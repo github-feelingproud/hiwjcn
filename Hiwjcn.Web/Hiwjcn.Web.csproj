@@ -274,7 +274,6 @@
     <Content Include="ui\jq-plus\layer\skin\default\loading-2.gif" />
     <Content Include="ui\jq-plus\layer\skin\layer.css" />
     <Content Include="ui\jq-plus\layer\skin\layer.ext.css" />
-    <Content Include="ui\jq-plus\masonry.pkgd.min.js" />
     <Content Include="ui\jq-plus\owl\AjaxLoader.gif" />
     <Content Include="ui\jq-plus\owl\grabbing.png" />
     <Content Include="ui\jq-plus\owl\owl.carousel.css" />
