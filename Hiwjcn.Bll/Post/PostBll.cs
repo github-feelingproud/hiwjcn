@@ -1,7 +1,6 @@
 ﻿using Dal.Post;
 using Dal.User;
 using Hiwjcn.Bll.Tag;
-using Hiwjcn.Core.Model.Hotel;
 using Hiwjcn.Dal.Tag;
 using Lib.core;
 using Lib.extension;
@@ -74,10 +73,6 @@ namespace Bll.Post
             var model = _PostDal.GetFirst(x => x.PostID == postID);
             if (model == null) { return "内容不存在"; }
             var canDelete = false;
-            if (HotelMemberType == (int)MemberType.超级管理员)
-            {
-                canDelete = true;
-            }
             if (model.AuthorID == AuthorID)
             {
                 canDelete = true;

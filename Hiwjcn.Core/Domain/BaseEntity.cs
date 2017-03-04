@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using Lib.helper;
-using Lib.model;
+using Lib.data;
 
 namespace Model
 {

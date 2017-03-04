@@ -5,7 +5,7 @@ using Lib.helper;
 using Lib.infrastructure;
 using System;
 using System.Linq;
-using Lib.model;
+using Lib.data;
 using System.Linq.Expressions;
 
 namespace Bll

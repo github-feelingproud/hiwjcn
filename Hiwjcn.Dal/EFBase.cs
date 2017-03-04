@@ -2,7 +2,7 @@
 using Lib.extension;
 using Lib.helper;
 using Lib.infrastructure;
-using Lib.model;
+using Lib.data;
 using System;
 using System.Collections.Generic;
 using System.Data;

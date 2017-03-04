@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.core;
 using Lib.helper;
-using Lib.helper;
 using Hiwjcn.Dal.Sys;
 
 namespace Hiwjcn.Bll.Sys
