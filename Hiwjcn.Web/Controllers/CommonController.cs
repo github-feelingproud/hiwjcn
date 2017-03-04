@@ -1,7 +1,6 @@
 ﻿using Hiwjcn.Core.Infrastructure.Common;
 using Lib.core;
 using Lib.helper;
-using Lib.http;
 using Lib.io;
 using Lib.mvc;
 using Lib.net;

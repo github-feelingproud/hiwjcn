@@ -1,17 +1,12 @@
-﻿using System;
+﻿using Lib.core;
+using Lib.mvc.plugin;
+using System;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Reflection;
-using System.Web.Compilation;
-using System.Collections.Generic;
 using System.Threading;
-using Lib.core;
-using Lib.helper;
-using Lib.http;
-using Lib.io;
-using System.Text;
-using Lib.mvc.plugin;
+using System.Web;
+using System.Web.Compilation;
 
 [assembly: PreApplicationStartMethod(typeof(PluginManager), "LoadPlugins")]
 namespace Lib.mvc.plugin

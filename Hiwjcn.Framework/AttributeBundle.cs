@@ -1,26 +1,12 @@
-﻿using Bll;
-using Bll.Category;
+﻿using Bll.Category;
 using Hiwjcn.Bll.Sys;
 using Hiwjcn.Core.Model.Sys;
+using Lib.extension;
 using Lib.helper;
-using Lib.core;
-using Lib.http;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using Autofac;
-using Lib.cache;
-using System.Net;
-using Lib.mvc;
-using Lib.ioc;
-using Lib.mvc.user;
-using Lib.extension;
 
 namespace Hiwjcn.Framework
 {

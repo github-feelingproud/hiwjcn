@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Web;
 
-namespace Lib.http
+namespace Lib.mvc
 {
     /// <summary>
     /// 操作cookie

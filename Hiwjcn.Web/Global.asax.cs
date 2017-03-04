@@ -4,7 +4,6 @@ using Hiwjcn.Framework.Tasks;
 using Hiwjcn.Web.App_Start;
 using Lib.data;
 using Lib.helper;
-using Lib.http;
 using Lib.ioc;
 using System;
 using System.Linq;
@@ -12,6 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Lib.extension;
+using Lib.mvc;
 
 namespace Hiwjcn.Web
 {

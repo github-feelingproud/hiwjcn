@@ -1,17 +1,12 @@
-﻿using System;
+﻿using Hiwjcn.Core.Infrastructure.Page;
+using Lib.data;
+using Lib.helper;
+using Lib.infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Lib.core;
-using Lib.helper;
-using Lib.http;
-using Bll;
 using WebLogic.Dal.Page;
 using WebLogic.Model.Page;
-using Hiwjcn.Core.Infrastructure.Page;
-using Hiwjcn.Core.Infrastructure;
-using Lib.infrastructure;
-using Lib.data;
 
 namespace WebLogic.Bll.Page
 {

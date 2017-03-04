@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using com.google.zxing;
+using com.google.zxing.common;
+using com.google.zxing.qrcode.decoder;
+using Lib.helper;
+using System;
 using System.Collections;
-using System.Linq;
-using System.Web;
-using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using com.google.zxing;
-using com.google.zxing.common;
-using com.google.zxing.qrcode;
-using Lib.helper;
-using com.google.zxing.qrcode.decoder;
-using System.Text;
-using Lib.http;
-using Lib.core;
+using System.IO;
 
 namespace Lib.io
 {

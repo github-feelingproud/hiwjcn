@@ -1,8 +1,8 @@
 ﻿using Hiwjcn.Core.Infrastructure.Common;
 using Lib.helper;
-using Lib.http;
 using Lib.io;
 using Lib.ioc;
+using Lib.mvc;
 using Lib.mvc.user;
 using System.IO;
 using System.Linq;

@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Web;
 
-namespace Lib.http
+namespace Lib.mvc
 {
     public static class RequestHelper
     {

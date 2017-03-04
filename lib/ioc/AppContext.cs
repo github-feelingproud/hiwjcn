@@ -142,9 +142,15 @@ namespace Lib.ioc
                 return Container.Resolve<T>();
             }
         }
-        public static T[] GetAllObject<T>()
+        /// <summary>
+        /// 获取所有实例
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static T[] GetAllObject<T>(string name = null)
         {
-            return GetObject<IEnumerable<T>>().ToArray();
+            return GetObject<IEnumerable<T>>(name).ToArray();
         }
     }
 

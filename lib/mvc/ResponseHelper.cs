@@ -3,7 +3,7 @@ using System;
 using System.Configuration;
 using System.Web;
 
-namespace Lib.http
+namespace Lib.mvc
 {
     public static class ResponseHelper
     {

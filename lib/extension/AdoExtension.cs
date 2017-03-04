@@ -24,6 +24,14 @@ namespace Lib.extension
     /// </summary>
     public static class DapperExtension
     {
+        public static void OpenIfClosed(this IDbConnection con)
+        {
+            if (con.State == ConnectionState.Closed)
+            {
+                con.Open();
+            }
+        }
+
         public static void HowToUseParametersInDapperFramework(this IDbConnection con)
         {
             var args = new DynamicParameters(new { });

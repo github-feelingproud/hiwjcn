@@ -1,7 +1,6 @@
 ﻿using Bll.Category;
 using Hiwjcn.Web.Models.Category;
 using Lib.helper;
-using Lib.http;
 using Lib.mvc;
 using Model.Category;
 using System;

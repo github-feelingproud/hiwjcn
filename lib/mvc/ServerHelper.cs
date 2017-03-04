@@ -5,7 +5,7 @@ using System.Security;
 using System.Web;
 using System.Web.Hosting;
 
-namespace Lib.http
+namespace Lib.mvc
 {
     public static class ServerHelper
     {

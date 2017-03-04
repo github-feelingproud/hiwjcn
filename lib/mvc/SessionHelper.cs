@@ -2,7 +2,7 @@
 using System;
 using System.Web.SessionState;
 
-namespace Lib.http
+namespace Lib.mvc
 {
     public static class SessionHelper
     {

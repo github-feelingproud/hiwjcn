@@ -1,21 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Lib.core;
-using Lib;
-using Model;
-using Model.Sys;
-using Lib.http;
-using Lib.helper;
-using Bll;
-using Bll.Sys;
-using Model.User;
-using WebCore.MvcLib.Controller;
-using WebCore.MvcLib;
+﻿using Hiwjcn.Core.Infrastructure.Common;
 using Hiwjcn.Framework.Tasks;
-using Hiwjcn.Core.Infrastructure.Common;
+using Lib.helper;
+using Model.Sys;
+using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {

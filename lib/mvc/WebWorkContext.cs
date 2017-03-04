@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Lib.mvc.user;
+using System;
 using System.Web;
-using Lib.core;
-using Lib.helper;
-using Lib.http;
-using Lib.mvc.user;
 
 namespace Lib.mvc
 {

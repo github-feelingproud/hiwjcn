@@ -21,8 +21,10 @@ namespace Lib.log
         protected override void Append(LoggingEvent loggingEvent)
         {
             var logline = new LogLine(loggingEvent);
-            var client = new RedisHelper();
-            client.ListLeftPush(nameof(RedisLogAppender), logline);
+            using (var client = new RedisHelper())
+            {
+                client.ListLeftPush(nameof(RedisLogAppender), logline);
+            }
         }
     }
 }
