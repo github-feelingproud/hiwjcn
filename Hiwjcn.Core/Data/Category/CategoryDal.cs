@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Model.User;
+﻿using Lib.data;
 using Model.Category;
-using Lib.core;
-using Lib.data;
 
 namespace Dal.Category
 {

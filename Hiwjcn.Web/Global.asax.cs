@@ -37,7 +37,8 @@ namespace Hiwjcn.Web
                 //使用autofac生成控制器
                 DependencyResolver.SetResolver(new AutofacDependencyResolver(AppContext.Container));
                 //加速首次启动EF
-                EFManager.FastStart();
+                //EFManager.SelectDB(null).FastStart();
+                EFManager.FastStart<EntityDB>();
                 //启动后台服务
                 TaskManager.InitTasks();
 

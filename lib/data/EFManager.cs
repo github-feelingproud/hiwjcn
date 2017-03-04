@@ -22,7 +22,7 @@ namespace Lib.data
             this.db_name = name;
         }
         private string db_name { get; set; } = "db";
-        public static EFManager SelectDB(string name)
+        public static EFManager SelectDB(string name = null)
         {
             return new EFManager(name);
         }

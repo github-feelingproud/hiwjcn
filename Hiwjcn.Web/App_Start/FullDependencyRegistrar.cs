@@ -6,6 +6,7 @@ using Dal;
 using Hiwjcn.Bll;
 using Hiwjcn.Dal;
 using Lib.cache;
+using Lib.data;
 using Lib.events;
 using Lib.extension;
 using Lib.infrastructure;
@@ -37,12 +38,12 @@ namespace Hiwjcn.Web.App_Start
             {
                 builder.RegisterType<MemoryCacheProvider>().As<ICacheProvider>().SingleInstance();
             }
-            builder.RegisterType<EntityDB>().As<DbContext>();
+            builder.RegisterType<EntityDB>().Named<DbContext>("db");
             builder.RegisterType<MySqlConnection>().As<IDbConnection>();
 
             #region 注册Data
             //注册数据访问层
-            foreach (var t in typeof(EFManager).Assembly.GetTypes())
+            foreach (var t in typeof(EntityDB).Assembly.GetTypes())
             {
                 if (t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(EFRepository<>))
                 {
@@ -60,7 +61,7 @@ namespace Hiwjcn.Web.App_Start
             #endregion
 
             #region 注册service
-            var serviceAss = typeof(ServiceBase<>).Assembly;
+            var serviceAss = typeof(MyService).Assembly;
             //注册service
             foreach (var t in serviceAss.GetTypes())
             {
