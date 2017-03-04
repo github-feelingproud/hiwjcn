@@ -607,10 +607,6 @@
       <Project>{35bcb473-b95c-4b87-a9e6-7a538719c3d9}</Project>
       <Name>Hiwjcn.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Hiwjcn.Dal\Hiwjcn.Dal.csproj">
-      <Project>{935258c0-4801-4abe-86b4-cbe8a86e7c3d}</Project>
-      <Name>Hiwjcn.Dal</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Hiwjcn.Framework\Hiwjcn.Framework.csproj">
       <Project>{f6ea1c4a-821e-417b-b02e-05b492874e40}</Project>
       <Name>Hiwjcn.Framework</Name>

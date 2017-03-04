@@ -86,10 +86,6 @@
       <Project>{35BCB473-B95C-4B87-A9E6-7A538719C3D9}</Project>
       <Name>Hiwjcn.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Hiwjcn.Dal\Hiwjcn.Dal.csproj">
-      <Project>{935258C0-4801-4ABE-86B4-CBE8A86E7C3D}</Project>
-      <Name>Hiwjcn.Dal</Name>
-    </ProjectReference>
     <ProjectReference Include="..\lib\Lib.csproj">
       <Project>{5F8BD505-423D-400C-84C4-F9638F84CC41}</Project>
       <Name>Lib</Name>

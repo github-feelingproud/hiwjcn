@@ -1,11 +1,9 @@
 ﻿using Hiwjcn.Core.Model.EFMapping;
-using Hiwjcn.Core.Model.Hotel;
 using Hiwjcn.Core.Model.Sys;
 using Lib.core;
 using Model;
 using Model.Category;
 using Model.Post;
-using Model.Product;
 using Model.Sys;
 using Model.User;
 using System;
@@ -15,7 +13,6 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Reflection;
 using WebLogic.Model.Page;
-using WebLogic.Model.Product;
 using WebLogic.Model.Sys;
 using WebLogic.Model.Tag;
 using WebLogic.Model.User;
@@ -44,20 +41,8 @@ namespace Hiwjcn.Dal
 
         #region model对应的实体
         public virtual DbSet<CategoryModel> CategoryModel { get; set; }
-        public virtual DbSet<HotelManagerModel> HotelManagerModel { get; set; }
-        public virtual DbSet<HotelModel> HotelModel { get; set; }
-        public virtual DbSet<PriceTempModel> PriceTempModel { get; set; }
-        public virtual DbSet<RoomModel> RoomModel { get; set; }
-        public virtual DbSet<RoomTypeModel> RoomTypeModel { get; set; }
-        public virtual DbSet<V_HotelManager> V_HotelManager { get; set; }
         public virtual DbSet<SectionModel> SectionModel { get; set; }
         public virtual DbSet<PostModel> PostModel { get; set; }
-        public virtual DbSet<AddressModel> AddressModel { get; set; }
-        public virtual DbSet<OrderItemModel> OrderItemModel { get; set; }
-        public virtual DbSet<OrderModel> OrderModel { get; set; }
-        public virtual DbSet<ProductItemModel> ProductItemModel { get; set; }
-        public virtual DbSet<ProductModel> ProductModel { get; set; }
-        public virtual DbSet<ShoppingCartModel> ShoppingCartModel { get; set; }
         public virtual DbSet<AreaModel> AreaModel { get; set; }
         public virtual DbSet<CommentModel> CommentModel { get; set; }
         public virtual DbSet<LinkModel> LinkModel { get; set; }
@@ -72,7 +57,6 @@ namespace Hiwjcn.Dal
         public virtual DbSet<RolePermissionModel> RolePermissionModel { get; set; }
         public virtual DbSet<UserModel> UserModel { get; set; }
         public virtual DbSet<UserRoleModel> UserRoleModel { get; set; }
-        public virtual DbSet<EventModel> EventModel { get; set; }
         #endregion
 
         /// <summary>
