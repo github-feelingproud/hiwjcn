@@ -1,0 +1,67 @@
+﻿@using Hiwjcn.Framework;
+@using System.Reflection;
+@{
+    Layout = null;
+    var data = ViewData["data"] as ListViewDataContainer;
+    if (data == null) { data = new ListViewDataContainer(); }
+}
+
+<div class="col-md-12">
+    <h2>@(data.Title)</h2>
+</div>
+<div class="col-md-12">
+    @if (ValidateHelper.IsPlumpList(data.Body))
+    {
+        PropertyInfo key = null;
+        List<PropertyInfo> displayCols = null;
+        data.GetCols(ref key, ref displayCols);
+        <table class="table table-hover">
+            <tbody>
+                @foreach (var model in data.Body)
+                {
+                    <tr>
+                        @foreach (var p in displayCols)
+                        {
+                            <td>@(p.GetValue(model))</td>
+                        }
+                        <td>
+                            <a href="@(string.Format(data.EditAction,key.GetValue(model)))">编辑</a>
+                            <a class="del" data-id="@(key.GetValue(model))" href="javascript:;">删除</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <script type="text/javascript">
+            $(function () {
+                $('.del').click(function () {
+                    if (!confirm('确定删除此项？')) {
+                        return false;
+                    }
+                    var del_btn = $(this);
+                    var frame = del_btn.parent().parent();
+                    frame.hide();
+                    var id = del_btn.data('id');
+                    postJson('@(data.DeleteAction)', { id: id }, function (res) {
+                        if (res && res.success) {
+                            frame.remove();
+                        }
+                        else {
+                            alert(res.msg);
+                            frame.show();
+                        }
+                    });
+                    return false;
+                });
+            });
+        </script>
+    }
+    else
+    {
+        <div class="alert alert-info">没有数据</div>
+    }
+</div>
+<div class="col-md-12">
+    @Html.Raw(data.Pager)
+</div>
+

@@ -1,0 +1,56 @@
+﻿@{
+    Layout = null;
+    
+    string title = ConvertHelper.GetString(ViewData["title"]);
+    string description = ConvertHelper.GetString(ViewData["description"]);
+    string keywords = ConvertHelper.GetString(ViewData["keywords"]);
+}
+<!--title-->
+<title>@(title)</title>
+<!--关键词和描述-->
+<meta name="keywords" content="@(keywords)">
+<meta name="description" content="@(description)">
+<!--图标-->
+<link rel="shortcut icon" href="/static/image/logo/favicon.ico" type="image/x-icon">
+<!--网站信息-->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<!--bing webmaster told me to add this-->
+<meta http-equiv="content-language" content="zh-cn" />
+<!--响应式布局-->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<!--用webkit渲染-->
+<meta name="renderer" content="webkit" />
+<!--jquery等依赖-->
+<script src="/ui/jq/jquery-1.10.1.min.js"></script>
+<!--bootstrap-->
+<link href="/ui/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<script src="/ui/bootstrap/js/bootstrap.min.js"></script>
+<!--弹出层-->
+<script src="~/ui/jq-plus/layer/layer.js"></script>
+<!--font-awesome-->
+<link href="/ui/font-icon/css/font-awesome.min.css" rel="stylesheet" />
+<!--css和js库-->
+<link href="/ui/ui/ui.css" rel="stylesheet" />
+<script src="/ui/ui/ui.js"></script>
+<!-- js -->
+<script type="text/javascript">
+    $(function () {
+        //设置默认图片
+        var imgs = $('img');
+        imgs.each(function (index) {
+            var img = $(imgs.eq(index));
+            var index = 0;
+            img.on('error', function () {
+                if (index > 0) { return; }
+                ++index;
+                img.unbind('error');
+                img.attr('src', '/static/image/img_404.png');
+            });
+        });
+
+        var keepalive = setInterval(function () {
+            //get('/Page/KeepAlive/', {}, function (res) { });
+        }, 1000 * 60 * 5);
+
+    });
+</script>

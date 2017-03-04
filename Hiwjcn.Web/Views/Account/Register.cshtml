@@ -1,0 +1,109 @@
+﻿@using Lib.core;
+@using Lib.helper;
+@using Lib.http;
+@using Bll;
+@using Model;
+@{
+    Layout = null;
+}
+
+
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- header page -->
+    @Html.Partial(IncludePath("header"))
+    <style type="text/css">
+        .item {
+            margin: 15px 0px;
+        }
+    </style>
+</head>
+
+<body class="web_img_bg">
+    @Html.Partial(IncludePath("body_top"))
+    @Html.Partial(IncludePath("nav"))
+    <div class="center-block" style="width: 400px; margin-top: 30px;">
+        <div style="margin: 60px 0px 20px 0px; text-align: center;">
+        </div>
+        <div class="panel panel-default z-depth-1">
+            <div class="panel-heading">
+                请在此注册！
+            </div>
+            <div class="panel-body">
+                <form id="fm">
+                    <!--用户名-->
+                    <div class="item">
+                        <span style="font-size: 16px; font-weight: lighter; color: #777; line-height: 2;">请填写注册邮箱：</span><br />
+                        <input type="text" name="email" id="email" class="form-control" />
+                    </div>
+                    <!--密码-->
+                    <div class="item">
+                        <span style="font-size: 16px; font-weight: lighter; color: #777; line-height: 2;">密码：</span><br />
+                        <input type="password" name="pass" id="pass" class="form-control" />
+                    </div>
+                    <!--重复密码-->
+                    <div class="item">
+                        <span style="font-size: 16px; font-weight: lighter; color: #777; line-height: 2;">重复密码：</span><br />
+                        <input type="password" name="repass" id="repass" class="form-control" />
+                    </div>
+                    <!--验证码-->
+                    <div class="item float_wrapper">
+                        <div style="float: left; width: 200px;">
+                            <input type="text" name="verify" placeholder="验证码" id="verify" class="form-control" />
+                        </div>
+                        <div style="float: right;">
+                            <img src="/Common/VerifyCode/?key=reg_verify" id="verify_img" alt="verify image"
+                                 style="border:2px solid gray;cursor:pointer;" />
+                        </div>
+                    </div>
+                    <div class="item float_wrapper">
+                        <button type="submit" class="btn btn-primary">注册</button>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-footer">
+                <div class="input">
+                    <span><a href="/account/login/" target="_self">已有账号？立即登陆</a></span>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                var img_url = '';
+                function change_verify_image(verify_img) {
+                    if (img_url == '') {
+                        img_url = verify_img.attr('src');
+                    }
+                    verify_img.attr('src', img_url + "&sec=" + new Date().getTime());
+                    $('#verify').val('').focus();
+                    return false;
+                }
+                $('#verify_img').on('click', function () {
+                    change_verify_image($(this));
+                }).trigger('click');
+            });
+        </script>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $('#fm').submit(function () {
+                postFormJson('/account/RegisterAction/', 'fm', function (res) {
+                    if (res && res.success) {
+                        alert('注册成功');
+                        window.location.href = '/sso/login/';
+                    }
+                    else {
+                        alert(res.msg);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+    @Html.Partial(IncludePath("body_bottom"))
+</body>
+</html>

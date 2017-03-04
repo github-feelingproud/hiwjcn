@@ -1,0 +1,11 @@
+创建描述文件
+nuget spec
+
+打包
+nuget pack Lib.csproj
+
+发布
+nuget push lib.com.nuget.1.0.0.11.nupkg 3b7cbe09-e7ac-4f8a-b8ad-324340e66cf5 -Source https://www.nuget.org/api/v2/package
+
+项目地址
+https://www.nuget.org/packages/lib.com.nuget/

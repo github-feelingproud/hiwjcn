@@ -1,0 +1,48 @@
+﻿@using Lib.core;
+@using Lib.helper;
+@using Lib.http;
+@using Bll;
+@using Model;
+@{
+    Layout = null;
+
+    //设置网页关键词和title
+    {
+        ViewData[Bll.StaticData.Key.TitleKey] = "";
+        ViewData[Bll.StaticData.Key.KeywordsKey] = "";
+        ViewData[Bll.StaticData.Key.DescriptionKey] = "";
+    }
+}
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- header page -->
+    @Html.Partial(IncludePath("header"))
+</head>
+
+<body>
+    @Html.Partial(IncludePath("body_top"))
+    <!--导航-->
+    @Html.Partial(IncludePath("nav"))
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-4"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-3"></div>
+        </div>
+    </div>
+
+
+    <!-- footer page -->
+    @Html.Partial(IncludePath("footer"))
+    @Html.Partial(IncludePath("body_bottom"))
+</body>
+</html>

@@ -1,0 +1,50 @@
+﻿@{
+    Layout = null;
+    var c = this.X.context.Request.Cookies[LanguageHelper.CookieName];
+    var selected_lang = string.Empty;
+    if (c != null)
+    {
+        selected_lang = c.Value;
+    }
+
+    this.LoadLangResource();
+}
+
+@if (ValidateHelper.IsPlumpList(this.Language))
+{
+    <select class="form-control lang">
+        <option value="">Select Language</option>
+        @foreach (var lang in this.Language)
+        {
+            if (lang.Name == selected_lang)
+            {
+                <option value="@(lang.Name)" selected="selected">@(lang.Desc)</option>
+            }
+            else
+            {
+                <option value="@(lang.Name)">@(lang.Desc)</option>
+            }
+        }
+    </select>
+    <script type="text/javascript">
+        $(function () {
+            $('select.lang').change(function () {
+                var val = $(this).val();
+                postJson('/Common/SetLang', {
+                    lang: val
+                }, function (res) {
+                    if (res.success) {
+                        if (!confirm('即将刷新页面，是否继续？')) {
+                            return false;
+                        }
+                        window.location.reload();
+                    }
+                    else {
+                        alert(res.msg);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+}

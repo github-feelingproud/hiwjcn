@@ -1,0 +1,75 @@
+﻿using Bll.Category;
+using Hiwjcn.Bll.Sys;
+using Hiwjcn.Core.Model.Sys;
+using Lib.helper;
+using Lib.core;
+using Lib.http;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
+using System.IO;
+using System.Reflection;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+using System.Data;
+using Model;
+using System.ComponentModel.DataAnnotations;
+
+namespace Hiwjcn.Framework
+{
+    public class Simple_CRUD
+    {
+        public const string VIEW_DIR = "/Views/Simple_CRUD/";
+        public string View(string name)
+        {
+            return VIEW_DIR + name;
+        }
+    }
+    public class Simple_CRUD_List<T> : Simple_CRUD where T : BaseEntity
+    {
+        public string DeleteActionUrl { get; set; }
+        public ActionResult View()
+        {
+            var t = Type.GetType("");
+            return null;
+        }
+    }
+    public class Simple_CRUD_Form<T> : Simple_CRUD where T : BaseEntity
+    {
+        public string SaveActionUrl { get; set; }
+        public ActionResult View()
+        {
+            return null;
+        }
+    }
+    public class ListViewDataContainer
+    {
+        public string Title { get; set; }
+
+        public List<BaseEntity> Body { get; set; }
+
+        public string Pager { get; set; }
+
+        public string DeleteAction { get; set; }
+
+        public string EditAction { get; set; }
+
+        public void GetCols(ref PropertyInfo keyCol, ref List<PropertyInfo> displayCols)
+        {
+            if (!ValidateHelper.IsPlumpList(Body))
+            {
+                throw new Exception("list为空");
+            }
+            var props = Body[0].GetType().GetProperties().ToList();
+            displayCols = props.Where(x => x.GetCustomAttributes<DisplayColumnAttribute>().Any()).ToList();
+            var keyCols = props.Where(x => x.GetCustomAttributes<KeyAttribute>().Any()).ToList();
+            if (keyCols.Count != 1) { throw new Exception("有且只有一个主键"); }
+            keyCol = keyCols[0];
+        }
+    }
+    public class DisplayColumnAttribute : Attribute
+    { }
+}

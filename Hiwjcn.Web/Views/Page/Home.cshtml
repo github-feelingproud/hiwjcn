@@ -1,0 +1,138 @@
+﻿@using Lib.core;
+@using Lib.helper;
+@using Lib.http;
+@using Lib.helper;
+@using Bll;
+@using Model;
+@using Model.Post;
+@using Model.Sys;
+@using Model.User;
+@{
+    Layout = null;
+}
+
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- header page -->
+    @Html.Partial(IncludePath("header"))
+    <style type="text/css">
+        body {
+            background: none;
+            background-color: white;
+        }
+
+        .nav_cls {
+            margin-bottom: 0 !important;
+        }
+
+        .img_con {
+            margin-bottom: 10px;
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+
+            .img_con img {
+                width: 100%;
+                height: auto;
+                -webkit-transition: all 0.25s ease 0s;
+                -moz-transition: all 0.25s ease 0s;
+                -o-transition: all 0.25s ease 0s;
+                -ms-transition: all 0.25s ease 0s;
+                transition: all 0.25s ease 0s;
+            }
+
+                .img_con img:hover {
+                    opacity: 0.9;
+                }
+    </style>
+</head>
+
+<body>
+    @Html.Partial(IncludePath("body_top"))
+    <!--导航-->
+    @Html.Partial(IncludePath("nav"))
+
+    <div class="container">
+
+        @{
+            var model = ViewData["model"] as WebApp.Models.Page.HomeModel;
+            if (model == null) { model = new WebApp.Models.Page.HomeModel(); }
+            if (ValidateHelper.IsPlumpList(model.HomeLinksList))
+            {
+                LinkModel link = null;
+                var list = new List<LinkModel>(model.HomeLinksList);
+                bool stop = false; int i = 0;//最多10行
+                while (!stop && (++i) < 30)
+                {
+                    if ((link = Com.Pop(ref list)) != null)
+                    {
+                        <div class="row" style="margin-left:-5px;margin-right:-5px;">
+                            <div class="col-md-12">
+                                <div class="img_con">
+                                    <a href="@(link.Url)" target="_blank" data-order="@(link.OrderNum)">
+                                        <img class="lazy" src="/static/image/holder.png" data-original="@(link.Image)" alt="@(link.Title)" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        break;//没了就直接跳出
+                    }
+                    //看是否需要两列的row
+                    if ((link = Com.Pop(ref list)) != null)
+                    {
+                        <div class="row" style="margin-left:-5px;margin-right:-5px;">
+                            <div class="col-md-6">
+                                <div class="img_con">
+                                    <a href="@(link.Url)" target="_blank" data-order="@(link.OrderNum)">
+                                        <img class="lazy" src="/static/image/holder.png" data-original="@(link.Image)" alt="@(link.Title)" />
+                                    </a>
+                                </div>
+                            </div>
+                            @if ((link = Com.Pop(ref list)) != null)
+                            {
+                                //如果这一列有第二个图片
+                                <div class="col-md-6">
+                                    <div class="img_con">
+                                        <a href="@(link.Url)" target="_blank" data-order="@(link.OrderNum)">
+                                            <img class="lazy" src="/static/image/holder.png" data-original="@(link.Image)" alt="@(link.Title)" />
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                stop = true;
+                                //这里不能直接终止循环，那样会直接跳过下面的div标签
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        break;//没了就直接跳出
+                    }
+                }
+            }
+        }
+
+        <div class="row">
+            <div class="col-md-12">
+                <div style="padding:40px 0;">
+                    <div class="sep">
+                        <span class="sep-txt">END</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @Html.Partial(IncludePath("footer"))
+    @Html.Partial(IncludePath("body_bottom"))
+</body>
+</html>

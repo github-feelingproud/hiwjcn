@@ -1,0 +1,25 @@
+﻿@using Lib.core;
+@{
+    Layout = null;
+}
+
+<div id="back_top" class="btn pin" style="position: fixed; z-index: 100; right: 30px; bottom: 30px;">
+    <span class="fa fa-arrow-up"></span>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var back_top = $("#back_top");
+        back_top.click(function () {
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+        });
+        $(window).on('scroll', function () {
+            if ($(this).scrollTop() > 200) {
+                back_top.fadeIn();
+            }
+            else {
+                back_top.fadeOut();
+            }
+        }).trigger('scroll');
+    });
+</script>

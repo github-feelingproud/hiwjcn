@@ -1,0 +1,156 @@
+﻿@using Lib.core;
+@using Lib.helper;
+@using Lib.http;
+@using Lib.helper;
+@using Bll;
+@using Model;
+@using Model.Post;
+@using Model.Sys;
+@using Model.User;
+@using WebLogic.Model.Page;
+@using Model.Category;
+@using WebApp.Models.Group;
+@{
+    Layout = null;
+
+    var model = ViewData["model"] as PostListViewModel;
+    if (model == null) { model = new PostListViewModel(); }
+    if (model.SearchedTagList == null) { model.SearchedTagList = new List<string>(); }
+    
+}
+
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- header page -->
+    @Html.Partial(IncludePath("header"))
+</head>
+
+<body style="background:none;">
+    @Html.Partial(IncludePath("body_top"))
+    <!--导航-->
+    @Html.Partial(IncludePath("hotel_nav"))
+
+    <div class="container" style="margin-top: 30px;">
+
+        <div class="row">
+            <div class="col-md-6">
+                <form action="/group/postlist/" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="q" />
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-primary btn-simple">搜索</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6">
+                @{
+                    ViewData["sliderlist"] = model.Sliders;
+                }
+                @Html.Partial(IncludePath("slider"))
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:15px;">
+                <div class="pull-right">
+                    <a href="/group/postedit/" class="btn btn-primary btn-sm layer_win" target="_blank">发布话题</a>
+                </div>
+            </div>
+            <div class="col-md-12">
+                @if (ValidateHelper.IsPlumpList(model.PostList))
+                {
+                    <table class="table table-hover table-responsive postlist">
+                        <thead>
+                            <tr>
+                                <td style="width:50%;">主题</td>
+                                <td>标签</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var post in model.PostList)
+                            {
+                                if (post.UserModel == null) { post.UserModel = new UserModel(); }
+                                if (post.UpdateTime == null) { post.UpdateTime = DateTimeHelper.Now(); }
+                                <tr>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="pull-right">
+                                                    @if (post.AuthorID == model.LoginUserID)
+                                                    {
+                                                        <div class="right">
+                                                            <a href="/group/postedit/?id=@(post.PostID)" target="_blank"
+                                                               class="btn btn-x btn-sm layer_win">编辑</a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="title">
+                                                    @if (post.IsStickyTop())
+                                                    {
+                                                        <span class="label label-primary">置顶</span>
+                                                    }
+                                                    <strong style="font-size:14px;">
+                                                        <a href="/group/post/@(post.PostID)/" target="_blank">@(post.Title)</a>
+                                                    </strong>
+                                                    @if (ValidateHelper.IsPlumpString(post.Preview))
+                                                    {
+                                                        <div style="margin: 5px;color:gray;">@(Com.GetPreviewString(post.Preview, 50))</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (ValidateHelper.IsPlumpList(post.PostTagsList))
+                                        {
+                                            foreach (var tag in post.PostTagsList)
+                                            {
+                                                if (model.SearchedTagList.Contains(tag))
+                                                {
+                                                    <a class="label label-primary" href="/group/postlist/" target="_self">@(tag)</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="label label-gray" href="/group/postlist/?tag=@(tag)" target="_self">@(tag)</a>
+                                                }
+                                            }
+                                        }
+                                    </td>
+                                    <td>
+                                        <p>
+                                            <span class="fa fa-clock-o"></span>
+                                            <span>@(DateTimeHelper.GetFriendlyDateTime(post.UpdateTime))</span>
+                                        </p>
+                                        <p>
+                                            <span class="fa fa-user"></span>
+                                            <span>
+                                                <a href="/group/postlist/?uid=@(post.AuthorID)" target="_self">
+                                                    @(post.UserModel.NickName)
+                                                </a>
+                                            </span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="box_con right">
+                        @Html.Raw(model.PagerHtml)
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">还没有帖子</div>
+                }
+            </div>
+        </div>
+    </div>
+    @Html.Partial(IncludePath("body_bottom"))
+</body>
+</html>

@@ -1,0 +1,23 @@
+﻿{
+  "Name": "en",
+  "Desc": "英文",
+  "Default": false,
+  "Dict": [
+    {
+      "key": "home",
+      "value": "Home"
+    },
+    {
+      "key": "news",
+      "value": "News"
+    },
+    {
+      "key": "shop",
+      "value": "Shop"
+    },
+    {
+      "key": "contact",
+      "value": "Contact"
+    }
+  ]
+}

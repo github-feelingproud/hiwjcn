@@ -1,0 +1,23 @@
+﻿{
+  "Name": "zh-cn",
+  "Desc": "中文",
+  "Default": true,
+  "Dict": [
+    {
+      "key": "home",
+      "value": "首页"
+    },
+    {
+      "key": "news",
+      "value": "新闻"
+    },
+    {
+      "key": "shop",
+      "value": "商店"
+    },
+    {
+      "key": "contact",
+      "value": "联系"
+    }
+  ]
+}
