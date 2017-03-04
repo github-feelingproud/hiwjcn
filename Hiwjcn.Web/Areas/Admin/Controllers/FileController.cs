@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.IO;
-using Lib.io;
-using Lib.core;
-using Lib.helper;
-using WebCore.MvcLib.Controller;
-using Lib.helper;
+﻿using Lib.helper;
 using Lib.http;
-using Lib.model;
-using Model.User;
-using Bll.User;
-using WebLogic.Model.User;
+using Lib.io;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class FileController : WebCore.MvcLib.Controller.UserController
+    public class FileController : WebCore.MvcLib.Controller.UserBaseController
     {
         public ActionResult FileAction()
         {

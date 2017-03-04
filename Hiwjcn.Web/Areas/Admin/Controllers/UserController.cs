@@ -23,7 +23,7 @@ namespace WebApp.Areas.Admin.Controllers
     /// 用户管理
     /// </summary>
     [ValidateInput(false)]
-    public class UserController : WebCore.MvcLib.Controller.UserController
+    public class UserController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IUserService _IUserService { get; set; }
         public UserController(IUserService user)

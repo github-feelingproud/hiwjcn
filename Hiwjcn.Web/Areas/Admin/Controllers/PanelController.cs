@@ -1,7 +1,4 @@
-﻿using Bll.Product;
-using Dal.Post;
-using Dal.Product;
-using Dal.User;
+﻿using Dal.User;
 using Hiwjcn.Core.Infrastructure.User;
 using Hiwjcn.Dal.Sys;
 using Lib.helper;
@@ -15,7 +12,7 @@ namespace WebApp.Areas.Admin.Controllers
     /// <summary>
     /// 用作引导页
     /// </summary>
-    public class PanelController : WebCore.MvcLib.Controller.UserController
+    public class PanelController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IUserService _IUserService { get; set; }
         public PanelController(IUserService user)
@@ -32,15 +29,6 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 var udal = new UserDal();
                 ViewData["c1"] = udal.GetCount(null);
-
-                var pdal = new PostDal();
-                ViewData["c2"] = pdal.GetCount(null);
-
-                var prodal = new ProductDal();
-                ViewData["c3"] = prodal.GetCount(null);
-
-                var odal = new OrderDal();
-                ViewData["c4"] = odal.GetCount(null);
 
                 var now = DateTime.Now;
                 var reqdal = new ReqLogDal();
@@ -64,21 +52,6 @@ namespace WebApp.Areas.Admin.Controllers
                     success = true,
                     legend_data = userdata.Select(x => x.Sex).ToArray(),
                     data = userdata.Select(x => new { value = x.Count, name = x.Sex })
-                });
-
-                /////////////////////////////////////////////
-
-                var orderbll = new OrderBll();
-                var orderdata = orderbll.GetOrderCountGroupByState();
-                if (!ValidateHelper.IsPlumpList(orderdata))
-                {
-                    return GetJson(new { success = false });
-                }
-                ViewData["order_data"] = JsonHelper.ObjectToJson(new
-                {
-                    success = true,
-                    legend_data = orderdata.Select(x => x.StateName).ToArray(),
-                    data = orderdata.Select(x => new { value = x.Count, name = x.StateName })
                 });
                 return View();
             });

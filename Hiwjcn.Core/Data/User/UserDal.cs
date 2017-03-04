@@ -1,16 +1,7 @@
 ﻿using Dapper;
-using Hiwjcn.Dal;
 using Hiwjcn.Dal.User;
-using Lib.core;
 using Lib.data;
 using Model.User;
-using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using WebLogic.Dal;
 
 namespace Dal.User
 {

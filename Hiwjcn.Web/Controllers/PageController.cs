@@ -13,7 +13,7 @@ using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class PageController : WebCore.MvcLib.Controller.UserController
+    public class PageController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IPageService _IPageService { get; set; }
         private ILinkService _ILinkService { get; set; }

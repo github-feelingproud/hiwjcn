@@ -9,7 +9,7 @@ namespace Hiwjcn.Web.Controllers
     /// <summary>
     /// 评论
     /// </summary>
-    public class CommentController : WebCore.MvcLib.Controller.UserController
+    public class CommentController : WebCore.MvcLib.Controller.UserBaseController
     {
         private CommentBll _CommentBll { get; set; }
         public CommentController()

@@ -1,29 +1,25 @@
-﻿using Bll;
-using Hiwjcn.Core.Infrastructure.Common;
+﻿using Hiwjcn.Core.Infrastructure.Common;
 using Hiwjcn.Core.Infrastructure.User;
 using Lib.helper;
-using Lib.core;
+using Lib.ioc;
+using Lib.mvc;
+using Lib.mvc.user;
 using Model.Sys;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using Lib.mvc.user;
-using Lib.mvc;
-using Lib.ioc;
 
 namespace WebCore.MvcLib.Controller
 {
     [ValidateInput(false)]
-    public class UserController : BaseController
+    public class UserBaseController : BaseController
     {
         /// <summary>
         /// 网站配置
         /// </summary>
         public List<OptionModel> Settings { get; private set; }
 
-        public UserController()
+        public UserBaseController()
         {
             //自动登录还有问题
             //AutoLoginSSO();

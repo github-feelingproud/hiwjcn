@@ -4,7 +4,7 @@ using WebLogic.Model.Tag;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class TagController : WebCore.MvcLib.Controller.UserController
+    public class TagController : WebCore.MvcLib.Controller.UserBaseController
     {
         public TagBll _TagBll = new TagBll();
 

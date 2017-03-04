@@ -82,5 +82,26 @@ namespace Lib.extension
         {
             return new string[] { "1", "true", "yes", "on" }.Contains(data.ToString().ToLower().Trim());
         }
+
+        /// <summary>
+        /// 转为json 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static string ToJson(this object data)
+        {
+            return JsonHelper.ObjectToJson(data);
+        }
+
+        /// <summary>
+        /// json转为实体
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static T JsonToEntity<T>(this string json)
+        {
+            return JsonHelper.JsonToEntity<T>(json);
+        }
     }
 }

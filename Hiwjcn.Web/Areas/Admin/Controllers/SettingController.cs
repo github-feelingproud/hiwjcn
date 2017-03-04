@@ -19,7 +19,7 @@ using Hiwjcn.Core.Infrastructure.Common;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class SettingController : WebCore.MvcLib.Controller.UserController
+    public class SettingController : WebCore.MvcLib.Controller.UserBaseController
     {
         private ISettingService _ISettingService { get; set; }
         public SettingController(ISettingService setting)

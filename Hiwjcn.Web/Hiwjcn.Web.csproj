@@ -179,7 +179,6 @@
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
-    <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\PageController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -195,9 +194,6 @@
       <DependentUpon>index.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\Category\CategoryManageViewModel.cs" />
-    <Compile Include="Models\Group\PostEditViewModel.cs" />
-    <Compile Include="Models\Group\PostListViewModel.cs" />
-    <Compile Include="Models\Group\PostViewModel.cs" />
     <Compile Include="Models\Link\LinkEditViewModel.cs" />
     <Compile Include="Models\Link\LinkListViewModel.cs" />
     <Compile Include="Models\Page\HomeModel.cs" />
@@ -716,15 +712,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\_ViewStart.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Group\Post.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Group\PostList.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Group\PostEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Page\Home.cshtml" />

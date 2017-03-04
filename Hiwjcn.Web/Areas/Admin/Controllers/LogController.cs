@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.IO;
-using Lib.model;
+﻿using Hiwjcn.Bll.Sys;
 using Lib.helper;
-using Lib.core;
 using Lib.http;
 using Lib.io;
-using WebCore.MvcLib.Controller;
-using WebCore.MvcLib;
-using Hiwjcn.Bll.Sys;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class LogController : WebCore.MvcLib.Controller.UserController
+    public class LogController : WebCore.MvcLib.Controller.UserBaseController
     {
         public ActionResult ReadLog(string name)
         {

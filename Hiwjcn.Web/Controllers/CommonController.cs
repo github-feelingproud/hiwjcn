@@ -1,35 +1,24 @@
-﻿using Bll.Post;
-using Bll.Product;
-using Hiwjcn.Bll.Sys;
-using Lib.helper;
+﻿using Hiwjcn.Core.Infrastructure.Common;
 using Lib.core;
+using Lib.helper;
 using Lib.http;
 using Lib.io;
-using Lib.model;
+using Lib.mvc;
 using Lib.net;
-using Model.Post;
-using Model.Product;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using System.Xml;
-using WebCore.MvcLib;
-using WebCore.MvcLib.Controller;
-using WebLogic.Bll.Sys;
-using Hiwjcn.Framework;
-using Hiwjcn.Core.Infrastructure.Common;
-using Lib.mvc;
 
 namespace Hiwjcn.Web.Controllers
 {
     /// <summary>
     /// 公用组件
     /// </summary>
-    public class CommonController : WebCore.MvcLib.Controller.UserController
+    public class CommonController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IAreaService _IAreaService { get; set; }
         private IUpFileService _IUpFileService { get; set; }

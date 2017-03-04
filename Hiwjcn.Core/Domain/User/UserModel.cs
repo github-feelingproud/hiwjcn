@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Data;
-using Model;
-using Lib;
-using Lib.core;
+﻿using Hiwjcn.Core.Model.EFMapping;
 using Lib.helper;
-using Lib.model;
-using System.ComponentModel.DataAnnotations.Schema;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using WebLogic.Model.User;
-using Hiwjcn.Core.Model.EFMapping;
 
 namespace Model.User
 {

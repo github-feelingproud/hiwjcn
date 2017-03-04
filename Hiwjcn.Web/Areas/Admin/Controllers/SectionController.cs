@@ -1,25 +1,13 @@
-﻿using System;
+﻿using Hiwjcn.Core.Infrastructure.Page;
+using Lib.helper;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Model.Post;
-using Lib.core;
-using Lib.helper;
-using Lib.helper;
-using Model.User;
-using Lib.http;
-using WebCore.MvcLib.Controller;
-using WebLogic.Bll.Page;
 using WebLogic.Model.Page;
-using WebLogic.Model.User;
-using WebCore.MvcLib;
-using WebLogic.Bll.User;
-using Hiwjcn.Core.Infrastructure.Page;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class SectionController : WebCore.MvcLib.Controller.UserController
+    public class SectionController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IPageService _IPageService { get; set; }
 

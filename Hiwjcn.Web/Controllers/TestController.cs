@@ -22,7 +22,7 @@ namespace Hiwjcn.Web.Controllers
         public virtual string Key { get; set; }
     }
 
-    public class TestController : WebCore.MvcLib.Controller.UserController
+    public class TestController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IEventPublisher _IEventPublisher { get; set; }
         public TestController(IEventPublisher pub)
@@ -130,7 +130,7 @@ namespace Hiwjcn.Web.Controllers
                 foreach (var t in this.GetType().Assembly.GetTypes())
                 {
                     //
-                    if (t.BaseType != null && t.BaseType == typeof(WebCore.MvcLib.Controller.UserController))
+                    if (t.BaseType != null && t.BaseType == typeof(WebCore.MvcLib.Controller.UserBaseController))
                     {
                         //
                     }

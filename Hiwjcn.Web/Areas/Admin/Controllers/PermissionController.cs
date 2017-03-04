@@ -12,7 +12,7 @@ namespace WebApp.Areas.Admin.Controllers
     /// <summary>
     /// 权限角色相关
     /// </summary>
-    public class PermissionController : WebCore.MvcLib.Controller.UserController
+    public class PermissionController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IUserService _IUserService { get; set; }
         private IRoleService _IRoleService { get; set; }

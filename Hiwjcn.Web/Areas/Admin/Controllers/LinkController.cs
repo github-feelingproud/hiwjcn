@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class LinkController : WebCore.MvcLib.Controller.UserController
+    public class LinkController : WebCore.MvcLib.Controller.UserBaseController
     {
         private ILinkService _ILinkService { get; set; }
 

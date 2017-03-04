@@ -107,7 +107,6 @@
   <ItemGroup>
     <Compile Include="AttributeBundle.cs" />
     <Compile Include="UserController.cs" />
-    <Compile Include="HotelBaseController.cs" />
     <Compile Include="Simple_CRUD.cs" />
     <Compile Include="Tasks\TaskManager.cs" />
     <Compile Include="Tasks\WakeWebSiteTask.cs" />

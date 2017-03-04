@@ -3,7 +3,6 @@ using Hiwjcn.Core.Model.Sys;
 using Lib.core;
 using Model;
 using Model.Category;
-using Model.Post;
 using Model.Sys;
 using Model.User;
 using System;
@@ -42,7 +41,6 @@ namespace Hiwjcn.Dal
         #region model对应的实体
         public virtual DbSet<CategoryModel> CategoryModel { get; set; }
         public virtual DbSet<SectionModel> SectionModel { get; set; }
-        public virtual DbSet<PostModel> PostModel { get; set; }
         public virtual DbSet<AreaModel> AreaModel { get; set; }
         public virtual DbSet<CommentModel> CommentModel { get; set; }
         public virtual DbSet<LinkModel> LinkModel { get; set; }

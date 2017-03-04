@@ -3,7 +3,7 @@ using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class WidgetController : WebCore.MvcLib.Controller.UserController
+    public class WidgetController : WebCore.MvcLib.Controller.UserBaseController
     {
         private CategoryBll _CategoryBll { get; set; }
         public WidgetController()

@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class UserController : WebCore.MvcLib.Controller.UserController
+    public class UserController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IUserService _IUserService { get; set; }
         public UserController(IUserService user)

@@ -13,7 +13,7 @@ using WebLogic.Model.User;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class AccountController : WebCore.MvcLib.Controller.UserController
+    public class AccountController : WebCore.MvcLib.Controller.UserBaseController
     {
         private bool UseSSO = false;
 

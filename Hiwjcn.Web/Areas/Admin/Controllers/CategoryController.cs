@@ -10,7 +10,7 @@ using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class CategoryController : WebCore.MvcLib.Controller.UserController
+    public class CategoryController : WebCore.MvcLib.Controller.UserBaseController
     {
         /// <summary>
         /// 分类管理
