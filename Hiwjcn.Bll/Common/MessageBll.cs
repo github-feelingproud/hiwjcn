@@ -13,6 +13,7 @@ using Lib.helper;
 using Lib.http;
 using Dal.Sys;
 using Model.User;
+using Lib.infrastructure;
 
 namespace Bll.Sys
 {

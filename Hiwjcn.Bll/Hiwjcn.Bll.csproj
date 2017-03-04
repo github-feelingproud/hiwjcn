@@ -134,7 +134,6 @@
   <ItemGroup>
     <Compile Include="AopBoundle.cs" />
     <Compile Include="QiniuHelper.cs" />
-    <Compile Include="ServiceBase.cs" />
     <Compile Include="Post\PostEventHandler.cs" />
     <Compile Include="Category\CategoryBll.cs" />
     <Compile Include="Page\SectionService.cs" />

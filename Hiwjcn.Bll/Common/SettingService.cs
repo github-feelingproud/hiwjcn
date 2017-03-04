@@ -13,6 +13,7 @@ using Lib.helper;
 using Lib.http;
 using Dal.Sys;
 using Hiwjcn.Core.Infrastructure.Common;
+using Lib.infrastructure;
 
 namespace Bll.Sys
 {

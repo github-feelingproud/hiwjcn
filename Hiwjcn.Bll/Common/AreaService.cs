@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using WebLogic.Dal.Sys;
 using WebLogic.Model.Sys;
+using Lib.infrastructure;
 
 namespace WebLogic.Bll.Sys
 {

@@ -12,6 +12,7 @@ using Lib.helper;
 using Autofac;
 using Hiwjcn.Core.Infrastructure.User;
 using Lib.ioc;
+using Lib.infrastructure;
 
 namespace Hiwjcn.Bll.Sys
 {

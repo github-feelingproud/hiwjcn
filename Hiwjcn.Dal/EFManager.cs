@@ -16,7 +16,7 @@ namespace Hiwjcn.Dal
     /// <summary>
     /// EF的帮助类
     /// </summary>
-    public static class EFManager
+    public static class EFManager1
     {
         /// <summary>
         /// 取消EF首次访问数据库的System.Data.Entity.CreateDatabaseIfNotExists策略

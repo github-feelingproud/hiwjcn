@@ -10,6 +10,7 @@ using Lib.core;
 using Lib.helper;
 using WebLogic.Dal.User;
 using Hiwjcn.Core.Infrastructure.User;
+using Lib.infrastructure;
 
 namespace WebLogic.Bll.User
 {

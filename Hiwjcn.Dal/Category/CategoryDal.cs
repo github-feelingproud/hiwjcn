@@ -9,7 +9,7 @@ using Lib.data;
 
 namespace Dal.Category
 {
-    public class CategoryDal : Lib.data.EFRepository<CategoryModel>
+    public class CategoryDal : EFRepository<CategoryModel>
     {
         //
     }

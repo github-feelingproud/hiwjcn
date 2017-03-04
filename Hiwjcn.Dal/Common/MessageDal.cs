@@ -7,7 +7,7 @@ using Lib.data;
 
 namespace Dal.Sys
 {
-    public class MessageDal : Lib.data.EFRepository<MessageModel>
+    public class MessageDal : EFRepository<MessageModel>
     {
 
     }

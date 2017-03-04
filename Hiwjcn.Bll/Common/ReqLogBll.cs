@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Lib.core;
 using Lib.helper;
 using Hiwjcn.Dal.Sys;
+using Lib.infrastructure;
 
 namespace Hiwjcn.Bll.Sys
 {

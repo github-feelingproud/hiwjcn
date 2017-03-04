@@ -1,14 +1,12 @@
-﻿using Dal;
-using Lib.cache;
+﻿using Lib.cache;
 using Lib.core;
 using Lib.helper;
-using Lib.infrastructure;
 using System;
 using System.Linq;
 using Lib.data;
 using System.Linq.Expressions;
 
-namespace Bll
+namespace Lib.infrastructure
 {
     /// <summary>
     /// 逻辑类基类

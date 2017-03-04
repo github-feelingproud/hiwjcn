@@ -18,7 +18,7 @@ namespace Dal
     /// 如果使用groupby查询请手写session或者iqueryable查询
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EFRepository<T> : IRepository<T> where T : class, IDBTable
+    public class EFRepository1<T> : IRepository<T> where T : class, IDBTable
     {
         private const int DEFAULT_START = -1;
         private const int DEFAULT_COUNT = 1000;

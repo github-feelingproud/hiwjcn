@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WebLogic.Model.Tag;
 using Lib.helper;
 using Lib.core;
+using Lib.infrastructure;
 
 namespace Hiwjcn.Bll.Tag
 {

@@ -11,6 +11,7 @@ using WebLogic.Model.Page;
 using Hiwjcn.Core.Infrastructure.Page;
 using Hiwjcn.Core.Infrastructure;
 using Lib.infrastructure;
+using Lib.data;
 
 namespace WebLogic.Bll.Page
 {

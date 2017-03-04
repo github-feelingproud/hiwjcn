@@ -2,6 +2,7 @@
 using Hiwjcn.Dal;
 using Hiwjcn.Dal.User;
 using Lib.core;
+using Lib.data;
 using Model.User;
 using MySql.Data.MySqlClient;
 using System;

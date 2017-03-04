@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using WebLogic.Model.User;
 using Bll;
 using Lib.core;
-using WebLogic.Model.User;
 using WebLogic.Dal.User;
 using Lib.helper;
+using Lib.infrastructure;
 
 namespace WebLogic.Bll.User
 {

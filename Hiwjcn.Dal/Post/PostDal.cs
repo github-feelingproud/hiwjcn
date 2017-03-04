@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Lib.core;
-using Lib.model;
+using Lib.data;
 using Model.Post;
 using Dapper;
+using Lib.data;
 
 namespace Dal.Post
 {

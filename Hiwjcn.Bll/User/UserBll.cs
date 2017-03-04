@@ -17,6 +17,7 @@ using System.Web;
 using WebLogic.Dal.User;
 using WebLogic.Model.User;
 using Lib.ioc;
+using Lib.infrastructure;
 
 namespace Bll.User
 {

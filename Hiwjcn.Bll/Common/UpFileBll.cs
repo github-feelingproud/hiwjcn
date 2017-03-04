@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Hiwjcn.Core.Infrastructure.Common;
 using HtmlAgilityPack;
 using Lib.helper;
+using Lib.infrastructure;
 
 namespace Hiwjcn.Bll.Sys
 {

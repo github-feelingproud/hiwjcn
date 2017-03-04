@@ -1,5 +1,6 @@
 ﻿using Dal;
 using Hiwjcn.Core.Infrastructure;
+using Lib.data;
 using Lib.infrastructure;
 using Model.User;
 using System;

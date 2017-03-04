@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Bll;
-using Lib.core;
+﻿using Hiwjcn.Core.Infrastructure.User;
 using Lib.helper;
-using WebLogic.Model.User;
+using Lib.infrastructure;
+using System;
 using WebLogic.Dal.User;
-using Lib.helper;
-using Hiwjcn.Core.Infrastructure.User;
+using WebLogic.Model.User;
 
 namespace WebLogic.Bll.User
 {

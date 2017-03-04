@@ -5,6 +5,7 @@ using Hiwjcn.Dal.Tag;
 using Lib.core;
 using Lib.extension;
 using Lib.helper;
+using Lib.infrastructure;
 using Model.Post;
 using System;
 using System.Collections.Generic;

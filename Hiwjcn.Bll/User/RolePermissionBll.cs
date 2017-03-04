@@ -9,6 +9,7 @@ using Bll;
 using Lib.core;
 using WebLogic.Dal.User;
 using Lib.helper;
+using Lib.infrastructure;
 
 namespace WebLogic.Bll.User
 {

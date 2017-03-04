@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Dal;
 using WebLogic.Model.Page;
+using Lib.data;
 
 namespace WebLogic.Dal.Page
 {
