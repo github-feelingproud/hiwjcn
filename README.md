@@ -10,3 +10,4 @@
 	>Mysql存储Session
 	>身份验证权限
 	>各种类库...
+https://www.nuget.org/packages/lib.com.nuget/
