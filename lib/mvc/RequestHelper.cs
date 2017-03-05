@@ -319,8 +319,9 @@ namespace Lib.mvc
         /// <returns></returns>
         public static bool IsBrowser()
         {
+            var list = new string[] { "ie", "chrome", "mozilla", "netscape", "firefox", "opera" };
             string name = GetBrowserName();
-            return HttpClientHelper.BROWSER_LIST.Any(x => name.Contains(x));
+            return list.Any(x => name.Contains(x));
         }
 
         /// <summary>

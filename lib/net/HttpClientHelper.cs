@@ -159,10 +159,61 @@ namespace Lib.net
             }
         }
 
-        //浏览器列表
-        public static readonly string[] BROWSER_LIST = new string[] { "ie", "chrome", "mozilla", "netscape", "firefox", "opera" };
-        //搜索引擎列表
-        public static readonly string[] SEARCH_ENGINE_LIST = new string[] { "baidu", "google", "360", "sogou", "bing", "yahoo" };
+        /// <summary>
+        /// 提交json，并返回字符串
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="jsonObj"></param>
+        /// <returns></returns>
+        public static async Task<string> PostJson(string url, object jsonObj)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsJsonAsync(url, jsonObj);
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary>
+        /// 提交post请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static async Task<string> Post(string url, Dictionary<string, string> param)
+        {
+            var u = new Uri(url);
+            using (var client = new HttpClient())
+            {
+                using (var formContent = new MultipartFormDataContent())
+                {
+                    if (ValidateHelper.IsPlumpDict(param))
+                    {
+                        foreach (var key in param.Keys)
+                        {
+                            formContent.Add(new StringContent(param[key]), key);
+                        }
+                    }
+                    var response = await client.PostAsync(u, formContent);
+                    return await response.Content.ReadAsStringAsync();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 提交get请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static async Task<string> Get(string url)
+        {
+            var u = new Uri(url);
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(u);
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
 
         /// <summary>
         /// 处理请求
