@@ -260,7 +260,7 @@ namespace Lib.net
                 //如果是post并且有参数
                 if (method == RequestMethodEnum.POST && ValidateHelper.IsPlumpDict(param))
                 {
-                    var post_data = Com.DictToUrlParams(param);
+                    var post_data = param.ToUrlParam();
                     var data = Encoding.UTF8.GetBytes(post_data);
                     using (var stream = req.GetRequestStream())
                     {
@@ -270,8 +270,9 @@ namespace Lib.net
                 res = (HttpWebResponse)req.GetResponse();
                 handler.Invoke(res, res.StatusCode);
             }
-            catch (Exception e) //遇到错误，打印错误
+            catch (Exception e)
             {
+                e.AddLog();
                 throw e;
             }
             finally

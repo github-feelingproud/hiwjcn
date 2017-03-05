@@ -13,7 +13,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="dict"></param>
         /// <returns></returns>
-        public static string ToUrl(this IDictionary<string, string> dict)
+        public static string ToUrlParam(this IDictionary<string, string> dict)
         {
             return Com.DictToUrlParams(dict.ToDictionary(x => x.Key, x => x.Value));
         }
