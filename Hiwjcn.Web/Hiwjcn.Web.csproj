@@ -252,9 +252,7 @@
     <Content Include="ui\jq-plus\datepicker\js\bootstrap-datepicker.js" />
     <Content Include="ui\jq-plus\datepicker\js\bootstrap-datepicker.min.js" />
     <Content Include="ui\jq-plus\datepicker\locales\bootstrap-datepicker.zh-CN.min.js" />
-    <Content Include="ui\jq-plus\jquery.easing.js" />
     <Content Include="ui\jq-plus\jquery.lazyload.js" />
-    <Content Include="ui\jq-plus\jquery.mousewheel.js" />
     <Content Include="ui\jq-plus\layer\extend\layer.ext.js" />
     <Content Include="ui\jq-plus\layer\layer.js" />
     <Content Include="ui\jq-plus\layer\skin\default\icon-ext.png" />
@@ -271,10 +269,6 @@
     <Content Include="ui\jq-plus\owl\owl.carousel.min.js" />
     <Content Include="ui\jq-plus\owl\owl.theme.css" />
     <Content Include="ui\jq-plus\owl\owl.transitions.css" />
-    <Content Include="ui\jq-plus\tagEditor\jquery.caret.min.js" />
-    <Content Include="ui\jq-plus\tagEditor\jquery.tag-editor.css" />
-    <Content Include="ui\jq-plus\tagEditor\jquery.tag-editor.js" />
-    <Content Include="ui\jq-plus\tagEditor\jquery.tag-editor.min.js" />
     <Content Include="ui\jq-plus\ztree\css\awesomeStyle\awesome.css" />
     <Content Include="ui\jq-plus\ztree\css\awesomeStyle\img\loading.gif" />
     <Content Include="ui\jq-plus\ztree\css\demo.css" />

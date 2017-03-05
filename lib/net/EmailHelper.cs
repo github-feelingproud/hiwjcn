@@ -1,16 +1,9 @@
-﻿using System;
+﻿using Lib.helper;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Net.Mail;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
-using System.IO;
-using System.Xml;
-using System.Reflection;
-using Lib.core;
-using OpenPop.Pop3;
-using Lib.helper;
 
 namespace Lib.net
 {
@@ -125,40 +118,5 @@ namespace Lib.net
                 if (mail != null) { mail.Dispose(); }
             }
         }
-
-        /// <summary>
-        /// 接受邮件，处理所有正确存在邮件
-        /// </summary>
-        public static List<OpenPop.Mime.Message> ReceiveMail(EmailModel model, bool delete)
-        {
-            var popClient = new Pop3Client();
-            var list = new List<OpenPop.Mime.Message>();
-            try
-            {
-                popClient.Connect(model.PopServer, 110, false);
-                popClient.Authenticate(model.UserName, model.Password);
-                int count = popClient.GetMessageCount();
-
-                for (int i = count; i >= 1; --i)
-                {
-                    var msg = popClient.GetMessage(i);
-                    list.Add(msg);
-                    if (delete)
-                    {
-                        popClient.DeleteMessage(i); //邮件保存成功，删除服务器备份
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                popClient.Disconnect();
-            }
-            return list;
-        }
-
     }
 }

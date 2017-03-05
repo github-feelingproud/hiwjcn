@@ -1,8 +1,6 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using Autofac.Integration.Mvc;
-using Bll;
-using Dal;
 using Hiwjcn.Bll;
 using Hiwjcn.Dal;
 using Lib.cache;
