@@ -103,5 +103,16 @@ namespace Lib.extension
         {
             return JsonHelper.JsonToEntity<T>(json);
         }
+
+        /// <summary>
+        /// 映射
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static T MapTo<T>(this object data)
+        {
+            return MapperHelper.GetMappedEntity<T>(data);
+        }
     }
 }

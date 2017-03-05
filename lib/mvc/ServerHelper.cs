@@ -40,17 +40,38 @@ namespace Lib.mvc
             return ret;
         }
 
+        /// <summary>
+        /// 获取绝对路径
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static string GetMapPath(HttpContext context, string path)
         {
-            path = ConvertHelper.GetString(path);
-            return context.Server.MapPath(path);
+            try
+            {
+                return context.Server.MapPath(path);
+            }
+            catch
+            {
+                return MapPath(path);
+            }
+        }
+        /// <summary>
+        /// 获取绝对路径
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetMapPath(string path)
+        {
+            return GetMapPath(HttpContext.Current, path);
         }
         /// <summary>
         /// 来自nopcommerce的方法Maps a virtual path to a physical disk path.
         /// </summary>
         /// <param name="path">The path to map. E.g. "~/bin"</param>
         /// <returns>The physical path. E.g. "c:\inetpub\wwwroot\bin"</returns>
-        public static string MapPath(string path)
+        private static string MapPath(string path)
         {
             if (HostingEnvironment.IsHosted)
             {

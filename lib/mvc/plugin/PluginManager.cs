@@ -31,7 +31,7 @@ namespace Lib.mvc.plugin
             if (!ConfigHelper.Instance.LoadPlugin) { return; }
             using (new WriteLockDisposable(Locker))
             {
-                var PluginDir = ServerHelper.MapPath(PluginsPath);
+                var PluginDir = ServerHelper.GetMapPath(PluginsPath);
                 if (!Directory.Exists(PluginDir))
                 {
                     throw new Exception("插件目录不存在");
