@@ -121,7 +121,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hiwjcn.Bll\Hiwjcn.Bll.csproj">
+    <ProjectReference Include="..\Hiwjcn.Service\Hiwjcn.Service.csproj">
       <Project>{100b0f4d-99ac-498e-88d9-39fdd796ce19}</Project>
       <Name>Hiwjcn.Bll</Name>
     </ProjectReference>

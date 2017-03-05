@@ -26,3 +26,4 @@
 /lib/*.nupkg
 /Hiwjcn.Service/bin/Debug
 /Hiwjcn.Service/obj/Debug
+/lib.zip
