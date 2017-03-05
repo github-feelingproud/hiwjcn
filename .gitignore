@@ -24,3 +24,5 @@
 /Hiwjcn.v12.suo
 /Hiwjcn.Web/App_Data/Plugins/Page.Resume
 /lib/*.nupkg
+/Hiwjcn.Service/bin/Debug
+/Hiwjcn.Service/obj/Debug
