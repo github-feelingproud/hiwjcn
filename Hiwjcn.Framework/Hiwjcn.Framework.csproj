@@ -121,13 +121,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hiwjcn.Service\Hiwjcn.Service.csproj">
-      <Project>{100b0f4d-99ac-498e-88d9-39fdd796ce19}</Project>
-      <Name>Hiwjcn.Bll</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Hiwjcn.Core\Hiwjcn.Core.csproj">
       <Project>{35bcb473-b95c-4b87-a9e6-7a538719c3d9}</Project>
       <Name>Hiwjcn.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hiwjcn.Service\Hiwjcn.Service.csproj">
+      <Project>{100b0f4d-99ac-498e-88d9-39fdd796ce19}</Project>
+      <Name>Hiwjcn.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib\Lib.csproj">
+      <Project>{5f8bd505-423d-400c-84c4-f9638f84cc41}</Project>
+      <Name>Lib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
