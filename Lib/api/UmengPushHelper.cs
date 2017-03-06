@@ -86,7 +86,7 @@ namespace Lib.api
             }
             if (list.Count > 0)
             {
-                throw new Exception($"安卓推送缺少配置：{string.Join(",", list)}");
+                throw new Exception($"IOS推送缺少配置：{string.Join(",", list)}");
             }
             var data = new
             {
