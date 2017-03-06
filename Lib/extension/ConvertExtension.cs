@@ -139,7 +139,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="col"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> AddToDict(this NameValueCollection col)
+        public static Dictionary<string, string> ToDict(this NameValueCollection col)
         {
             var dict = new Dictionary<string, string>();
             foreach (var key in col.AllKeys)

@@ -8,6 +8,11 @@ using System.Reflection.Emit;
 using System.Reflection;
 using Newtonsoft.Json;
 using Lib.api;
+using Polly;
+using System.Threading;
+using Polly.Timeout;
+using Polly.Retry;
+using Polly.CircuitBreaker;
 
 namespace Hiwjcn.Test
 {
@@ -17,6 +22,72 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest2
     {
+        [TestMethod]
+        public void rongduan()
+        {
+            CircuitBreakerPolicy p = Policy.Handle<Exception>().CircuitBreaker(3, TimeSpan.FromMinutes(1));
+            try
+            {
+                p.Execute(() =>
+                {
+                    throw new Exception("fasd");
+                });
+            }
+            catch (Exception e)
+            { }
+            try
+            {
+                p.Execute(() =>
+                {
+                    throw new Exception("fasd");
+                });
+            }
+            catch (Exception e)
+            { }
+            try
+            {
+                p.Execute(() =>
+                {
+                    throw new Exception("fasd");
+                });
+            }
+            catch (Exception e)
+            { }
+            //错误3次后熔断，action不执行，直接抛出异常
+            try
+            {
+                p.Execute(() =>
+                {
+                    throw new Exception("fasd");
+                });
+            }
+            catch (Exception e)
+            { }
+        }
+
+        [TestMethod]
+        public void PollyTest()
+        {
+            try
+            {
+                int i = 0;
+                var count = Policy.Handle<Exception>().Retry(3).Execute(() =>
+                 {
+                     if ((++i) <= 1) { throw new Exception(""); }
+                     return 0;
+                 });
+
+                string data = null;
+                Policy.Timeout(3, TimeoutStrategy.Pessimistic).Execute(() =>
+                {
+                    Thread.Sleep(5000);
+                    data = "拿到数据";
+                });
+            }
+            catch (Exception e)
+            { }
+        }
+
         [TestMethod]
         public void fsadfasd()
         {
