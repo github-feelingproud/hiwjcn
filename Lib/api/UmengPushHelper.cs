@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using Lib.extension;
 
 namespace Lib.api
 {
@@ -130,6 +131,7 @@ namespace Lib.api
         {
             return JsonHelper.JsonToEntity<UmengReturn>(json);
         }
+        public virtual bool Success { get { return (ret ?? "").ToBool(); } }
         public virtual string ret { get; set; }
         public virtual UmengReturnData data { get; set; }
         public class UmengReturnData

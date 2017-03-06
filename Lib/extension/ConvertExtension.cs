@@ -80,7 +80,8 @@ namespace Lib.extension
         /// <param name="data">数据</param>
         public static bool ToBool(this object data)
         {
-            return new string[] { "1", "true", "yes", "on" }.Contains(data.ToString().ToLower().Trim());
+            var list = new string[] { "1", "true", "yes", "on", "success" };
+            return list.Contains(data.ToString().ToLower().Trim());
         }
 
         /// <summary>
