@@ -33,6 +33,10 @@ namespace Lib.api
 
         public static async Task<UmengReturn> Send(object post_body, string SK)
         {
+            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_URL))
+            {
+                throw new Exception($"请配置推送API地址：{UMENG_PUSH_URL}");
+            }
             var data_json = JsonHelper.ObjectToJson(post_body);
             var sign = BuildSign(data_json, SK);
             var url = $"{UMENG_PUSH_URL}?sign={sign}";
@@ -44,9 +48,18 @@ namespace Lib.api
 
         public static async Task<UmengReturn> PushAndroid(PayLoadAndroid payload, List<string> device_tokens)
         {
-            if (!ValidateHelper.IsAllPlumpString(UMENG_PUSH_APP_KEY_ANDROID, UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID, UMENG_PUSH_URL))
+            var list = new List<string>();
+            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_APP_KEY_ANDROID))
             {
-                throw new Exception("安卓推送配置错误");
+                list.Add(nameof(UMENG_PUSH_APP_KEY_ANDROID));
+            }
+            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID))
+            {
+                list.Add(nameof(UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID));
+            }
+            if (list.Count > 0)
+            {
+                throw new Exception($"安卓推送缺少配置：{string.Join(",", list)}");
             }
             var data = new
             {
@@ -59,28 +72,21 @@ namespace Lib.api
             };
             return await Send(data, UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID);
         }
-        //public static async Task<UmengReturn> Push(PayLoadIOS payload, List<string> device_tokens)
-        //{
-        //    if (!ValidateHelper.IsAllPlumpString(UMENG_PUSH_APP_KEY_IOS, UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS, UMENG_PUSH_URL))
-        //    {
-        //        throw new Exception("IOS推送配置错误");
-        //    }
-        //    var data = new
-        //    {
-        //        appkey = UMENG_PUSH_APP_KEY_IOS,
-        //        timestamp = DateTimeHelper.GetTimeStamp().ToString(),
-        //        alias_type = "qpl",
-        //        type = "customizedcast",
-        //        alias = string.Join(",", device_tokens),
-        //        payload = payload
-        //    };
-        //    return await Send(data, UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS);
-        //}
+
         public static async Task<UmengReturn> PushIOS(object payload, List<string> device_tokens)
         {
-            if (!ValidateHelper.IsAllPlumpString(UMENG_PUSH_APP_KEY_IOS, UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS, UMENG_PUSH_URL))
+            var list = new List<string>();
+            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_APP_KEY_IOS))
             {
-                throw new Exception("IOS推送配置错误");
+                list.Add(nameof(UMENG_PUSH_APP_KEY_IOS));
+            }
+            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS))
+            {
+                list.Add(nameof(UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS));
+            }
+            if (list.Count > 0)
+            {
+                throw new Exception($"安卓推送缺少配置：{string.Join(",", list)}");
             }
             var data = new
             {
@@ -109,17 +115,6 @@ namespace Lib.api
         public virtual string text { get; set; }
         public virtual string after_open { get { return "go_custom"; } }
     }
-    #endregion
-
-    #region IOS
-    //public class PayLoadIOS
-    //{
-    //    public virtual PayLoadIOSAPS aps { get; set; }
-    //}
-    //public class PayLoadIOSAPS
-    //{
-    //    public virtual string alert { get; set; }
-    //}
     #endregion
 
     /// <summary>
