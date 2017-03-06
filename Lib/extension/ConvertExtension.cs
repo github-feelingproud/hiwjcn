@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lib.helper;
 using Lib.core;
+using System.Collections.Specialized;
 
 namespace Lib.extension
 {
@@ -115,5 +116,38 @@ namespace Lib.extension
         {
             return MapperHelper.GetMappedEntity<T>(data);
         }
+
+        /// <summary>
+        /// 把一个字典加入另一个字典，重复就覆盖
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dict"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static Dictionary<K, V> AddDict<K, V>(this Dictionary<K, V> dict, Dictionary<K, V> data)
+        {
+            foreach (var kv in data)
+            {
+                dict[kv.Key] = kv.Value;
+            }
+            return dict;
+        }
+
+        /// <summary>
+        /// NameValueCollection转为字典
+        /// </summary>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> AddToDict(this NameValueCollection col)
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var key in col.AllKeys)
+            {
+                dict[key] = col[key];
+            }
+            return dict;
+        }
+        
     }
 }

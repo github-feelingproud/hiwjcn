@@ -80,14 +80,17 @@ namespace Lib.helper
         /// <param name="obj"></param>
         /// <param name="deft"></param>
         /// <returns></returns>
-        public static int GetInt(object obj, int deft = default(int))
+        public static int GetInt(object obj, int deft = default(int), bool throws = false)
         {
-            int res;
-            if (int.TryParse(GetString(obj), out res))
+            try
             {
-                return res;
+                return int.Parse(GetString(obj));
             }
-            return deft;
+            catch (Exception e)
+            {
+                if (throws) { throw e; }
+                return deft;
+            }
         }
         /// <summary>
         /// 转换为int64类型

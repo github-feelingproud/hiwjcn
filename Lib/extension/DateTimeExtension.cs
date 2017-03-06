@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lib.helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,6 +75,16 @@ namespace Lib.extension
         public static string ToChineseDateString(this DateTime dateTime)
         {
             return string.Format("{0}年{1}月{2}日", dateTime.Year, dateTime.Month, dateTime.Day);
+        }
+
+        /// <summary>
+        /// 转为n秒前，n分钟前 etc
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static string ToFriendlyDateTime(this DateTime dateTime)
+        {
+            return DateTimeHelper.GetFriendlyDateTime(dateTime);
         }
 
     }

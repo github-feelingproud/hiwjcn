@@ -9,7 +9,7 @@ using Lib.extension;
 
 namespace Lib.helper
 {
-    public class DateTimeHelper
+    public static class DateTimeHelper
     {
         /// <summary>
         /// 时间戳生成规则
@@ -42,7 +42,7 @@ namespace Lib.helper
         }
         public static int GetDayOfYear()
         {
-            return (int)DateTime.Now.DayOfYear;
+            return DateTime.Now.DayOfYear;
         }
         /// <summary>
         /// 获取系统时区(不返回null)
