@@ -1,5 +1,6 @@
 ﻿using Dal.User;
 using Hiwjcn.Dal;
+using Lib.api;
 using Lib.data;
 using Lib.events;
 using Lib.extension;
@@ -89,9 +90,10 @@ namespace Hiwjcn.Web.Controllers
             return Content(url);
         }
 
-        public ActionResult Baidu(string q, string from = "auto", string to = "en")
+        public async Task<ActionResult> Baidu(string q, string from = "auto", string to = "en")
         {
-            return Content(Com.BaiduTranslate(q, from, to));
+            var data = await BaiduTranslateHelper.BaiduTranslate(q, from, to);
+            return Content(data);
         }
 
         public ActionResult Pinyin(string str)
