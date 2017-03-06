@@ -191,6 +191,8 @@
     <Compile Include="helper\HtmlHelper.cs" />
     <Compile Include="helper\ReflectionHelper.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
+    <Compile Include="ioc\BaseDependencyRegistrar.cs" />
+    <Compile Include="ioc\IDependencyRegistrar.cs" />
     <Compile Include="mvc\CookieHelper.cs" />
     <Compile Include="mvc\RequestHelper.cs" />
     <Compile Include="mvc\ResponseHelper.cs" />

@@ -165,10 +165,14 @@ namespace Lib.net
         /// <param name="url"></param>
         /// <param name="jsonObj"></param>
         /// <returns></returns>
-        public static async Task<string> PostJson(string url, object jsonObj)
+        public static async Task<string> PostJson(string url, object jsonObj, int? timeout_second = null)
         {
             using (var client = new HttpClient())
             {
+                if (timeout_second != null)
+                {
+                    client.Timeout = TimeSpan.FromSeconds(timeout_second.Value);
+                }
                 var response = await client.PostAsJsonAsync(url, jsonObj);
                 return await response.Content.ReadAsStringAsync();
             }
@@ -180,11 +184,15 @@ namespace Lib.net
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public static async Task<string> Post(string url, Dictionary<string, string> param)
+        public static async Task<string> Post(string url, Dictionary<string, string> param, int? timeout_second = null)
         {
             var u = new Uri(url);
             using (var client = new HttpClient())
             {
+                if (timeout_second != null)
+                {
+                    client.Timeout = TimeSpan.FromSeconds(timeout_second.Value);
+                }
                 using (var formContent = new MultipartFormDataContent())
                 {
                     if (ValidateHelper.IsPlumpDict(param))
@@ -205,11 +213,15 @@ namespace Lib.net
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<string> Get(string url)
+        public static async Task<string> Get(string url, int? timeout_second = null)
         {
             var u = new Uri(url);
             using (var client = new HttpClient())
             {
+                if (timeout_second != null)
+                {
+                    client.Timeout = TimeSpan.FromSeconds(timeout_second.Value);
+                }
                 var response = await client.GetAsync(u);
                 return await response.Content.ReadAsStringAsync();
             }

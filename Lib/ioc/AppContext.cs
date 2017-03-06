@@ -153,30 +153,7 @@ namespace Lib.ioc
             return GetObject<IEnumerable<T>>(name).ToArray();
         }
     }
-
-    /// <summary>
-    /// 依赖注册接口
-    /// </summary>
-    public interface IDependencyRegistrar
-    {
-        void Register(ref ContainerBuilder builder);
-    }
-
-    /// <summary>
-    /// 注册依赖
-    /// </summary>
-    public class BaseDependencyRegistrar : IDependencyRegistrar
-    {
-        /// <summary>
-        /// 注册依赖
-        /// </summary>
-        /// <param name="builder"></param>
-        public void Register(ref ContainerBuilder builder)
-        {
-            //
-        }
-    }
-
+    
     /*
      1、InstancePerDependency
 
