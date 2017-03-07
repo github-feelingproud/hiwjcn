@@ -99,6 +99,10 @@
       <HintPath>..\packages\NPOI.2.2.1\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="RabbitMQ.Client, Version=3.6.6.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <HintPath>..\packages\RabbitMQ.Client.3.6.6\lib\net45\RabbitMQ.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="StackExchange.Redis, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\StackExchange.Redis.1.2.0\lib\net45\StackExchange.Redis.dll</HintPath>
       <Private>True</Private>
@@ -193,6 +197,11 @@
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="ioc\BaseDependencyRegistrar.cs" />
     <Compile Include="ioc\IDependencyRegistrar.cs" />
+    <Compile Include="mq\MessageConsumer.cs" />
+    <Compile Include="mq\MessageProducer.cs" />
+    <Compile Include="mq\RabbitMQChannel.cs" />
+    <Compile Include="mq\RabbitMQClient.cs" />
+    <Compile Include="mq\RabbitMQSection.cs" />
     <Compile Include="mvc\CookieHelper.cs" />
     <Compile Include="mvc\RequestHelper.cs" />
     <Compile Include="mvc\ResponseHelper.cs" />
@@ -254,6 +263,7 @@
   <ItemGroup>
     <Content Include="使用说明.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
