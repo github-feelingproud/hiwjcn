@@ -68,6 +68,12 @@ namespace Lib.io
             return bm;
         }
 
+        public byte[] GetBytes(string content, int size = 230, string img_path = null)
+        {
+            var bm = GetBitmap(content, size, img_path);
+            return ConvertHelper.BitmapToBytes(bm);
+        }
+
         public void WriteToFile(string content, string file_path, string img_path = null)
         {
             using (var bm = this.GetBitmap(content, img_path: img_path))

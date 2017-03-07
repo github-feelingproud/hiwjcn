@@ -133,8 +133,8 @@ namespace Lib.io
         {
             if (IsPixelFormatIndexed(bm))
             {
-                Bitmap newbitmap = new Bitmap(bm.Width, bm.Height, PixelFormat.Format32bppArgb);
-                using (Graphics g = Graphics.FromImage(newbitmap))
+                var newbitmap = new Bitmap(bm.Width, bm.Height, PixelFormat.Format32bppArgb);
+                using (var g = Graphics.FromImage(newbitmap))
                 {
                     g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                     g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
@@ -142,7 +142,7 @@ namespace Lib.io
                     g.DrawImage(bm, 0, 0);
                 }
                 bm.Dispose();
-                bm = newbitmap;
+                return newbitmap;
             }
             return bm;
         }

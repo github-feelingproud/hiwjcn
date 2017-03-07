@@ -267,8 +267,7 @@ namespace Hiwjcn.Web.Controllers
                 {
                     img = Server.MapPath("~/Static/image/no_data.png");
                 }
-                var bm = qr.GetBitmap(con, img_path: img);
-                var b = ConvertHelper.BitmapToBytes(bm);
+                var b = qr.GetBytes(con, img_path: img);
                 if (!ValidateHelper.IsPlumpList(b)) { return Content("err"); }
                 ResponseHelper.SetResponseNoCache(this.X.context.Response);
                 return File(b, "image/Png");

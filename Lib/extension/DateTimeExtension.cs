@@ -87,5 +87,28 @@ namespace Lib.extension
             return DateTimeHelper.GetFriendlyDateTime(dateTime);
         }
 
+        /// <summary>
+        /// 获取一天的开始和第二天的开始
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static Tuple<DateTime, DateTime> GetDateBorder(this DateTime dateTime)
+        {
+            var date = dateTime.Date;
+            return Tuple.Create(date, date.AddDays(1));
+        }
+
+        /// <summary>
+        /// 判断是否是同一天
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static bool IsSameDay(this DateTime dateTime, DateTime time)
+        {
+            var border = dateTime.GetDateBorder();
+            return border.Item1 <= time && time < border.Item2;
+        }
+
     }
 }
