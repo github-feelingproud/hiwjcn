@@ -13,6 +13,7 @@ using System.Threading;
 using Polly.Timeout;
 using Polly.Retry;
 using Polly.CircuitBreaker;
+using Lib.mq;
 
 namespace Hiwjcn.Test
 {
@@ -22,6 +23,19 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest2
     {
+        [TestMethod]
+        public void mq()
+        {
+            var p = RabbitMQClient.DefaultClient.CreateProducer("ex");
+            p.Send("", "");
+
+            var c = RabbitMQClient.DefaultClient.CreateNoackConsumer();
+            c.Subscribe("", x =>
+            {
+                //
+            });
+        }
+
         [TestMethod]
         public void rongduan()
         {
