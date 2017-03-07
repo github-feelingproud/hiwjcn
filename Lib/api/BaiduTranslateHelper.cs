@@ -47,7 +47,7 @@ namespace Lib.api
             dict["sign"] = md5;
 
             var urlparam = $"{url}?{dict.ToUrlParam()}";
-            trans = await HttpClientHelper.Get(urlparam);
+            trans = await HttpClientHelper.GetAsync(urlparam);
             if (!ValidateHelper.IsPlumpString(trans)) { throw new Exception("翻译失败"); }
             return trans;
         }

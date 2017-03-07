@@ -165,7 +165,7 @@ namespace Lib.net
         /// <param name="url"></param>
         /// <param name="jsonObj"></param>
         /// <returns></returns>
-        public static async Task<string> PostJson(string url, object jsonObj, int? timeout_second = null)
+        public static async Task<string> PostJsonAsync(string url, object jsonObj, int? timeout_second = null)
         {
             using (var client = new HttpClient())
             {
@@ -184,7 +184,7 @@ namespace Lib.net
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public static async Task<string> Post(string url, Dictionary<string, string> param, int? timeout_second = null)
+        public static async Task<string> PostAsync(string url, Dictionary<string, string> param, int? timeout_second = null)
         {
             var u = new Uri(url);
             using (var client = new HttpClient())
@@ -213,7 +213,7 @@ namespace Lib.net
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<string> Get(string url, int? timeout_second = null)
+        public static async Task<string> GetAsync(string url, int? timeout_second = null)
         {
             var u = new Uri(url);
             using (var client = new HttpClient())
@@ -224,6 +224,62 @@ namespace Lib.net
                 }
                 var response = await client.GetAsync(u);
                 return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        public static string PostJson(string url, object jsonObj)
+        {
+            var data = Encoding.UTF8.GetBytes(jsonObj.ToJson());
+            return Send(url, data, "text/json");
+        }
+
+        public static string Post(string url, Dictionary<string, string> param)
+        {
+            var data = Encoding.UTF8.GetBytes(param.ToUrlParam());
+            return Send(url, data, "application/x-www-form-urlencoded");
+        }
+
+        public static string Send(string url, byte[] data, string contentType,
+            RequestMethodEnum method = RequestMethodEnum.POST, int? timeout_second = 30)
+        {
+            HttpWebRequest req = null;
+            HttpWebResponse res = null;
+            try
+            {
+                //连接到目标网页
+                req = (HttpWebRequest)WebRequest.Create(url);
+                if (timeout_second != null)
+                {
+                    req.Timeout = timeout_second.Value * 1000;
+                }
+                req.Method = GetMethod(method);
+
+                req.ContentType = contentType;
+                req.ContentLength = data.Length;
+                using (var stream = req.GetRequestStream())
+                {
+                    stream.Write(data, 0, data.Length);
+                }
+
+                res = (HttpWebResponse)req.GetResponse();
+                return ConvertHelper.StreamToString(res.GetResponseStream());
+            }
+            catch (Exception e)
+            {
+                e.AddLog();
+                throw e;
+            }
+            finally
+            {
+                try
+                {
+                    req?.Abort();
+                }
+                catch (Exception e)
+                {
+                    e.AddLog(typeof(HttpClientHelper));
+                }
+                res?.Dispose();
             }
         }
 
@@ -250,16 +306,9 @@ namespace Lib.net
             {
                 //连接到目标网页
                 req = (HttpWebRequest)WebRequest.Create(url);
-                //发送X_FORWARDED_FOR头(若是用取源IP的方式，可以用这个来造假IP,对日志的记录无效)
-                req.Headers.Add("X_FORWARDED_FOR", "101.0.0.11");
                 req.Timeout = timeout_second * 1000;//10s请求超时
                 req.Method = GetMethod(method);
-                req.KeepAlive = true;
-                req.AllowAutoRedirect = true;
                 req.ContentType = "application/x-www-form-urlencoded";
-                req.AllowAutoRedirect = true;
-                req.Accept = "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, */*";
-                req.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)";
                 //添加cookie
                 if (ValidateHelper.IsPlumpList(cookies))
                 {
@@ -299,36 +348,6 @@ namespace Lib.net
                 }
                 res?.Dispose();
             }
-        }
-
-        /// <summary>
-        /// 读取字符串
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="param"></param>
-        /// <param name="cookies"></param>
-        /// <param name="method"></param>
-        /// <param name="timeout_second"></param>
-        /// <returns></returns>
-        public static string RequestString(string url,
-            Dictionary<string, string> param,
-            List<Cookie> cookies,
-            RequestMethodEnum method,
-            int timeout_second)
-        {
-            var str = string.Empty;
-            HttpRequestHandler(url, param, cookies, method, timeout_second, (res, status) =>
-            {
-                if (status != HttpStatusCode.OK) { throw new Exception($"status:{status}"); }
-                using (var s = res.GetResponseStream())
-                {
-                    using (var reader = new StreamReader(s))
-                    {
-                        str = reader.ReadToEnd();
-                    }
-                }
-            });
-            return str;
         }
 
         /// <summary>

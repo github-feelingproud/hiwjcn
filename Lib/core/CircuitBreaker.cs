@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 
 namespace Lib.core
 {
-    /// <summary>
-    /// 实现功能熔断
-    /// </summary>
-    public class CircuitBreaker
+    public static class TimeOutHelper
     {
         /// <summary>
         /// https://github.com/App-vNext/Polly
@@ -30,4 +27,24 @@ namespace Lib.core
             }
         }
     }
+    /// <summary>
+    /// 实现功能熔断
+    /// </summary>
+    public class CircuitBreaker
+    {
+        public readonly List<DateTime> ErrorList = new List<DateTime>();
+        public int ExceptionCount { get; set; }
+        public TimeSpan ExceptionInTime { get; set; }
+        public TimeSpan BlockTime { get; set; }
+        public DateTime BlockUntil { get; set; }
+    }
+    public static class CircuitBreakerErrorListExtension
+    {
+        public static void CheckOrThrow(this CircuitBreaker breaker)
+        {
+
+        }
+    }
+    public static class CircuitBreakerExecuteExtension
+    { }
 }

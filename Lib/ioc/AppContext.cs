@@ -127,18 +127,10 @@ namespace Lib.ioc
         {
             if (ValidateHelper.IsPlumpString(name))
             {
-                if (!Container.IsRegisteredWithName<T>(name))
-                {
-                    throw new Exception($"请注册依赖：{typeof(T)}，name：{name}");
-                }
                 return Container.ResolveNamed<T>(name);
             }
             else
             {
-                if (!Container.IsRegistered<T>())
-                {
-                    throw new Exception($"请注册依赖：{typeof(T)}");
-                }
                 return Container.Resolve<T>();
             }
         }

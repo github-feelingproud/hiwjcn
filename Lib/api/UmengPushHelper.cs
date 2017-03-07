@@ -41,7 +41,7 @@ namespace Lib.api
             var sign = BuildSign(data_json, SK);
             var url = $"{UMENG_PUSH_URL}?sign={sign}";
 
-            var json = await HttpClientHelper.PostJson(url, post_body);
+            var json = await HttpClientHelper.PostJsonAsync(url, post_body);
 
             return UmengReturn.FromJson(json);
         }
