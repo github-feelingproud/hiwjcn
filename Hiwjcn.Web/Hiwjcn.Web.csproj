@@ -531,7 +531,6 @@
     <Content Include="ui\ueditor\third-party\zeroclipboard\ZeroClipboard.js" />
     <Content Include="ui\ueditor\third-party\zeroclipboard\ZeroClipboard.min.js" />
     <Content Include="ui\ueditor\third-party\zeroclipboard\ZeroClipboard.swf" />
-    <Content Include="ui\ueditor\ueditor.all.js" />
     <Content Include="ui\ueditor\ueditor.all.min.js" />
     <Content Include="ui\ueditor\ueditor.config.js" />
     <Content Include="ui\ueditor\ueditor.parse.js" />

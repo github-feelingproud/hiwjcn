@@ -148,6 +148,36 @@ namespace Lib.extension
             }
             return dict;
         }
-        
+
+        /// <summary>
+        /// 格式化数字，获取xxx xxxk xxxw
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
+        public static string SimpleNumber(this Int64 num)
+        {
+            return Com.SimpleNumber(num);
+        }
+
+        /// <summary>
+        /// 获取拼音
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string GetPinyin(this string s)
+        {
+            return Com.Pinyin(s);
+        }
+
+        /// <summary>
+        /// 获取拼音首字母
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string GetSpell(this string s)
+        {
+            return Com.GetSpell(s);
+        }
+
     }
 }
