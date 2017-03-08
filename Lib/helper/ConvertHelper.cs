@@ -188,24 +188,13 @@ namespace Lib.helper
         #region 图片转换
         public static byte[] BitmapToBytes(Bitmap bm, ImageFormat format = null)
         {
+            if (bm == null) { throw new Exception("bitmap为空"); }
             if (format == null) { format = ImageFormat.Png; }
 
-            MemoryStream ms = null;
-            try
+            using (var ms = new MemoryStream())
             {
-                if (bm == null) { return null; }
-                ms = new MemoryStream();
                 bm.Save(ms, format);
                 return ms.ToArray();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                bm?.Dispose();
-                IOHelper.CloseStream(ms);
             }
         }
 
@@ -280,39 +269,28 @@ Console.WriteLine(Convert.ToBase64String(buffer)); //这是把字节数组当作
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static byte[] StreamToBytes(Stream stream, bool autoClose = false)
+        public static byte[] StreamToBytes(Stream stream)
         {
-            try
+            if (stream == null || !stream.CanRead) { throw new Exception("流为空，或者不可读"); }
+            if (stream.CanSeek)
             {
-                if (stream == null || !stream.CanRead) { return null; }
-                if (stream.CanSeek)
+                byte[] bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, bytes.Length);
+                return bytes;
+            }
+            else
+            {
+                var bytes = new List<byte>();
+                int b = 0;
+                while (true)
                 {
-                    byte[] bytes = new byte[stream.Length];
-                    stream.Read(bytes, 0, bytes.Length);
-                    return bytes;
-                }
-                else
-                {
-                    var bytes = new List<byte>();
-                    int b = 0;
-                    while (true)
+                    if ((b = stream.ReadByte()) == -1)
                     {
-                        if ((b = stream.ReadByte()) == -1)
-                        {
-                            break;
-                        }
-                        bytes.Add((byte)b);
+                        break;
                     }
-                    return bytes.ToArray();
+                    bytes.Add((byte)b);
                 }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                if (autoClose) { IOHelper.CloseStream(stream); }
+                return bytes.ToArray();
             }
         }
 
@@ -324,18 +302,7 @@ Console.WriteLine(Convert.ToBase64String(buffer)); //这是把字节数组当作
         /// <returns></returns>
         public static byte[] MemoryStreamToBytes(MemoryStream stream, bool autoClose = false)
         {
-            try
-            {
-                return stream.ToArray();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                if (autoClose) { IOHelper.CloseStream(stream); }
-            }
+            return stream.ToArray();
         }
 
         /// <summary>
@@ -345,12 +312,9 @@ Console.WriteLine(Convert.ToBase64String(buffer)); //这是把字节数组当作
         /// <returns></returns>
         public static string StreamToString(Stream stream)
         {
-            using (stream)
+            using (var reader = new StreamReader(stream))
             {
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
+                return reader.ReadToEnd();
             }
         }
         #endregion

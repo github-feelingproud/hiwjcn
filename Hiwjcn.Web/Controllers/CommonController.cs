@@ -155,17 +155,17 @@ namespace Hiwjcn.Web.Controllers
                     xml.Save(savePath);
                 }
 
-                var stream = new MemoryStream();
-                xml.Save(stream);
-                //用完之后自动关闭
-                byte[] b = ConvertHelper.MemoryStreamToBytes(stream, autoClose: true);
-                if (!ValidateHelper.IsPlumpList(b))
+                using (var stream = new MemoryStream())
                 {
-                    return Content("生成站点地图错误，请联系管理员");
+                    xml.Save(stream);
+                    //用完之后自动关闭
+                    byte[] b = ConvertHelper.MemoryStreamToBytes(stream);
+                    if (!ValidateHelper.IsPlumpList(b))
+                    {
+                        return Content("生成站点地图错误，请联系管理员");
+                    }
+                    return Content(System.Text.Encoding.UTF8.GetString(b), "text/xml");
                 }
-                return Content(System.Text.Encoding.UTF8.GetString(b), "text/xml");
-                //return new MvcLib.Result.XmlResult(b);
-                //return File(b, "text/xml");
             });
         }
 
@@ -267,7 +267,7 @@ namespace Hiwjcn.Web.Controllers
                 {
                     img = Server.MapPath("~/Static/image/no_data.png");
                 }
-                var b = qr.GetBytes(con, img_path: img);
+                var b = qr.GetBitmapBytes(con, img_path: img);
                 if (!ValidateHelper.IsPlumpList(b)) { return Content("err"); }
                 ResponseHelper.SetResponseNoCache(this.X.context.Response);
                 return File(b, "image/Png");
@@ -310,7 +310,7 @@ namespace Hiwjcn.Web.Controllers
             {
                 var file = this.X.context.Request.Files["img"];
                 if (file == null) { return Content(string.Empty); }
-                byte[] b = IOHelper.GetPostFileBytes(file);
+                byte[] b = IOHelper.GetPostFileBytesAndDispose(file);
                 if (!ValidateHelper.IsPlumpList(b)) { return Content(string.Empty); }
                 QrCode qr = new QrCode();
                 string str = qr.DistinguishQrImage(b);

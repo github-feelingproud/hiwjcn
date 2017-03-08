@@ -178,33 +178,28 @@ namespace Lib.io
         }
     }
 
-    public class WordHelper
+    public static class WordHelper
     {
         public static byte[] CreateWord(Dictionary<string, string> paragraphs)
         {
-            try
-            {
-                XWPFDocument doc = new XWPFDocument();
-                //创建段落对象
-                if (!ValidateHelper.IsPlumpDict(paragraphs))
-                {
-                    return null;
-                }
-                paragraphs.Keys.ToList().ForEach(key =>
-                {
-                    XWPFParagraph paragraph = doc.CreateParagraph();
-                    XWPFRun run = paragraph.CreateRun();
-                    run.IsBold = true;
-                    run.SetText(ConvertHelper.GetString(key));
-                    run.SetText(ConvertHelper.GetString(paragraphs[key]));
-                });
-                MemoryStream stream = new MemoryStream();
-                doc.Write(stream);
-                return ConvertHelper.MemoryStreamToBytes(stream, true);
-            }
-            catch
+            var doc = new XWPFDocument();
+            //创建段落对象
+            if (!ValidateHelper.IsPlumpDict(paragraphs))
             {
                 return null;
+            }
+            paragraphs.Keys.ToList().ForEach(key =>
+            {
+                XWPFParagraph paragraph = doc.CreateParagraph();
+                XWPFRun run = paragraph.CreateRun();
+                run.IsBold = true;
+                run.SetText(ConvertHelper.GetString(key));
+                run.SetText(ConvertHelper.GetString(paragraphs[key]));
+            });
+            using (var stream = new MemoryStream())
+            {
+                doc.Write(stream);
+                return ConvertHelper.MemoryStreamToBytes(stream);
             }
         }
     }

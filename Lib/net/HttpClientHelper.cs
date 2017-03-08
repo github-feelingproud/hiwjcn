@@ -262,7 +262,10 @@ namespace Lib.net
                 }
 
                 res = (HttpWebResponse)req.GetResponse();
-                return ConvertHelper.StreamToString(res.GetResponseStream());
+                using (var s = res.GetResponseStream())
+                {
+                    return ConvertHelper.StreamToString(s);
+                }
             }
             catch (Exception e)
             {

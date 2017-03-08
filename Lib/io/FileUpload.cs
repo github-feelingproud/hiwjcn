@@ -129,7 +129,20 @@ namespace Lib.io
                 }
                 fs = new FileStream(model.FilePath, FileMode.Create, FileAccess.Write);
                 //循环写数据，结束后关闭输入输出流
-                IOHelper.WritePostFileToStreamAndCloseStream(ref http_file, ref fs);
+                using (http_file.InputStream)
+                {
+                    using (fs)
+                    {
+                        var buffer = new byte[1024 * 1024];
+                        int len = 0;
+                        while ((len = http_file.InputStream.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            fs.Write(buffer, 0, len);
+                        }
+                        fs.Flush();
+                    }
+                }
+
                 model.SuccessUpload = true;
                 return model;
             }

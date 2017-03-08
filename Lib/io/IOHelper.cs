@@ -51,54 +51,17 @@ namespace Lib.io
         }
 
         /// <summary>
-        /// 把httpfile写入stream并关闭stream
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="file"></param>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        public static void WritePostFileToStreamAndCloseStream<T>(ref HttpPostedFile file, ref T stream) where T : Stream
-        {
-            try
-            {
-                var buffer = new byte[1024 * 1024];
-                int len = 0;
-                while ((len = file.InputStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    stream.Write(buffer, 0, len);
-                }
-                stream.Flush();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                CloseStream(stream, file.InputStream);
-            }
-        }
-
-        /// <summary>
         /// 获取文件的字节数组
         /// </summary>
         /// <param name="postFile"></param>
         /// <returns></returns>
-        public static byte[] GetPostFileBytes(HttpPostedFile postFile)
+        public static byte[] GetPostFileBytesAndDispose(HttpPostedFile postFile)
         {
-            try
+            using (postFile.InputStream)
             {
                 var b = new byte[postFile.InputStream.Length];
                 postFile.InputStream.Read(b, 0, b.Length);
                 return b;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                CloseStream(postFile.InputStream);
             }
         }
 
@@ -114,49 +77,23 @@ namespace Lib.io
             }
         }
 
-        public static void CloseStream(params Stream[] stms)
-        {
-            foreach (var s in stms)
-            {
-                s.Dispose();
-            }
-        }
-
-        public static void CloseStreamReader(params TextReader[] readers)
-        {
-            foreach (var r in readers)
-            {
-                r.Dispose();
-            }
-        }
-
         public static string ReadFileString(string filePath, Encoding encoding = null)
         {
-            FileStream fs = null;
-            StreamReader sr = null;
-            try
+            var fi = new FileInfo(filePath);
+            if (encoding == null) { encoding = Encoding.UTF8; }
+            //共享文件锁
+            using (var fs = fi.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var fi = new FileInfo(filePath);
-                if (encoding == null) { encoding = Encoding.UTF8; }
-                //共享文件锁
-                fs = fi.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                sr = new StreamReader(fs, encoding);
-                var b = new char[1024 * 100];
-                var str = new StringBuilder();
-                while (sr.Read(b, 0, b.Length) > 0)
+                using (var sr = new StreamReader(fs, encoding))
                 {
-                    str.Append(b);
+                    var b = new char[1024 * 100];
+                    var str = new StringBuilder();
+                    while (sr.Read(b, 0, b.Length) > 0)
+                    {
+                        str.Append(b);
+                    }
+                    return str.ToString();
                 }
-                return str.ToString();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                fs?.Dispose();
-                sr?.Dispose();
             }
         }
 
@@ -289,10 +226,10 @@ namespace Lib.io
             /// <returns>文件的编码类型</returns>
             public static System.Text.Encoding GetType(string FILE_NAME)
             {
-                var fs = new FileStream(FILE_NAME, FileMode.Open, FileAccess.Read);
-                var r = GetType(fs);
-                fs.Dispose();
-                return r;
+                using (var fs = new FileStream(FILE_NAME, FileMode.Open, FileAccess.Read))
+                {
+                    return GetType(fs);
+                }
             }
 
             /// <summary>
@@ -305,26 +242,27 @@ namespace Lib.io
                 byte[] Unicode = new byte[] { 0xFF, 0xFE, 0x41 };
                 byte[] UnicodeBIG = new byte[] { 0xFE, 0xFF, 0x00 };
                 byte[] UTF8 = new byte[] { 0xEF, 0xBB, 0xBF }; //带BOM
-                Encoding reVal = Encoding.Default;
+                var reVal = Encoding.Default;
 
-                BinaryReader r = new BinaryReader(fs, System.Text.Encoding.Default);
-                int i;
-                int.TryParse(fs.Length.ToString(), out i);
-                byte[] ss = r.ReadBytes(i);
-                if (IsUTF8Bytes(ss) || (ss[0] == 0xEF && ss[1] == 0xBB && ss[2] == 0xBF))
+                using (var r = new BinaryReader(fs, System.Text.Encoding.Default))
                 {
-                    reVal = Encoding.UTF8;
+                    int i;
+                    int.TryParse(fs.Length.ToString(), out i);
+                    byte[] ss = r.ReadBytes(i);
+                    if (IsUTF8Bytes(ss) || (ss[0] == 0xEF && ss[1] == 0xBB && ss[2] == 0xBF))
+                    {
+                        reVal = Encoding.UTF8;
+                    }
+                    else if (ss[0] == 0xFE && ss[1] == 0xFF && ss[2] == 0x00)
+                    {
+                        reVal = Encoding.BigEndianUnicode;
+                    }
+                    else if (ss[0] == 0xFF && ss[1] == 0xFE && ss[2] == 0x41)
+                    {
+                        reVal = Encoding.Unicode;
+                    }
+                    return reVal;
                 }
-                else if (ss[0] == 0xFE && ss[1] == 0xFF && ss[2] == 0x00)
-                {
-                    reVal = Encoding.BigEndianUnicode;
-                }
-                else if (ss[0] == 0xFF && ss[1] == 0xFE && ss[2] == 0x41)
-                {
-                    reVal = Encoding.Unicode;
-                }
-                r.Close();
-                return reVal;
             }
             /// <summary>
             /// 判断是否是不带 BOM 的 UTF8 格式

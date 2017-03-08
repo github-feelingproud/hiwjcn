@@ -22,7 +22,7 @@ namespace Lib.io
         /// <param name="size"></param>
         /// <param name="img_path"></param>
         /// <returns></returns>
-        public Bitmap GetBitmap(string content, int size = 230, string img_path = null)
+        private Bitmap GetBitmap(string content, int size = 230, string img_path = null)
         {
             content = ConvertHelper.GetString(content);
 
@@ -68,10 +68,12 @@ namespace Lib.io
             return bm;
         }
 
-        public byte[] GetBytes(string content, int size = 230, string img_path = null)
+        public byte[] GetBitmapBytes(string content, int size = 230, string img_path = null)
         {
-            var bm = GetBitmap(content, size, img_path);
-            return ConvertHelper.BitmapToBytes(bm);
+            using (var bm = GetBitmap(content, size, img_path))
+            {
+                return ConvertHelper.BitmapToBytes(bm);
+            }
         }
 
         public void WriteToFile(string content, string file_path, string img_path = null)
@@ -87,19 +89,16 @@ namespace Lib.io
         /// </summary>
         /// <param name="b"></param>
         /// <returns></returns>
-        public string DistinguishQrImage(Bitmap bm)
+        private string DistinguishQrImage(Bitmap bm)
         {
             if (bm == null)
             {
                 throw new Exception("bitmap is null");
             }
-            using (bm)
-            {
-                var source = new RGBLuminanceSource(bm, bm.Width, bm.Height);
-                var bbm = new BinaryBitmap(new HybridBinarizer(source));
-                var result = new MultiFormatReader().decode(bbm);
-                return result.Text;
-            }
+            var source = new RGBLuminanceSource(bm, bm.Width, bm.Height);
+            var bbm = new BinaryBitmap(new HybridBinarizer(source));
+            var result = new MultiFormatReader().decode(bbm);
+            return result.Text;
         }
         /// <summary>
         /// 识别二维码
@@ -122,8 +121,10 @@ namespace Lib.io
         {
             using (var stream = new MemoryStream(b))
             {
-                string str = DistinguishQrImage(new Bitmap(stream));
-                return str;
+                using (var bm = new Bitmap(stream))
+                {
+                    return DistinguishQrImage(bm);
+                }
             }
         }
     }

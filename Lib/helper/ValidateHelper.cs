@@ -276,7 +276,7 @@ namespace Lib.helper
             finally
             {
                 img?.Dispose();
-                IOHelper.CloseStream(ms);
+                ms?.Dispose();
             }
         }
 
