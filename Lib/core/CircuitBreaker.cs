@@ -30,6 +30,28 @@ namespace Lib.core
             }
         }
     }
+    public static class RetryHelper
+    {
+        public static T Retry<T>(Func<T> action, int times = 3)
+        {
+            int i = 0;
+            while (true)
+            {
+                try
+                {
+                    return action();
+                }
+                catch when (i <= times)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(1.5, (++i) - 5)));
+                    //重试时间间隔
+                    //[(0, 0.13168724279835392), (1, 0.19753086419753085), (2, 0.2962962962962963), 
+                    //(3, 0.4444444444444444), (4, 0.6666666666666666), 
+                    //(5, 1.0), (6, 1.5), (7, 2.25), (8, 3.375), (9, 5.0625)]
+                }
+            }
+        }
+    }
     /// <summary>
     /// 实现功能熔断
     /// </summary>
