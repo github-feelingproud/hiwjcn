@@ -18,8 +18,13 @@ namespace Lib.data
     /// <typeparam name="T"></typeparam>
     public class EFRepository<T> : EFManager, IRepository<T> where T : class, IDBTable
     {
+        public EFManager EFManager { get; private set; }
+
         public EFRepository() : this("db") { }
-        public EFRepository(string db_name) : base(db_name) { }
+        public EFRepository(string db_name) : base(db_name)
+        {
+            EFManager = EFManager.SelectDB(db_name);
+        }
 
         private const int DEFAULT_START = -1;
         private const int DEFAULT_COUNT = 1000;

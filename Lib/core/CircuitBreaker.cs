@@ -37,13 +37,14 @@ namespace Lib.core
             int i = 0;
             while (true)
             {
+                ++i;
                 try
                 {
                     return action();
                 }
                 catch when (i <= times)
                 {
-                    Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(1.5, (++i) - 5)));
+                    Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(1.5, i - 5)));
                     //重试时间间隔
                     //[(0, 0.13168724279835392), (1, 0.19753086419753085), (2, 0.2962962962962963), 
                     //(3, 0.4444444444444444), (4, 0.6666666666666666), 
