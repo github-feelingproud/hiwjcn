@@ -120,6 +120,12 @@
     <Compile Include="RedisMsg.Designer.cs">
       <DependentUpon>RedisMsg.cs</DependentUpon>
     </Compile>
+    <Compile Include="RegexTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RegexTest.Designer.cs">
+      <DependentUpon>RegexTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Spider.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -144,6 +150,9 @@
     <EmbeddedResource Include="RedisMsg.resx">
       <DependentUpon>RedisMsg.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="RegexTest.resx">
+      <DependentUpon>RegexTest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Spider.resx">
       <DependentUpon>Spider.cs</DependentUpon>
     </EmbeddedResource>
@@ -160,6 +169,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lib\Lib.csproj">
+      <Project>{5f8bd505-423d-400c-84c4-f9638f84cc41}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

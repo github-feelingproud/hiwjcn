@@ -79,6 +79,17 @@ namespace Hiwjcn.Test
             {
                 var s = false;
                 s = "hiwjcn@live.com".IsEmail();
+                s = "13915280232".IsMobilePhone();
+                s = "www.baidu.com".IsDomain();
+                s = "中文2".IsChineaseStr();
+                s = "中文".IsChineaseStr();
+                s = "中午3".IsChinese();
+                s = "中午".IsChinese();
+                s = "320623199201196215".IsIDCardNo();
+                s = "127.0.0.1".IsIP();
+                s = "168.0.0.8".IsIP();
+                s = "jklkj4234g".IsNUMBER_OR_CHAR();
+                s = "42134".IsNumber();
                 s = "13915280232".IsPhone();
                 s = "http://www.baidu.com".IsURL();
                 s = "2016-09-08".IsDate();

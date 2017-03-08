@@ -47,7 +47,7 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsEmail(string s)
         {
-            return IsPlumpString(s) && RegexHelper.IsMatch(s, RegexHelper.EMAIL, RegexOptions.IgnoreCase);
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
         }
 
         /// <summary>
@@ -57,7 +57,17 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsURL(string s)
         {
-            return IsPlumpString(s) && RegexHelper.IsMatch(s, RegexHelper.URL, RegexOptions.IgnoreCase);
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"[a-zA-z]+://[^s]*");
+        }
+
+        /// <summary>
+        /// 是手机号
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsMobilePhone(string s)
+        {
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$");
         }
 
         /// <summary>
@@ -65,7 +75,37 @@ namespace Lib.helper
         /// </summary>
         public static bool IsPhone(string s)
         {
-            return IsPlumpString(s) && RegexHelper.IsMatch(s, RegexHelper.PHONE, RegexOptions.IgnoreCase);
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^(\d{3,4}-?)?\d{7,8}$");
+        }
+
+        /// <summary>
+        /// 是否是域名
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsDomain(string s)
+        {
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$");
+        }
+
+        /// <summary>
+        /// 是否是中文
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsChinese(string s)
+        {
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^[\u4e00-\u9fa5]{0,}$");
+        }
+
+        /// <summary>
+        /// 是否是身份证号
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsIDCardNo(string s)
+        {
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^(^\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$");
         }
 
         /// <summary>
@@ -73,7 +113,17 @@ namespace Lib.helper
         /// </summary>
         public static bool IsDate(string s)
         {
-            return IsPlumpString(s) && RegexHelper.IsMatch(s, RegexHelper.DATE, RegexOptions.IgnoreCase);
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"(\d{4})-(\d{1,2})-(\d{1,2})");
+        }
+
+        /// <summary>
+        /// 是否是IP
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsIP(string s)
+        {
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"\d+\.\d+\.\d+\.\d+");
         }
 
         /// <summary>
@@ -83,7 +133,27 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsTime(string s)
         {
-            return IsPlumpString(s) && RegexHelper.IsMatch(s, RegexHelper.TIME, RegexOptions.IgnoreCase);
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$");
+        }
+
+        /// <summary>
+        /// 数字或者字母
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsNUMBER_OR_CHAR(string s)
+        {
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^[A-Za-z0-9]{4,40}$");
+        }
+
+        /// <summary>
+        /// 是否是数字
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsNumber(string s)
+        {
+            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"^[0-9]*$");
         }
 
         /// <summary>
