@@ -186,6 +186,7 @@
     <Compile Include="extension\ConvertExtension.cs" />
     <Compile Include="extension\LogExtension.cs" />
     <Compile Include="extension\PollyExtension.cs" />
+    <Compile Include="extension\StringExtension.cs" />
     <Compile Include="extension\TypeExtension.cs" />
     <Compile Include="extension\ValidateExtension.cs" />
     <Compile Include="helper\EncodingHelper.cs" />
