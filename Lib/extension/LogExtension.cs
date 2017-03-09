@@ -1,9 +1,8 @@
 ﻿using Lib.helper;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Web;
 using System.Configuration;
+using System.Web;
 
 namespace Lib.extension
 {
@@ -104,7 +103,7 @@ namespace Lib.extension
         /// <param name="t"></param>
         public static void SaveWarnLog(this string log, Type t)
         {
-            LogHelper.Info(t, log);
+            LogHelper.Warn(t, log);
         }
     }
 
@@ -131,13 +130,36 @@ namespace Lib.extension
         /// 业务日志
         /// </summary>
         /// <param name="log"></param>
+        [Obsolete("使用AddBusinessInfoLog或者AddBusinessWarnLog")]
         public static void AddBusinessLog(this string log)
+        {
+            log.AddBusinessInfoLog();
+        }
+
+        /// <summary>
+        /// 业务日志
+        /// </summary>
+        /// <param name="log"></param>
+        public static void AddBusinessInfoLog(this string log)
         {
             new
             {
                 msg = log,
                 req_data = ReqData()
             }.ToJson().SaveInfoLog(LoggerName);
+        }
+
+        /// <summary>
+        /// 业务日志
+        /// </summary>
+        /// <param name="log"></param>
+        public static void AddBusinessWarnLog(this string log)
+        {
+            new
+            {
+                msg = log,
+                req_data = ReqData()
+            }.ToJson().SaveWarnLog(LoggerName);
         }
 
         /// <summary>
@@ -154,7 +176,7 @@ namespace Lib.extension
             }
             catch (Exception e)
             {
-                return new { msg = $"获取请求信息失败", error_list = e.GetInnerExceptionAsList() };
+                return new { msg = $"获取请求信息失败", error_list = e?.GetInnerExceptionAsList() };
             }
         }
     }
