@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
@@ -16,7 +17,9 @@ namespace Lib.data
         int Add(params T[] models);
         Task<int> AddAsync(params T[] models);
         int Delete(params T[] models);
+        Task<int> DeleteAsync(params T[] models);
         int Update(params T[] models);
+        Task<int> UpdateAsync(params T[] models);
         T GetByKeys(params object[] keys);
         List<T> QueryList<OrderByColumnType>(
             Expression<Func<T, bool>> where,
@@ -29,8 +32,8 @@ namespace Lib.data
         int GetCount(Expression<Func<T, bool>> where);
         bool Exist(Expression<Func<T, bool>> where);
         void PrepareSession(Func<DbContext, bool> callback);
-        //void PrepareConnection(Action<IDbConnection> callback);
-        //void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback, IsolationLevel? isoLevel = null);
+        void PrepareConnection(Action<IDbConnection> callback);
+        void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback, IsolationLevel? isoLevel = null);
         void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = true);
     }
 }

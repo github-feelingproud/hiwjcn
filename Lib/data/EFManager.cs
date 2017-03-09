@@ -27,6 +27,7 @@ namespace Lib.data
             return new EFManager(name);
         }
 
+        #region 静态方法
         /// <summary>
         /// 取消EF首次访问数据库的System.Data.Entity.CreateDatabaseIfNotExists策略
         /// </summary>
@@ -52,10 +53,12 @@ namespace Lib.data
                 mappingCollection.GenerateViews(new List<EdmSchemaError>());
             }
         }
+        #endregion
 
         /// <summary>
         /// 加速首次启动 
         /// </summary>
+        [Obsolete("不要用")]
         public void FastStart()
         {
             //Database.SetInitializer<EntityDB>(null);

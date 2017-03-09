@@ -16,14 +16,14 @@ namespace Lib.data
     /// 如果使用groupby查询请手写session或者iqueryable查询
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EFRepository<T> : EFManager, IRepository<T> where T : class, IDBTable
+    public class EFRepository<T> : IRepository<T> where T : class, IDBTable
     {
-        public EFManager EFManager { get; private set; }
+        public EFManager _EFManager { get; private set; }
 
         public EFRepository() : this("db") { }
-        public EFRepository(string db_name) : base(db_name)
+        public EFRepository(string db_name)
         {
-            EFManager = EFManager.SelectDB(db_name);
+            this._EFManager = EFManager.SelectDB(db_name);
         }
 
         private const int DEFAULT_START = -1;
@@ -51,10 +51,15 @@ namespace Lib.data
             });
             return count;
         }
+        /// <summary>
+        /// 异步添加
+        /// </summary>
+        /// <param name="models"></param>
+        /// <returns></returns>
         public async Task<int> AddAsync(params T[] models)
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
-            using (var db = GetDbContext())
+            using (var db = this._EFManager.GetDbContext())
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -89,6 +94,25 @@ namespace Lib.data
             });
             return count;
         }
+        /// <summary>
+        /// 异步删除 
+        /// </summary>
+        /// <param name="models"></param>
+        /// <returns></returns>
+        public async Task<int> DeleteAsync(params T[] models)
+        {
+            if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
+            using (var db = this._EFManager.GetDbContext())
+            {
+                var set = db.Set<T>();
+                foreach (var m in models)
+                {
+                    db.Entry(m).State = EntityState.Deleted;
+                    //session.Set<T>().Remove(m);
+                }
+                return await db.SaveChangesAsync();
+            }
+        }
         #endregion
 
         #region 修改
@@ -113,6 +137,25 @@ namespace Lib.data
                 return true;
             });
             return count;
+        }
+        /// <summary>
+        /// 异步更新
+        /// </summary>
+        /// <param name="models"></param>
+        /// <returns></returns>
+        public async Task<int> UpdateAsync(params T[] models)
+        {
+            if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
+            using (var db = this._EFManager.GetDbContext())
+            {
+                var set = db.Set<T>();
+                foreach (var m in models)
+                {
+                    //添加追踪（引用），如果多个追踪对象包含相同key就会抛出异常
+                    db.Entry(m).State = EntityState.Modified;
+                }
+                return await db.SaveChangesAsync();
+            }
         }
 
         #endregion
@@ -260,7 +303,22 @@ namespace Lib.data
         /// <param name="Transaction"></param>
         public void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = true)
         {
-            PrepareIQueryable<T>(callback, track);
+            this._EFManager.PrepareIQueryable<T>(callback, track);
+        }
+
+        public void PrepareSession(Func<DbContext, bool> callback)
+        {
+            this._EFManager.PrepareSession(callback);
+        }
+
+        public void PrepareConnection(Action<IDbConnection> callback)
+        {
+            this._EFManager.PrepareConnection(callback);
+        }
+
+        public void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback, IsolationLevel? isoLevel = default(IsolationLevel?))
+        {
+            this._EFManager.PrepareConnection(callback, isoLevel);
         }
     }
 }
