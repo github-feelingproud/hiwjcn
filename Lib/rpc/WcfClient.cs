@@ -101,7 +101,7 @@ namespace Lib.rpc
             }
             catch (Exception e)
             {
-                e.AddLog("服务执行错误");
+                e.AddErrorLog();
                 return new OperationResult<R>() { Ex = e, ErrorMessage = e.Message };
             }
         }
@@ -136,7 +136,7 @@ namespace Lib.rpc
             }
             catch (Exception e)
             {
-                e.AddLog("服务执行错误");
+                e.AddErrorLog();
                 return await Task.FromResult(new OperationResult<R>() { Ex = e, ErrorMessage = e.Message });
             }
         }

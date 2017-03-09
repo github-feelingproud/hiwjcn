@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Web;
+using System.Linq;
+using Lib.mvc;
 
 namespace Lib.extension
 {
@@ -170,13 +172,28 @@ namespace Lib.extension
         {
             try
             {
-                var url = HttpContext.Current.Request.Url.ToString();
-                var p = HttpContext.Current.Request.Form.ToDict().ToUrlParam();
-                return new { url = url, req_param = p };
+                var context = HttpContext.Current;
+
+                var method = context.Request.HttpMethod;
+
+                var url = context.Request.Url.ToString();
+
+                var p = context.Request.Form.ToDict().ToUrlParam();
+
+                var cookies = context.Request.Cookies.AllKeys.Select(x => new { key = x, value = context.Request.Cookies[x]?.Value });
+
+                //请求上下文信息
+                return new
+                {
+                    method = method,
+                    url = url,
+                    req_param = p,
+                    cookies = cookies
+                };
             }
-            catch (Exception e)
+            catch
             {
-                return new { msg = $"获取请求信息失败", error_list = e?.GetInnerExceptionAsList() };
+                return new { msg = "非Web环境" };
             }
         }
     }

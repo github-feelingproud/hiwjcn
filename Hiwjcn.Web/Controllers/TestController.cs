@@ -1,5 +1,4 @@
 ﻿using Dal.User;
-using Hiwjcn.Dal;
 using Lib.api;
 using Lib.data;
 using Lib.events;
@@ -31,6 +30,14 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher = pub;
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
+        }
+
+        public ActionResult Log()
+        {
+            DateTime.Now.ToString().AddBusinessInfoLog();
+            DateTime.Now.ToString().AddBusinessWarnLog();
+            new Exception("第一层错误", new Exception(DateTime.Now.ToString())).AddErrorLog();
+            return Content(DateTime.Now.ToString());
         }
 
         public ActionResult set_cookie()
