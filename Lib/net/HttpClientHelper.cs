@@ -227,18 +227,49 @@ namespace Lib.net
             }
         }
 
+        /// <summary>
+        /// postjson
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="jsonObj"></param>
+        /// <returns></returns>
         public static string PostJson(string url, object jsonObj)
         {
             var data = Encoding.UTF8.GetBytes(jsonObj.ToJson());
             return Send(url, data, "text/json");
         }
 
+        /// <summary>
+        /// post
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public static string Post(string url, Dictionary<string, string> param)
         {
             var data = Encoding.UTF8.GetBytes(param.ToUrlParam());
             return Send(url, data, "application/x-www-form-urlencoded");
         }
 
+        /// <summary>
+        /// get
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string Get(string url)
+        {
+            return Send(url, null, string.Empty, RequestMethodEnum.GET);
+        }
+
+        /// <summary>
+        /// send request
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="data"></param>
+        /// <param name="contentType"></param>
+        /// <param name="method"></param>
+        /// <param name="timeout_second"></param>
+        /// <returns></returns>
         public static string Send(string url, byte[] data, string contentType,
             RequestMethodEnum method = RequestMethodEnum.POST, int? timeout_second = 30)
         {
@@ -254,11 +285,14 @@ namespace Lib.net
                 }
                 req.Method = GetMethod(method);
 
-                req.ContentType = contentType;
-                req.ContentLength = data.Length;
-                using (var stream = req.GetRequestStream())
+                if (ValidateHelper.IsPlumpList(data))
                 {
-                    stream.Write(data, 0, data.Length);
+                    req.ContentType = contentType;
+                    req.ContentLength = data.Length;
+                    using (var stream = req.GetRequestStream())
+                    {
+                        stream.Write(data, 0, data.Length);
+                    }
                 }
 
                 res = (HttpWebResponse)req.GetResponse();

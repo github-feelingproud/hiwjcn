@@ -9,22 +9,44 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Lib.extension;
+using Lib.task;
 
 namespace Hiwjcn.Framework.Tasks
 {
-    public class WakeWebSiteTask : IJob
+    public class WakeWebSiteTask : QuartzJobBase
     {
-        public void Execute(IJobExecutionContext context)
+        public override string Name
+        {
+            get
+            {
+                return "唤醒网站";
+            }
+        }
+
+        public override bool Start
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public override ITrigger Trigger
+        {
+            get
+            {
+                return TaskManager.BuildCommonTrigger(15);
+            }
+        }
+
+        public override void Execute(IJobExecutionContext context)
         {
             try
             {
                 Thread.Sleep(1000 * 60);
                 var url = "http://colin.hiwj.cn/";
-                HttpClientHelper.SendHttpRequest(url, null, null, null, RequestMethodEnum.GET, 60, (res) =>
-                 {
-                     var html = AsyncHelper.RunSync(() => res.Content.ReadAsStringAsync());
-                     LogHelper.Info(this.GetType(), $"唤醒网站，读取内容长度为{html?.Length}");
-                 });
+                var html = HttpClientHelper.Get(url);
+                $"唤醒网站，读取内容长度为{html?.Length}".AddBusinessInfoLog();
             }
             catch (Exception e)
             {

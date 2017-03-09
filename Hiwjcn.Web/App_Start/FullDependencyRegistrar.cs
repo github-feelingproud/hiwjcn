@@ -3,12 +3,14 @@ using Autofac.Extras.DynamicProxy;
 using Autofac.Integration.Mvc;
 using Hiwjcn.Bll;
 using Hiwjcn.Dal;
+using Hiwjcn.Framework.Tasks;
 using Lib.cache;
 using Lib.data;
 using Lib.events;
 using Lib.extension;
 using Lib.infrastructure;
 using Lib.ioc;
+using Lib.task;
 using MySql.Data.MySqlClient;
 using System;
 using System.Data;
@@ -38,6 +40,9 @@ namespace Hiwjcn.Web.App_Start
             }
             builder.RegisterType<EntityDB>().Named<DbContext>("db");
             builder.RegisterType<MySqlConnection>().As<IDbConnection>();
+
+            var jobTypes = new Type[] { typeof(WakeWebSiteTask) };
+            builder.RegisterTypes(jobTypes).As<QuartzJobBase>();
 
             #region 注册Data
             //注册数据访问层

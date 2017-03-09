@@ -104,7 +104,6 @@
     <Compile Include="Domain\Sys\UpFileModel.cs" />
     <Compile Include="Domain\Tag\TagMapModel.cs" />
     <Compile Include="Domain\Tag\TagModel.cs" />
-    <Compile Include="Domain\Sys\ScheduleJobModel.cs" />
     <Compile Include="Domain\User\LoginErrorLogModel.cs" />
     <Compile Include="Domain\User\RoleModel.cs" />
     <Compile Include="Domain\User\RolePermissionModel.cs" />

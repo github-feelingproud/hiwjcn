@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Lib.extension;
 using Lib.mvc;
+using Lib.core;
 
 namespace Hiwjcn.Web
 {
@@ -56,12 +57,10 @@ namespace Hiwjcn.Web
         {
             try
             {
-                //关闭redis线程池
-                RedisConnectionManager.Dispose();
+                ReleaseHelper.DisposeAll();
+
                 //关闭后台服务
                 TaskManager.StopTasks();
-                //销毁ioc容器
-                AppContext.Dispose();
 
                 //记录程序关闭
                 "Application_End".SaveInfoLog(this.GetType());

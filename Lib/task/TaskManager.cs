@@ -11,9 +11,10 @@ using Quartz.Impl.Matchers;
 using Quartz.Collection;
 using Lib.helper;
 using Lib.core;
-using Model.Task;
+using Lib.extension;
+using Lib.ioc;
 
-namespace Hiwjcn.Framework.Tasks
+namespace Lib.task
 {
     /// <summary>
     /// 任务调度
@@ -89,8 +90,37 @@ namespace Hiwjcn.Framework.Tasks
             }
             manager.Clear();
 
-            var job = JobBuilder.Create<WakeWebSiteTask>().WithIdentity("唤醒网站").Build();
-            manager.ScheduleJob(job, BuildCommonTrigger(60));
+            //从IOC中找到任务，并执行
+            QuartzJobBase[] jobs = null;
+            try
+            {
+                jobs = AppContext.GetAllObject<QuartzJobBase>();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+            jobs = ConvertHelper.NotNullList(jobs).Where(x => x.Start).ToArray();
+            if (ValidateHelper.IsPlumpList(jobs))
+            {
+                if (jobs.Select(x => x.Name).Distinct().Count() != jobs.Count())
+                {
+                    throw new Exception("注册的任务中存在重名");
+                }
+                if (jobs.Any(x => x.Trigger == null))
+                {
+                    throw new Exception("注册的任务中有些Trigger没有定义");
+                }
+                foreach (var job in jobs)
+                {
+                    var job_to_run = JobBuilder.Create(job.GetType()).WithIdentity(job.Name).Build();
+                    manager.ScheduleJob(job_to_run, job.Trigger);
+                }
+            }
+            else
+            {
+                return;
+            }
 
             manager.Start();
         }
