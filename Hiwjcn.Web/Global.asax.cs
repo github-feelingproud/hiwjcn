@@ -13,6 +13,7 @@ using System.Web.Routing;
 using Lib.extension;
 using Lib.mvc;
 using Lib.core;
+using Lib.task;
 
 namespace Hiwjcn.Web
 {
@@ -58,9 +59,6 @@ namespace Hiwjcn.Web
             try
             {
                 ReleaseHelper.DisposeAll();
-
-                //关闭后台服务
-                TaskManager.StopTasks();
 
                 //记录程序关闭
                 "Application_End".SaveInfoLog(this.GetType());

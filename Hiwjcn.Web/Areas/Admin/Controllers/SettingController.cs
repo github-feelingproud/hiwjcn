@@ -1,6 +1,7 @@
 ﻿using Hiwjcn.Core.Infrastructure.Common;
 using Hiwjcn.Framework.Tasks;
 using Lib.helper;
+using Lib.task;
 using Model.Sys;
 using System.Web.Mvc;
 

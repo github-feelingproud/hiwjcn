@@ -43,7 +43,6 @@ namespace Hiwjcn.Framework.Tasks
         {
             try
             {
-                Thread.Sleep(1000 * 60);
                 var url = "http://colin.hiwj.cn/";
                 var html = HttpClientHelper.Get(url);
                 $"唤醒网站，读取内容长度为{html?.Length}".AddBusinessInfoLog();
