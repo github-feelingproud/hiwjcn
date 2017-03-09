@@ -20,7 +20,7 @@ namespace Dal.User
         public int UpdateUserMask(int uid, byte[] b)
         {
             int count = 0;
-            PrepareConnection(con =>
+            DBHelper.PrepareConnection(con =>
             {
                 var sql = "update wp_users set user_db_img=@img where user_id=@uid";
                 count = con.Execute(sql, new { img = b, uid = uid });
@@ -36,7 +36,7 @@ namespace Dal.User
         public byte[] ReadUserImage(int uid)
         {
             byte[] b = null;
-            PrepareConnection(con =>
+            DBHelper.PrepareConnection(con =>
             {
                 var sql = "select user_db_img from wp_users where user_id=@uid limit 0,1";
                 b = con.ExecuteScalar<byte[]>(sql, new { uid = uid });

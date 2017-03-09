@@ -15,7 +15,7 @@ namespace Lib.data
     }
     public static class DBHelper
     {
-        private static readonly string ConStr = ConfigurationManager.ConnectionStrings["db"]?.ToString();
+        private static readonly string ConStr = ConfigurationManager.AppSettings["db"] ?? ConfigurationManager.ConnectionStrings["db"]?.ToString();
         /// <summary>
         /// 使用ioc中注册的数据库
         /// </summary>
@@ -26,9 +26,18 @@ namespace Lib.data
             {
                 throw new Exception("请在appsetting中配置节点为db的通用链接字符串");
             }
-
-            if (!AppContext.IsRegistered<IDbConnection>()) { return new SqlConnection(); }
-            return AppContext.GetObject<IDbConnection>();
+            IDbConnection con = null;
+            if (!AppContext.IsRegistered<IDbConnection>())
+            {
+                con = new SqlConnection();
+            }
+            else
+            {
+                con = AppContext.GetObject<IDbConnection>();
+            }
+            con.ConnectionString = ConStr;
+            con.Open();
+            return con;
         }
         /// <summary>
         /// 使用ioc中注册的数据库
@@ -38,8 +47,6 @@ namespace Lib.data
         {
             using (var con = GetConnectionProvider())
             {
-                con.ConnectionString = ConStr;
-                con.Open();
                 callback.Invoke(con);
             }
         }
@@ -50,11 +57,8 @@ namespace Lib.data
         /// <param name="iso"></param>
         public static void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback, IsolationLevel? iso = null)
         {
-            using (var con = GetConnectionProvider())
+            PrepareConnection(con =>
             {
-                con.ConnectionString = ConStr;
-                con.Open();
-
                 IDbTransaction t = null;
                 if (iso == null)
                 {
@@ -85,7 +89,7 @@ namespace Lib.data
                 {
                     t.Dispose();
                 }
-            }
+            });
         }
 
 

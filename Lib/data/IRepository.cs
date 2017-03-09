@@ -32,8 +32,6 @@ namespace Lib.data
         int GetCount(Expression<Func<T, bool>> where);
         bool Exist(Expression<Func<T, bool>> where);
         void PrepareSession(Func<DbContext, bool> callback);
-        void PrepareConnection(Action<IDbConnection> callback);
-        void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback, IsolationLevel? isoLevel = null);
         void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = true);
     }
 }

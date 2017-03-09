@@ -310,15 +310,5 @@ namespace Lib.data
         {
             this._EFManager.PrepareSession(callback);
         }
-
-        public void PrepareConnection(Action<IDbConnection> callback)
-        {
-            this._EFManager.PrepareConnection(callback);
-        }
-
-        public void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback, IsolationLevel? isoLevel = default(IsolationLevel?))
-        {
-            this._EFManager.PrepareConnection(callback, isoLevel);
-        }
     }
 }

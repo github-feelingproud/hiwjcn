@@ -8,5 +8,11 @@ namespace Lib.data
 {
     public interface IDBTable
     {
+        //
+    }
+
+    public class DBTable : IDBTable
+    {
+        //
     }
 }
