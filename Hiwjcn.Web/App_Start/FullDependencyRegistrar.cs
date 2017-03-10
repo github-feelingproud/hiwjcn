@@ -44,7 +44,7 @@ namespace Hiwjcn.Web.App_Start
             #region 任务调度
             //自动注册调度任务
             var jobTypes = typeof(WebCore.MvcLib.Controller.UserBaseController).Assembly.GetTypes().ToArray();
-            jobTypes = jobTypes.Where(x => x.IsAssignableTo<QuartzJobBase>()).ToArray();
+            jobTypes = jobTypes.Where(x => x.IsAssignableTo<QuartzJobBase>() && !x.IsAbstract).ToArray();
             if (ValidateHelper.IsPlumpList(jobTypes))
             {
                 builder.RegisterTypes(jobTypes).As<QuartzJobBase>();

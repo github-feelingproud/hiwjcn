@@ -1,15 +1,8 @@
-﻿using Lib.core;
-using Lib.helper;
+﻿using Lib.extension;
 using Lib.net;
+using Lib.task;
 using Quartz;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Lib.extension;
-using Lib.task;
 
 namespace Hiwjcn.Framework.Tasks
 {
@@ -35,7 +28,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             get
             {
-                return TaskManager.BuildCommonTrigger(15);
+                return BuildCommonTrigger(15);
             }
         }
 

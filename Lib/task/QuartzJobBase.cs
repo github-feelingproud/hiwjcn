@@ -23,5 +23,9 @@ namespace Lib.task
         public abstract ITrigger Trigger { get; }
 
         public abstract void Execute(IJobExecutionContext context);
+
+        protected ITrigger BuildCommonTrigger(int seconds) => 
+            BuildTrigger(t => t.StartNow().WithSimpleSchedule(x => x.WithIntervalInSeconds(seconds).RepeatForever()).Build());
+        protected ITrigger BuildTrigger(Func<TriggerBuilder, ITrigger> func) => func(TriggerBuilder.Create());
     }
 }

@@ -75,7 +75,6 @@ namespace Lib.task
         #endregion
 
         #region 开启和关闭任务
-        public static ITrigger BuildCommonTrigger(int seconds) => TriggerBuilder.Create().StartNow().WithSimpleSchedule(x => x.WithIntervalInSeconds(seconds).RepeatForever()).Build();
         public static void InitTasks()
         {
             if (manager == null)
