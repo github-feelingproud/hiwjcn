@@ -55,7 +55,7 @@ namespace Lib.extension
         /// <param name="client"></param>
         /// <param name="indexName"></param>
         /// <param name="data"></param>
-        public static void AddToIndex<T>(this ElasticClient client, string indexName, IEnumerable<T> data) where T : class
+        public static void AddToIndex<T>(this IElasticClient client, string indexName, List<T> data) where T : class
         {
             var bulk = new BulkRequest(indexName)
             {
@@ -77,7 +77,7 @@ namespace Lib.extension
         /// <param name="targetField"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static IDictionary<string, Suggest[]> SuggestKeyword<T>(this ElasticClient client, Expression<Func<T, object>> targetField, string text) where T : class
+        public static IDictionary<string, Suggest[]> SuggestKeyword<T>(this IElasticClient client, Expression<Func<T, object>> targetField, string text) where T : class
         {
             var response = client.Suggest<T>(
                 x => x.Phrase("phrase_suggest",

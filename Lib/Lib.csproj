@@ -217,6 +217,7 @@
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="ioc\BaseDependencyRegistrar.cs" />
     <Compile Include="ioc\IDependencyRegistrar.cs" />
+    <Compile Include="log\ESLogAppender.cs" />
     <Compile Include="mq\MessageConsumer.cs" />
     <Compile Include="mq\MessageProducer.cs" />
     <Compile Include="mq\RabbitMQChannel.cs" />
