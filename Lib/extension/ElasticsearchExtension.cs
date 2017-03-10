@@ -8,88 +8,21 @@ using Nest;
 using System.Net;
 using System.Configuration;
 using Lib.extension;
+using Lib.helper;
 
 namespace Lib.extension
 {
     public static class ElasticsearchExtension
     {
-
-    }
-    public static class ElasticsearchHelper
-    {
-        //创建连接池Elasticsearch
-        private static readonly ConnectionSettings ConnectionSettings;
-
-        static ElasticsearchHelper()
-        {
-            ConnectionSettings = new ConnectionSettings(new StaticConnectionPool(ConfigurationManager.ConnectionStrings["Elasticsearch"].ConnectionString.Split('|', ';', ',').Select(s => new Uri(s))));
-
-            ConnectionSettings.MaximumRetries(3);
-
-            EnableDebug();
-        }
-
-        #region EnableDebug
-        public static void EnableDebug() => EnableDebug(details =>
-        {
-            var request = $"{details.HttpMethod} {details.Uri}";
-
-            if (details.RequestBodyInBytes != null)
-                request += Environment.NewLine + Encoding.UTF8.GetString(details.RequestBodyInBytes);
-
-            if (details.Success || details.HttpStatusCode == (int)HttpStatusCode.NotFound)
-            {
-                return;
-            }
-
-            request.AddBusinessWarnLog();
-
-            if (details.ResponseBodyInBytes != null)
-            {
-                ("Elasticsearch error response: " + Encoding.UTF8.GetString(details.ResponseBodyInBytes)).AddBusinessWarnLog();
-            }
-        });
-
-        public static void EnableDebug(Action<IApiCallDetails> handler)
-        {
-            ConnectionSettings.DisableDirectStreaming();
-            ConnectionSettings.OnRequestCompleted(handler);
-        }
-        #endregion
-
-        public static IElasticClient CreateClient() => new ElasticClient(ConnectionSettings);
-
-        private static readonly Func<TypeMappingDescriptor<object>, TypeMappingDescriptor<object>> DefaultMapSelector = m => m.Dynamic()
-            .DynamicTemplates(dt => dt
-                .DynamicTemplate("template_string",
-                    mdt => mdt
-                        .Mapping(mdtm => mdtm.String(s => s.Index(FieldIndexOption.NotAnalyzed)))
-                        .MatchMappingType("string")
-                        .Match("*"))
-                .DynamicTemplate("template_nested",
-                    mdt => mdt
-                        .Mapping(mdtm => mdtm.Nested<object>(n => n.AutoMap()))
-                        .MatchMappingType("object")
-                        .Match("*")));
-
-        /// <summary>所有字符串NotAnalyzed，所有object都mapping成nested</summary>
-        public static MappingsDescriptor MapDefault(this MappingsDescriptor md) =>
-            md.Map("_default_", DefaultMapSelector);
-
-        /// <summary>所有字符串NotAnalyzed，所有object都mapping成nested</summary>
-        public static MappingsDescriptor MapDefault(this MappingsDescriptor md, Func<TypeMappingDescriptor<object>, ITypeMapping> selector) =>
-            md.Map("_default_", m => selector(DefaultMapSelector(m)));
-
-        #region CreateIndexIfNotExists 如果索引不存在则创建索引
-
-        /// <summary>如果索引不存在则创建索引</summary>
-        /// <returns>true：索引存在或创建成功；false：索引创建失败</returns>
-        public static bool CreateIndexIfNotExists(this IElasticClient client, string indexName) =>
-            CreateIndexIfNotExists(client, indexName, null);
-
-        /// <summary>如果索引不存在则创建索引</summary>
-        /// <returns>true：索引存在或创建成功；false：索引创建失败</returns>
-        public static bool CreateIndexIfNotExists(this IElasticClient client, string indexName, Func<CreateIndexDescriptor, ICreateIndexRequest> selector)
+        /// <summary>
+        /// 如果索引不存在就创建
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="indexName"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public static bool CreateIndexIfNotExists(this IElasticClient client, string indexName,
+            Func<CreateIndexDescriptor, ICreateIndexRequest> selector = null)
         {
             indexName = indexName.ToLower();
 
@@ -105,32 +38,24 @@ namespace Lib.extension
             return false;
         }
 
-        /// <summary>如果索引不存在则创建索引</summary>
-        /// <returns>true：索引存在或创建成功；false：索引创建失败</returns>
-        public static Task<bool> CreateIndexIfNotExistsAsync(this IElasticClient client, string indexName) =>
-            CreateIndexIfNotExistsAsync(client, indexName, null);
-
-        /// <summary>如果索引不存在则创建索引</summary>
-        /// <returns>true：索引存在或创建成功；false：索引创建失败</returns>
-        public static async Task<bool> CreateIndexIfNotExistsAsync(this IElasticClient client, string indexName, Func<CreateIndexDescriptor, ICreateIndexRequest> selector)
+        /// <summary>
+        /// 获取聚合，因为升级到5.0，这个方法不可用，还需要研究
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        private static Dictionary<string, List<KeyedBucket<string>>> GetAggs<T>(this ISearchResponse<T> response) where T : class, new()
         {
-            indexName = indexName.ToLower();
-
-            if ((await client.IndexExistsAsync(indexName)).Exists)
-                return true;
-
-            var response = await client.CreateIndexAsync(indexName, selector);
-            if (response.IsValid)
-                return true;
-
-            response.LogError();
-
-            return false;
+            return response?.Aggregations?.ToDictionary(
+                    x => x.Key,
+                    x => (x.Value as BucketAggregate)?.Items.Select(i => (i as KeyedBucket<string>)).Where(i => i?.DocCount > 0).ToList()
+                    )?.Where(x => ValidateHelper.IsPlumpList(x.Value)).ToDictionary(x => x.Key, x => x.Value);
         }
-        #endregion
 
-        #region LogError
-
+        /// <summary>
+        /// 记录返回错误
+        /// </summary>
+        /// <param name="response"></param>
         public static void LogError(this IResponse response)
         {
             if (response.ServerError?.Error == null)
@@ -141,6 +66,77 @@ namespace Lib.extension
                 return;
             }
         }
-        #endregion
+
+        /// <summary>
+        /// 开启链接调试
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <param name="handler"></param>
+        public static void EnableDebug(this ConnectionSettings setting, Action<IApiCallDetails> handler)
+        {
+            if (handler == null)
+            {
+                handler = x =>
+                {
+                    if (x.OriginalException != null)
+                    {
+                        x.OriginalException.AddErrorLog();
+                    }
+                    new
+                    {
+                        debuginfo = x.DebugInformation,
+                        url = x.Uri.ToString(),
+                        success = x.Success,
+                        method = x.HttpMethod.ToString(),
+                        DeprecationWarnings = x.DeprecationWarnings
+                    }.ToJson().AddBusinessInfoLog();
+                };
+            }
+            setting.DisableDirectStreaming();
+            setting.OnRequestCompleted(handler);
+        }
+    }
+
+    /// <summary>
+    /// es
+    /// </summary>
+    public static class ElasticsearchHelper
+    {
+        //创建连接池Elasticsearch
+        private static readonly ConnectionSettings ConnectionSettings;
+
+        static ElasticsearchHelper()
+        {
+            var constr = ConfigurationManager.ConnectionStrings["ES"]?.ConnectionString;
+            if (!ValidateHelper.IsPlumpString(constr))
+            {
+                return;
+            }
+            var urls = constr.Split('|', ';', ',').Select(s => new Uri(s));
+            ConnectionSettings = new ConnectionSettings(new StaticConnectionPool(urls));
+
+            ConnectionSettings.MaximumRetries(2);
+        }
+
+        /// <summary>
+        /// 获取连接池
+        /// </summary>
+        /// <returns></returns>
+        public static ConnectionSettings GetConnectionSettings() => ConnectionSettings;
+
+        /// <summary>
+        /// 获取链接对象
+        /// </summary>
+        /// <returns></returns>
+        public static IElasticClient CreateClient() => new ElasticClient(ConnectionSettings);
+
+        /// <summary>
+        /// 关闭连接池
+        /// </summary>
+        public static void Dispose()
+        {
+            IDisposable pool = ConnectionSettings;
+            pool.Dispose();
+        }
     }
 }

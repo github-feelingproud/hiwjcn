@@ -182,7 +182,7 @@
     <Compile Include="core\DelegateCollection.cs" />
     <Compile Include="core\ExceptionsCollection.cs" />
     <Compile Include="core\MyStringComparer.cs" />
-    <Compile Include="core\ReleaseHelper.cs" />
+    <Compile Include="core\LibReleaseHelper.cs" />
     <Compile Include="core\ThreadWrapper.cs" />
     <Compile Include="data\DBHelper.cs" />
     <Compile Include="data\EFRepository.cs" />

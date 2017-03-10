@@ -58,7 +58,7 @@ namespace Hiwjcn.Web
         {
             try
             {
-                ReleaseHelper.DisposeAll();
+                LibReleaseHelper.DisposeAll();
 
                 //记录程序关闭
                 "Application_End".SaveInfoLog(this.GetType());
