@@ -8,6 +8,7 @@ using Nest;
 using System.Net;
 using System.Configuration;
 using Lib.helper;
+using System.Linq.Expressions;
 
 namespace Lib.extension
 {
@@ -66,6 +67,28 @@ namespace Lib.extension
                 response.LogError();
                 throw new Exception("创建索引错误", response.OriginalException);
             }
+        }
+
+        /// <summary>
+        /// 搜索建议
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="targetField"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static IDictionary<string, Suggest[]> SuggestKeyword<T>(this ElasticClient client, Expression<Func<T, object>> targetField, string text) where T : class
+        {
+            var response = client.Suggest<T>(
+                x => x.Phrase("phrase_suggest",
+                m => m.Field(targetField).Text(text)));
+
+            if (!response.IsValid)
+            {
+                response.LogError();
+                throw new Exception("建议错误", response.OriginalException);
+            }
+            return response.Suggestions;
         }
 
         /// <summary>
@@ -130,8 +153,7 @@ namespace Lib.extension
                         debuginfo = x.DebugInformation,
                         url = x.Uri.ToString(),
                         success = x.Success,
-                        method = x.HttpMethod.ToString(),
-                        DeprecationWarnings = x.DeprecationWarnings
+                        method = x.HttpMethod.ToString()
                     }.ToJson().AddBusinessInfoLog();
                 };
             }

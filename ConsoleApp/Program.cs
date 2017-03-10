@@ -25,6 +25,7 @@ using Fleck;
 using Fleck.Handlers;
 using Fleck.Helpers;
 using System.Net;
+using Lib.extension;
 
 namespace ConsoleApp
 {
@@ -96,16 +97,13 @@ namespace ConsoleApp
             PrepareES(client =>
             {
                 var indexName = nameof(DiskFileIndex).ToLower();
-                if (!client.IndexExists(indexName).Exists)
+                try
                 {
-                    var createIndexRes = client.CreateIndex(indexName,
-                        x => x.Settings(s => s.NumberOfShards(5).NumberOfReplicas(1))
-                        .Mappings(map => map.Map<DiskFileIndex>(m => m.AutoMap(5))));
-                    if (!createIndexRes.IsValid)
-                    {
-                        Console.WriteLine("无法创建索引");
-                        return false;
-                    }
+                    client.CreateIndexIfNotExists(indexName, x => x.DeaultCreateIndexDescriptor<DiskFileIndex>());
+                }
+                catch (Exception e)
+                {
+                    e.AddErrorLog();
                 }
 
                 var txtFiles = new string[] {
@@ -133,20 +131,7 @@ namespace ConsoleApp
                         model.Size = f.Length;
                         model.Content = File.ReadAllText(model.Path);
                         var data = new List<DiskFileIndex>() { model };
-                        var bulk = new BulkRequest(indexName)
-                        {
-                            Operations = data.Select(x => new BulkIndexOperation<DiskFileIndex>(x)).ToArray()
-                        };
-                        var res = client.Bulk(bulk);
-                        if (res.IsValid)
-                        {
-                            Console.WriteLine($"索引文件：{f.FullName}");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"索引失败，文件：{f.FullName}");
-                            Thread.Sleep(500);
-                        }
+                        client.AddToIndex(indexName, data);
                     }
                     catch (Exception e)
                     {
@@ -260,15 +245,12 @@ namespace ConsoleApp
         {
             PrepareES(client =>
             {
-                var queryresponse = client.Suggest<ProductListV2>(x => x.Phrase("phrase_suggest", m => m.Field(f => f.SeachTitle).Text("MAHLwjE")));
-                if (queryresponse.IsValid)
+                try
                 {
+                    var data = client.SuggestKeyword<ProductListV2>(x => x.SeachTitle, "MAHLwjE");
                 }
-                else
-                {
-                    Console.WriteLine("查询失败");
-                }
-                Console.ReadLine();
+                catch
+                { }
                 return true;
             });
         }
@@ -293,82 +275,5 @@ namespace ConsoleApp
         [String(Name = "Content", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
         public virtual string Content { get; set; }
     }
-
-    [ElasticsearchType(IdProperty = "UKey", Name = "ProductList")]
-    public class ProductListV2
-    {
-        [String(Name = "UKey", Index = FieldIndexOption.NotAnalyzed)]
-        public string UKey { get; set; }
-
-        [String(Name = "ProductId", Index = FieldIndexOption.NotAnalyzed)]
-        public string ProductId { get; set; }
-
-        [String(Name = "TraderId", Index = FieldIndexOption.NotAnalyzed)]
-        public string TraderId { get; set; }
-
-        [String(Name = "PlatformCatalogId", Index = FieldIndexOption.NotAnalyzed)]
-        public string PlatformCatalogId { get; set; }
-
-        [String(Name = "BrandId", Index = FieldIndexOption.NotAnalyzed)]
-        public string BrandId { get; set; }
-
-        [Number(Name = "PAvailability", Index = NonStringIndexOption.NotAnalyzed)]
-        public int PAvailability { get; set; }
-
-        [Number(Name = "PIsRemove", Index = NonStringIndexOption.NotAnalyzed)]
-        public int PIsRemove { get; set; }
-
-        [Number(Name = "UpAvailability", Index = NonStringIndexOption.NotAnalyzed)]
-        public int UpAvailability { get; set; }
-
-        [Number(Name = "UpIsRemove", Index = NonStringIndexOption.NotAnalyzed)]
-        public int UpIsRemove { get; set; }
-
-        [String(Name = "UserSku", Index = FieldIndexOption.NotAnalyzed)]
-        public string UserSku { get; set; }
-
-        [Number(Name = "IsGroup", Index = NonStringIndexOption.NotAnalyzed)]
-        public int IsGroup { get; set; }
-
-        [Number(Name = "UpiId", Index = NonStringIndexOption.NotAnalyzed)]
-        public int UpiId { get; set; }
-
-        /// <summary>
-        /// 销量
-        /// </summary>
-        [Number(Name = "SalesVolume", Index = NonStringIndexOption.NotAnalyzed)]
-        public int SalesVolume { get; set; }
-
-        /// <summary>
-        /// 是否有货
-        /// </summary>
-        [Number(Name = "InventoryStatus", Index = NonStringIndexOption.NotAnalyzed)]
-        public int InventoryStatus { get; set; }
-
-
-        [Number(Name = "SalesPrice", Index = NonStringIndexOption.NotAnalyzed)]
-        public decimal SalesPrice { get; set; }
-
-        [String(Name = "ShopName", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
-        public string ShopName { get; set; }
-
-        [String(Name = "ShopNamePinyin", Analyzer = "pinyin_analyzer", SearchAnalyzer = "pinyin_analyzer")]
-        public string ShopNamePinyin { get; set; }
-
-        [String(Name = "SeachTitle", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
-        public string SeachTitle { get; set; }
-
-        [Date(Name = "UpdatedDate")]
-        public DateTime UpdatedDate { get; set; }
-
-        [String(Name = "ShowCatalogIdList", Index = FieldIndexOption.NotAnalyzed)]
-        public string[] ShowCatalogIdList { get; set; }
-
-        [String(Name = "PlatformCatalogIdList", Index = FieldIndexOption.NotAnalyzed)]
-        public string[] PlatformCatalogIdList { get; set; }
-
-        [String(Name = "ProductAttributes", Index = FieldIndexOption.NotAnalyzed)]
-        public string[] ProductAttributes { get; set; }
-    }
-
+    
 }
