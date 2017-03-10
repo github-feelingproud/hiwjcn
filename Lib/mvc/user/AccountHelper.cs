@@ -73,10 +73,16 @@ namespace Lib.mvc.user
             //保存到session
             SessionHelper.SetSession(context.Session, LOGIN_USER_SESSION, loginuser);
             //保存到cookie
-            CookieHelper.SetCookie(context, COOKIE_LOGIN_UID, loginuser.Email, domain: COOKIE_DOMAIN,
+            if (GetCookieUID() != loginuser.Email)
+            {
+                CookieHelper.SetCookie(context, COOKIE_LOGIN_UID, loginuser.Email, domain: COOKIE_DOMAIN,
+                        expires_minutes: CookieExpiresMinutes);
+            }
+            if (GetCookieToken() != loginuser.LoginToken)
+            {
+                CookieHelper.SetCookie(context, COOKIE_LOGIN_TOKEN, loginuser.LoginToken, domain: COOKIE_DOMAIN,
                     expires_minutes: CookieExpiresMinutes);
-            CookieHelper.SetCookie(context, COOKIE_LOGIN_TOKEN, loginuser.LoginToken, domain: COOKIE_DOMAIN,
-                expires_minutes: CookieExpiresMinutes);
+            }
         }
 
         /// <summary>
