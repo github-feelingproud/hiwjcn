@@ -30,7 +30,7 @@ namespace Hiwjcn.Framework.Tasks
             get
             {
                 //每天早上6点发送昨天的数据报告
-                return BuildTrigger(t => t.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(6, 0)).Build());
+                return TriggerDaily(6, 0);
             }
         }
 

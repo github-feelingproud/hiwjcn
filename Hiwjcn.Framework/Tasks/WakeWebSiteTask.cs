@@ -28,7 +28,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             get
             {
-                return BuildCommonTrigger(15);
+                return TriggerInterval(15);
             }
         }
 

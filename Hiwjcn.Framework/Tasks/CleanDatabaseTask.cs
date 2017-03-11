@@ -30,7 +30,7 @@ namespace Hiwjcn.Framework.Tasks
             get
             {
                 //早上2.30清理数据库
-                return BuildTrigger(t => t.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(2, 30)).Build());
+                return TriggerDaily(2, 30);
             }
         }
 

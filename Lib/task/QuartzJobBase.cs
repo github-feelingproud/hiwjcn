@@ -24,8 +24,36 @@ namespace Lib.task
 
         public abstract void Execute(IJobExecutionContext context);
 
-        protected ITrigger BuildCommonTrigger(int seconds) => 
+        /// <summary>
+        /// Cron表达式
+        /// </summary>
+        /// <param name="cron"></param>
+        /// <returns></returns>
+        protected ITrigger TriggerWithCron(string cron) =>
+            BuildTrigger(t => t.WithSchedule(CronScheduleBuilder.CronSchedule(cron)).Build());
+        
+        /// <summary>
+        /// 每天固定时间
+        /// </summary>
+        /// <param name="hour"></param>
+        /// <param name="minute"></param>
+        /// <returns></returns>
+        protected ITrigger TriggerDaily(int hour, int minute) =>
+            BuildTrigger(t => t.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(hour, minute)).Build());
+
+        /// <summary>
+        /// 间隔几秒
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <returns></returns>
+        protected ITrigger TriggerInterval(int seconds) =>
             BuildTrigger(t => t.StartNow().WithSimpleSchedule(x => x.WithIntervalInSeconds(seconds).RepeatForever()).Build());
+
+        /// <summary>
+        /// 创建trigger
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
         protected ITrigger BuildTrigger(Func<TriggerBuilder, ITrigger> func) => func(TriggerBuilder.Create());
     }
 }
