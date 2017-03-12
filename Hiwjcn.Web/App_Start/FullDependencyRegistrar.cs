@@ -17,6 +17,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
+using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.App_Start
 {
@@ -24,8 +25,16 @@ namespace Hiwjcn.Web.App_Start
     {
         public void Register(ref ContainerBuilder builder)
         {
+            var tps = new
+            {
+                web = this.GetType(),
+                framework = typeof(UserBaseController),
+                service = typeof(MyService),
+                core = typeof(EntityDB)
+            };
+
             //注册控制器
-            builder.RegisterControllers(this.GetType().Assembly);
+            builder.RegisterControllers(tps.web.Assembly);
             //Aop拦截
             builder.RegisterType<AopLogError>();
             //缓存
@@ -43,8 +52,10 @@ namespace Hiwjcn.Web.App_Start
 
             #region 任务调度
             //自动注册调度任务
-            var jobTypes = typeof(WebCore.MvcLib.Controller.UserBaseController).Assembly.GetTypes().ToArray();
-            jobTypes = jobTypes.Where(x => x.IsAssignableTo<QuartzJobBase>() && !x.IsAbstract).ToArray();
+            var jobTypes = tps.framework.Assembly.GetTypes().ToArray();
+            jobTypes = jobTypes.Where(x => x.IsAssignableTo<QuartzJobBase>()
+            && !x.IsAbstract
+            && !x.IsInterface).ToArray();
             if (ValidateHelper.IsPlumpList(jobTypes))
             {
                 builder.RegisterTypes(jobTypes).As<QuartzJobBase>();
@@ -53,7 +64,7 @@ namespace Hiwjcn.Web.App_Start
 
             #region 注册Data
             //注册数据访问层
-            foreach (var t in typeof(EntityDB).Assembly.GetTypes())
+            foreach (var t in tps.core.Assembly.GetTypes())
             {
                 if (t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(EFRepository<>))
                 {
@@ -71,7 +82,7 @@ namespace Hiwjcn.Web.App_Start
             #endregion
 
             #region 注册service
-            var serviceAss = typeof(MyService).Assembly;
+            var serviceAss = tps.service.Assembly;
             //注册service
             foreach (var t in serviceAss.GetTypes())
             {
