@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Lib.extension
 {
+    /// <summary>
+    /// 基于polly实现的一些执行策略
+    /// </summary>
     public static class PollyExtension
     {
         /// <summary>

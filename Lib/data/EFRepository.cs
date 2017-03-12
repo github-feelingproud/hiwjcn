@@ -39,7 +39,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
             int count = 0;
-            PrepareSession(db =>
+            _EFManager.PrepareSession(db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -59,15 +59,18 @@ namespace Lib.data
         public async Task<int> AddAsync(params T[] models)
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
-            using (var db = this._EFManager.GetDbContext())
+            int count = 0;
+            await _EFManager.PrepareSessionAsync(async db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
                 {
                     set.Add(m);
                 }
-                return await db.SaveChangesAsync();
-            }
+                count = await db.SaveChangesAsync();
+                return true;
+            });
+            return count;
         }
         #endregion
 
@@ -81,7 +84,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
             int count = 0;
-            PrepareSession(db =>
+            _EFManager.PrepareSession(db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -125,7 +128,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
             int count = 0;
-            PrepareSession(db =>
+            _EFManager.PrepareSession(db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -170,12 +173,26 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(keys)) { throw new Exception("参数为空"); }
             T model = default(T);
-            PrepareSession((db) =>
+            _EFManager.PrepareSession((db) =>
             {
                 model = db.Set<T>().Find(keys);
                 return true;
             });
             return model;
+        }
+
+        /// <summary>
+        /// 异步查找
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public async Task<T> GetByKeysAsync(params object[] keys)
+        {
+            if (!ValidateHelper.IsPlumpList(keys)) { throw new Exception("参数为空"); }
+            using (var db = _EFManager.GetDbContext())
+            {
+                return await db.Set<T>().FindAsync(keys);
+            }
         }
 
         /// <summary>

@@ -21,6 +21,7 @@ namespace Lib.data
         int Update(params T[] models);
         Task<int> UpdateAsync(params T[] models);
         T GetByKeys(params object[] keys);
+        Task<T> GetByKeysAsync(params object[] keys);
         List<T> QueryList<OrderByColumnType>(
             Expression<Func<T, bool>> where,
             Expression<Func<T, OrderByColumnType>> orderby = null,

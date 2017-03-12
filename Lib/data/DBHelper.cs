@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Lib.ioc;
 using Lib.helper;
+using Lib.extension;
 using System.Configuration;
 
 namespace Lib.data
@@ -36,7 +37,8 @@ namespace Lib.data
                 con = AppContext.GetObject<IDbConnection>();
             }
             con.ConnectionString = ConStr;
-            con.Open();
+            //打开链接，重试两次
+            new Action(() => { con.Open(); }).InvokeWithRetry(2);
             return con;
         }
         /// <summary>

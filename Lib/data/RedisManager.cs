@@ -10,6 +10,14 @@ using System.Threading;
 
 namespace Lib.data
 {
+    /*
+     个人觉得对NoSql数据库的操作不要使用异步，因为本身响应就很快，不会阻塞
+     
+     个人觉得对NoSql数据库的操作不要使用异步，因为本身响应就很快，不会阻塞
+     
+     个人觉得对NoSql数据库的操作不要使用异步，因为本身响应就很快，不会阻塞
+         */
+
     /// <summary>
     /// redis基类，实现序列化和反序列化
     /// </summary>

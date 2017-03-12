@@ -244,7 +244,7 @@
     <Compile Include="io\ZipHelper.cs" />
     <Compile Include="log\RedisLogAppender.cs" />
     <Compile Include="io\FileModel.cs" />
-    <Compile Include="data\IDBTable.cs" />
+    <Compile Include="data\DBTable.cs" />
     <Compile Include="mvc\AutoFacControllerFactory.cs" />
     <Compile Include="mvc\BaseController.cs" />
     <Compile Include="mvc\inject\InjectAttribute.cs" />

@@ -9,6 +9,7 @@ using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lib.data
 {
@@ -114,6 +115,18 @@ namespace Lib.data
             }
         }
 
+        public async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        {
+            using (var db = GetDbContext())
+            {
+                //执行回调
+                if (!(await callback.Invoke(db)))
+                {
+                    //执行失败
+                }
+            }
+        }
+
         /// <summary>
         /// 准备IQueryable用于linq查询
         /// Where方法里不是func而是expression，
@@ -141,6 +154,28 @@ namespace Lib.data
                     query = session.Set<T>().AsNoTracking();
                 }
                 return callback.Invoke(query);
+            });
+        }
+
+        public async Task PrepareIQueryableAsync<T>(Func<IQueryable<T>, bool> callback, bool track = true)
+            where T : class, IDBTable
+        {
+            await PrepareSessionAsync(async session =>
+            {
+                //用来查询，所以不要跟踪实体状态
+                //NopCommerce:
+                //Gets a table with "no tracking" enabled (EF feature) 
+                //Use it only when you load record(s) only for read-only operations
+                IQueryable<T> query = null;
+                if (track)
+                {
+                    query = session.Set<T>().AsQueryable();
+                }
+                else
+                {
+                    query = session.Set<T>().AsNoTracking();
+                }
+                return await Task.FromResult(callback.Invoke(query));
             });
         }
 
