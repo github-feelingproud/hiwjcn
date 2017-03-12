@@ -181,6 +181,7 @@
     <Compile Include="core\CircuitBreaker.cs" />
     <Compile Include="core\DelegateCollection.cs" />
     <Compile Include="core\ExceptionsCollection.cs" />
+    <Compile Include="core\LibStartUpHelper.cs" />
     <Compile Include="core\MyStringComparer.cs" />
     <Compile Include="core\LibReleaseHelper.cs" />
     <Compile Include="core\ThreadWrapper.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="helper\XmlHelper.cs" />
     <Compile Include="task\QuartzJobBase.cs" />
     <Compile Include="task\ScheduleJobModel.cs" />
+    <Compile Include="task\TaskLogger.cs" />
     <Compile Include="task\TaskManager.cs" />
     <Compile Include="TestFile.cs" />
     <Compile Include="helper\SerializationHelper.cs" />

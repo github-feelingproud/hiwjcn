@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+﻿using Lib.core;
+using Lib.extension;
+using Lib.helper;
+using Lib.ioc;
 using Quartz;
-using Quartz.Job;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
-using Quartz.Collection;
-using Lib.helper;
-using Lib.core;
-using Lib.extension;
-using Lib.ioc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lib.task
 {
@@ -75,8 +70,15 @@ namespace Lib.task
         #endregion
 
         #region 开启和关闭任务
+        /// <summary>
+        /// 初始化任务，只能调用一次
+        /// </summary>
         public static void InitTasks()
         {
+            if (manager != null)
+            {
+                throw new Exception("调度对象已经初始化");
+            }
             if (manager == null)
             {
                 lock (locker)
@@ -127,10 +129,20 @@ namespace Lib.task
         /// <summary>
         /// 关闭所有任务，请关闭task manager
         /// </summary>
-        public static void StopTasks() => manager?.Shutdown();
+        public static void Dispose() => manager?.Shutdown();
         #endregion
 
         #region 任务的手动干预
+        /// <summary>
+        /// 全部暂停
+        /// </summary>
+        public static void PauseAll() => manager.PauseAll();
+
+        /// <summary>
+        /// 全部继续
+        /// </summary>
+        public static void ResumeAll() => manager.ResumeAll();
+
         public static void PauseJob(string jobName, string groupName)
         {
             var key = JobKey.Create(jobName, groupName);

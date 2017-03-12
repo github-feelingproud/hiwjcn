@@ -16,8 +16,18 @@ namespace Lib.core
         {
             try
             {
+                //startup tasks
+                LibStartUpHelper.Dispose();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+
+            try
+            {
                 //task
-                TaskManager.StopTasks();
+                TaskManager.Dispose();
             }
             catch (Exception e)
             {
