@@ -6,7 +6,7 @@ namespace Lib.events
     /// A container for entities that are updated.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EntityUpdated<T> where T : DBTable
+    public class EntityUpdated<T> where T : IDBTable
     {
         public EntityUpdated(T entity)
         {

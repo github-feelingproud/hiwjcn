@@ -12,7 +12,7 @@ namespace Lib.infrastructure
     /// 逻辑类基类
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class ServiceBase<T> : IServiceBase<T> where T : DBTable
+    public abstract class ServiceBase<T> : IServiceBase<T> where T : class, IDBTable
     {
         /// <summary>
         /// 是否使用缓存

@@ -136,7 +136,7 @@ namespace Lib.data
         /// <param name="callback"></param>
         /// <param name="Transaction"></param>
         public void PrepareIQueryable<T>(Func<IQueryable<T>, bool> callback, bool track = true)
-            where T : DBTable
+            where T : class, IDBTable
         {
             PrepareSession(session =>
             {
@@ -158,7 +158,7 @@ namespace Lib.data
         }
 
         public async Task PrepareIQueryableAsync<T>(Func<IQueryable<T>, bool> callback, bool track = true)
-            where T : DBTable
+            where T : class, IDBTable
         {
             await PrepareSessionAsync(async session =>
             {

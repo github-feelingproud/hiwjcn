@@ -12,7 +12,7 @@ namespace Model
     /// <summary>
     /// 实体基类
     /// </summary>
-    public abstract class BaseEntity : DBTable
+    public abstract class BaseEntity : IDBTable
     {
         /// <summary>
         /// Gets or sets the entity identifier

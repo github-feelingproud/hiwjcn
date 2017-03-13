@@ -287,7 +287,10 @@ namespace Lib.net
 
                 if (ValidateHelper.IsPlumpList(data))
                 {
-                    req.ContentType = contentType;
+                    if (ValidateHelper.IsPlumpString(contentType))
+                    {
+                        req.ContentType = contentType;
+                    }
                     req.ContentLength = data.Length;
                     using (var stream = req.GetRequestStream())
                     {
