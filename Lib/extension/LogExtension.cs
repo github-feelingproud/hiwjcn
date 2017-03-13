@@ -174,6 +174,8 @@ namespace Lib.extension
             {
                 var context = HttpContext.Current;
 
+                var req_id = Com.GetRequestID();
+
                 var method = context.Request.HttpMethod;
 
                 var url = context.Request.Url.ToString();

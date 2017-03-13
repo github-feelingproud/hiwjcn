@@ -159,6 +159,9 @@ namespace Lib.mvc
         }
     }
 
+    /// <summary>
+    /// 登录
+    /// </summary>
     public class LoginResult : ActionResult
     {
         public override void ExecuteResult(ControllerContext context)
@@ -169,14 +172,19 @@ namespace Lib.mvc
             context.HttpContext.ApplicationInstance.CompleteRequest();
         }
     }
+
+    /// <summary>
+    /// 返回首页
+    /// </summary>
     public class GoHomeResult : ActionResult
     {
         public override void ExecuteResult(ControllerContext context)
         {
-            context.HttpContext.Response.Redirect("/page/home/");
+            context.HttpContext.Response.Redirect("/");
             context.HttpContext.ApplicationInstance.CompleteRequest();
         }
     }
+
     /// <summary>
     /// 301永久跳转
     /// </summary>
@@ -201,6 +209,9 @@ namespace Lib.mvc
         }
     }
 
+    /// <summary>
+    /// 无权限
+    /// </summary>
     public class Http403 : ActionResult
     {
         public override void ExecuteResult(ControllerContext context)
@@ -214,6 +225,10 @@ namespace Lib.mvc
             context.HttpContext.ApplicationInstance.CompleteRequest();
         }
     }
+
+    /// <summary>
+    /// 页面找不到
+    /// </summary>
     public class Http404 : ActionResult
     {
         public override void ExecuteResult(ControllerContext context)
@@ -227,6 +242,10 @@ namespace Lib.mvc
             context.HttpContext.ApplicationInstance.CompleteRequest();
         }
     }
+
+    /// <summary>
+    /// 服务器内部错误
+    /// </summary>
     public class Http500 : ActionResult
     {
         public override void ExecuteResult(ControllerContext context)

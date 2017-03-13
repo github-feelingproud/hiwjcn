@@ -58,6 +58,8 @@ namespace Hiwjcn.Web
         {
             try
             {
+                //关闭的时候不等待任务完成
+                TaskManager._WaitForJobsToComplete = false;
                 LibReleaseHelper.DisposeAll();
 
                 //记录程序关闭

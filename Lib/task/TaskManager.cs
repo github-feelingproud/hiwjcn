@@ -127,9 +127,14 @@ namespace Lib.task
         }
 
         /// <summary>
+        /// 关闭时是否等待任务完成
+        /// </summary>
+        public static bool? _WaitForJobsToComplete = null;
+
+        /// <summary>
         /// 关闭所有任务，请关闭task manager
         /// </summary>
-        public static void Dispose() => manager?.Shutdown();
+        public static void Dispose() => manager?.ShutdownIfStarted(_WaitForJobsToComplete ?? false);
         #endregion
 
         #region 任务的手动干预
@@ -168,4 +173,28 @@ namespace Lib.task
         }
         #endregion
     }
+
+    /// <summary>
+    /// quartz扩展
+    /// </summary>
+    public static class QuartzExtension
+    {
+        /// <summary>
+        /// 如果任务开启就关闭
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <param name="waitForJobsToComplete"></param>
+        public static void ShutdownIfStarted(this IScheduler manager, bool waitForJobsToComplete = false)
+        {
+            if (!waitForJobsToComplete)
+            {
+                $"任务关闭不会等待任务完成，肯能导致数据不完整，你可以设置{waitForJobsToComplete}来调整".AddBusinessWarnLog();
+            }
+            if (manager.IsStarted)
+            {
+                manager.Shutdown(waitForJobsToComplete);
+            }
+        }
+    }
+
 }
