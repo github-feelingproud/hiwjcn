@@ -123,7 +123,7 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static T GetObject<T>(string name = null) where T : class
+        public static T GetObject<T>(string name = null)
         {
             if (ValidateHelper.IsPlumpString(name))
             {
@@ -145,7 +145,7 @@ namespace Lib.ioc
             return GetObject<IEnumerable<T>>(name).ToArray();
         }
     }
-    
+
     /*
      1、InstancePerDependency
 

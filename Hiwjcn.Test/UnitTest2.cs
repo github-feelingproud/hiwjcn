@@ -27,6 +27,8 @@ namespace Hiwjcn.Test
     {
         public void efasync()
         {
+            var ar = new[] { new { a = 1 }, new { a = 3 } };
+
             using (var db = new EntityDB())
             {
                 //

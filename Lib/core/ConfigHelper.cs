@@ -152,4 +152,16 @@ namespace Lib.core
             }
         }
     }
+
+    public class ConfigKV
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class Config
+    {
+        public ConfigKV AppSettings { get; }
+        public ConfigKV ConnectionStrings { get; }
+    }
 }
