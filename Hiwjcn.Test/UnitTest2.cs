@@ -14,6 +14,8 @@ using Polly.Timeout;
 using Polly.Retry;
 using Polly.CircuitBreaker;
 using Lib.mq;
+using System.Linq;
+using Hiwjcn.Dal;
 
 namespace Hiwjcn.Test
 {
@@ -23,6 +25,14 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest2
     {
+        public void efasync()
+        {
+            using (var db = new EntityDB())
+            {
+                //
+            }
+        }
+
         [TestMethod]
         public void mq()
         {
