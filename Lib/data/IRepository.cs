@@ -11,7 +11,7 @@ namespace Lib.data
     /// 仓储接口
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IRepository<T> where T : IDBTable
+    public interface IRepository<T> where T : DBTable
     {
         /// <summary>
         /// 数据源选择

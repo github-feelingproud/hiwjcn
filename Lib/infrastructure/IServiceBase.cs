@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Lib.infrastructure
 {
-    public interface IServiceBase<T> where T : class, IDBTable
+    public interface IServiceBase<T> where T : DBTable
     {
         bool UseCache { get; set; }
 

@@ -16,7 +16,7 @@ namespace Lib.data
     /// 如果使用groupby查询请手写session或者iqueryable查询
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EFRepository<T> : IRepository<T> where T : class, IDBTable
+    public class EFRepository<T> : IRepository<T> where T : DBTable
     {
         public EFManager _EFManager { get; private set; }
 
