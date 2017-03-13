@@ -14,6 +14,11 @@ namespace Lib.data
     public interface IRepository<T> where T : IDBTable
     {
         /// <summary>
+        /// 数据源选择
+        /// </summary>
+        EFManager _EFManager { get; }
+
+        /// <summary>
         /// 插入
         /// </summary>
         /// <param name="models"></param>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Lib.helper;
 using Lib.data;
+using Lib.extension;
 
 namespace Model
 {
@@ -21,7 +22,7 @@ namespace Model
 
         public override string ToString()
         {
-            return JsonHelper.ObjectToJson(this);
+            return this.ToJson();
         }
 
         public override bool Equals(object obj)
