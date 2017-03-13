@@ -21,9 +21,9 @@ using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.App_Start
 {
-    public class FullDependencyRegistrar : IDependencyRegistrar
+    public class FullDependencyRegistrar : DependencyRegistrarBase
     {
-        public void Register(ref ContainerBuilder builder)
+        public override void Register(ref ContainerBuilder builder)
         {
             var tps = new
             {
@@ -52,82 +52,22 @@ namespace Hiwjcn.Web.App_Start
 
             #region 任务调度
             //自动注册调度任务
-            var jobTypes = tps.framework.Assembly.GetTypes().ToArray();
-            jobTypes = jobTypes.Where(x => x.IsAssignableTo<QuartzJobBase>()
-            && !x.IsAbstract
-            && !x.IsInterface).ToArray();
-            if (ValidateHelper.IsPlumpList(jobTypes))
-            {
-                builder.RegisterTypes(jobTypes).As<QuartzJobBase>();
-            }
+            RegTasks(ref builder, tps.framework.Assembly);
             #endregion
 
             #region 注册Data
             //注册数据访问层
-            foreach (var t in tps.core.Assembly.GetTypes())
-            {
-                if (t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(EFRepository<>))
-                {
-                    var interfaces = t.BaseType.GetInterfaces().Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRepository<>));
-                    if (interfaces?.Count() > 0)
-                    {
-                        builder.RegisterType(t).As(interfaces.ToArray());
-                    }
-                    else
-                    {
-                        builder.RegisterType(t).As(t);
-                    }
-                }
-            }
+            RegDataRepository(ref builder, tps.core.Assembly);
             #endregion
 
             #region 注册service
-            var serviceAss = tps.service.Assembly;
-            //注册service
-            foreach (var t in serviceAss.GetTypes())
-            {
-                //注册service
-                if (t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(ServiceBase<>))
-                {
-                    var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IServiceBase<>)));
-                    if (interfaces?.Count() > 0)
-                    {
-                        builder.RegisterType(t).As(interfaces.ToArray()).EnableClassInterceptors();
-                    }
-                    else
-                    {
-                        builder.RegisterType(t).As(t).EnableClassInterceptors();
-                    }
-                }
-            }
+            //逻辑代码注册
+            RegService(ref builder, true, tps.service.Assembly);
             #endregion
 
             #region 注册事件
-            var ass = new Assembly[] { serviceAss };
             //事件注册
-            var consumerType = typeof(IConsumer<>);
-            foreach (var a in ass)
-            {
-                try
-                {
-                    //找到包含consumer的类
-                    var types = a.GetTypes().Where(x => x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == consumerType));
-                    foreach (var t in types)
-                    {
-                        //找到接口
-                        var interfaces = t.GetInterfaces().Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == consumerType).ToArray();
-                        //注册到所有接口
-                        builder.RegisterType(t).As(interfaces).InstancePerLifetimeScope();
-                    }
-                }
-                catch (Exception e)
-                {
-                    //Entity Framework 6不允许get types，抛了一个异常
-                    e.AddLog("注册事件发布异常");
-                    continue;
-                }
-            }
-            builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
+            RegEvent(ref builder, tps.service.Assembly);
             #endregion
         }
     }
