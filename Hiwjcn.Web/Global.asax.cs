@@ -1,24 +1,26 @@
 ﻿using Autofac.Integration.Mvc;
 using Hiwjcn.Dal;
-using Hiwjcn.Framework.Tasks;
 using Hiwjcn.Web.App_Start;
+using Lib.core;
 using Lib.data;
+using Lib.extension;
 using Lib.helper;
 using Lib.ioc;
+using Lib.mvc;
+using Lib.task;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using Lib.extension;
-using Lib.mvc;
-using Lib.core;
-using Lib.task;
 
 namespace Hiwjcn.Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        private static Task start_up_task = null;
+
         #region Application
         protected void Application_Start()
         {
@@ -41,8 +43,13 @@ namespace Hiwjcn.Web
                 //加速首次启动EF
                 //EFManager.SelectDB(null).FastStart();
                 EFManager.FastStart<EntityDB>();
-                //启动后台服务
-                TaskManager.InitTasks();
+
+                start_up_task = Task.Run(()=>
+                {
+                    //启动后台服务
+                    TaskManager.InitTasks();
+                    //do something else
+                });
 
                 //记录程序开始
                 $"Application_Start|耗时：{(DateTime.Now - start).TotalSeconds}秒".SaveInfoLog(this.GetType());
