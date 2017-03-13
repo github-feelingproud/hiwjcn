@@ -6,6 +6,8 @@ using System;
 
 namespace Hiwjcn.Framework.Tasks
 {
+    [PersistJobDataAfterExecution]
+    [DisallowConcurrentExecution]
     public class WakeWebSiteTask : QuartzJobBase
     {
         public override string Name

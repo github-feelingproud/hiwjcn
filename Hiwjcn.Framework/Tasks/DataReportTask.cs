@@ -7,6 +7,8 @@ using System.Threading;
 
 namespace Hiwjcn.Framework.Tasks
 {
+    [PersistJobDataAfterExecution]
+    [DisallowConcurrentExecution]
     public class DataReportTask : QuartzJobBase
     {
         public override string Name
