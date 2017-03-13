@@ -16,12 +16,25 @@ namespace Lib.task
 {
     public abstract class QuartzJobBase : IJob
     {
+        /// <summary>
+        /// 任务名，不能重复
+        /// </summary>
         public abstract string Name { get; }
 
-        public abstract bool Start { get; }
+        /// <summary>
+        /// 是否自动启动
+        /// </summary>
+        public abstract bool AutoStart { get; }
 
+        /// <summary>
+        /// 调度规则
+        /// </summary>
         public abstract ITrigger Trigger { get; }
 
+        /// <summary>
+        /// 任务的具体实现
+        /// </summary>
+        /// <param name="context"></param>
         public abstract void Execute(IJobExecutionContext context);
 
         /// <summary>
@@ -31,7 +44,7 @@ namespace Lib.task
         /// <returns></returns>
         protected ITrigger TriggerWithCron(string cron) =>
             BuildTrigger(t => t.WithSchedule(CronScheduleBuilder.CronSchedule(cron)).Build());
-        
+
         /// <summary>
         /// 每天固定时间
         /// </summary>
@@ -40,6 +53,26 @@ namespace Lib.task
         /// <returns></returns>
         protected ITrigger TriggerDaily(int hour, int minute) =>
             BuildTrigger(t => t.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(hour, minute)).Build());
+
+        /// <summary>
+        /// 每月的某一时间
+        /// </summary>
+        /// <param name="dayOfMonth"></param>
+        /// <param name="hour"></param>
+        /// <param name="minute"></param>
+        /// <returns></returns>
+        protected ITrigger TriggerMonthly(int dayOfMonth, int hour, int minute) =>
+            BuildTrigger(t => t.WithSchedule(CronScheduleBuilder.MonthlyOnDayAndHourAndMinute(dayOfMonth, hour, minute)).Build());
+
+        /// <summary>
+        /// 每周某一天执行
+        /// </summary>
+        /// <param name="dayOfWeek"></param>
+        /// <param name="hour"></param>
+        /// <param name="minute"></param>
+        /// <returns></returns>
+        protected ITrigger TriggerWeekly(DayOfWeek dayOfWeek, int hour, int minute) =>
+            BuildTrigger(t => t.WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(dayOfWeek, hour, minute)).Build());
 
         /// <summary>
         /// 间隔几秒

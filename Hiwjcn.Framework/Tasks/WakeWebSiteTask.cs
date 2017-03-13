@@ -16,7 +16,7 @@ namespace Hiwjcn.Framework.Tasks
             }
         }
 
-        public override bool Start
+        public override bool AutoStart
         {
             get
             {

@@ -101,7 +101,7 @@ namespace Lib.task
             {
                 e.AddErrorLog();
             }
-            jobs = ConvertHelper.NotNullList(jobs).Where(x => x.Start).ToArray();
+            jobs = ConvertHelper.NotNullList(jobs).Where(x => x.AutoStart).ToArray();
             if (ValidateHelper.IsPlumpList(jobs))
             {
                 if (jobs.Select(x => x.Name).Distinct().Count() != jobs.Count())
