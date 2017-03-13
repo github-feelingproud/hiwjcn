@@ -60,30 +60,41 @@ namespace Lib.mvc
         }
     }
 
+    [Serializable]
+    [DataContract]
+    public class ResultMsg : ResultMsg<object>
+    { }
+
     /// <summary>
     /// 汽配龙的model
     /// </summary>
     [Serializable]
     [DataContract]
-    public class ResultMsg
+    public class ResultMsg<T>
     {
         [DataMember]
         public string UserToken { get; set; }
+
         [DataMember]
         public string SafeCode { get; set; }
+
         [DataMember]
         public bool Success { get; set; }
+
         [DataMember]
         public string ErrorCode { get; set; }
+
         [DataMember]
         public string ErrorMsg { get; set; }
+
         [DataMember]
-        public object Data { get; set; }
+        public T Data { get; set; }
+
         [DataMember]
         public int Total { get; set; }
 
         [Obsolete("使用没有参数的构造函数")]
-        public ResultMsg(object data, bool success, string errorCode, string errorMsg, string userToken)
+        public ResultMsg(T data, bool success, string errorCode, string errorMsg, string userToken)
         {
             this.Data = data;
             this.Success = success;
