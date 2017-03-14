@@ -1,22 +1,12 @@
 ﻿using Autofac;
-using Autofac.Extras.DynamicProxy;
 using Autofac.Integration.Mvc;
 using Hiwjcn.Bll;
 using Hiwjcn.Dal;
 using Lib.cache;
-using Lib.data;
-using Lib.events;
-using Lib.extension;
-using Lib.helper;
-using Lib.infrastructure;
 using Lib.ioc;
-using Lib.task;
 using MySql.Data.MySqlClient;
-using System;
 using System.Data;
 using System.Data.Entity;
-using System.Linq;
-using System.Reflection;
 using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.App_Start

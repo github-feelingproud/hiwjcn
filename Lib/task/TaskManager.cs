@@ -188,7 +188,7 @@ namespace Lib.task
         {
             if (!waitForJobsToComplete)
             {
-                $"任务关闭不会等待任务完成，肯能导致数据不完整，你可以设置{waitForJobsToComplete}来调整".AddBusinessWarnLog();
+                $"任务关闭不会等待任务完成，肯能导致数据不完整，你可以设置{nameof(waitForJobsToComplete)}来调整".AddBusinessWarnLog();
             }
             if (manager.IsStarted)
             {
