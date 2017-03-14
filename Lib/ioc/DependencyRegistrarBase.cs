@@ -154,5 +154,15 @@ namespace Lib.ioc
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
         }
 
+        /// <summary>
+        /// 注册插件的控制器
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="ass"></param>
+        protected void RegPlguinController(ref ContainerBuilder builder, params Assembly[] ass)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
