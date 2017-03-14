@@ -18,7 +18,8 @@ namespace Lib.mvc
         /// <param name="helper"></param>
         /// <param name="session_key"></param>
         /// <returns></returns>
-        public static MvcHtmlString CSRFTokenField(this HtmlHelper helper, string session_key)
+        public static MvcHtmlString CSRFTokenField(this System.Web.Mvc.HtmlHelper helper,
+            string session_key)
         {
             return MvcHtmlString.Create(ValidCSRFAttribute.CreateCSRFFieldHtml(session_key));
         }
@@ -31,7 +32,8 @@ namespace Lib.mvc
         /// <param name="pagecount"></param>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static MvcHtmlString BootstrapPaging(this HtmlHelper helper, int page, int pagecount, string url)
+        public static MvcHtmlString BootstrapPaging(this System.Web.Mvc.HtmlHelper helper,
+            int page, int pagecount, string url)
         {
             var html = PagerHelper.GetPagerHtml(page, pagecount, url);
             return MvcHtmlString.Create(html);

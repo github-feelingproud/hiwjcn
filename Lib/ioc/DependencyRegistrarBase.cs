@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
+using Autofac.Integration.Mvc;
 using Lib.cache;
 using Lib.data;
 using Lib.events;
@@ -8,6 +9,7 @@ using Lib.helper;
 using Lib.infrastructure;
 using Lib.ioc;
 using Lib.task;
+using Lib.mvc.plugin;
 using MySql.Data.MySqlClient;
 using System;
 using System.Data;
@@ -161,7 +163,18 @@ namespace Lib.ioc
         /// <param name="ass"></param>
         protected void RegPlguinController(ref ContainerBuilder builder, params Assembly[] ass)
         {
-            throw new NotImplementedException();
+            foreach (var a in ass)
+            {
+                builder.RegisterControllers(a);
+
+                var tps = a.GetTypes().Where(x => x.IsAssignableTo<BasePaymentController>()
+                && !x.IsAbstract
+                && !x.IsInterface).ToArray();
+                if (ValidateHelper.IsPlumpList(tps))
+                {
+                    builder.RegisterTypes(tps).As<BasePaymentController>();
+                }
+            }
         }
 
     }

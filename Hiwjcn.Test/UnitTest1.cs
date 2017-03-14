@@ -8,6 +8,7 @@ using System.Threading;
 using Model.User;
 using Bll;
 using Autofac;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using HtmlAgilityPack;
@@ -57,6 +58,18 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest1
     {
+        /// <summary>
+        /// tolist也是引用
+        /// </summary>
+        [TestMethod]
+        public void fsdafasdfasdfasfasdf()
+        {
+            var users = new List<UserModel>() { new UserModel() { Money = 2 }, new UserModel() { Money = 1 } };
+            var data = new { x = users.Where(x => x.Money == 2).ToList() };
+            users.Where(x => x.Money == 2).ToList().ForEach(x => x.NickName = "12");
+
+        }
+
         [TestMethod]
         public void tfasdfasfasf90()
         {
