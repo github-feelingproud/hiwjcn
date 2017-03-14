@@ -44,7 +44,7 @@ namespace Hiwjcn.Web
                 //EFManager.SelectDB(null).FastStart();
                 EFManager.FastStart<EntityDB>();
 
-                start_up_task = Task.Run(()=>
+                start_up_task = Task.Run(() =>
                 {
                     //启动后台服务
                     TaskManager.InitTasks();
