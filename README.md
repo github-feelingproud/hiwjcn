@@ -17,3 +17,5 @@
 	>各种类库...
 ###Lib项目
 https://www.nuget.org/packages/lib.com.nuget/
+###Bug反馈
+issue or hiwjcn@live.com
