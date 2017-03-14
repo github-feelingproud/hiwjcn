@@ -1,6 +1,8 @@
 ﻿using Lib.core;
+using Lib.extension;
 using Lib.mvc.plugin;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -39,6 +41,7 @@ namespace Lib.mvc.plugin
                 var dlls = Directory.GetFiles(PluginDir, "*.dll", SearchOption.AllDirectories).Select(x => new FileInfo(x)).ToList();
                 foreach (var dll in dlls)
                 {
+                    /*
                     var allass = AppDomain.CurrentDomain.GetAssemblies().Select(x => x.FullName.Split(',').FirstOrDefault()).ToList();
                     var fileNameWithoutExt = Path.GetFileNameWithoutExtension(dll.FullName);
 
@@ -52,6 +55,8 @@ namespace Lib.mvc.plugin
                         }
                     }
                     if (nextDll) { continue; }
+                    */
+                    if (IsAlreadyLoaded(dll)) { continue; }
 
                     var ass = Assembly.LoadFile(dll.FullName);
                     BuildManager.AddReferencedAssembly(ass);
@@ -62,6 +67,43 @@ namespace Lib.mvc.plugin
                 //var repeat = list.GroupBy(x => x).Select(x => new { key = x, count = x.Count() }).Where(x => x.count > 1).ToList();
 
             }
+        }
+
+        /// <summary>
+        /// Indicates whether assembly file is already loaded
+        /// </summary>
+        /// <param name="fileInfo">File info</param>
+        /// <returns>Result</returns>
+        private static bool IsAlreadyLoaded(FileInfo fileInfo)
+        {
+            //compare full assembly name
+            //var fileAssemblyName = AssemblyName.GetAssemblyName(fileInfo.FullName);
+            //foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            //{
+            //    if (a.FullName.Equals(fileAssemblyName.FullName, StringComparison.InvariantCultureIgnoreCase))
+            //        return true;
+            //}
+            //return false;
+
+            //do not compare the full assembly name, just filename
+            try
+            {
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileInfo.FullName);
+                if (fileNameWithoutExt == null)
+                    throw new Exception($"Cannot get file extension for {fileInfo.Name}");
+                foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    string assemblyName = a.FullName.Split(new char[] { ',' }).FirstOrDefault();
+                    if (fileNameWithoutExt.Equals(assemblyName, StringComparison.InvariantCultureIgnoreCase))
+                        return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Cannot validate whether an assembly is already loaded. " + e.GetInnerExceptionAsJson());
+                e.AddErrorLog();
+            }
+            return false;
         }
     }
 }

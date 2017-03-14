@@ -190,6 +190,7 @@
     <Compile Include="core\DelegateCollection.cs" />
     <Compile Include="core\ExceptionsCollection.cs" />
     <Compile Include="core\LibStartUpHelper.cs" />
+    <Compile Include="core\MimeTypes.cs" />
     <Compile Include="core\MyStringComparer.cs" />
     <Compile Include="core\LibReleaseHelper.cs" />
     <Compile Include="core\ThreadWrapper.cs" />
