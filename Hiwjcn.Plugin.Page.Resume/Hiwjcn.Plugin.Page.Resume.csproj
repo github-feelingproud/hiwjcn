@@ -98,6 +98,10 @@
       <Project>{100b0f4d-99ac-498e-88d9-39fdd796ce19}</Project>
       <Name>Hiwjcn.Service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Lib\Lib.csproj">
+      <Project>{5f8bd505-423d-400c-84c4-f9638f84cc41}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

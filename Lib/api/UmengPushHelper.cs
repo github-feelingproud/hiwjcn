@@ -10,11 +10,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using Lib.extension;
+using Polly.CircuitBreaker;
+using Polly;
 
 namespace Lib.api
 {
     public static class UmengPushHelper
     {
+        /// <summary>
+        /// 连续错误10就熔断1分钟
+        /// </summary>
+        private static readonly CircuitBreakerPolicy p = Policy.Handle<Exception>().CircuitBreaker(10, TimeSpan.FromMinutes(1));
 
         public static readonly string UMENG_PUSH_URL = ConfigurationManager.AppSettings[nameof(UMENG_PUSH_URL)] ?? "http://msg.umeng.com/api/send";
 
@@ -41,7 +47,7 @@ namespace Lib.api
             var sign = BuildSign(data_json, SK);
             var url = $"{UMENG_PUSH_URL}?sign={sign}";
 
-            var json = await HttpClientHelper.PostJsonAsync(url, post_body);
+            var json = await p.ExecuteAsync(async () => { return await HttpClientHelper.PostJsonAsync(url, post_body); });
 
             return UmengReturn.FromJson(json);
         }

@@ -6,11 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.net;
+using Polly.CircuitBreaker;
+using Polly;
 
 namespace Lib.api
 {
     public class BaiduTranslateHelper
     {
+        /// <summary>
+        /// 连续错误10就熔断1分钟
+        /// </summary>
+        private static readonly CircuitBreakerPolicy p = Policy.Handle<Exception>().CircuitBreaker(10, TimeSpan.FromMinutes(1));
+
         #region 百度翻译接口
         class BaiduTransResult
         {
@@ -47,7 +54,8 @@ namespace Lib.api
             dict["sign"] = md5;
 
             var urlparam = $"{url}?{dict.ToUrlParam()}";
-            trans = await HttpClientHelper.GetAsync(urlparam);
+            //trans = await HttpClientHelper.GetAsync(urlparam);
+            trans = await p.ExecuteAsync(async () => await HttpClientHelper.GetAsync(urlparam));
             if (!ValidateHelper.IsPlumpString(trans)) { throw new Exception("翻译失败"); }
             return trans;
         }
