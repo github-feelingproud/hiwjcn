@@ -24,6 +24,7 @@ namespace Hiwjcn.Web.App_Start
             };
 
             //注册控制器
+            //RegController(ref builder);
             builder.RegisterControllers(tps.web.Assembly);
             //Aop拦截
             builder.RegisterType<AopLogError>();

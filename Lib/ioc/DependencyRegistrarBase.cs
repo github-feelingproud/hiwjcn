@@ -9,6 +9,7 @@ using Lib.helper;
 using Lib.infrastructure;
 using Lib.ioc;
 using Lib.task;
+using Lib.mvc;
 using Lib.mvc.plugin;
 using MySql.Data.MySqlClient;
 using System;
@@ -154,6 +155,15 @@ namespace Lib.ioc
                 }
             }
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
+        }
+
+        protected void RegController(ref ContainerBuilder builder)
+        {
+            foreach (var a in AppDomain.CurrentDomain.ReflectionOnlyGetAssemblies())
+            {
+                if (!a.GetTypes().Any(x => x.IsAssignableTo<BaseController>() && !x.IsAbstract && !x.IsInterface)) { continue; }
+                builder.RegisterControllers(a);
+            }
         }
 
         /// <summary>

@@ -16,6 +16,7 @@ using Polly.CircuitBreaker;
 using Lib.mq;
 using System.Linq;
 using Hiwjcn.Dal;
+using Autofac;
 
 namespace Hiwjcn.Test
 {
@@ -25,6 +26,19 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest2
     {
+        [TestMethod]
+        public void fasdfasdfadsf()
+        {
+            try
+            {
+                var ass = Assembly.LoadFile(@"C:\Users\wangfengjun\Desktop\publish\bin\QPL.Pay.dll");
+                var tps = ass.GetTypes();
+            }
+            catch (Exception e)
+            { }
+        }
+
+        [TestMethod]
         public void efasync()
         {
             var ar = new[] { new { a = 1 }, new { a = 3 } };
