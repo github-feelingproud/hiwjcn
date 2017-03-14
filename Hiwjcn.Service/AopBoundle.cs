@@ -32,7 +32,7 @@ namespace Hiwjcn.Bll
                 var name = invocation.Method.Name;
                 var type = invocation.Method.ReturnType;
                 //log error
-                e.AddLog("错误");
+                e.SaveLog("错误");
             }
 
         }

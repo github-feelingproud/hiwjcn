@@ -10,6 +10,7 @@ namespace Lib.extension
 {
     public static class LogExtension
     {
+        #region exception扩展
         /// <summary>
         /// 获取深层的异常信息
         /// </summary>
@@ -29,14 +30,14 @@ namespace Lib.extension
         {
             return Com.GetExceptionMsgList(e);
         }
+        #endregion
 
         /// <summary>
         /// 使用log4net添加日志
         /// </summary>
         /// <param name="e"></param>
         /// <param name="name"></param>
-        /// <param name="prefix"></param>
-        public static void AddLog(this Exception e, string name = nameof(AddLog))
+        public static void SaveLog(this Exception e, string name)
         {
             e.GetInnerExceptionAsJson().SaveErrorLog(name);
         }
@@ -45,8 +46,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="e"></param>
         /// <param name="t"></param>
-        /// <param name="prefix"></param>
-        public static void AddLog(this Exception e, Type t)
+        public static void SaveLog(this Exception e, Type t)
         {
             e.GetInnerExceptionAsJson().SaveErrorLog(t);
         }
@@ -56,7 +56,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="name"></param>
-        public static void SaveErrorLog(this string log, string name = nameof(SaveErrorLog))
+        public static void SaveErrorLog(this string log, string name)
         {
             LogHelper.Error(name, log);
         }
@@ -75,7 +75,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="name"></param>
-        public static void SaveInfoLog(this string log, string name = nameof(SaveInfoLog))
+        public static void SaveInfoLog(this string log, string name)
         {
             LogHelper.Info(name, log);
         }
@@ -94,7 +94,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="name"></param>
-        public static void SaveWarnLog(this string log, string name = nameof(SaveWarnLog))
+        public static void SaveWarnLog(this string log, string name)
         {
             LogHelper.Warn(name, log);
         }
@@ -182,7 +182,12 @@ namespace Lib.extension
 
                 var p = context.Request.Form.ToDict().ToUrlParam();
 
-                var cookies = context.Request.Cookies.AllKeys.Select(x => new { key = x, value = context.Request.Cookies[x]?.Value });
+                var cookies = context.Request.Cookies.AllKeys.Select(x =>
+                new
+                {
+                    key = x,
+                    value = context.Request.Cookies[x]?.Value
+                });
 
                 //请求上下文信息
                 return new

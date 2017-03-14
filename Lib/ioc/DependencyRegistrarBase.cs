@@ -147,7 +147,7 @@ namespace Lib.ioc
                 catch (Exception e)
                 {
                     //Entity Framework 6不允许get types，抛了一个异常
-                    e.AddLog("注册事件发布异常");
+                    e.SaveLog("注册事件发布异常");
                     continue;
                 }
             }

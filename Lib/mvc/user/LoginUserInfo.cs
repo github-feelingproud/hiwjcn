@@ -53,7 +53,7 @@ namespace Lib.mvc.user
             }
             catch (Exception e)
             {
-                e.AddLog("获取登录额外信息错误");
+                e.SaveLog("获取登录额外信息错误");
                 return default(T);
             }
         }

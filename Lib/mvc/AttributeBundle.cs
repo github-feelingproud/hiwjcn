@@ -125,7 +125,7 @@ namespace Lib.mvc
                 var ex = filterContext.Exception;
                 if (ex != null && !filterContext.ExceptionHandled)
                 {
-                    ex.AddLog("全局捕捉到错误");
+                    ex.SaveLog("全局捕捉到错误");
                 }
                 filterContext.ExceptionHandled = true;
             }

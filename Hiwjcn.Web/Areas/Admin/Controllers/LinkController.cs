@@ -122,7 +122,7 @@ namespace WebApp.Areas.Admin.Controllers
                         }
                         catch (Exception e)
                         {
-                            e.AddLog(this.GetType());
+                            e.SaveLog(this.GetType());
                             ViewData["info"] = "上传到七牛错误";
                         }
                     }

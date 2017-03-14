@@ -69,13 +69,17 @@ namespace Lib.rpc
             {
                 this.Close();
             }
-            catch
+            catch (Exception e)
             {
+                e.AddErrorLog();
                 try
                 {
                     this.Abort();
                 }
-                catch { }
+                catch (Exception err)
+                {
+                    err.AddErrorLog();
+                }
             }
         }
     }

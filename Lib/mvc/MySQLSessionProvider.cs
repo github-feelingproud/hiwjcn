@@ -532,7 +532,7 @@ IF NOT EXISTS `my_aspnet_sessions` (
             }
             catch (Exception e)
             {
-                e.AddLog(this.GetType());
+                e.SaveLog(this.GetType());
             }
 
             lock (this)

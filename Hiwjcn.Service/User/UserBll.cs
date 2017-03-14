@@ -479,7 +479,7 @@ namespace Bll.User
             }
             catch (Exception e)
             {
-                e.AddLog(this.GetType());
+                e.SaveLog(this.GetType());
                 return "账号注册成功，但是邮件发送异常";
             }
         }
@@ -521,7 +521,7 @@ namespace Bll.User
             }
             catch (Exception e)
             {
-                e.AddLog(this.GetType());
+                e.SaveLog(this.GetType());
             }
 
             return SUCCESS;

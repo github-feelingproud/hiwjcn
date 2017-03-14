@@ -57,7 +57,7 @@ namespace Hiwjcn.Web
             }
             catch (Exception e)
             {
-                e.AddLog("网站启动异常");
+                e.SaveLog("网站启动异常");
                 throw e;
             }
         }
@@ -75,7 +75,7 @@ namespace Hiwjcn.Web
             }
             catch (Exception ex)
             {
-                ex.AddLog("网站关闭异常");
+                ex.SaveLog("网站关闭异常");
                 throw ex;
             }
         }
@@ -125,7 +125,7 @@ namespace Hiwjcn.Web
             }
             else
             {
-                ex.AddLog(this.GetType());
+                ex.SaveLog(this.GetType());
             }
         }
         #endregion

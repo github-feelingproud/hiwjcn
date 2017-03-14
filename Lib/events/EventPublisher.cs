@@ -44,7 +44,7 @@ namespace Lib.events
             }
             catch (Exception e)
             {
-                e.AddLog(this.GetType());
+                e.SaveLog(this.GetType());
             }
         }
 

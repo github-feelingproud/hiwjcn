@@ -57,9 +57,9 @@ namespace Lib.cache
                     }
                     catch (Exception ex)
                     {
-                        ex.AddLog(typeof(CacheManager));
+                        ex.SaveLog(typeof(CacheManager));
                     }
-                    e.AddLog(typeof(CacheManager));
+                    e.SaveLog(typeof(CacheManager));
                 }
             }
             return dataSource.Invoke();
