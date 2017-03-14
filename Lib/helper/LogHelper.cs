@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Lib.io;
-using System.Reflection;
-using System.IO;
-using Common.Logging;
+﻿using Common.Logging;
+using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace Lib.helper
 {
@@ -47,14 +42,21 @@ namespace Lib.helper
         /// <param name="t"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public static void Error(Type t, string msg)
+        public static void Error(Type t, string msg, Exception err = null)
         {
             try
             {
                 Config();
 
                 var logger = LogManager.GetLogger(t);
-                logger.Error(msg);
+                if (err == null)
+                {
+                    logger.Error(msg);
+                }
+                else
+                {
+                    logger.Error(msg, err);
+                }
             }
             catch (Exception e)
             {
@@ -66,14 +68,21 @@ namespace Lib.helper
         /// </summary>
         /// <param name="name"></param>
         /// <param name="msg"></param>
-        public static void Error(string name, string msg)
+        public static void Error(string name, string msg, Exception err = null)
         {
             try
             {
                 Config();
 
                 var logger = LogManager.GetLogger(name);
-                logger.Error(msg);
+                if (err == null)
+                {
+                    logger.Error(msg);
+                }
+                else
+                {
+                    logger.Error(msg, err);
+                }
             }
             catch (Exception e)
             {

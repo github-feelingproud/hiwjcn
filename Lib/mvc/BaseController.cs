@@ -188,8 +188,7 @@ namespace Lib.mvc
                 }
                 else
                 {
-                    var msg = Com.GetExceptionMsgJson(e);
-                    return GetErrorResult(msg);
+                    return GetErrorResult(e.GetInnerExceptionAsJson());
                 }
             }
         }
@@ -217,8 +216,7 @@ namespace Lib.mvc
                 }
                 else
                 {
-                    var msg = e.GetInnerExceptionAsJson();
-                    return GetErrorResult(msg);
+                    return GetErrorResult(e.GetInnerExceptionAsJson());
                 }
             }
         }

@@ -1,22 +1,13 @@
-﻿using System;
+﻿using Lib.core;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Text;
-using System.Data;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Web.Security;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Collections;
-using System.Web.SessionState;
-using System.Security;
-using Lib.core;
-using Lib.net;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Data.Common;
-using Lib.extension;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Lib.helper
 {
@@ -37,6 +28,10 @@ namespace Lib.helper
             list.Add(e?.InnerException?.Message);
             list.Add(e?.InnerException?.InnerException?.Message);
             list.Add(e?.InnerException?.InnerException?.InnerException?.Message);
+
+            //ef报错不在innerexception里
+            try { if (e != null) { list.Add(JsonHelper.ObjectToJson(e)); } } catch { }
+
             return list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
         }
 
@@ -47,6 +42,11 @@ namespace Lib.helper
         /// <returns></returns>
         public static string GetExceptionMsgJson(Exception e) => JsonHelper.ObjectToJson(GetExceptionMsgList(e));
 
+        /// <summary>
+        /// 运行命令行
+        /// </summary>
+        /// <param name="cmds"></param>
+        /// <returns></returns>
         public static string RunExec(params string[] cmds)
         {
             using (var p = new System.Diagnostics.Process())
