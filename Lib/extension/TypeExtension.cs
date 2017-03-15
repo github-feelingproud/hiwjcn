@@ -19,5 +19,16 @@ namespace Lib.extension
         {
             return a.GetTypes().Where(x => x.BaseType != null && x.BaseType == typeof(T)).ToList();
         }
+
+        /// <summary>
+        /// 是否可以赋值给
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static bool IsAssignableTo_<T>(this Type t)
+        {
+            return typeof(T).IsAssignableFrom(t);
+        }
     }
 }
