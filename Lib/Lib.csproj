@@ -209,6 +209,7 @@
     <Compile Include="events\IConsumer.cs" />
     <Compile Include="events\IEventPublisher.cs" />
     <Compile Include="extension\AdoExtension.cs" />
+    <Compile Include="extension\CommonExtension.cs" />
     <Compile Include="extension\DateTimeExtension.cs" />
     <Compile Include="extension\ConvertExtension.cs" />
     <Compile Include="extension\ElasticsearchExtension.cs" />

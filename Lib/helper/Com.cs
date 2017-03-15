@@ -29,10 +29,15 @@ namespace Lib.helper
             list.Add(e?.InnerException?.InnerException?.Message);
             list.Add(e?.InnerException?.InnerException?.InnerException?.Message);
 
-            //ef报错不在innerexception里
-            try { if (e != null) { list.Add(JsonHelper.ObjectToJson(e)); } } catch { }
+            list = list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
 
-            return list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
+            if (list.Count <= 1)
+            {
+                //ef报错不在innerexception里
+                try { if (e != null) { list.Add(JsonHelper.ObjectToJson(e)); } } catch { }
+            }
+
+            return list;
         }
 
         /// <summary>
