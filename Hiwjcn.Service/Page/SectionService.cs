@@ -60,7 +60,12 @@ namespace WebLogic.Bll.Page
         /// <returns></returns>
         public SectionModel GetSection(string name, string section_type = null)
         {
-            return GetSections(new string[] { name }, section_type)?[0];
+            var list = GetSections(new string[] { name }, section_type);
+            if (ValidateHelper.IsPlumpList(list))
+            {
+                return list[0];
+            }
+            return null;
         }
 
         /// <summary>
@@ -71,7 +76,7 @@ namespace WebLogic.Bll.Page
         public List<SectionModel> GetSections(string[] names = null, string section_type = null, string rel_group = null, int maxcount = 100)
         {
             if (names == null) { names = new string[] { }; }
-            string key = Com.GetCacheKey($"{nameof(PageService)}.{nameof(GetSections)}",
+            string key = GetCacheKey($"{nameof(PageService)}.{nameof(GetSections)}",
                 string.Join("|", names), section_type, rel_group, maxcount.ToString());
             return Cache(key, () =>
             {

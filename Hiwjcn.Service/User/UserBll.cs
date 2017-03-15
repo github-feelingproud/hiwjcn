@@ -5,7 +5,6 @@ using Hiwjcn.Core.Infrastructure.User;
 using Lib.helper;
 using Lib.core;
 using Lib.extension;
-using Lib.helper;
 using Lib.io;
 using Lib.net;
 using Model.User;
@@ -146,7 +145,12 @@ namespace Bll.User
         /// <returns></returns>
         public UserModel GetByID(int userID)
         {
-            return GetUserByIDS(userID)?[0];
+            var list = GetUserByIDS(userID);
+            if (ValidateHelper.IsPlumpList(list))
+            {
+                return list[0];
+            }
+            return null;
         }
 
         /// <summary>
@@ -535,8 +539,7 @@ namespace Bll.User
         /// <returns></returns>
         private List<UserModel> GetRolesForUserList(List<UserModel> list)
         {
-            if (!ValidateHelper.IsPlumpList(list)) { return null; }
-            var useridlist = list.Select(x => x.UserID).Distinct().ToArray();
+            var useridlist = list.Select(x => x.UserID).ToArray();
 
             //读取角色
             var userrolemaplist = _UserRoleDal.GetList(x => useridlist.Contains(x.UserID));
