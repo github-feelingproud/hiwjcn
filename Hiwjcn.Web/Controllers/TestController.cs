@@ -6,6 +6,8 @@ using Lib.extension;
 using Lib.helper;
 using Lib.mvc.user;
 using Model.User;
+using Polly;
+using Polly.CircuitBreaker;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,6 +32,70 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher = pub;
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
+        }
+
+
+        private static CircuitBreakerPolicy p = Policy.Handle<Exception>().CircuitBreaker(5, TimeSpan.FromSeconds(30));
+
+        public ActionResult breaker()
+        {
+            return RunAction(() =>
+            {
+                new Action(() =>
+                {
+                    Thread.Sleep(1000 * 3);
+                    bool i = true;
+                    if (i) { throw new Exception("测试执行错误"); }
+                }).InvokeWithCircuitBreaker(ref p);
+
+                return Content("");
+            });
+        }
+
+        private static readonly CircuitBreakerPolicy pp = Policy.Handle<Exception>().CircuitBreaker(5, TimeSpan.FromSeconds(30));
+
+        public ActionResult breaker_1()
+        {
+            return RunAction(() =>
+            {
+                new Action(() =>
+                {
+                    Thread.Sleep(1000 * 3);
+                    bool i = true;
+                    if (i) { throw new Exception("测试执行错误"); }
+                }).InvokeWithCircuitBreaker(pp);
+
+                return Content("");
+            });
+        }
+
+        public ActionResult timeout()
+        {
+            return RunAction(() =>
+            {
+                new Action(() =>
+                {
+                    Thread.Sleep(1000 * 10);
+                }).InvokeWithTimeOut(2);
+                return Content("");
+            });
+        }
+
+        public ActionResult retry()
+        {
+            return RunAction(() =>
+            {
+                int retryCount = 0;
+                new Action(() =>
+                {
+                    ++retryCount;
+                    if (retryCount < 3)
+                    {
+                        throw new Exception("出错，再试");
+                    }
+                }).InvokeWithRetry(5);
+                return Content($"retrycount:{retryCount}");
+            });
         }
 
         public ActionResult Log()

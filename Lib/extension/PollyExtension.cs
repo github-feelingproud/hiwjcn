@@ -72,6 +72,19 @@ namespace Lib.extension
         /// <param name="policy"></param>
         public static void InvokeWithCircuitBreaker(this Action action, ref CircuitBreakerPolicy policy)
         {
+            action.InvokeWithCircuitBreaker(policy);
+        }
+
+        /// <summary>
+        /// 熔断，policy必须是全局的
+        /// 线程安全：
+        /// https://github.com/App-vNext/Polly/wiki/Circuit-Breaker#thread-safety-and-locking
+        /// polly内部实现是线程安全的，但是如果你的委托不是线程安全的，那这个操作就不是线程安全的
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="policy"></param>
+        public static void InvokeWithCircuitBreaker(this Action action, CircuitBreakerPolicy policy)
+        {
             policy.Execute(() =>
             {
                 action();
