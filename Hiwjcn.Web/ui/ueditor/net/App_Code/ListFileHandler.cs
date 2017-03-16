@@ -24,7 +24,9 @@ public class ListFileManager : Handler
 
     public override void Process()
     {
-        var loginuser = AccountHelper.User.GetLoginUser(Context);
+        var logincontext = AppContext.GetObject<LoginStatus>();
+
+        var loginuser = logincontext.GetLoginUser(Context);
         if (loginuser == null)
         {
             State = "没有登陆";

@@ -1,6 +1,7 @@
 ﻿using Lib.core;
 using Lib.extension;
 using Lib.helper;
+using Lib.ioc;
 using Lib.net;
 using System;
 using System.Collections.Generic;
@@ -99,7 +100,7 @@ namespace Lib.mvc.user
             {
                 if (data.data != null)
                 {
-                    AccountHelper.SSO.SetUserLogin(loginuser: data.data);
+                    AppContext.GetObject<LoginStatus>().SetUserLogin(loginuser: data.data);
                     return new RedirectResult(redirect_url);
                 }
                 else

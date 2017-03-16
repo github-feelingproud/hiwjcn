@@ -2,6 +2,7 @@
 using Hiwjcn.Framework;
 using Lib.core;
 using Lib.helper;
+using Lib.ioc;
 using Lib.mvc;
 using Lib.mvc.user;
 using Model.User;
@@ -18,12 +19,19 @@ namespace Hiwjcn.Web.Controllers
         private bool UseSSO = false;
 
         private IUserService _IUserService { get; set; }
+
         private ILoginLogService _LoginErrorLogBll { get; set; }
 
-        public AccountController(IUserService user, ILoginLogService loginlog)
+        private LoginStatus _LoginStatus { get; set; }
+
+        public AccountController(
+            IUserService user,
+            ILoginLogService loginlog,
+            LoginStatus logincontext)
         {
             this._IUserService = user;
             this._LoginErrorLogBll = loginlog;
+            this._LoginStatus = logincontext;
         }
 
         /// <summary>
@@ -67,7 +75,7 @@ namespace Hiwjcn.Web.Controllers
                 if (model != null && model.UserToken?.Length > 0)
                 {
                     //记录登录状态
-                    AccountHelper.User.SetUserLogin(loginuser: new LoginUserInfo() { });
+                    AppContext.GetObject<LoginStatus>().SetUserLogin(loginuser: new LoginUserInfo() { });
                     return GetJson(new { success = true, msg = "登陆成功" });
                 }
                 //登录错误，记录错误记录
@@ -174,18 +182,18 @@ namespace Hiwjcn.Web.Controllers
                     return GoToPostChildCallBack(url, callback);
                 }
 
-                var email = AccountHelper.User.GetCookieUID();
-                var token = AccountHelper.User.GetCookieToken();
+                var email = _LoginStatus.GetCookieUID();
+                var token = _LoginStatus.GetCookieToken();
                 if (ValidateHelper.IsAllPlumpString(email, token))
                 {
                     var model = _IUserService.LoginByToken(email, token);
                     //如果通过token登陆成功
                     if (model != null && model.UserToken != null)
                     {
-                        AccountHelper.User.SetUserLogin(loginuser: new LoginUserInfo() { });
+                        _LoginStatus.SetUserLogin(loginuser: new LoginUserInfo() { });
                         return GoToPostChildCallBack(url, callback);
                     }
-                    AccountHelper.User.SetUserLogout();
+                    _LoginStatus.SetUserLogout();
                 }
                 return View();
             });
@@ -199,7 +207,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return RunAction(() =>
             {
-                AccountHelper.User.SetUserLogout();
+                _LoginStatus.SetUserLogout();
                 return View();
             });
         }
@@ -297,7 +305,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return RunAction(() =>
             {
-                AccountHelper.User.SetUserLogout();
+                _LoginStatus.SetUserLogout();
                 return GoHome();
             });
         }
@@ -349,9 +357,9 @@ namespace Hiwjcn.Web.Controllers
             if (data != null && data.success && data.data != null)
             {
                 //如果当前已经登陆就先退出
-                if (this.X.LoginUser != null) { AccountHelper.User.SetUserLogout(); }
+                if (this.X.LoginUser != null) { _LoginStatus.SetUserLogout(); }
                 //记录登陆状态并跳转
-                AccountHelper.User.SetUserLogin(loginuser: data.data);
+                _LoginStatus.SetUserLogin(loginuser: data.data);
                 return string.Empty;
             }
             else

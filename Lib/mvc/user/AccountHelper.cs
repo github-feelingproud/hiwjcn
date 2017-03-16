@@ -6,10 +6,15 @@ using System.Web.SessionState;
 
 namespace Lib.mvc.user
 {
+    public interface ILoginStatus
+    {
+        //
+    }
+
     /// <summary>
     /// 登录状态存取
     /// </summary>
-    public class LoginStatus : IRequiresSessionState
+    public class LoginStatus : ILoginStatus, IRequiresSessionState
     {
         //COOKIE
         public string COOKIE_LOGIN_UID { get; private set; }
@@ -227,7 +232,7 @@ namespace Lib.mvc.user
         {
             get
             {
-                return CacheInstance(nameof(Trader), () =>
+                return CacheInstance(nameof(SSO), () =>
                 {
                     return new LoginStatus("SSO_UID", "SSO_TOKEN", "SSO_SESSION", domain);
                 });

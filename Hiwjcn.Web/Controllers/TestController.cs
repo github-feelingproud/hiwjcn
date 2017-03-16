@@ -106,18 +106,18 @@ namespace Hiwjcn.Web.Controllers
             return Content(DateTime.Now.ToString());
         }
 
-        public ActionResult set_cookie()
-        {
-            AccountHelper.Admin.SetUserLogin(this.X.context, new LoginUserInfo() { });
-            return Content("");
-        }
+        //public ActionResult set_cookie()
+        //{
+        //    AccountHelper.Admin.SetUserLogin(this.X.context, new LoginUserInfo() { });
+        //    return Content("");
+        //}
 
-        public ActionResult remove_cookie()
-        {
-            AccountHelper.Admin.DeleteCookie(this.X.context, true);
-            AccountHelper.Admin.DeleteCookie(this.X.context, false);
-            return Content("");
-        }
+        //public ActionResult remove_cookie()
+        //{
+        //    AccountHelper.Admin.DeleteCookie(this.X.context, true);
+        //    AccountHelper.Admin.DeleteCookie(this.X.context, false);
+        //    return Content("");
+        //}
 
         public async Task<ActionResult> tt()
         {

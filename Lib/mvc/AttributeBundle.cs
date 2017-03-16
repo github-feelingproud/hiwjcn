@@ -369,12 +369,6 @@ namespace Lib.mvc
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var loginuser = AccountHelper.User.GetLoginUser();
-            if (loginuser == null)
-            {
-                filterContext.Result = ResultHelper.BadRequest("验证重复提交必须先登录");
-                return;
-            }
             var sessionID = filterContext.HttpContext.Session.SessionID;
             var key = $"{nameof(AntiReSubmitAttribute)}:{sessionID}";
 

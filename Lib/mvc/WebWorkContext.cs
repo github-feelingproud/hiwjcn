@@ -1,4 +1,5 @@
 ﻿using Lib.mvc.user;
+using Lib.ioc;
 using System;
 using System.Web;
 
@@ -31,6 +32,10 @@ namespace Lib.mvc
         public string Url { get; private set; }
 
         #region 登录信息
+        public LoginUserInfo User { get; private set; }
+
+        public LoginUserInfo SSOUser { get; private set; }
+
         public LoginUserInfo LoginUser { get; private set; }
 
         public LoginUserInfo LoginTrader { get; private set; }
@@ -62,6 +67,8 @@ namespace Lib.mvc
 
         public void LoadLoginUser()
         {
+            this.User = AppContext.GetObject<LoginStatus>().GetLoginUser(context);
+            this.SSOUser = AccountHelper.SSO.GetLoginUser(context);
             this.LoginUser = AccountHelper.User.GetLoginUser(context);
             this.LoginTrader = AccountHelper.Trader.GetLoginUser(context);
             this.LoginSeller = AccountHelper.Seller.GetLoginUser(context);

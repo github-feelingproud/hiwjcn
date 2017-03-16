@@ -37,11 +37,13 @@ namespace WebCore.MvcLib.Controller
         [NonAction]
         private void AutoLogin()
         {
-            var loginuser = AccountHelper.User.GetLoginUser();
+            var logincontext = AppContext.GetObject<LoginStatus>();
+
+            var loginuser = logincontext.GetLoginUser();
             if (loginuser != null) { return; }
 
-            var email = AccountHelper.User.GetCookieUID();
-            var token = AccountHelper.User.GetCookieToken();
+            var email = logincontext.GetCookieUID();
+            var token = logincontext.GetCookieToken();
             if (ValidateHelper.IsAllPlumpString(email, token))
             {
                 var bll = AppContext.GetObject<IUserService>();
@@ -49,11 +51,11 @@ namespace WebCore.MvcLib.Controller
                 //如果通过token登陆成功
                 if (model != null && model.UserToken != null)
                 {
-                    AccountHelper.User.SetUserLogin(loginuser: new LoginUserInfo() { });
+                    logincontext.SetUserLogin(loginuser: new LoginUserInfo() { });
                     return;
                 }
             }
-            AccountHelper.User.SetUserLogout();
+            logincontext.SetUserLogout();
         }
 
         /// <summary>
