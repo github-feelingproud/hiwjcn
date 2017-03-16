@@ -134,7 +134,7 @@ namespace Hiwjcn.Web.Controllers
             }
 
             ViewData["token"] = loginuser.LoginToken;
-            ViewData["email"] = loginuser.Email;
+            ViewData["uid"] = loginuser.UserID;
             ViewData["url"] = url;
             ViewData["callback"] = callback;
             return View();

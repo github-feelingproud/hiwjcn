@@ -70,12 +70,21 @@ namespace Lib.mvc.user
             if (loginuser == null) { throw new Exception("登陆状态为空"); }
             if (CookieExpiresMinutes <= 0) { throw new Exception("cookie过期时间必须大于0，请修改配置"); }
 
+            if (!ValidateHelper.IsPlumpString(loginuser.UserID))
+            {
+                throw new Exception("记录登录状态失败，缺少userid");
+            }
+            if (!ValidateHelper.IsPlumpString(loginuser.LoginToken))
+            {
+                throw new Exception("记录登录状态失败，缺少token");
+            }
+
             //保存到session
             SessionHelper.SetSession(context.Session, LOGIN_USER_SESSION, loginuser);
             //保存到cookie
-            if (GetCookieUID() != loginuser.Email)
+            if (GetCookieUID() != loginuser.UserID)
             {
-                CookieHelper.SetCookie(context, COOKIE_LOGIN_UID, loginuser.Email, domain: COOKIE_DOMAIN,
+                CookieHelper.SetCookie(context, COOKIE_LOGIN_UID, loginuser.UserID, domain: COOKIE_DOMAIN,
                         expires_minutes: CookieExpiresMinutes);
             }
             if (GetCookieToken() != loginuser.LoginToken)
@@ -158,7 +167,7 @@ namespace Lib.mvc.user
             var cookie_uid = GetCookieUID(context);
             var cookie_token = GetCookieToken(context);
 
-            if (model != null && model.IID > 0 && model.Email == cookie_uid && model.LoginToken == cookie_token)
+            if (model != null && model.UserID == cookie_uid && model.LoginToken == cookie_token)
             {
                 return model;
             }
