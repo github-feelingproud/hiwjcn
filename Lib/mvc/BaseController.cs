@@ -1,6 +1,7 @@
 ﻿using Lib.core;
 using Lib.extension;
 using Lib.helper;
+using Lib.ioc;
 using Lib.mvc.user;
 using System;
 using System.Collections.Generic;
@@ -258,7 +259,7 @@ namespace Lib.mvc
                 if (loginuser == null)
                 {
                     //没有登陆就跳转登陆
-                    var redirect_url = SSOClientHelper.BuildSSOLoginUrl(this.X.Url);
+                    var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(this.X.Url);
                     return new RedirectResult(redirect_url);
                 }
                 //所需要的全部权限值

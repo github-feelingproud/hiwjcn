@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Lib.ioc;
 
 namespace Lib.mvc.user
 {
@@ -30,7 +31,7 @@ namespace Lib.mvc.user
             {
                 //没有登陆就跳转登陆
                 var url = context.Request.Url.ToString();
-                var redirect_url = SSOClientHelper.BuildSSOLoginUrl(url);
+                var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(url);
                 filterContext.Result = new RedirectResult(redirect_url);
                 return;
             }

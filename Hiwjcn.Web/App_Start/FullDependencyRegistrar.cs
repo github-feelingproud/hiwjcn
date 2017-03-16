@@ -4,6 +4,7 @@ using Hiwjcn.Bll;
 using Hiwjcn.Dal;
 using Lib.cache;
 using Lib.ioc;
+using Lib.mvc.user;
 using MySql.Data.MySqlClient;
 using System.Data;
 using System.Data.Entity;
@@ -40,6 +41,7 @@ namespace Hiwjcn.Web.App_Start
             }
             builder.RegisterType<EntityDB>().Named<DbContext>("db");
             builder.RegisterType<MySqlConnection>().As<IDbConnection>();
+            builder.RegisterType<GetLocalLoginUrl>().As<IGetLoginUrl>().SingleInstance();
 
             #region 任务调度
             //自动注册调度任务
