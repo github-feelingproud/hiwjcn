@@ -42,7 +42,7 @@ namespace Hiwjcn.Web.App_Start
             builder.RegisterType<EntityDB>().Named<DbContext>("db");
             builder.RegisterType<MySqlConnection>().As<IDbConnection>();
             builder.RegisterType<GetLocalLoginUrl>().As<IGetLoginUrl>().SingleInstance();
-            builder.RegisterInstance(new LoginStatus()).As<LoginStatus>().InstancePerRequest();
+            builder.RegisterInstance(new LoginStatus()).As<LoginStatus>().SingleInstance();
 
             #region 任务调度
             //自动注册调度任务
