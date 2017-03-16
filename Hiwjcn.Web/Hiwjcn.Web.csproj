@@ -252,7 +252,6 @@
     <Content Include="ui\jq-plus\datepicker\css\bootstrap-datepicker3.standalone.min.css" />
     <Content Include="ui\jq-plus\datepicker\js\bootstrap-datepicker.min.js" />
     <Content Include="ui\jq-plus\datepicker\locales\bootstrap-datepicker.zh-CN.min.js" />
-    <Content Include="ui\jq-plus\jquery.lazyload.js" />
     <Content Include="ui\jq-plus\layer\extend\layer.ext.js" />
     <Content Include="ui\jq-plus\layer\layer.js" />
     <Content Include="ui\jq-plus\layer\skin\default\icon-ext.png" />
@@ -297,7 +296,6 @@
     <Content Include="ui\jq-plus\ztree\js\jquery.ztree.exedit-3.5.min.js" />
     <Content Include="ui\jq-plus\ztree\js\jquery.ztree.exhide-3.5.min.js" />
     <Content Include="ui\jq\jquery-1.10.1.min.js" />
-    <Content Include="ui\js\is.js" />
     <Content Include="ui\ueditor\dialogs\anchor\anchor.html" />
     <Content Include="ui\ueditor\dialogs\attachment\attachment.css" />
     <Content Include="ui\ueditor\dialogs\attachment\attachment.html" />

@@ -221,6 +221,20 @@ namespace Lib.mvc.user
         }
 
         /// <summary>
+        /// SSO
+        /// </summary>
+        public static LoginStatus SSO
+        {
+            get
+            {
+                return CacheInstance(nameof(Trader), () =>
+                {
+                    return new LoginStatus("SSO_UID", "SSO_TOKEN", "SSO_SESSION", domain);
+                });
+            }
+        }
+
+        /// <summary>
         /// 卖家
         /// </summary>
         public static LoginStatus Trader
