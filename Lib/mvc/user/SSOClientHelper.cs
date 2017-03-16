@@ -15,6 +15,9 @@ namespace Lib.mvc.user
 {
     public static class SSOClientHelper
     {
+        /// <summary>
+        /// 检查单点登录配置
+        /// </summary>
         public static void CheckSSOConfig()
         {
             var list = new List<string>();
@@ -83,5 +86,37 @@ namespace Lib.mvc.user
             return info;
         }
 
+        /// <summary>
+        /// 登录回调
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="uid"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<ActionResult> GetCallBackResult(string url, string uid, string token)
+        {
+            var redirect_url = url;
+            var data = await GetCheckTokenResult(uid, token);
+            if (data == null)
+            {
+                return new ContentResult() { Content = "返回数据无法解析" };
+            }
+            if (data.success)
+            {
+                if (data.data != null)
+                {
+                    AccountHelper.User.SetUserLogin(loginuser: data.data);
+                    return new RedirectResult(redirect_url);
+                }
+                else
+                {
+                    return new ContentResult() { Content = "服务器返回了错误的数据" };
+                }
+            }
+            else
+            {
+                return new ContentResult() { Content = data.message };
+            }
+        }
     }
 }

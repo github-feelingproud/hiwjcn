@@ -23,12 +23,14 @@ namespace Lib.mvc.user
         {
             SSOClientHelper.CheckSSOConfig();
 
-            var user = AccountHelper.User.GetLoginUser(HttpContext.Current);
+            var context = HttpContext.Current;
+
+            var user = AccountHelper.User.GetLoginUser(context);
             if (user == null)
             {
                 //没有登陆就跳转登陆
-                var cur_url = filterContext.HttpContext.Server.UrlEncode(filterContext.HttpContext.Request.Url.ToString());
-                var cb_url = filterContext.HttpContext.Server.UrlEncode(ConfigHelper.Instance.CallBackUrl);
+                var cur_url = context.Server.UrlEncode(context.Request.Url.ToString());
+                var cb_url = context.Server.UrlEncode(ConfigHelper.Instance.CallBackUrl);
                 var redirect_url = $"{ConfigHelper.Instance.SSOLoginUrl}?url={cur_url}&callback={cb_url}";
                 filterContext.Result = new RedirectResult(redirect_url);
                 return;
@@ -49,7 +51,7 @@ namespace Lib.mvc.user
                         {
                             re = new JsonResult()
                             {
-                                Data = new { Success = false, ErrorMsg = "没有权限", ErrorCode = p },
+                                Data = new ResJson() { Success = false, ErrorMsg = "没有权限", ErrorCode = p },
                                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
                             };
                         }
