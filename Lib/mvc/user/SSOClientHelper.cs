@@ -23,9 +23,9 @@ namespace Lib.mvc.user
             var list = new List<string>();
             var config = ConfigHelper.Instance;
 
-            if (!ValidateHelper.IsPlumpString(config.CallBackUrl))
+            if (!ValidateHelper.IsPlumpString(config.WebToken))
             {
-                list.Add(nameof(config.CallBackUrl));
+                list.Add(nameof(config.WebToken));
             }
             if (!ValidateHelper.IsPlumpString(config.SSOLoginUrl))
             {
@@ -117,6 +117,18 @@ namespace Lib.mvc.user
             {
                 return new ContentResult() { Content = data.message };
             }
+        }
+
+        /// <summary>
+        /// 构造SSO登录地址
+        /// </summary>
+        /// <param name="current_url"></param>
+        /// <returns></returns>
+        public static string BuildSSOLoginUrl(string current_url)
+        {
+            var config = ConfigHelper.Instance;
+            current_url = EncodingHelper.UrlEncode(current_url);
+            return $"{config.SSOLoginUrl}?url={current_url}&web_token={config.WebToken}";
         }
     }
 }

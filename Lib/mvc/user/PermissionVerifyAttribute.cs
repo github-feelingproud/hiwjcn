@@ -29,9 +29,8 @@ namespace Lib.mvc.user
             if (user == null)
             {
                 //没有登陆就跳转登陆
-                var cur_url = context.Server.UrlEncode(context.Request.Url.ToString());
-                var cb_url = context.Server.UrlEncode(ConfigHelper.Instance.CallBackUrl);
-                var redirect_url = $"{ConfigHelper.Instance.SSOLoginUrl}?url={cur_url}&callback={cb_url}";
+                var url = context.Request.Url.ToString();
+                var redirect_url = SSOClientHelper.BuildSSOLoginUrl(url);
                 filterContext.Result = new RedirectResult(redirect_url);
                 return;
             }

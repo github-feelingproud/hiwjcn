@@ -258,11 +258,7 @@ namespace Lib.mvc
                 if (loginuser == null)
                 {
                     //没有登陆就跳转登陆
-                    var config = ConfigHelper.Instance;
-
-                    var url = EncodingHelper.UrlEncode(this.X.Url);
-                    var callback = EncodingHelper.UrlEncode(this.X.BaseUrl + config.CallBackUrl);
-                    var redirect_url = config.SSOLoginUrl + $"?url={url}&callback={callback}";
+                    var redirect_url = SSOClientHelper.BuildSSOLoginUrl(this.X.Url);
                     return new RedirectResult(redirect_url);
                 }
                 //所需要的全部权限值

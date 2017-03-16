@@ -31,7 +31,7 @@ namespace Lib.core
             this.SSOLoginUrl = ConfigurationManager.AppSettings[nameof(SSOLoginUrl)];
             this.SSOLogoutUrl = ConfigurationManager.AppSettings[nameof(SSOLogoutUrl)];
             this.CheckLoginInfoUrl = ConfigurationManager.AppSettings[nameof(CheckLoginInfoUrl)];
-            this.CallBackUrl = ConfigurationManager.AppSettings[nameof(CallBackUrl)];
+            this.WebToken = ConfigurationManager.AppSettings[nameof(WebToken)];
             this.DefaultRedirectUrl = ConfigurationManager.AppSettings[nameof(DefaultRedirectUrl)];
 
             this.CookieDomain = ConfigurationManager.AppSettings[nameof(CookieDomain)];
@@ -67,7 +67,7 @@ namespace Lib.core
 
         public virtual string RedisConnectionString { get; private set; }
 
-        public virtual string CallBackUrl { get; private set; }
+        public virtual string WebToken { get; private set; }
 
         public virtual string SSOLoginUrl { get; private set; }
 
