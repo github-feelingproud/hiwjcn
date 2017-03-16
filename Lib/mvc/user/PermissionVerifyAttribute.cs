@@ -26,7 +26,7 @@ namespace Lib.mvc.user
 
             var context = HttpContext.Current;
 
-            var user = AccountHelper.User.GetLoginUser(context);
+            var user = AppContext.GetObject<IGetLoginUser>().GetLoginUser(context);
             if (user == null)
             {
                 //没有登陆就跳转登陆

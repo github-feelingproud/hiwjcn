@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using System.Net;
-using System.Net.Http;
+﻿using Lib.core;
+using Lib.extension;
 using Lib.helper;
-using Lib.core;
 using Lib.net;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Lib.mvc.user
 {
@@ -71,15 +67,13 @@ namespace Lib.mvc.user
 
             CheckLoginInfoData info = null;
 
-            await HttpClientHelper.SendHttpRequestAsync(checkUrl, dict, null, null, RequestMethodEnum.POST, 10, async (res) =>
+            await HttpClientHelper.SendHttpRequestAsync(checkUrl, dict, null, null,
+                RequestMethodEnum.POST, 10, async (res) =>
             {
-                if (res.IsSuccessStatusCode)
+                var json = await res.Content.ReadAsStringAsync();
+                if (ValidateHelper.IsPlumpString(json))
                 {
-                    var json = await res.Content.ReadAsStringAsync();
-                    if (ValidateHelper.IsAllPlumpString(json))
-                    {
-                        info = JsonHelper.JsonToEntity<CheckLoginInfoData>(json);
-                    }
+                    info = json.JsonToEntity<CheckLoginInfoData>();
                 }
             });
 
@@ -105,7 +99,7 @@ namespace Lib.mvc.user
             {
                 if (data.data != null)
                 {
-                    AccountHelper.User.SetUserLogin(loginuser: data.data);
+                    AccountHelper.SSO.SetUserLogin(loginuser: data.data);
                     return new RedirectResult(redirect_url);
                 }
                 else

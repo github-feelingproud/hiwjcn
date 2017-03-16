@@ -278,6 +278,7 @@
     <Compile Include="mvc\user\CheckLoginInfoData.cs" />
     <Compile Include="mvc\HtmlExtensions.cs" />
     <Compile Include="mvc\user\IGetLoginUrl.cs" />
+    <Compile Include="mvc\user\IGetLoginUser.cs" />
     <Compile Include="mvc\user\LoginUserInfo.cs" />
     <Compile Include="mvc\MySQLSessionProvider.cs" />
     <Compile Include="mvc\user\PermissionVerifyAttribute.cs" />

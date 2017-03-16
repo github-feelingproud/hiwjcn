@@ -15,12 +15,12 @@ namespace Lib.mvc.user
     {
         public LoginUserInfo() { }
 
-        [Obsolete("推荐使用UserUID关联")]
+        [Obsolete("计划废止，推荐使用UserID")]
         public virtual int IID { get; set; }
 
-        [Obsolete("计划废止，推荐使用UserUID")]
         public virtual string UserID { get; set; }
 
+        [Obsolete("计划废止，推荐使用UserID")]
         public virtual string UserUID
         {
             get { return this.UserID; }
@@ -29,6 +29,7 @@ namespace Lib.mvc.user
 
         public virtual string NickName { get; set; }
 
+        [Obsolete("不作为ID使用，推荐使用UserID")]
         public virtual string Email { get; set; }
 
         public virtual string HeadImgUrl { get; set; }
