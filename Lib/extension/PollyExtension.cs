@@ -31,7 +31,18 @@ namespace Lib.extension
         /// <param name="retryCount"></param>
         public static void InvokeWithRetry(this Action action, int retryCount)
         {
-            Policy.Handle<Exception>().Retry(retryCount).Execute(() =>
+            InvokeWithRetry<Exception>(action, retryCount);
+        }
+
+        /// <summary>
+        /// 重试多次
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="retryCount"></param>
+        public static void InvokeWithRetry<T>(this Action action, int retryCount) where T : Exception
+        {
+            Policy.Handle<T>().Retry(retryCount).Execute(() =>
             {
                 action();
             });
@@ -42,9 +53,10 @@ namespace Lib.extension
         /// </summary>
         /// <param name="action"></param>
         /// <param name="seconds"></param>
-        public static void InvokeWithTimeOut(this Action action, int seconds)
+        public static void InvokeWithTimeOut(this Action action, int seconds, TimeoutStrategy? strategy = null)
         {
-            Policy.Timeout(seconds, TimeoutStrategy.Pessimistic).Execute(() =>
+            strategy = strategy ?? TimeoutStrategy.Pessimistic;
+            Policy.Timeout(seconds, strategy.Value).Execute(() =>
             {
                 action();
             });
@@ -63,6 +75,22 @@ namespace Lib.extension
             policy.Execute(() =>
             {
                 action();
+            });
+        }
+
+        /// <summary>
+        /// 熔断，policy必须是全局的
+        /// 线程安全：
+        /// https://github.com/App-vNext/Polly/wiki/Circuit-Breaker#thread-safety-and-locking
+        /// polly内部实现是线程安全的，但是如果你的委托不是线程安全的，那这个操作就不是线程安全的
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="policy"></param>
+        public static async Task InvokeWithCircuitBreakerAsync(this Func<Task> action, CircuitBreakerPolicy policy)
+        {
+            await policy.ExecuteAsync(async () =>
+            {
+                await action();
             });
         }
 
