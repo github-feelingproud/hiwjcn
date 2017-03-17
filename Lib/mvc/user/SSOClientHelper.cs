@@ -67,16 +67,12 @@ namespace Lib.mvc.user
             dict["token"] = token;
 
             CheckLoginInfoData info = null;
-
-            await HttpClientHelper.SendHttpRequestAsync(checkUrl, dict, null, null,
-                RequestMethodEnum.POST, 10, async (res) =>
+            
+            var json = await HttpClientHelper.PostAsync(checkUrl, dict, 15);
+            if (ValidateHelper.IsPlumpString(json))
             {
-                var json = await res.Content.ReadAsStringAsync();
-                if (ValidateHelper.IsPlumpString(json))
-                {
-                    info = json.JsonToEntity<CheckLoginInfoData>();
-                }
-            });
+                info = json.JsonToEntity<CheckLoginInfoData>();
+            }
 
             return info;
         }
