@@ -46,32 +46,33 @@ namespace Lib.helper
             }
         }
 
+        /// <summary>
+        /// 读取文件MD5
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static string GetFileMD5(string fileName)
         {
-            FileStream file = null; MD5 md5 = null;
-            try
+            using (var file = new FileStream(fileName, FileMode.Open))
             {
-                file = new FileStream(fileName, System.IO.FileMode.Open);
-                md5 = new MD5CryptoServiceProvider();
-                var bs = md5.ComputeHash(file);
-                var sb = new StringBuilder();
-                foreach (var b in bs)
+                using (var md5 = new MD5CryptoServiceProvider())
                 {
-                    sb.Append(b.ToString("x2"));
+                    var bs = md5.ComputeHash(file);
+                    var sb = new StringBuilder();
+                    foreach (var b in bs)
+                    {
+                        sb.Append(b.ToString("x2"));
+                    }
+                    return sb.ToString();
                 }
-                return sb.ToString();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                if (md5 != null) { md5.Dispose(); }
-                if (file != null) { file.Dispose(); }
             }
         }
 
+        /// <summary>
+        /// 获取sha1
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public static string GetSHA1(string str)
         {
             using (SHA1 sha1 = new SHA1CryptoServiceProvider())
@@ -83,6 +84,12 @@ namespace Lib.helper
             }
         }
 
+        /// <summary>
+        /// 获取hmac md5
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public static string GetHMACMD5(string str, string password)
         {
             using (var hmac_md5 = new HMACMD5())
@@ -94,6 +101,12 @@ namespace Lib.helper
             }
         }
 
+        /// <summary>
+        /// 获取hmac sha1
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public static string GetHMACSHA1(string str, string password)
         {
             using (var hmac_sha1 = new HMACSHA1())

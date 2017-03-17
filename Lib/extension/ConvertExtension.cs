@@ -86,6 +86,16 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 转为md5
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static string ToMD5(this string data)
+        {
+            return SecureHelper.GetMD5(data);
+        }
+
+        /// <summary>
         /// 转为json 
         /// </summary>
         /// <param name="data"></param>
