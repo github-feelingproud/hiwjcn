@@ -306,8 +306,8 @@ namespace Lib.mvc
                 filterContext.Result = ResultHelper.BadRequest("缺少时间戳");
                 return;
             }
-            var req_time = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(timespan);
-            if ((DateTime.Now - req_time).TotalSeconds > 5)
+            var server_timestamp = DateTimeHelper.GetTimeStamp();
+            if (server_timestamp - timespan > 5 || server_timestamp < timespan)
             {
                 filterContext.Result = ResultHelper.BadRequest("请求内容已经过期");
                 return;
@@ -334,11 +334,11 @@ namespace Lib.mvc
                 dict[p] = ConvertHelper.GetString(reqparams[p]);
             }
 
-            var strdata = string.Join("&", dict.Select(x => x.Key + "=" + x.Value));
+            var strdata = dict.ToUrlParam();
             strdata += sign_key;
             strdata = strdata.ToLower();
 
-            var md5 = ConvertHelper.GetString(SecureHelper.GetMD5(strdata)).Trim().ToUpper();
+            var md5 = strdata.ToMD5().ToUpper();
             if (sign != md5)
             {
                 var msg = $"服务器加密：{md5}客户端加密：{sign}服务器排序：{strdata}";

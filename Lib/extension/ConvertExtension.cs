@@ -10,7 +10,7 @@ namespace Lib.extension
     public static class ConvertExtension
     {
         /// <summary>
-        /// 字典变url格式
+        /// 字典变url格式(a=1&b=3)
         /// </summary>
         /// <param name="dict"></param>
         /// <returns></returns>

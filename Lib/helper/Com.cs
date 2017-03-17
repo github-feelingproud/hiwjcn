@@ -628,7 +628,7 @@ namespace Lib.helper
         }
 
         /// <summary>
-        /// 把字典转换为URL参数
+        /// 字典变url格式(a=1&b=3)
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
