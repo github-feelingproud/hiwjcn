@@ -4,6 +4,7 @@ using Hiwjcn.Bll;
 using Hiwjcn.Dal;
 using Lib.cache;
 using Lib.ioc;
+using Lib.core;
 using Lib.mvc.user;
 using MySql.Data.MySqlClient;
 using System.Data;
@@ -39,6 +40,7 @@ namespace Hiwjcn.Web.App_Start
             {
                 builder.RegisterType<MemoryCacheProvider>().As<ICacheProvider>().SingleInstance();
             }
+            builder.RegisterType<BasicConfigProvider>().As<ISettings>().SingleInstance();
             builder.RegisterType<EntityDB>().Named<DbContext>("db");
             builder.RegisterType<MySqlConnection>().As<IDbConnection>();
             builder.RegisterType<GetLocalLoginUrl>().As<IGetLoginUrl>().SingleInstance();

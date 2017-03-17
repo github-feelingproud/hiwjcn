@@ -7,18 +7,88 @@ using System.Configuration;
 using Lib.core;
 using Lib.helper;
 using Lib.extension;
+using Lib.ioc;
 
 namespace Lib.core
 {
     /// <summary>
+    /// 设置
+    /// </summary>
+    public interface ISettings
+    {
+        List<string> AllowDomains { get; }
+
+        string ComDbConStr { get; }
+
+        string MySqlConnectionString { get; }
+
+        string MsSqlConnectionString { get; }
+
+        string RedisConnectionString { get; }
+
+        string WebToken { get; }
+
+        string SSOLoginUrl { get; }
+
+        string SSOLogoutUrl { get; }
+
+        string CheckLoginInfoUrl { get; }
+
+        string DefaultRedirectUrl { get; }
+
+        string CookieDomain { get; }
+
+        string SmptServer { get; }
+
+        string SmptLoginName { get; }
+
+        string SmptPassWord { get; }
+
+        string SmptSenderName { get; }
+
+        string SmptEmailAddress { get; }
+
+        string FeedBackEmail { get; }
+
+        string QiniuAccessKey { get; }
+
+        string QiniuSecretKey { get; }
+
+        string QiniuBucketName { get; }
+
+        string QiniuBaseUrl { get; }
+        /// <summary>
+        /// 账户登录cookie保存分钟
+        /// </summary>
+        int CookieExpiresMinutes { get; }
+
+        /// <summary>
+        /// 缓存失效时间
+        /// </summary>
+        int CacheExpiresMinutes { get; }
+        /// <summary>
+        /// 是否是调试状态
+        /// </summary>
+        bool IsDebug { get; }
+        /// <summary>
+        /// 是否加载插件
+        /// </summary>
+        bool LoadPlugin { get; }
+        /// <summary>
+        /// 系统默认编码
+        /// </summary>
+        Encoding SystemEncoding { get; }
+    }
+
+    /// <summary>
     /// 加载当前上下文项目config文件中的配置
     /// </summary>
-    public class ConfigStore
+    public class BasicConfigProvider : ISettings
     {
         /// <summary>
         /// 从web.config中加载配置
         /// </summary>
-        public ConfigStore()
+        public BasicConfigProvider()
         {
             this.AllowDomains = ConfigurationManager.AppSettings[nameof(AllowDomains)]?.Split(',')?.ToList();
             if (this.AllowDomains == null) { this.AllowDomains = new List<string>(); }
@@ -122,11 +192,439 @@ namespace Lib.core
     }
 
     /// <summary>
+    /// 基于json的实现
+    /// </summary>
+    public class JsonConfigProvider : ISettings
+    {
+        public List<string> AllowDomains
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int CacheExpiresMinutes
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string CheckLoginInfoUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string ComDbConStr
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string CookieDomain
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int CookieExpiresMinutes
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DefaultRedirectUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string FeedBackEmail
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool IsDebug
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool LoadPlugin
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string MsSqlConnectionString
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string MySqlConnectionString
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string QiniuAccessKey
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string QiniuBaseUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string QiniuBucketName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string QiniuSecretKey
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string RedisConnectionString
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptEmailAddress
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptLoginName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptPassWord
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptSenderName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptServer
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SSOLoginUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SSOLogoutUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Encoding SystemEncoding
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string WebToken
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 基于xml的实现
+    /// </summary>
+    public class XmlConfigProvider : ISettings
+    {
+        public List<string> AllowDomains
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int CacheExpiresMinutes
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string CheckLoginInfoUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string ComDbConStr
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string CookieDomain
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int CookieExpiresMinutes
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DefaultRedirectUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string FeedBackEmail
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool IsDebug
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool LoadPlugin
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string MsSqlConnectionString
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string MySqlConnectionString
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string QiniuAccessKey
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string QiniuBaseUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string QiniuBucketName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string QiniuSecretKey
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string RedisConnectionString
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptEmailAddress
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptLoginName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptPassWord
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptSenderName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SmptServer
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SSOLoginUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string SSOLogoutUrl
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Encoding SystemEncoding
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string WebToken
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
+
+    /// <summary>
     /// 加载当前上下文项目config文件中的配置
     /// </summary>
     public static class ConfigHelper
     {
-        private static ConfigStore ins = null;
+        private static ISettings ins = null;
 
         private static readonly object locker = new object();
 
@@ -134,7 +632,7 @@ namespace Lib.core
         /// 获取单例
         /// </summary>
         /// <returns></returns>
-        public static ConfigStore Instance
+        public static ISettings Instance
         {
             get
             {
@@ -144,24 +642,12 @@ namespace Lib.core
                     {
                         if (ins == null)
                         {
-                            ins = new ConfigStore();
+                            ins = new BasicConfigProvider();
                         }
                     }
                 }
                 return ins;
             }
         }
-    }
-
-    public class ConfigKV
-    {
-        public string Key { get; set; }
-        public string Value { get; set; }
-    }
-
-    public class Config
-    {
-        public ConfigKV AppSettings { get; }
-        public ConfigKV ConnectionStrings { get; }
     }
 }

@@ -53,7 +53,7 @@ namespace Hiwjcn.Web
 
                 //记录程序开始
                 $"Application_Start|耗时：{(DateTime.Now - start).TotalSeconds}秒".SaveInfoLog(this.GetType());
-                "记录数据库的日志".AddBusinessInfoLog();
+                //"记录数据库的日志".AddBusinessInfoLog();
             }
             catch (Exception e)
             {
