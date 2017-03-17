@@ -25,6 +25,13 @@ namespace Lib.mvc
     }
 
     /// <summary>
+    /// 接口公共返回值的缩写
+    /// </summary>
+    [Serializable]
+    [DataContract]
+    public class _ : ResJson { }
+
+    /// <summary>
     /// json格式
     /// </summary>
     [Serializable]
