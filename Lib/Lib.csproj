@@ -199,6 +199,8 @@
     <Compile Include="core\LibReleaseHelper.cs" />
     <Compile Include="core\ThreadWrapper.cs" />
     <Compile Include="data\DBHelper.cs" />
+    <Compile Include="data\EFExtension.cs" />
+    <Compile Include="data\EFMappingBase.cs" />
     <Compile Include="data\EFRepository.cs" />
     <Compile Include="data\EFManager.cs" />
     <Compile Include="data\RedisManager.cs" />

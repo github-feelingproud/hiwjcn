@@ -1,16 +1,13 @@
-﻿using Hiwjcn.Core.Model.EFMapping;
-using Hiwjcn.Core.Model.Sys;
+﻿using Hiwjcn.Core.Model.Sys;
 using Lib.core;
+using Lib.data;
 using Model;
 using Model.Category;
 using Model.Sys;
 using Model.User;
-using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Linq;
-using System.Reflection;
 using WebLogic.Model.Page;
 using WebLogic.Model.Sys;
 using WebLogic.Model.Tag;
@@ -72,13 +69,7 @@ namespace Hiwjcn.Dal
             //手动注册
             //modelBuilder.Configurations.Add(new UserModelMapping());
             //通过反射自动注册
-            var tps = Assembly.GetAssembly(typeof(BaseEntity)).GetTypes().Where(x => x.BaseType != null && x.BaseType.IsGenericType && x.BaseType.GetGenericTypeDefinition() == typeof(MappingBase<>));
-            foreach (var t in tps)
-            {
-                dynamic configurationInstance = Activator.CreateInstance(t);
-                //mapping
-                modelBuilder.Configurations.Add(configurationInstance);
-            }
+            modelBuilder.RegisterTableFluentMapping(this.GetType().Assembly);
 
             base.OnModelCreating(modelBuilder);
         }
