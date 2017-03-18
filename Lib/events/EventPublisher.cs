@@ -55,6 +55,11 @@ namespace Lib.events
         /// <param name="eventMessage">Event message</param>
         public virtual void Publish<T>(T eventMessage)
         {
+            if (!AppContext.IsRegistered<IConsumer<T>>())
+            {
+                $"无法触发事件，没有再ioc中注册{typeof(IConsumer<T>)}的实例".AddBusinessInfoLog();
+                return;
+            }
             var subscriptions = AppContext.GetAllObject<IConsumer<T>>();
             subscriptions.ToList().ForEach(x => PublishToConsumer(x, eventMessage));
         }
