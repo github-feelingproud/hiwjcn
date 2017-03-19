@@ -1,22 +1,60 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using Lib.ioc;
+using Lib.helper;
 
 namespace Lib.data
 {
+    /// <summary>
+    /// EF mapping的方式
+    /// </summary>
+    public enum EFConfigEnum : int
+    {
+        Attribute = 1,
+        Fluent = 2
+    }
+
+    /// <summary>
+    /// EF配置
+    /// </summary>
+    public interface IEFConfig
+    {
+        string ConnectionString { get; }
+
+        bool LazyLoad { get; }
+
+        bool ValidModelWhenSave { get; }
+
+        int CommandTimeoutSeconds { get; }
+
+        EFConfigEnum ConfigType { get; }
+
+        Assembly[] EntityAssemblies { get; }
+
+        void AddLog(string log);
+    }
+
+    /// <summary>
+    /// 通过ioc创建实例
+    /// </summary>
     public class EFEntityDB : DbContext
     {
-        public EFEntityDB() : base("")
-        {
-            this.Configuration.LazyLoadingEnabled = false;
-            this.Configuration.ValidateOnSaveEnabled = false;
+        private readonly IEFConfig _config;
 
-            this.Database.CommandTimeout = 3;
-            this.Database.Log = (log) =>
-            {
-                //if (!ValidateHelper.IsPlumpString(log)) { return; }
-                //LogHelper.Error(typeof(EntityDB), "EF日志：\n" + log);
-            };
+        public EFEntityDB(IEFConfig config) : base(config.ConnectionString)
+        {
+            this._config = config;
+
+            this.Configuration.LazyLoadingEnabled = _config.LazyLoad;
+            this.Configuration.ValidateOnSaveEnabled = _config.ValidModelWhenSave;
+
+            this.Database.CommandTimeout = _config.CommandTimeoutSeconds;
+
+            this.Database.Log = new Action<string>(_config.AddLog);
         }
 
         /// <summary>
@@ -28,13 +66,25 @@ namespace Lib.data
             //不在表名后加s或者es
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
 
-            bool UseThis = false;
-            if (!UseThis) { return; }
+            var ass = this._config.EntityAssemblies;
+            if (!ValidateHelper.IsPlumpList(ass))
+            {
+                throw new Exception("EF:实体程序集不允许为空");
+            }
 
-            //手动注册
-            //modelBuilder.Configurations.Add(new UserModelMapping());
-            //通过反射自动注册
-            modelBuilder.RegisterTableFluentMapping(this.GetType().Assembly);
+            var mappingType = this._config.ConfigType;
+            if (mappingType == EFConfigEnum.Attribute)
+            {
+                modelBuilder.RegisterTableAttributeMapping(ass);
+            }
+            else if (mappingType == EFConfigEnum.Fluent)
+            {
+                modelBuilder.RegisterTableFluentMapping(ass);
+            }
+            else
+            {
+                throw new Exception("EF:不支持的mapping方式");
+            }
 
             base.OnModelCreating(modelBuilder);
         }
