@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using Lib.helper;
+using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using Lib.ioc;
-using Lib.helper;
+using System.Data.Entity.SqlServer;
+using System.Reflection;
 
 namespace Lib.data
 {
@@ -37,6 +36,21 @@ namespace Lib.data
 
         void AddLog(string log);
     }
+
+    /// <summary>
+    /// 备注一下：通过这种方式可以配置DefaultConnectionFactory
+    /// 通过DbConfigurationType标签可以添加到EFDBCONTEXT上
+    /// https://msdn.microsoft.com/en-us/data/jj680699
+    /// </summary>
+    public class MyConfiguration : DbConfiguration
+    {
+        public MyConfiguration()
+        {
+            SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
+            SetDefaultConnectionFactory(new LocalDbConnectionFactory("v11.0"));
+        }
+    }
+
 
     /// <summary>
     /// 通过ioc创建实例
