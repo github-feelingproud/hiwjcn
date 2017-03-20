@@ -12,6 +12,11 @@ namespace Lib.distributed
     /// </summary>
     public class ZooKeeperClientSection : ConfigurationSection
     {
+        public static ZooKeeperClientSection FromSection(string name)
+        {
+            return (ZooKeeperClientSection)ConfigurationManager.GetSection(name);
+        }
+
         [ConfigurationProperty(nameof(SessionTimeOut), IsRequired = true)]
         public int SessionTimeOut
         {

@@ -178,6 +178,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="ZooKeeperNet, Version=3.4.6.1, Culture=neutral, PublicKeyToken=fefd2c046da35b56, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZooKeeper.Net.3.4.6.2\lib\net40\ZooKeeperNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="zxing, Version=1.0.4727.18517, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ZXing.2.1.1\lib\net20\zxing.dll</HintPath>
       <Private>True</Private>
@@ -205,12 +209,15 @@
     <Compile Include="data\EFRepository.cs" />
     <Compile Include="data\EFManager.cs" />
     <Compile Include="data\RedisManager.cs" />
+    <Compile Include="data\SerializeBase.cs" />
     <Compile Include="distributed\DistributedLockClient.cs" />
+    <Compile Include="distributed\IDistributedLock.cs" />
     <Compile Include="distributed\RedisDistributedLock.cs" />
     <Compile Include="distributed\ZooKeeperClient.cs" />
     <Compile Include="distributed\ZooKeeperClientSection.cs" />
     <Compile Include="distributed\ZooKeeperConfigurationClient.cs" />
     <Compile Include="distributed\ZooKeeperConfigurationManager.cs" />
+    <Compile Include="distributed\ZooKeeperLock.cs" />
     <Compile Include="events\EntityDeleted.cs" />
     <Compile Include="events\EntityInserted.cs" />
     <Compile Include="events\EntityUpdated.cs" />
@@ -218,6 +225,7 @@
     <Compile Include="events\IConsumer.cs" />
     <Compile Include="events\IEventPublisher.cs" />
     <Compile Include="extension\AdoExtension.cs" />
+    <Compile Include="extension\CollectionExtension.cs" />
     <Compile Include="extension\CommonExtension.cs" />
     <Compile Include="extension\DateTimeExtension.cs" />
     <Compile Include="extension\ConvertExtension.cs" />

@@ -18,7 +18,7 @@ namespace Lib.cache
     /// <summary>
     /// »º´æ»ùÀà
     /// </summary>
-    public abstract class CacheBase : RedisBase
+    public abstract class CacheBase : SerializeBase
     {
         //
     }
