@@ -86,6 +86,16 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// true为1，false为0
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static int ToBoolInt(this object data)
+        {
+            return data.ToBool() ? 1 : 0;
+        }
+
+        /// <summary>
         /// 转为md5
         /// </summary>
         /// <param name="data"></param>
