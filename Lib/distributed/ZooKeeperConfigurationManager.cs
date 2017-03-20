@@ -62,5 +62,10 @@ namespace Lib.distributed
         {
             return _configurationClient.GetValue(section, key);
         }
+
+        public static void Dispose()
+        {
+            _configurationClient?.Dispose();
+        }
     }
 }

@@ -26,7 +26,7 @@ namespace Lib.distributed
             cancellationToken.ThrowIfCancellationRequested();
 
             if (_semaphore != null)
-                throw new DistributedLockException("锁释放前不能重复锁");
+                throw new Exception("锁释放前不能重复锁");
 
             _semaphore = new SemaphoreSlim(0, 1);
 
@@ -56,7 +56,7 @@ namespace Lib.distributed
             cancellationToken.ThrowIfCancellationRequested();
 
             if (_semaphore != null)
-                throw new DistributedLockException("锁释放前不能重复锁");
+                throw new Exception("锁释放前不能重复锁");
 
             _semaphore = new SemaphoreSlim(0, 1);
 

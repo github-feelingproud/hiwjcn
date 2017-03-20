@@ -10,11 +10,11 @@ namespace Lib.distributed
     /// <summary>
     /// zookeeper配置
     /// </summary>
-    public class ZooKeeperClientSection : ConfigurationSection
+    public class ZooKeeperConfigSection : ConfigurationSection
     {
-        public static ZooKeeperClientSection FromSection(string name)
+        public static ZooKeeperConfigSection FromSection(string name)
         {
-            return (ZooKeeperClientSection)ConfigurationManager.GetSection(name);
+            return (ZooKeeperConfigSection)ConfigurationManager.GetSection(name);
         }
 
         [ConfigurationProperty(nameof(SessionTimeOut), IsRequired = true)]

@@ -1,4 +1,5 @@
 ﻿using Lib.data;
+using Lib.distributed;
 using Lib.extension;
 using Lib.ioc;
 using Lib.mq;
@@ -68,6 +69,16 @@ namespace Lib.core
             {
                 //关闭rabbitmq
                 ElasticsearchHelper.Dispose();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+
+            try
+            {
+                //zookeeper config
+                ZooKeeperConfigurationManager.Dispose();
             }
             catch (Exception e)
             {

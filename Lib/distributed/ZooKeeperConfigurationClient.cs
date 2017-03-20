@@ -7,23 +7,20 @@ using System.Threading.Tasks;
 
 namespace Lib.distributed
 {
-    /// <summary>从ZooKeeper读取配置</summary>
+    /// <summary>
+    /// 从ZooKeeper读取配置
+    /// </summary>
     public class ZooKeeperConfigurationClient : ZooKeeperClient
     {
         private readonly string _path;
         private IDictionary<string, IDictionary<string, string>> _configSource;
 
-        #region ctor
-        /// <summary>ctor</summary>
-        /// <param name="configurationName">配置节点名称，默认zookeeper</param>
-        /// <param name="path">路径</param>
         public ZooKeeperConfigurationClient(string configurationName, string path) : base(configurationName)
         {
             _path = path;
 
             OnDataChanged += client => ReinitConfig();
         }
-        #endregion
 
         public Action OnConfigChanged;
 
@@ -42,10 +39,12 @@ namespace Lib.distributed
         {
             var values = new NameValueCollection();
             if (_configSource != null && _configSource.ContainsKey(section))
+            {
                 foreach (var item in _configSource[section])
                 {
                     values[item.Key] = item.Value;
                 }
+            }
             return values;
         }
     }

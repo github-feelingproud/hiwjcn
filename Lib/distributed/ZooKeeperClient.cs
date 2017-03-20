@@ -21,9 +21,9 @@ namespace Lib.distributed
 
         private ManualResetEvent _resetEvent = new ManualResetEvent(false);
 
-        public ZooKeeperClient(string configurationName = "zookeeper") : this(ZooKeeperClientSection.FromSection(configurationName)) { }
+        public ZooKeeperClient(string configurationName = "zookeeper") : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
-        public ZooKeeperClient(ZooKeeperClientSection configuration) : this(configuration.Server, configuration.SessionTimeOut) { }
+        public ZooKeeperClient(ZooKeeperConfigSection configuration) : this(configuration.Server, configuration.SessionTimeOut) { }
 
         public ZooKeeperClient(string server, int sessionTimeOut)
         {

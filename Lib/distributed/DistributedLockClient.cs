@@ -13,36 +13,24 @@ namespace Lib.distributed
     {
         private readonly string _basePath;
 
-        #region ctor
-        /// <summary>ctor</summary>
-        /// <param name="key">锁Key</param>
-        public DistributedLockClient(string key) : this(key, DefaultConfigurationName) { }
-        /// <summary>ctor</summary>
-        /// <param name="key">锁Key</param>
-        /// <param name="configurationName">配置节点名称，默认distributedLock</param>
-        public DistributedLockClient(string key, string configurationName) : this(key, ZooKeeperClientSection.FromSection(configurationName)) { }
-        /// <summary>ctor</summary>
-        /// <param name="key">锁Key</param>
-        /// <param name="configuration">配置</param>
-        public DistributedLockClient(string key, ZooKeeperClientSection configuration) : base(configuration)
+
+        public DistributedLockClient(string key) : this(key, "zookeeper") { }
+
+        public DistributedLockClient(string key, string configurationName) : this(key, ZooKeeperConfigSection.FromSection(configurationName)) { }
+        
+        public DistributedLockClient(string key, ZooKeeperConfigSection configuration) : base(configuration)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
 
             _basePath = configuration.DistributedLockPath + "/" + key.ToMD5();
         }
-        #endregion
-
-        /// <summary>是否是主</summary>
-        public bool IsMaster => _preNo == null;
-
-        /// <summary>Master变动事件通知</summary>
+        
         public Action<DistributedLockClient> OnMasterChanged;
 
         private string _sequenceNo;
         private string _preNo;
-
-        /// <summary></summary>
+        
         public void Lock()
         {
             if (_sequenceNo == null)
