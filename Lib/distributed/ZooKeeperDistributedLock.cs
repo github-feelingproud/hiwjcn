@@ -6,72 +6,50 @@ using System.Threading.Tasks;
 using Lib.extension;
 using ZooKeeperNet;
 using System.Threading;
+using System.Diagnostics;
+using Lib.helper;
 
 namespace Lib.distributed
 {
-    public class DistributedLockClient : ZooKeeperClient
+    public class ZooKeeperDistributedLock : ZooKeeperClient, IDistributedLock
     {
         private readonly string _basePath;
 
+        public ZooKeeperDistributedLock(string key) : this(key, "zookeeper") { }
 
-        public DistributedLockClient(string key) : this(key, "zookeeper") { }
+        public ZooKeeperDistributedLock(string key, string configurationName) :
+            this(key, ZooKeeperConfigSection.FromSection(configurationName))
+        { }
 
-        public DistributedLockClient(string key, string configurationName) : this(key, ZooKeeperConfigSection.FromSection(configurationName)) { }
-        
-        public DistributedLockClient(string key, ZooKeeperConfigSection configuration) : base(configuration)
+        public ZooKeeperDistributedLock(string key, ZooKeeperConfigSection configuration) : base(configuration)
         {
-            if (string.IsNullOrEmpty(key))
+            if (!ValidateHelper.IsPlumpString(key))
+            {
                 throw new ArgumentNullException(nameof(key));
+            }
 
             _basePath = configuration.DistributedLockPath + "/" + key.ToMD5();
         }
-        
-        public Action<DistributedLockClient> OnMasterChanged;
 
-        private string _sequenceNo;
-        private string _preNo;
-        
+        public Action<ZooKeeperDistributedLock> OnMasterChanged { get; set; }
+
+        private string _sequenceNo { get; set; }
+        private string _preNo { get; set; }
+
         public void Lock()
         {
             if (_sequenceNo == null)
-                AlwaysRun(() =>
+            {
+                new Action(() =>
                 {
                     CreatePersistentPath(_basePath);
                     _sequenceNo = CreateSequential(_basePath + "/", false);
-                }, 5);
+                }).InvokeWithRetry(5);
+            }
             else
                 throw new Exception("锁释放前不能重复锁");
 
             Task.Run(new Action(Revote));
-        }
-
-        private void AlwaysRun(Action action, int times)
-        {
-            var counter = 0;
-            do
-            {
-                try
-                {
-                    action();
-
-                    break;
-                }
-                catch (KeeperException.ConnectionLossException ex)
-                {
-                    ex.AddErrorLog();
-                    Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(1.5, counter++ - 5)));
-                }
-                catch (KeeperException.NodeExistsException ex)
-                {
-                    ex.AddErrorLog();
-                    counter++;
-                }
-                catch (KeeperException.NoNodeException ex)
-                {
-                    ex.AddErrorLog();
-                    counter++;
-                }
-            } while (counter < times);
         }
 
         private void Revote()
@@ -82,9 +60,13 @@ namespace Lib.distributed
             _preNo = children.Where(node => string.CompareOrdinal(node, _sequenceNo) < 0).OrderByDescending(node => node).FirstOrDefault();
 
             if (_preNo == null)
+            {
                 OnMasterChanged?.Invoke(this);
+            }
             else if (_sequenceNo != null)
+            {
                 Watch(_basePath + "/" + _preNo, new DistributedLockWatcher(Revote));
+            }
         }
 
         public void Release()
@@ -94,7 +76,11 @@ namespace Lib.distributed
 
             try
             {
-                AlwaysRun(() => DeleteNode(_basePath + "/" + _sequenceNo), 5);
+                new Action(() =>
+                {
+                    DeleteNode(_basePath + "/" + _sequenceNo);
+                }).InvokeWithRetry(5);
+
                 DeleteNode(_basePath);
             }
             catch (Exception ex)

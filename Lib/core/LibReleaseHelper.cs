@@ -47,16 +47,6 @@ namespace Lib.core
 
             try
             {
-                //IOC
-                AppContext.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
-            try
-            {
                 //关闭rabbitmq
                 RabbitMQClient.DefaultClient.Dispose();
             }
@@ -78,7 +68,17 @@ namespace Lib.core
             try
             {
                 //zookeeper config
-                ZooKeeperConfigurationManager.Dispose();
+                //ZooKeeperConfigurationManager.Dispose();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+
+            try
+            {
+                //IOC
+                AppContext.Dispose();
             }
             catch (Exception e)
             {

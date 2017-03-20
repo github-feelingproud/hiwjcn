@@ -23,23 +23,22 @@ namespace Lib.distributed
 
         public ZooKeeperClient(string configurationName = "zookeeper") : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
-        public ZooKeeperClient(ZooKeeperConfigSection configuration) : this(configuration.Server, configuration.SessionTimeOut) { }
-
-        public ZooKeeperClient(string server, int sessionTimeOut)
+        public ZooKeeperClient(ZooKeeperConfigSection configuration)
         {
-            if (!ValidateHelper.IsPlumpString(server))
+            if (!ValidateHelper.IsPlumpString(configuration.Server))
             {
                 throw new ArgumentNullException("zookeeper server can not be empty");
             }
 
-            ConnectionLossTimeout = sessionTimeOut;
+            ConnectionLossTimeout = configuration.SessionTimeOut;
 
-            _zookeeper = new ZooKeeper(server, TimeSpan.FromMilliseconds(sessionTimeOut), new ZooKeeperWatcher(this));
+            _zookeeper = new ZooKeeper(
+                configuration.Server,
+                TimeSpan.FromMilliseconds(configuration.SessionTimeOut),
+                new ZooKeeperWatcher(this));
         }
 
         protected int ConnectionLossTimeout { get; set; }
-        
-        #region Invoke
 
         public T Invoke<T>(string path, Func<IZooKeeper, string, T> func)
         {
@@ -63,54 +62,24 @@ namespace Lib.distributed
                 action(_zookeeper, path);
             }
         }
-        #endregion
 
-        #region GetData
-        /// <summary>获取数据</summary>
-        /// <typeparam name="T">类型</typeparam>
-        /// <param name="path">路径</param>
-        /// <returns>数据</returns>
         public T GetData<T>(string path) => GetData<T>(path, false);
 
-        /// <summary>获取数据</summary>
-        /// <typeparam name="T">类型</typeparam>
-        /// <param name="path">路径</param>
-        /// <param name="watch">是否添加watch，默认false</param>
-        /// <returns>数据</returns>
         public virtual T GetData<T>(string path, bool watch) =>
             Deserialize<T>(Invoke(path, (zookeeper, p) => zookeeper.GetData(p, watch, null)));
 
-        #endregion
-
-        #region SetData
-        /// <summary>设置数据</summary>
-        /// <typeparam name="T">类型</typeparam>
-        /// <param name="path">路径</param>
-        /// <param name="objData">对象</param>
-        /// <returns>是否成功</returns>
         public bool SetData<T>(string path, T objData) => SetData(path, objData, -1);
 
-        /// <summary>设置数据</summary>
-        /// <typeparam name="T">类型</typeparam>
-        /// <param name="path">路径</param>
-        /// <param name="objData">对象</param>
-        /// <param name="version">数据版本，默认-1</param>
-        /// <returns>是否成功</returns>
         public virtual bool SetData<T>(string path, T objData, int version)
         {
             var buffer = Serialize(objData);
             return Invoke(path, (zookeeper, p) => zookeeper.SetData(p, buffer, version)) != null;
         }
-        #endregion
 
-        #region GetChildren
         public IEnumerable<string> GetChildren(string path) => GetChildren(path, false);
 
         public IEnumerable<string> GetChildren(string path, bool watch) => Invoke(path, (zookeeper, p) => zookeeper.GetChildren(p, watch));
 
-        #endregion
-
-        #region CreatePath
         public bool CreatePersistentPath(string path)
         {
             if (Invoke(path, (zookeeper, p) => zookeeper.Exists(p, false)) != null)
@@ -147,14 +116,10 @@ namespace Lib.distributed
                 .Substring(path.Length);
 
         public void DeleteNode(string path) => Invoke(path, (zookeeper, p) => zookeeper.Delete(p, -1));
-        #endregion
 
-        #region Watch
         public Stat Watch(string path) => Invoke(path, (zookeeper, p) => zookeeper.Exists(p, true));
 
         public Stat Watch(string path, IWatcher watcher) => Invoke(path, (zookeeper, p) => zookeeper.Exists(p, watcher));
-
-        #endregion
 
         public Action<ZooKeeperClient> OnDisconnected;
         public Action<ZooKeeperClient> OnReconnected;
@@ -265,5 +230,46 @@ namespace Lib.distributed
             }
         }
 
+    }
+
+    /// <summary>
+    /// 链接管理
+    /// </summary>
+    public static class ZooKeeperClientManager
+    { }
+
+    /// <summary>
+    /// zookeeper配置
+    /// </summary>
+    public class ZooKeeperConfigSection : ConfigurationSection
+    {
+        public static ZooKeeperConfigSection FromSection(string name)
+        {
+            return (ZooKeeperConfigSection)ConfigurationManager.GetSection(name);
+        }
+
+        [ConfigurationProperty(nameof(SessionTimeOut), IsRequired = true)]
+        public int SessionTimeOut
+        {
+            get { return int.Parse(this[nameof(SessionTimeOut)].ToString()); }
+        }
+
+        [ConfigurationProperty(nameof(Server), IsRequired = true)]
+        public string Server
+        {
+            get { return this[nameof(Server)].ToString(); }
+        }
+
+        [ConfigurationProperty(nameof(MasterSlavePath), IsRequired = false)]
+        public string MasterSlavePath
+        {
+            get { return this[nameof(MasterSlavePath)].ToString(); }
+        }
+
+        [ConfigurationProperty(nameof(DistributedLockPath), IsRequired = false)]
+        public string DistributedLockPath
+        {
+            get { return this[nameof(DistributedLockPath)].ToString(); }
+        }
     }
 }

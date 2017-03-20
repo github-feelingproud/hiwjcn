@@ -13,7 +13,7 @@ namespace Lib.distributed
     /// Redis分布式锁
     /// https://github.com/KidFashion/redlock-cs
     /// </summary>
-    public class RedisDistributedLock : IDisposable
+    public class RedisDistributedLock : IDistributedLock
     {
         public int DB_NUM { get; set; } = 1;
         private string _key { get; set; }
