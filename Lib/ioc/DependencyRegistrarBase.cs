@@ -17,6 +17,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Lib.ioc
 {
@@ -157,13 +158,14 @@ namespace Lib.ioc
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
         }
 
-        protected void RegController(ref ContainerBuilder builder)
+        /// <summary>
+        /// 获取插件程序集(还需完善)
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        protected List<Assembly> FindPluginAssemblies()
         {
-            foreach (var a in AppDomain.CurrentDomain.ReflectionOnlyGetAssemblies())
-            {
-                if (!a.GetTypes().Any(x => x.IsAssignableTo<BaseController>() && !x.IsAbstract && !x.IsInterface)) { continue; }
-                builder.RegisterControllers(a);
-            }
+            return AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.StartsWith("Hiwjcn.Plugin.")).ToList();
         }
 
         /// <summary>
@@ -171,15 +173,16 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="ass"></param>
-        protected void RegPlguinController(ref ContainerBuilder builder, params Assembly[] ass)
+        protected void RegController(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
+                //注册URL
                 builder.RegisterControllers(a);
-
-                var tps = a.GetTypes().Where(x => x.IsAssignableTo<BasePaymentController>()
-                && !x.IsAbstract
-                && !x.IsInterface).ToArray();
+                //注册插件
+                var tps = a.GetTypes().Where(x =>
+                 x.IsAssignableTo_<BasePaymentController>()
+                 && x.IsNormalClass()).ToArray();
                 if (ValidateHelper.IsPlumpList(tps))
                 {
                     builder.RegisterTypes(tps).As<BasePaymentController>();

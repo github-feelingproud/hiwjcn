@@ -29,13 +29,17 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void fasdfasdfadsf()
         {
-            try
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
             {
-                var ass = Assembly.LoadFile(@"C:\Users\wangfengjun\Desktop\publish\bin\QPL.Pay.dll");
-                var tps = ass.GetTypes();
+                try
+                {
+                    var tps = a.GetTypes();
+                }
+                catch (Exception e)
+                {
+
+                }
             }
-            catch (Exception e)
-            { }
         }
 
         [TestMethod]

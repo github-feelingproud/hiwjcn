@@ -14,6 +14,8 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Linq;
+using Lib.mvc;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -34,6 +36,22 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        public ActionResult DLL()
+        {
+            return RunAction(() =>
+            {
+                var ass = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(x => x.FullName.StartsWith("Hiwjcn.Plugin."));
+                var s = string.Join("\n", ass.Select(x => x.FullName));
+                foreach (var a in ass)
+                {
+                    var controller = a.GetTypes().Where(x => x.IsAssignableTo_<BaseController>() && !x.IsAbstract && !x.IsInterface);
+                    if (!controller.Any()) { continue; }
+
+                }
+                return Content("");
+            });
+        }
 
         private static CircuitBreakerPolicy p = Policy.Handle<Exception>().CircuitBreaker(5, TimeSpan.FromSeconds(30));
 

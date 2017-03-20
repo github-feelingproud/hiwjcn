@@ -30,5 +30,15 @@ namespace Lib.extension
         {
             return typeof(T).IsAssignableFrom(t);
         }
+
+        /// <summary>
+        /// 非抽象类
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static bool IsNormalClass(this Type t)
+        {
+            return t.IsClass && !t.IsAbstract;
+        }
     }
 }
