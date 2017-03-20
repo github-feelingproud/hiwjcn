@@ -17,14 +17,11 @@ namespace Lib.distributed
         private readonly string _path;
         private string _no;
 
-        public ZooKeeperDistributedLock(string key, string configurationName = "zookeeper") :
-            this(key, ZooKeeperConfigSection.FromSection(configurationName))
-        { }
-
-        public ZooKeeperDistributedLock(string key, ZooKeeperConfigSection configuration)
+        public ZooKeeperDistributedLock(string key, string configName)
         {
-            _client = new ZooKeeperClient(configuration);
-            _path = configuration.DistributedLockPath + "/" + key.ToMD5();
+            var config = ZooKeeperConfigSection.FromSection(configName);
+            _client = new ZooKeeperClient(config);
+            _path = config.DistributedLockPath + "/" + key.ToMD5();
 
             //抢锁
             new Action(() =>
@@ -33,7 +30,7 @@ namespace Lib.distributed
                 _no = _client.CreateSequential(_path + "/", false);
             }).InvokeWithRetry(5);
         }
-        
+
         public void Dispose()
         {
             if (ValidateHelper.IsPlumpString(_no))

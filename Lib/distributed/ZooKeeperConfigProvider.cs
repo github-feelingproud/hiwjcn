@@ -19,7 +19,7 @@ namespace Lib.distributed
             //load data from zk
             using (var client = new ZooKeeperClient(configurationName))
             {
-                var json = client.GetData<string>(path);
+                var json = client.Get<string>(path);
                 //parse json and assign data
             }
         }

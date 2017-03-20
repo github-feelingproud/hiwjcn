@@ -8,9 +8,18 @@ using ZooKeeperNet;
 using Lib.extension;
 using Lib.helper;
 using Lib.data;
+using Lib.ioc;
 
 namespace Lib.distributed
 {
+    public class DefaultWatcher : IWatcher
+    {
+        public void Process(WatchedEvent @event)
+        {
+            //
+        }
+    }
+
     /// <summary>
     /// 
     /// 资料：邮箱搜索“zookeeper资料”
@@ -19,7 +28,7 @@ namespace Lib.distributed
     {
         private readonly IZooKeeper _zookeeper;
 
-        private ManualResetEvent _resetEvent = new ManualResetEvent(false);
+        private readonly ManualResetEvent _resetEvent = new ManualResetEvent(false);
 
         public ZooKeeperClient(string configurationName = "zookeeper") : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
@@ -31,11 +40,22 @@ namespace Lib.distributed
             }
 
             ConnectionLossTimeout = configuration.SessionTimeOut;
+            var timeOut = TimeSpan.FromMilliseconds(configuration.SessionTimeOut);
 
-            _zookeeper = new ZooKeeper(
-                configuration.Server,
-                TimeSpan.FromMilliseconds(configuration.SessionTimeOut),
-                new ZooKeeperWatcher(this));
+            if (AppContext.IsRegistered<IWatcher>())
+            {
+                _zookeeper = new ZooKeeper(
+                    configuration.Server,
+                    timeOut,
+                    AppContext.GetObject<IWatcher>());
+            }
+            else
+            {
+                _zookeeper = new ZooKeeper(
+                    configuration.Server,
+                    timeOut,
+                    new DefaultWatcher());
+            }
         }
 
         protected int ConnectionLossTimeout { get; set; }
@@ -63,40 +83,40 @@ namespace Lib.distributed
             }
         }
 
-        public T GetData<T>(string path) => GetData<T>(path, false);
 
-        public virtual T GetData<T>(string path, bool watch) =>
-            Deserialize<T>(Invoke(path, (zookeeper, p) => zookeeper.GetData(p, watch, null)));
+        public virtual T Get<T>(string path, bool watch = false)
+        {
+            return Deserialize<T>(Invoke(path, (zookeeper, p) => zookeeper.GetData(p, watch, null)));
+        }
 
-        public bool SetData<T>(string path, T objData) => SetData(path, objData, -1);
-
-        public virtual bool SetData<T>(string path, T objData, int version)
+        public virtual bool Set<T>(string path, T objData, int version = -1)
         {
             var buffer = Serialize(objData);
             return Invoke(path, (zookeeper, p) => zookeeper.SetData(p, buffer, version)) != null;
         }
 
-        public IEnumerable<string> GetChildren(string path) => GetChildren(path, false);
-
-        public IEnumerable<string> GetChildren(string path, bool watch) => Invoke(path, (zookeeper, p) => zookeeper.GetChildren(p, watch));
+        public IEnumerable<string> GetChildren(string path, bool watch = false)
+        {
+            return Invoke(path, (zookeeper, p) => zookeeper.GetChildren(p, watch));
+        }
 
         public bool CreatePersistentPath(string path)
         {
             if (Invoke(path, (zookeeper, p) => zookeeper.Exists(p, false)) != null)
                 return false;
 
-            var prePath = "";
+            var _path = string.Empty;
             foreach (var item in path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                prePath = prePath + "/" + item;
-                if (Invoke(prePath, (zookeeper, p) => zookeeper.Exists(p, false)) != null)
+                _path = _path + "/" + item;
+                if (Invoke(_path, (zookeeper, p) => zookeeper.Exists(p, false)) != null)
                 {
                     continue;
                 }
 
                 try
                 {
-                    Invoke(prePath, (zookeeper, p) => zookeeper.Create(p, null, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent));
+                    Invoke(_path, (zookeeper, p) => zookeeper.Create(p, null, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent));
                 }
                 catch (KeeperException.NodeExistsException e)
                 {
@@ -106,6 +126,7 @@ namespace Lib.distributed
 
             return true;
         }
+
         public string CreateSequential(string path, bool persistent) => CreateSequential(path, null, persistent);
 
         public string CreateSequential(string path, byte[] data, bool persistent)
@@ -113,25 +134,15 @@ namespace Lib.distributed
             return Invoke(path, (zookeeper, p) =>
                 zookeeper.Create(p,
                     data,
-                    Ids.OPEN_ACL_UNSAFE, persistent ? CreateMode.PersistentSequential : CreateMode.EphemeralSequential))
-                .Substring(path.Length);
+                    Ids.OPEN_ACL_UNSAFE,
+                    persistent ? CreateMode.PersistentSequential : CreateMode.EphemeralSequential)).Substring(path.Length);
         }
-
 
         public void DeleteNode(string path) => Invoke(path, (zookeeper, p) => zookeeper.Delete(p, -1));
 
         public Stat Watch(string path) => Invoke(path, (zookeeper, p) => zookeeper.Exists(p, true));
 
         public Stat Watch(string path, IWatcher watcher) => Invoke(path, (zookeeper, p) => zookeeper.Exists(p, watcher));
-
-        public Action<ZooKeeperClient> OnDisconnected;
-        public Action<ZooKeeperClient> OnReconnected;
-        public Action<ZooKeeperClient> OnSessionExpired;
-        public Action<ZooKeeperClient> OnDataChanged;
-        public Action<ZooKeeperClient> OnNodeDeleted;
-        public Action<ZooKeeperClient> OnNodeCreated;
-        public Action<ZooKeeperClient> OnNodeChildrenChanged;
-        public Action<ZooKeeperClient> OnClosed;
 
         public bool _disposed = false;
         public void Dispose()
@@ -140,72 +151,6 @@ namespace Lib.distributed
             _resetEvent.Dispose();
             _disposed = true;
         }
-
-        class ZooKeeperWatcher : IWatcher
-        {
-            private readonly ZooKeeperClient _zookeeper;
-            public ZooKeeperWatcher(ZooKeeperClient zookeeper)
-            {
-                _zookeeper = zookeeper;
-            }
-
-            private bool _disconnected;
-
-            public void Process(WatchedEvent @event)
-            {
-                $"ZooKeeperWatcher: State={@event.State}, EventType={@event.Type}, Path={@event.Path}".AddBusinessInfoLog();
-
-                switch (@event.State)
-                {
-                    case KeeperState.Disconnected:
-                        if (_zookeeper._disposed)
-                        {
-                            _zookeeper.OnClosed?.Invoke(_zookeeper);
-                        }
-                        else
-                        {
-                            _disconnected = true;
-                            _zookeeper._resetEvent?.Reset();
-                            _zookeeper.OnDisconnected?.Invoke(_zookeeper);
-                        }
-                        break;
-                    case KeeperState.SyncConnected:
-                        _zookeeper._resetEvent?.Set();
-                        if (_disconnected)
-                        {
-                            _disconnected = false;
-                            _zookeeper.OnReconnected?.Invoke(_zookeeper);
-                        }
-                        break;
-                    case KeeperState.Expired:
-                        _zookeeper.OnSessionExpired?.Invoke(_zookeeper);
-                        break;
-                    case KeeperState.NoSyncConnected:
-                    default:
-                        break;
-                }
-
-                switch (@event.Type)
-                {
-                    case EventType.NodeCreated:
-                        _zookeeper.OnNodeCreated?.Invoke(_zookeeper);
-                        break;
-                    case EventType.NodeDeleted:
-                        _zookeeper.OnNodeDeleted?.Invoke(_zookeeper);
-                        break;
-                    case EventType.NodeDataChanged:
-                        _zookeeper.OnDataChanged?.Invoke(_zookeeper);
-                        break;
-                    case EventType.NodeChildrenChanged:
-                        _zookeeper.OnNodeChildrenChanged?.Invoke(_zookeeper);
-                        break;
-                    case EventType.None:
-                    default:
-                        break;
-                }
-            }
-        }
-
     }
 
     /// <summary>
