@@ -1,4 +1,4 @@
-﻿using Hiwjcn.Core.Model.EFMapping;
+﻿using Lib.data;
 using Lib.helper;
 using System;
 using System.Collections.Generic;
@@ -153,7 +153,7 @@ namespace Model.User
         }
     }
 
-    public class UserModelMapping : MappingBase<UserModel>
+    public class UserModelMapping : EFMappingBase<UserModel>
     {
         public UserModelMapping()
         {

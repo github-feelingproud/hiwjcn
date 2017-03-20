@@ -16,7 +16,8 @@ namespace Lib.data
     }
     public static class DBHelper
     {
-        private static readonly string ConStr = ConfigurationManager.AppSettings["db"] ?? ConfigurationManager.ConnectionStrings["db"]?.ToString();
+        private static readonly string ConStr = ConfigurationManager.AppSettings["db"] ??
+            ConfigurationManager.ConnectionStrings["db"]?.ToString();
         /// <summary>
         /// 使用ioc中注册的数据库
         /// </summary>

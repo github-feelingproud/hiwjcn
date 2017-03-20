@@ -40,5 +40,27 @@ namespace Lib.extension
         {
             return t.IsClass && !t.IsAbstract;
         }
+
+        /// <summary>
+        /// 是指定的泛型
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static bool IsGenericType_<T>(this Type t)
+        {
+            return t.IsGenericType_(typeof(T));
+        }
+
+        /// <summary>
+        /// 是指定的泛型
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="tt"></param>
+        /// <returns></returns>
+        public static bool IsGenericType_(this Type t, Type tt)
+        {
+            return t.IsGenericType && t.GetGenericTypeDefinition() == tt;
+        }
     }
 }
