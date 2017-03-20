@@ -108,12 +108,15 @@ namespace Lib.distributed
         }
         public string CreateSequential(string path, bool persistent) => CreateSequential(path, null, persistent);
 
-        public string CreateSequential(string path, byte[] data, bool persistent) =>
-            Invoke(path, (zookeeper, p) =>
+        public string CreateSequential(string path, byte[] data, bool persistent)
+        {
+            return Invoke(path, (zookeeper, p) =>
                 zookeeper.Create(p,
                     data,
                     Ids.OPEN_ACL_UNSAFE, persistent ? CreateMode.PersistentSequential : CreateMode.EphemeralSequential))
                 .Substring(path.Length);
+        }
+
 
         public void DeleteNode(string path) => Invoke(path, (zookeeper, p) => zookeeper.Delete(p, -1));
 
@@ -130,40 +133,13 @@ namespace Lib.distributed
         public Action<ZooKeeperClient> OnNodeChildrenChanged;
         public Action<ZooKeeperClient> OnClosed;
 
-        #region Dispose
+        public bool _disposed = false;
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        bool _disposed;
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            _disposed = true;
-
-            if (disposing)
-            {
-                //释放托管资源，比如将对象设置为null
-            }
-
-            //释放非托管资源
             _zookeeper.Dispose();
-
-            var resetEvent = _resetEvent;
-            _resetEvent = null;
-
-            resetEvent.Dispose();
+            _resetEvent.Dispose();
+            _disposed = true;
         }
-
-        ~ZooKeeperClient()
-        {
-            Dispose(false);
-        }
-        #endregion
 
         class ZooKeeperWatcher : IWatcher
         {
