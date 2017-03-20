@@ -98,9 +98,9 @@ on user.UserID equals section.SectionID
         public void fsdafds()
         {
             var data = ServiceHelper<IOrderService>.Invoke(x => x.GetOrders());
-            var data_1 = ServiceHelper<IOrderService>.InvokeAsync(x => x.GetOrders()).Result;
+            var data_1 = ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.GetOrders()).Result;
             var data_2 = ServiceHelper<IOrderService>.InvokeAsync(async x => await x.GetOrdersAsync_()).Result;
-            var data_3 = ServiceHelper<IOrderService>.InvokeAsync(x => x.ThrowOrders()).Result;
+            var data_3 = ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.ThrowOrders()).Result;
         }
 
         [TestMethod]

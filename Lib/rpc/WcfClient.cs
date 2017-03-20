@@ -109,20 +109,22 @@ namespace Lib.rpc
                 return new OperationResult<R>() { Ex = e, ErrorMessage = e.Message };
             }
         }
+
         /// <summary>
-        /// 同步变异步
+        /// 同步转异步执行
         /// https://www.zhihu.com/question/56539006
+        /// https://blogs.msdn.microsoft.com/pfxteam/2012/03/24/should-i-expose-asynchronous-wrappers-for-synchronous-methods/
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="R"></typeparam>
-        /// <param name="client"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        //[Obsolete("不推荐使用，详情见:https://blogs.msdn.microsoft.com/pfxteam/2012/03/24/should-i-expose-asynchronous-wrappers-for-synchronous-methods/")]
-        public static async Task<OperationResult<R>> InvokeAsync<T, R>(this ServiceClient<T> client, Func<T, R> func) where T : class
+        [Obsolete("使用Task.Run。调用时请确保是IO密集型操作，而不是计算密集型！具体参见此方法备注中的URL")]
+        public static async Task<OperationResult<R>> InvokeSyncAsAsync<T, R>(this ServiceClient<T> client, Func<T, R> func) where T : class
         {
             return await Task.Run(() => client.Invoke(func));
         }
+
         /// <summary>
         /// 异步执行
         /// </summary>
@@ -165,22 +167,25 @@ namespace Lib.rpc
                 return client.Invoke(func);
             }
         }
+
         /// <summary>
         /// 同步转异步执行
         /// https://www.zhihu.com/question/56539006
+        /// https://blogs.msdn.microsoft.com/pfxteam/2012/03/24/should-i-expose-asynchronous-wrappers-for-synchronous-methods/
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="R"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        //[Obsolete("不推荐使用，详情见:https://blogs.msdn.microsoft.com/pfxteam/2012/03/24/should-i-expose-asynchronous-wrappers-for-synchronous-methods/")]
-        public static async Task<OperationResult<R>> InvokeAsync<R>(Func<T, R> func)
+        [Obsolete("使用Task.Run。调用时请确保是IO密集型操作，而不是计算密集型！具体参见此方法备注中的URL")]
+        public static async Task<OperationResult<R>> InvokeSyncAsAsync<R>(Func<T, R> func)
         {
             using (var client = new ServiceClient<T>())
             {
-                return await client.InvokeAsync(func);
+                return await client.InvokeSyncAsAsync(func);
             }
         }
+
         /// <summary>
         /// 异步执行
         /// </summary>
