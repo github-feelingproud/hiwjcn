@@ -25,6 +25,7 @@ using System.Runtime.Serialization;
 using QPL.WebService.Order.Core;
 using QPL.WebService.Order.Core.Models;
 using WebLogic.Model.Page;
+using Lib.distributed;
 
 namespace QPL.WebService.Order.Core.Models
 {
