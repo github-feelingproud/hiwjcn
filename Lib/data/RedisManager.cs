@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Lib.extension;
 
 namespace Lib.data
 {
@@ -29,7 +30,7 @@ namespace Lib.data
         /// <param name="handler"></param>
         public static void PrepareConnection(Func<ConnectionMultiplexer, bool> handler)
         {
-            handler.Invoke(RedisConnectionManager.GetConnectionAndCache());
+            handler.Invoke(RedisConnectionManager.StoreInstance());
         }
 
         /// <summary>
@@ -113,7 +114,7 @@ namespace Lib.data
                     {
                         if (_instance == null || !_instance.IsConnected)
                         {
-                            _instance = GetConnectionAndCache();
+                            _instance = StoreInstance();
                         }
                     }
                 }
@@ -122,40 +123,25 @@ namespace Lib.data
         }
 
         /// <summary>
-        /// 缓存获取
+        /// 存储实例
         /// </summary>
         /// <param name="conStr"></param>
         /// <returns></returns>
-        public static ConnectionMultiplexer GetConnectionAndCache(string conStr = null)
+        public static ConnectionMultiplexer StoreInstance(string conStr = null)
         {
             conStr = conStr ?? DefaultConnectionString;
-            if (ConnectionCache.ContainsKey(conStr))
-            {
-                //有缓存
-                var con = ConnectionCache[conStr];
-                if (con != null && con.IsConnected)
+            var ins = ConnectionCache.StoreInstance(conStr
+                , () =>
                 {
-                    return con;
+                    return ConnectionMultiplexer.Connect(conStr);
                 }
-                else
+                , x =>
                 {
-                    ConnectionCache.Keys.Remove(conStr);
+                    return x != null && x.IsConnected;
                 }
-            }
-            //没有缓存
-            var connection = ConnectionMultiplexer.Connect(conStr);
-            //把连接对象添加到缓存，防止多线程重复添加
-            if (!ConnectionCache.ContainsKey(conStr))
-            {
-                lock (add_cache_locker)
-                {
-                    if (!ConnectionCache.ContainsKey(conStr))
-                    {
-                        ConnectionCache[conStr] = connection;
-                    }
-                }
-            }
-            return ConnectionCache[conStr];
+                , add_cache_locker
+                , x => x?.Dispose());
+            return ins;
         }
 
         public static void Dispose()
@@ -187,7 +173,7 @@ namespace Lib.data
             _conn =
                 string.IsNullOrWhiteSpace(readWriteHosts) ?
                 RedisConnectionManager.Instance :
-                RedisConnectionManager.GetConnectionAndCache(readWriteHosts);
+                RedisConnectionManager.StoreInstance(readWriteHosts);
         }
 
         #region String

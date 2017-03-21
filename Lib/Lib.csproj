@@ -226,6 +226,7 @@
     <Compile Include="extension\CommonExtension.cs" />
     <Compile Include="extension\DateTimeExtension.cs" />
     <Compile Include="extension\ConvertExtension.cs" />
+    <Compile Include="extension\DictExtension.cs" />
     <Compile Include="extension\ElasticsearchExtension.cs" />
     <Compile Include="extension\LogExtension.cs" />
     <Compile Include="extension\PollyExtension.cs" />
