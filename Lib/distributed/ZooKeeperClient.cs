@@ -9,6 +9,7 @@ using Lib.extension;
 using Lib.helper;
 using Lib.data;
 using Lib.ioc;
+using Lib.core;
 
 namespace Lib.distributed
 {
@@ -60,6 +61,15 @@ namespace Lib.distributed
 
         protected int ConnectionLossTimeout { get; set; }
 
+        public bool IsAlive
+        {
+            get
+            {
+                if (_zookeeper == null) { return false; }
+                return _zookeeper.State.IsAlive();
+            }
+        }
+
         public T Invoke<T>(string path, Func<IZooKeeper, string, T> func)
         {
             if (_resetEvent.WaitOne(ConnectionLossTimeout))
@@ -71,6 +81,7 @@ namespace Lib.distributed
                 return func(_zookeeper, path);
             }
         }
+
         public void Invoke(string path, Action<IZooKeeper, string> action)
         {
             if (_resetEvent.WaitOne(ConnectionLossTimeout))
@@ -82,7 +93,6 @@ namespace Lib.distributed
                 action(_zookeeper, path);
             }
         }
-
 
         public virtual T Get<T>(string path, bool watch = false)
         {
@@ -156,8 +166,38 @@ namespace Lib.distributed
     /// <summary>
     /// 链接管理
     /// </summary>
-    public static class ZooKeeperClientManager
-    { }
+    public class ZooKeeperClientManager : StaticClientManager<ZooKeeperClient>
+    {
+        public static readonly ZooKeeperClientManager Instance = new ZooKeeperClientManager();
+
+        public ZooKeeperClientManager() : base("zookeeper")
+        { }
+
+        public override bool CheckInstance(ZooKeeperClient ins)
+        {
+            if (ins == null) { return false; }
+            return ins.IsAlive;
+        }
+
+        public override ZooKeeperClient CreateInstance(string key)
+        {
+            var config = ZooKeeperConfigSection.FromSection(key);
+            return new ZooKeeperClient(config);
+        }
+
+        public override void Dispose()
+        {
+            foreach (var kv in db)
+            {
+                kv.Value?.Dispose();
+            }
+        }
+
+        public override void DisposeInstance(ZooKeeperClient ins)
+        {
+            ins?.Dispose();
+        }
+    }
 
     /// <summary>
     /// zookeeper配置

@@ -14,4 +14,95 @@ namespace Lib.core
     {
         public readonly object _locker = new object();
     }
+
+    /// <summary>
+    /// 扩展
+    /// </summary>
+    public static class StoreInstanceDictExtension
+    {
+        /// <summary>
+        /// 维护多个实例
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dict"></param>
+        /// <param name="key"></param>
+        /// <param name="func"></param>
+        /// <param name="CheckInstance"></param>
+        /// <param name="_locker">一定要是引用类型</param>
+        /// <returns></returns>
+        public static T StoreInstance<T>(this StoreInstanceDict<T> dict, string key, Func<T> func,
+            Func<T, bool> CheckInstance = null, Action<T> releaseInstance = null)
+        {
+            //如果为空就默认都可以
+            if (CheckInstance == null) { CheckInstance = _ => true; }
+
+            if (dict.ContainsKey(key))
+            {
+                var ins = dict[key];
+                if (CheckInstance(ins))
+                {
+                    return ins;
+                }
+                else
+                {
+                    releaseInstance?.Invoke(ins);
+                    dict.Remove(key);
+                }
+            }
+            if (!dict.ContainsKey(key))
+            {
+                lock (dict._locker)
+                {
+                    if (!dict.ContainsKey(key))
+                    {
+                        var ins = func();
+                        if (!CheckInstance(ins)) { throw new Exception("新生成的实例没有通过验证"); }
+                        dict[key] = ins;
+                    }
+                }
+            }
+            return dict[key];
+        }
+    }
+
+    /// <summary>
+    /// 实例管理
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class StaticClientManager<T> : IDisposable
+    {
+        protected readonly StoreInstanceDict<T> db = new StoreInstanceDict<T>();
+
+        protected readonly string DefaultKey;
+
+        public StaticClientManager() : this("")
+        { }
+
+        public StaticClientManager(string defaultkey)
+        {
+            this.DefaultKey = defaultkey;
+        }
+
+        #region 等待实现
+        public abstract T CreateInstance(string key);
+
+        public abstract void DisposeInstance(T ins);
+
+        public abstract bool CheckInstance(T ins);
+
+        public abstract void Dispose();
+        #endregion
+
+        public T GetInstance(string key)
+        {
+            key = key ?? DefaultKey;
+
+            var geter = new Func<T>(() => CreateInstance(key));
+            var check = new Func<T, bool>(CheckInstance);
+            var dispose = new Action<T>(DisposeInstance);
+
+            var ins = db.StoreInstance(key, geter, check, dispose);
+            return ins;
+        }
+    }
 }

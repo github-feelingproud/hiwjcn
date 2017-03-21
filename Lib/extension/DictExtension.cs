@@ -11,50 +11,6 @@ namespace Lib.extension
     public static class DictExtension
     {
         /// <summary>
-        /// 维护多个实例
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dict"></param>
-        /// <param name="key"></param>
-        /// <param name="func"></param>
-        /// <param name="CheckInstance"></param>
-        /// <param name="_locker">一定要是引用类型</param>
-        /// <returns></returns>
-        public static T StoreInstance<T>(this StoreInstanceDict<T> dict, string key, Func<T> func,
-            Func<T, bool> CheckInstance = null, Action<T> releaseInstance = null)
-        {
-            //如果为空就默认都可以
-            if (CheckInstance == null) { CheckInstance = _ => true; }
-
-            if (dict.ContainsKey(key))
-            {
-                var ins = dict[key];
-                if (CheckInstance(ins))
-                {
-                    return ins;
-                }
-                else
-                {
-                    releaseInstance?.Invoke(ins);
-                    dict.Remove(key);
-                }
-            }
-            if (!dict.ContainsKey(key))
-            {
-                lock (dict._locker)
-                {
-                    if (!dict.ContainsKey(key))
-                    {
-                        var ins = func();
-                        if (!CheckInstance(ins)) { throw new Exception("新生成的实例没有通过验证"); }
-                        dict[key] = ins;
-                    }
-                }
-            }
-            return dict[key];
-        }
-
-        /// <summary>
         /// 字典变url格式(a=1&b=3)
         /// </summary>
         /// <param name="dict"></param>
