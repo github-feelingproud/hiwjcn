@@ -4,6 +4,7 @@ using Bll.User;
 using Lib.extension;
 using Lib.infrastructure;
 using Hiwjcn.Core.Infrastructure.User;
+using Model.User;
 
 namespace Hiwjcn.Test
 {
@@ -27,6 +28,8 @@ namespace Hiwjcn.Test
             var e = typeof(IServiceBase<>);
             //{Name = "ServiceBase`1" FullName = "Lib.infrastructure.ServiceBase`1"}
             var f = typeof(ServiceBase<>);
+            //{Name = "ServiceBase`1" FullName = "Lib.infrastructure.ServiceBase`1[[Model.User.UserModel, Hiwjcn.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"}
+            var m = typeof(ServiceBase<UserModel>);
 
             //true
             var g = userType.IsAssignableTo_<IUserService>();
