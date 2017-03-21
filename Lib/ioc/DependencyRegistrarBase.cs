@@ -55,10 +55,10 @@ namespace Lib.ioc
                     {
                         builder.RegisterType(t).As(t);
                         builder.RegisterType(t).As(t.BaseType);
-                        var interfaces = t.BaseType.GetInterfaces().Where(x => x.IsGenericType_(typeof(IRepository<>)));
+                        var interfaces = t.BaseType.GetInterfaces().Where(x => x.IsGenericType_(typeof(IRepository<>))).ToArray();
                         if (interfaces?.Count() > 0)
                         {
-                            builder.RegisterType(t).As(interfaces.ToArray());
+                            builder.RegisterType(t).As(interfaces);
                         }
                     }
                 }
@@ -81,14 +81,14 @@ namespace Lib.ioc
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(ServiceBase<>)))
                     {
                         //实现iservicebase的接口
-                        var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IServiceBase<>))));
+                        var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IServiceBase<>)))).ToArray();
                         if (intercept)
                         {
                             builder.RegisterType(t).As(t).EnableClassInterceptors();
                             builder.RegisterType(t).As(t.BaseType).EnableClassInterceptors();
                             if (interfaces?.Count() > 0)
                             {
-                                builder.RegisterType(t).As(interfaces.ToArray()).EnableClassInterceptors();
+                                builder.RegisterType(t).As(interfaces).EnableClassInterceptors();
                             }
                         }
                         else
@@ -97,7 +97,7 @@ namespace Lib.ioc
                             builder.RegisterType(t).As(t.BaseType);
                             if (interfaces?.Count() > 0)
                             {
-                                builder.RegisterType(t).As(interfaces.ToArray());
+                                builder.RegisterType(t).As(interfaces);
                             }
                         }
                     }
