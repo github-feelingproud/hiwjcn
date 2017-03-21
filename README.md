@@ -1,4 +1,4 @@
-###Asp.Net MVC开发框架
+## Asp.Net MVC开发框架
 	>基于autofac的ioc依赖注入
 	>基于autofac.dynamicproxy的aop面向切面编程
 	>entity framework orm+仓储模式架构
@@ -15,7 +15,9 @@
 	>第三方api调用
 	>身份验证权限
 	>各种类库...
-###Lib项目
+	
+## Lib项目
 https://www.nuget.org/packages/lib.com.nuget/
-###Bug反馈
+
+## Bug反馈
 issue or hiwjcn@live.com
