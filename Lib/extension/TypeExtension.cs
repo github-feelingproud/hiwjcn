@@ -28,7 +28,18 @@ namespace Lib.extension
         /// <returns></returns>
         public static bool IsAssignableTo_<T>(this Type t)
         {
-            return typeof(T).IsAssignableFrom(t);
+            return t.IsAssignableTo_(typeof(T));
+        }
+
+        /// <summary>
+        /// 是否可以赋值给
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsAssignableTo_(this Type t, Type type)
+        {
+            return type.IsAssignableFrom(t);
         }
 
         /// <summary>
