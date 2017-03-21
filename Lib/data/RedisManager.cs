@@ -97,8 +97,7 @@ namespace Lib.data
         //"127.0.0.1:6379,allowadmin=true
         private static readonly string DefaultConnectionString = ConfigHelper.Instance.RedisConnectionString;
         private static readonly object get_instance_locker = new object();
-        private static readonly object add_cache_locker = new object();
-        private static readonly ConcurrentDictionary<string, ConnectionMultiplexer> ConnectionCache = new ConcurrentDictionary<string, ConnectionMultiplexer>();
+        private static readonly StoreInstanceDict<ConnectionMultiplexer> ConnectionCache = new StoreInstanceDict<ConnectionMultiplexer>();
 
         private static ConnectionMultiplexer _instance { get; set; }
         /// <summary>
@@ -139,7 +138,6 @@ namespace Lib.data
                 {
                     return x != null && x.IsConnected;
                 }
-                , add_cache_locker
                 , x => x?.Dispose());
             return ins;
         }

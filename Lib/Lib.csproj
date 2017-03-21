@@ -201,6 +201,7 @@
     <Compile Include="core\MimeTypes.cs" />
     <Compile Include="core\MyStringComparer.cs" />
     <Compile Include="core\LibReleaseHelper.cs" />
+    <Compile Include="core\StoreInstanceDict.cs" />
     <Compile Include="core\ThreadWrapper.cs" />
     <Compile Include="data\DBHelper.cs" />
     <Compile Include="data\EFEntityDB.cs" />

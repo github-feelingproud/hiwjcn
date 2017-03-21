@@ -1,4 +1,5 @@
 ﻿using Lib.helper;
+using Lib.core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +20,11 @@ namespace Lib.extension
         /// <param name="CheckInstance"></param>
         /// <param name="_locker">一定要是引用类型</param>
         /// <returns></returns>
-        public static T StoreInstance<T>(this IDictionary<string, T> dict, string key, Func<T> func,
-            Func<T, bool> CheckInstance = null, object _locker = null, Action<T> releaseInstance = null)
+        public static T StoreInstance<T>(this StoreInstanceDict<T> dict, string key, Func<T> func,
+            Func<T, bool> CheckInstance = null, Action<T> releaseInstance = null)
         {
             //如果为空就默认都可以
             if (CheckInstance == null) { CheckInstance = _ => true; }
-            //如果没有指定locker就使用dict作为locker
-            if (_locker == null) { _locker = dict; }
 
             if (dict.ContainsKey(key))
             {
@@ -37,12 +36,12 @@ namespace Lib.extension
                 else
                 {
                     releaseInstance?.Invoke(ins);
-                    dict.Keys.Remove(key);
+                    dict.Remove(key);
                 }
             }
             if (!dict.ContainsKey(key))
             {
-                lock (_locker)
+                lock (dict._locker)
                 {
                     if (!dict.ContainsKey(key))
                     {
