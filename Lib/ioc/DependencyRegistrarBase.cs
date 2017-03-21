@@ -17,6 +17,7 @@ namespace Lib.ioc
 {
     /// <summary>
     /// 注册IOC依赖
+    /// 搜索“autofac泛型注入”
     /// </summary>
     public abstract class DependencyRegistrarBase : IDependencyRegistrar
     {
@@ -116,14 +117,14 @@ namespace Lib.ioc
             {
                 try
                 {
-                    //找到包含consumer的类
-                    var types = a.GetTypes().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IConsumer<>))));
-                    foreach (var t in types)
+                    foreach (var t in a.GetTypes())
                     {
-                        //找到接口
                         var interfaces = t.GetInterfaces().Where(x => x.IsGenericType_(typeof(IConsumer<>))).ToArray();
-                        //注册到所有接口
-                        builder.RegisterType(t).As(interfaces);
+                        if (interfaces?.Count() > 0)
+                        {
+                            //注册到所有接口
+                            builder.RegisterType(t).As(interfaces);
+                        }
                     }
                 }
                 catch (Exception e)
