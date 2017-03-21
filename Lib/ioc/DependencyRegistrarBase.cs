@@ -1,23 +1,17 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using Autofac.Integration.Mvc;
-using Lib.cache;
 using Lib.data;
 using Lib.events;
 using Lib.extension;
 using Lib.helper;
 using Lib.infrastructure;
-using Lib.ioc;
-using Lib.task;
-using Lib.mvc;
 using Lib.mvc.plugin;
-using MySql.Data.MySqlClient;
+using Lib.task;
 using System;
-using System.Data;
-using System.Data.Entity;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Collections.Generic;
 
 namespace Lib.ioc
 {
@@ -38,9 +32,7 @@ namespace Lib.ioc
             foreach (var a in ass)
             {
                 var jobTypes = a.GetTypes().ToArray();
-                jobTypes = jobTypes.Where(x => x.IsAssignableTo<QuartzJobBase>()
-                && !x.IsAbstract
-                && !x.IsInterface).ToArray();
+                jobTypes = jobTypes.Where(x => x.IsAssignableTo_<QuartzJobBase>() && x.IsNormalClass()).ToArray();
                 if (ValidateHelper.IsPlumpList(jobTypes))
                 {
                     builder.RegisterTypes(jobTypes).As<QuartzJobBase>();
@@ -59,19 +51,14 @@ namespace Lib.ioc
             {
                 foreach (var t in a.GetTypes())
                 {
-                    if (t.BaseType != null &&
-                        t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(EFRepository<>))
+                    if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(EFRepository<>)))
                     {
-                        var interfaces = t.BaseType.GetInterfaces().Where(x =>
-                        x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRepository<>));
-
+                        builder.RegisterType(t).As(t);
+                        builder.RegisterType(t).As(t.BaseType);
+                        var interfaces = t.BaseType.GetInterfaces().Where(x => x.IsGenericType_(typeof(IRepository<>)));
                         if (interfaces?.Count() > 0)
                         {
                             builder.RegisterType(t).As(interfaces.ToArray());
-                        }
-                        else
-                        {
-                            builder.RegisterType(t).As(t);
                         }
                     }
                 }
@@ -91,32 +78,26 @@ namespace Lib.ioc
                 foreach (var t in a.GetTypes())
                 {
                     //注册service
-                    if (t.BaseType != null &&
-                        t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(ServiceBase<>))
+                    if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(ServiceBase<>)))
                     {
-                        var interfaces = t.GetInterfaces().Where(x =>
-                        x.GetInterfaces().Any(i =>
-                        i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IServiceBase<>)));
-                        if (interfaces?.Count() > 0)
+                        //实现iservicebase的接口
+                        var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IServiceBase<>))));
+                        if (intercept)
                         {
-                            if (intercept)
+                            builder.RegisterType(t).As(t).EnableClassInterceptors();
+                            builder.RegisterType(t).As(t.BaseType).EnableClassInterceptors();
+                            if (interfaces?.Count() > 0)
                             {
                                 builder.RegisterType(t).As(interfaces.ToArray()).EnableClassInterceptors();
-                            }
-                            else
-                            {
-                                builder.RegisterType(t).As(interfaces.ToArray());
                             }
                         }
                         else
                         {
-                            if (intercept)
+                            builder.RegisterType(t).As(t);
+                            builder.RegisterType(t).As(t.BaseType);
+                            if (interfaces?.Count() > 0)
                             {
-                                builder.RegisterType(t).As(t).EnableClassInterceptors();
-                            }
-                            else
-                            {
-                                builder.RegisterType(t).As(t);
+                                builder.RegisterType(t).As(interfaces.ToArray());
                             }
                         }
                     }
@@ -131,19 +112,16 @@ namespace Lib.ioc
         /// <param name="ass"></param>
         protected void RegEvent(ref ContainerBuilder builder, params Assembly[] ass)
         {
-            var consumerType = typeof(IConsumer<>);
             foreach (var a in ass)
             {
                 try
                 {
                     //找到包含consumer的类
-                    var types = a.GetTypes().Where(x =>
-                    x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == consumerType));
+                    var types = a.GetTypes().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IConsumer<>))));
                     foreach (var t in types)
                     {
                         //找到接口
-                        var interfaces = t.GetInterfaces().Where(x =>
-                        x.IsGenericType && x.GetGenericTypeDefinition() == consumerType).ToArray();
+                        var interfaces = t.GetInterfaces().Where(x => x.IsGenericType_(typeof(IConsumer<>))).ToArray();
                         //注册到所有接口
                         builder.RegisterType(t).As(interfaces);
                     }
@@ -180,9 +158,7 @@ namespace Lib.ioc
                 //注册URL
                 builder.RegisterControllers(a);
                 //注册插件
-                var tps = a.GetTypes().Where(x =>
-                 x.IsAssignableTo_<BasePaymentController>()
-                 && x.IsNormalClass()).ToArray();
+                var tps = a.GetTypes().Where(x => x.IsAssignableTo_<BasePaymentController>() && x.IsNormalClass()).ToArray();
                 if (ValidateHelper.IsPlumpList(tps))
                 {
                     builder.RegisterTypes(tps).As<BasePaymentController>();

@@ -95,9 +95,9 @@ namespace Lib.extension
         /// <param name="sd"></param>
         /// <param name="pre"></param>
         /// <param name="after"></param>
-        public static void AddHighlightWrapper<T>(this SearchDescriptor<T> sd, string pre = "<em>", string after = "</em>") where T : class
+        public static SearchDescriptor<T> AddHighlightWrapper<T>(this SearchDescriptor<T> sd, string pre = "<em>", string after = "</em>") where T : class
         {
-            sd.Highlight(x => x.PreTags(pre).PostTags(after));
+            return sd.Highlight(x => x.PreTags(pre).PostTags(after));
         }
 
         /// <summary>
@@ -121,12 +121,14 @@ namespace Lib.extension
         /// <param name="response"></param>
         public static void LogError(this IResponse response)
         {
-            if (response.ServerError?.Error == null)
+            string server_error = null;
+            if (response.ServerError?.Error != null)
             {
-                if (response.OriginalException != null)
-                {
-                    response.OriginalException.AddErrorLog();
-                }
+                server_error = "ES服务器错误";
+            }
+            if (response.OriginalException != null)
+            {
+                response.OriginalException.AddErrorLog(server_error);
             }
         }
 
@@ -239,7 +241,7 @@ namespace Lib.extension
             var idlist = new string[] { };
             if (!new string[] { "2", "4" }.Contains(model.CustomerType))
             {
-                
+
                 qc = qc && (!new TermsQuery() { Field = nameof(temp.UKey), Terms = idlist });
             }
             else

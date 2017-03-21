@@ -11,6 +11,8 @@ namespace Lib.ioc
 {
     /// <summary>
     /// IOC容器
+    /// https://autofac.org/
+    /// http://autofac.readthedocs.io/en/latest/getting-started/index.html
     /// </summary>
     public static class AppContext
     {
