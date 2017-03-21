@@ -152,6 +152,37 @@ namespace Lib.data
     }
 
     /// <summary>
+    /// redis 链接管理
+    /// </summary>
+    public class RedisClientManager : StaticClientManager<ConnectionMultiplexer>
+    {
+        public static readonly RedisClientManager Instance = new RedisClientManager();
+
+        public override bool CheckInstance(ConnectionMultiplexer ins)
+        {
+            return ins != null && ins.IsConnected;
+        }
+
+        public override ConnectionMultiplexer CreateInstance(string key)
+        {
+            return ConnectionMultiplexer.Connect(key);
+        }
+
+        public override void Dispose()
+        {
+            foreach (var kv in db)
+            {
+                kv.Value?.Dispose();
+            }
+        }
+
+        public override void DisposeBrokenInstance(ConnectionMultiplexer ins)
+        {
+            ins?.Dispose();
+        }
+    }
+
+    /// <summary>
     /// Redis操作
     /// https://github.com/qq1206676756/RedisHelp
     /// </summary>

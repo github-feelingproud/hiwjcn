@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.extension;
 
 namespace Lib.core
 {
@@ -69,39 +70,74 @@ namespace Lib.core
     /// 实例管理
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class StaticClientManager<T> : IDisposable
+    public abstract class StaticClientManager<T> : StaticClientManager<T, string>
+    {
+        public override string CreateStringKey(string key)
+        {
+            return key;
+        }
+    }
+
+    /// <summary>
+    /// T是缓存对象，K是创建T所需要的参数类型，缓存Key通过K去生成
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="K"></typeparam>
+    public abstract class StaticClientManager<T, K> : IDisposable
     {
         protected readonly StoreInstanceDict<T> db = new StoreInstanceDict<T>();
 
-        protected readonly string DefaultKey;
-
-        public StaticClientManager() : this("")
-        { }
-
-        public StaticClientManager(string defaultkey)
+        /// <summary>
+        /// 创建string key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual string CreateStringKey(K key)
         {
-            this.DefaultKey = defaultkey;
+            return key.ToJson().ToSHA1();
         }
 
         #region 等待实现
-        public abstract T CreateInstance(string key);
+        /// <summary>
+        /// 创建对象
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public abstract T CreateInstance(K key);
 
-        public abstract void DisposeInstance(T ins);
+        /// <summary>
+        /// 释放对象
+        /// </summary>
+        /// <param name="ins"></param>
+        public abstract void DisposeBrokenInstance(T ins);
 
+        /// <summary>
+        /// 检查对象
+        /// </summary>
+        /// <param name="ins"></param>
+        /// <returns></returns>
         public abstract bool CheckInstance(T ins);
 
+        /// <summary>
+        /// 释放所有对象
+        /// </summary>
         public abstract void Dispose();
         #endregion
 
-        public T GetInstance(string key)
+        /// <summary>
+        /// 获取实例
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public T GetInstance(K key)
         {
-            key = key ?? DefaultKey;
 
+            var str_key = CreateStringKey(key);
             var geter = new Func<T>(() => CreateInstance(key));
             var check = new Func<T, bool>(CheckInstance);
-            var dispose = new Action<T>(DisposeInstance);
+            var dispose = new Action<T>(DisposeBrokenInstance);
 
-            var ins = db.StoreInstance(key, geter, check, dispose);
+            var ins = db.StoreInstance(str_key, geter, check, dispose);
             return ins;
         }
     }

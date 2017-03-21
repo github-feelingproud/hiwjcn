@@ -170,13 +170,12 @@ namespace Lib.distributed
     {
         public static readonly ZooKeeperClientManager Instance = new ZooKeeperClientManager();
 
-        public ZooKeeperClientManager() : base("zookeeper")
+        public ZooKeeperClientManager()
         { }
 
         public override bool CheckInstance(ZooKeeperClient ins)
         {
-            if (ins == null) { return false; }
-            return ins.IsAlive;
+            return ins != null && ins.IsAlive;
         }
 
         public override ZooKeeperClient CreateInstance(string key)
@@ -193,7 +192,7 @@ namespace Lib.distributed
             }
         }
 
-        public override void DisposeInstance(ZooKeeperClient ins)
+        public override void DisposeBrokenInstance(ZooKeeperClient ins)
         {
             ins?.Dispose();
         }

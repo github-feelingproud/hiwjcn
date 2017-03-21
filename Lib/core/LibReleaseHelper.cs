@@ -39,6 +39,7 @@ namespace Lib.core
             {
                 //redis
                 RedisConnectionManager.Dispose();
+                RedisClientManager.Instance.Dispose();
             }
             catch (Exception e)
             {
@@ -67,8 +68,8 @@ namespace Lib.core
 
             try
             {
-                //zookeeper config
-                //ZooKeeperConfigurationManager.Dispose();
+                //zookeeper
+                ZooKeeperClientManager.Instance.Dispose();
             }
             catch (Exception e)
             {

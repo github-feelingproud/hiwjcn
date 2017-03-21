@@ -28,5 +28,15 @@ namespace Lib.extension
         {
             return Com.FindAtFromStr(s);
         }
+
+        /// <summary>
+        /// 获取sha1
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string ToSHA1(this string s)
+        {
+            return SecureHelper.GetSHA1(s);
+        }
     }
 }
