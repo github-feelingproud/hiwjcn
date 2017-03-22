@@ -48,6 +48,7 @@ namespace Lib.ioc
         /// <param name="ass"></param>
         protected void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
         {
+            builder.RegisterGeneric(typeof(EFRepository<>)).As(typeof(IRepository<>));
             foreach (var a in ass)
             {
                 foreach (var t in a.GetTypes())
@@ -74,6 +75,7 @@ namespace Lib.ioc
         /// <param name="ass"></param>
         protected void RegService(ref ContainerBuilder builder, bool intercept, params Assembly[] ass)
         {
+            builder.RegisterGeneric(typeof(ServiceBase<>)).As(typeof(IServiceBase<>));
             foreach (var a in ass)
             {
                 foreach (var t in a.GetTypes())
