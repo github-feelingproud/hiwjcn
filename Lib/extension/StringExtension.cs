@@ -38,5 +38,35 @@ namespace Lib.extension
         {
             return SecureHelper.GetSHA1(s);
         }
+
+        /// <summary>
+        /// 转为md5
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static string ToMD5(this string data)
+        {
+            return SecureHelper.GetMD5(data);
+        }
+
+        /// <summary>
+        /// 获取拼音
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string GetPinyin(this string s)
+        {
+            return Com.Pinyin(s);
+        }
+
+        /// <summary>
+        /// 获取拼音首字母
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string GetSpell(this string s)
+        {
+            return Com.GetSpell(s);
+        }
     }
 }

@@ -15,16 +15,7 @@ namespace Lib.extension
         /// <param name="data">数据</param>
         public static int ToInt(this object data)
         {
-            return ConvertHelper.GetInt(data.ToString());
-        }
-
-        /// <summary>
-        /// 转换为双精度浮点数
-        /// </summary>
-        /// <param name="data">数据</param>
-        public static double ToDouble(this object data)
-        {
-            return ConvertHelper.GetDouble(data.ToString());
+            return ConvertHelper.GetInt(data);
         }
 
         /// <summary>
@@ -32,18 +23,14 @@ namespace Lib.extension
         /// </summary>
         /// <param name="data">数据</param>
         /// <param name="digits">小数位数</param>
-        public static double ToDouble(this object data, int digits)
+        public static double ToDouble(this object data, int? digits = null)
         {
-            return Math.Round(data.ToDouble(), digits);
-        }
-
-        /// <summary>
-        /// 转换为高精度浮点数
-        /// </summary>
-        /// <param name="data">数据</param>
-        public static decimal ToDecimal(this object data)
-        {
-            return ConvertHelper.GetDecimal(data);
+            var db = ConvertHelper.GetDouble(data);
+            if (digits != null)
+            {
+                return Math.Round(db, digits.Value);
+            }
+            return db;
         }
 
         /// <summary>
@@ -51,9 +38,14 @@ namespace Lib.extension
         /// </summary>
         /// <param name="data">数据</param>
         /// <param name="digits">小数位数</param>
-        public static decimal ToDecimal(this object data, int digits)
+        public static decimal ToDecimal(this object data, int? digits = null)
         {
-            return Math.Round(data.ToDecimal(), digits);
+            var dec = ConvertHelper.GetDecimal(data);
+            if (digits != null)
+            {
+                return Math.Round(dec, digits.Value);
+            }
+            return dec;
         }
 
         /// <summary>
@@ -83,16 +75,6 @@ namespace Lib.extension
         public static int ToBoolInt(this object data)
         {
             return data.ToBool() ? 1 : 0;
-        }
-
-        /// <summary>
-        /// 转为md5
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static string ToMD5(this string data)
-        {
-            return SecureHelper.GetMD5(data);
         }
 
         /// <summary>
@@ -126,22 +108,7 @@ namespace Lib.extension
         {
             return MapperHelper.GetMappedEntity<T>(data);
         }
-
-        /// <summary>
-        /// NameValueCollection转为字典
-        /// </summary>
-        /// <param name="col"></param>
-        /// <returns></returns>
-        public static Dictionary<string, string> ToDict(this NameValueCollection col)
-        {
-            var dict = new Dictionary<string, string>();
-            foreach (var key in col.AllKeys)
-            {
-                dict[key] = col[key];
-            }
-            return dict;
-        }
-
+        
         /// <summary>
         /// 格式化数字，获取xxx xxxk xxxw
         /// </summary>
@@ -150,26 +117,6 @@ namespace Lib.extension
         public static string SimpleNumber(this Int64 num)
         {
             return Com.SimpleNumber(num);
-        }
-
-        /// <summary>
-        /// 获取拼音
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public static string GetPinyin(this string s)
-        {
-            return Com.Pinyin(s);
-        }
-
-        /// <summary>
-        /// 获取拼音首字母
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public static string GetSpell(this string s)
-        {
-            return Com.GetSpell(s);
         }
 
     }

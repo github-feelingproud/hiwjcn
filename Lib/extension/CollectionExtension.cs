@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,21 @@ namespace Lib.extension
                 yield return enumerator.Current;
 
             } while (--batchSize > 0 && enumerator.MoveNext());
+        }
+
+        /// <summary>
+        /// NameValueCollection转为字典
+        /// </summary>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> ToDict(this NameValueCollection col)
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var key in col.AllKeys)
+            {
+                dict[key] = col[key];
+            }
+            return dict;
         }
     }
 }
