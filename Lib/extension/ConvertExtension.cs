@@ -34,7 +34,7 @@ namespace Lib.extension
         /// <param name="digits">小数位数</param>
         public static double ToDouble(this object data, int digits)
         {
-            return Math.Round(ToDouble(data), digits);
+            return Math.Round(data.ToDouble(), digits);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Lib.extension
         /// <param name="digits">小数位数</param>
         public static decimal ToDecimal(this object data, int digits)
         {
-            return Math.Round(ToDecimal(data), digits);
+            return Math.Round(data.ToDecimal(), digits);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Lib.extension
         {
             return MapperHelper.GetMappedEntity<T>(data);
         }
-        
+
         /// <summary>
         /// NameValueCollection转为字典
         /// </summary>
