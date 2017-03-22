@@ -42,12 +42,19 @@ namespace Lib.data
     /// 通过DbConfigurationType标签可以添加到EFDBCONTEXT上
     /// https://msdn.microsoft.com/en-us/data/jj680699
     /// </summary>
-    public class MyConfiguration : DbConfiguration
+    public class SqlServerConfiguration : DbConfiguration
     {
-        public MyConfiguration()
+        public SqlServerConfiguration()
         {
             SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
             SetDefaultConnectionFactory(new LocalDbConnectionFactory("v11.0"));
+        }
+    }
+    public class MySqlConfiguration : DbConfiguration
+    {
+        public MySqlConfiguration()
+        {
+            //SetDefaultConnectionFactory(new MySql.Data.Entity.MySqlConnectionFactory());
         }
     }
 
