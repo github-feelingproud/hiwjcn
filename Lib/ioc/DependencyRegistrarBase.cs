@@ -57,7 +57,7 @@ namespace Lib.ioc
                     {
                         builder.RegisterType(t).As(t);
                         builder.RegisterType(t).As(t.BaseType);
-                        var interfaces = t.BaseType.GetInterfaces().Where(x => x.IsGenericType_(typeof(IRepository<>))).ToArray();
+                        var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IRepository<>)))).ToArray();
                         if (interfaces?.Count() > 0)
                         {
                             builder.RegisterType(t).As(interfaces);
