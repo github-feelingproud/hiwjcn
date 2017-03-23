@@ -64,14 +64,15 @@ namespace Hiwjcn.Test
     public class UnitTest1
     {
         [TestMethod]
-        public void fsdafds()
+        public async Task fsdafds()
         {
             var data_0 = ServiceHelper<IOrderService>.Invoke(x => x.GetOrders());
             var data_4 = ServiceHelper<IOrderService>.Invoke(x => x.notExistFunction());
 
-            var data_1 = ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.GetOrders()).Result;
-            var data_2 = ServiceHelper<IOrderService>.InvokeAsync(async x => await x.GetOrdersAsync_()).Result;
-            var data_3 = ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.ThrowOrders()).Result;
+            var data_2 = await ServiceHelper<IOrderService>.InvokeAsync(async x => await x.GetOrdersAsync_());
+
+            var data_1 = await ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.GetOrders());
+            var data_3 = await ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.ThrowOrders());
         }
 
         /// <summary>
