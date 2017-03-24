@@ -68,5 +68,15 @@ namespace Lib.extension
         {
             return Com.GetSpell(s);
         }
+
+        /// <summary>
+        /// 提取url后面的参数
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> ExtractUrlParams(this string s)
+        {
+            return Com.ExtractUrlParams(s);
+        }
     }
 }

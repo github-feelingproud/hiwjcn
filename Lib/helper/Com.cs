@@ -17,6 +17,36 @@ namespace Lib.helper
     public static class Com
     {
         /// <summary>
+        /// 把URL后面的参数变成字典
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> ExtractUrlParams(string url)
+        {
+            var dict = new Dictionary<string, string>();
+            if (!ValidateHelper.IsPlumpString(url)) { return dict; }
+            var url_sp = url.Split('?');
+            if (!new int[] { 1, 2 }.Contains(url_sp.Length)) { throw new Exception("多问号错误"); }
+            var param_part = url_sp.Length == 1 ? url_sp[0] : url_sp[1];
+
+            foreach (var p in param_part.Split('&'))
+            {
+                var sp = p.Split('=');
+                if (!new int[] { 1, 2 }.Contains(sp.Length)) { throw new Exception("多等号错误"); }
+                if (sp.Length == 1)
+                {
+                    dict[sp[0]] = string.Empty;
+                }
+                else
+                {
+                    dict[sp[0]] = sp[1];
+                }
+            }
+
+            return dict;
+        }
+
+        /// <summary>
         /// 获取Exception深层次的错误
         /// </summary>
         /// <param name="e"></param>
