@@ -252,7 +252,7 @@ namespace Lib.mvc
                 //尝试使用session和cookie获取登陆用户
                 if (loginuser == null)
                 {
-                    loginuser = this.X.LoginUser;
+                    loginuser = this.X.User;
                 }
 
                 //如果没登陆就跳转

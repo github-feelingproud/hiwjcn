@@ -307,7 +307,8 @@ namespace Lib.mvc
                 return;
             }
             var server_timestamp = DateTimeHelper.GetTimeStamp();
-            if (server_timestamp - timespan > 5 || server_timestamp < timespan)
+            //取绝对值
+            if (Math.Abs(server_timestamp - timespan) > 5)
             {
                 filterContext.Result = ResultHelper.BadRequest("请求内容已经过期");
                 return;
