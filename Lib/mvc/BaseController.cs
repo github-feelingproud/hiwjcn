@@ -84,7 +84,7 @@ namespace Lib.mvc
         [NonAction]
         public ActionResult GetJsonRes(string errmsg)
         {
-            return GetJson(new ResJson() { success = !ValidateHelper.IsPlumpString(errmsg), msg = errmsg });
+            return GetJson(new _() { success = !ValidateHelper.IsPlumpString(errmsg), msg = errmsg });
         }
 
         /// <summary>
@@ -151,21 +151,11 @@ namespace Lib.mvc
         #endregion
 
         #region action处理
-        /// <summary>
-        /// 返回错误页面或者json
-        /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="msg"></param>
-        /// <returns></returns>
-        [NonAction]
-        private ActionResult GetErrorResult(string msg)
-        {
-            if (this.X.IsAjax || this.X.IsPost)
-            {
-                return this.GetJsonRes(msg);
-            }
-            return this.GetJsonRes(msg);
-        }
+
+        protected ActionResult ErrorResult { get; set; }
+        protected ActionResult NoLoginResult { get; set; }
+        protected ActionResult NoPermissionResult { get; set; }
+        protected List<string> PermissionList { get; set; }
 
         /// <summary>
         /// 获取action的时候捕获异常
@@ -174,7 +164,7 @@ namespace Lib.mvc
         /// <param name="controller"></param>
         /// <returns></returns>
         [NonAction]
-        public ActionResult RunAction(Func<ActionResult> GetActionFunc, ActionResult ErrorResult = null)
+        public ActionResult RunAction(Func<ActionResult> GetActionFunc)
         {
             try
             {
@@ -189,7 +179,7 @@ namespace Lib.mvc
                 }
                 else
                 {
-                    return GetErrorResult(e.GetInnerExceptionAsJson());
+                    return Http500();
                 }
             }
         }
@@ -202,7 +192,7 @@ namespace Lib.mvc
         /// <param name="ErrorResult"></param>
         /// <returns></returns>
         [NonAction]
-        public async Task<ActionResult> RunActionAsync(Func<Task<ActionResult>> GetActionFunc, ActionResult ErrorResult = null)
+        public async Task<ActionResult> RunActionAsync(Func<Task<ActionResult>> GetActionFunc)
         {
             try
             {
@@ -217,7 +207,7 @@ namespace Lib.mvc
                 }
                 else
                 {
-                    return GetErrorResult(e.GetInnerExceptionAsJson());
+                    return Http500();
                 }
             }
         }
@@ -236,52 +226,96 @@ namespace Lib.mvc
         /// <param name="DefaultErrorResult"></param>
         /// <returns></returns>
         [NonAction]
-        public ActionResult RunActionWhenLogin(
-            Func<LoginUserInfo, ActionResult> GetActionFunc, List<string> PermissionList = null,
-            ActionResult NoPermissionResult = null, ActionResult ErrorResult = null)
+        public ActionResult RunActionWhenLogin(Func<LoginUserInfo, ActionResult> GetActionFunc)
         {
             return RunAction(() =>
             {
-                LoginUserInfo loginuser = null;
-                //尝试通过token获取登陆用户
-                var token = this.Request.Headers["token"];
-                if (ValidateHelper.IsPlumpString(token))
+                var data = TryGetLoginUser();
+                var loginuser = data.Item1;
+                var error = data.Item2;
+                if (error != null)
                 {
-                    loginuser = null;
-                }
-                //尝试使用session和cookie获取登陆用户
-                if (loginuser == null)
-                {
-                    loginuser = this.X.User;
-                }
-
-                //如果没登陆就跳转
-                if (loginuser == null)
-                {
-                    //没有登陆就跳转登陆
-                    var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(this.X.Url);
-                    return new RedirectResult(redirect_url);
-                }
-                //所需要的全部权限值
-                foreach (var per in ConvertHelper.NotNullList(PermissionList))
-                {
-                    //只要没有满足一个权限就返回错误值
-                    if (!loginuser.HasPermission(per))
-                    {
-                        if (NoPermissionResult != null)
-                        {
-                            return NoPermissionResult;
-                        }
-                        else
-                        {
-                            return this.GetJsonRes("没有权限");
-                        }
-                    }
+                    return error;
                 }
 
                 return GetActionFunc.Invoke(loginuser);
-            }, ErrorResult);
+            });
         }
+
+        /// <summary>
+        /// 异步实现
+        /// </summary>
+        /// <param name="GetActionFunc"></param>
+        /// <param name="PermissionList"></param>
+        /// <param name="NoPermissionResult"></param>
+        /// <param name="ErrorResult"></param>
+        /// <returns></returns>
+        [NonAction]
+        public async Task<ActionResult> RunActionWhenLoginAsync(Func<LoginUserInfo, Task<ActionResult>> GetActionFunc)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var data = TryGetLoginUser();
+                var loginuser = data.Item1;
+                var error = data.Item2;
+                if (error != null)
+                {
+                    return error;
+                }
+
+                return await GetActionFunc.Invoke(loginuser);
+            });
+        }
+
+        [NonAction]
+        private Tuple<LoginUserInfo, ActionResult> TryGetLoginUser()
+        {
+            LoginUserInfo loginuser = null;
+            //尝试通过token获取登陆用户
+            var token = this.Request.Headers["token"];
+            if (ValidateHelper.IsPlumpString(token))
+            {
+                loginuser = null;
+            }
+            //尝试使用session和cookie获取登陆用户
+            if (loginuser == null)
+            {
+                loginuser = this.X.User;
+            }
+            //==================================================================================================
+            //如果没登陆就跳转
+            if (loginuser == null)
+            {
+                if (NoLoginResult != null)
+                {
+                    return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, NoLoginResult);
+                }
+                else
+                {
+                    //没有登陆就跳转登陆
+                    var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(this.X.Url);
+                    return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, new RedirectResult(redirect_url));
+                }
+            }
+            //所需要的全部权限值
+            foreach (var per in ConvertHelper.NotNullList(PermissionList))
+            {
+                //只要没有满足一个权限就返回错误值
+                if (!loginuser.HasPermission(per))
+                {
+                    if (NoPermissionResult != null)
+                    {
+                        return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, NoPermissionResult);
+                    }
+                    else
+                    {
+                        return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, Http403());
+                    }
+                }
+            }
+            return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, null);
+        }
+
         #endregion
 
     }

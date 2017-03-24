@@ -26,13 +26,13 @@ namespace Lib.mvc.user
 
             var context = HttpContext.Current;
 
-            var user = AppContext.GetObject<LoginStatus>().GetLoginUser(context);
-            if (user == null)
+            var loginuser = AppContext.GetObject<LoginStatus>().GetLoginUser(context);
+
+            //==============================================================================
+
+            if (loginuser == null)
             {
-                //没有登陆就跳转登陆
-                var url = context.Request.Url.ToString();
-                var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(url);
-                filterContext.Result = new RedirectResult(redirect_url);
+                filterContext.Result = GetJson(new _() { success = false, msg = "未登录" });
                 return;
             }
             //验证权限
@@ -40,27 +40,30 @@ namespace Lib.mvc.user
             {
                 foreach (var p in Permission.Split(',').Where(x => x?.Length > 0))
                 {
-                    if (!user.HasPermission(p))
+                    if (!loginuser.HasPermission(p))
                     {
-                        ActionResult re = null;
                         if (ReDirectUrl?.Length > 0)
                         {
-                            re = new RedirectResult(ReDirectUrl);
+                            filterContext.Result = new RedirectResult(ReDirectUrl);
                         }
                         else
                         {
-                            re = new JsonResult()
-                            {
-                                Data = new ResJson() { Success = false, ErrorMsg = "没有权限", ErrorCode = p },
-                                JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                            };
+                            filterContext.Result = GetJson(new _() { success = false, msg = "没有权限" });
                         }
-                        filterContext.Result = re;
                         return;
                     }
                 }
             }
         }
 
+
+        private ActionResult GetJson(object data)
+        {
+            return new JsonResult()
+            {
+                Data = data,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+        }
     }
 }
