@@ -177,6 +177,7 @@ namespace Hiwjcn.Web.Controllers
         [ValidateInput(false)]
         public ActionResult SendMailAction(string name, string email, string subject, string content)
         {
+            this.ErrorResult = GetJsonRes("发生错误，请检查服务器配置");
             return RunAction(() =>
             {
                 if (!ValidateHelper.IsAllPlumpString(name, email, subject, content))
@@ -222,7 +223,7 @@ namespace Hiwjcn.Web.Controllers
                 }
 
                 return GetJsonRes(EmailSender.SendMail(model) ? "" : "发送失败，请联系管理员");
-            }, ErrorResult: GetJsonRes("发生错误，请检查服务器配置"));
+            });
         }
 
         /// <summary>

@@ -22,6 +22,7 @@ namespace WebApp.Areas.Admin.Controllers
         /// <returns></returns>
         public ActionResult SectionList(string q, int? page)
         {
+            this.PermissionList = new List<string>() { };
             return RunActionWhenLogin((loginuser) =>
             {
                 int pageSize = 16;
@@ -36,7 +37,7 @@ namespace WebApp.Areas.Admin.Controllers
                     ViewData["pager"] = data.GetPagerHtml(url, "page", page.Value, pageSize);
                 }
                 return View();
-            }, PermissionList: new List<string>() { });
+            });
         }
 
         /// <summary>
@@ -108,13 +109,14 @@ namespace WebApp.Areas.Admin.Controllers
         /// <returns></returns>
         public ActionResult SectionEdit(string name)
         {
+            this.PermissionList = new List<string>() { };
             return RunActionWhenLogin((loginuser) =>
             {
                 SectionModel model = _IPageService.GetSection(name);
                 ViewData["model"] = model;
 
                 return View();
-            }, new List<string>() { });
+            });
         }
 
     }

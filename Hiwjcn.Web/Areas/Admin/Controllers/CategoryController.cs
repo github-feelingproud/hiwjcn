@@ -17,6 +17,7 @@ namespace WebApp.Areas.Admin.Controllers
         /// <returns></returns>
         public ActionResult CategoryManage(string type)
         {
+            this.NoPermissionResult = GoHome();
             return RunActionWhenLogin((loginuser) =>
             {
                 var model = new CategoryManageViewModel();
@@ -77,7 +78,7 @@ namespace WebApp.Areas.Admin.Controllers
                 }
                 ViewData["model"] = model;
                 return View();
-            }, NoPermissionResult: new GoHomeResult());
+            });
         }
 
         [NonAction]

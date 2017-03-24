@@ -14,7 +14,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 ViewData["list"] = _TagBll.GetList();
                 return View();
-            }, PermissionList: null);
+            });
         }
 
         public ActionResult TagEdit(int? id)
@@ -28,7 +28,7 @@ namespace WebApp.Areas.Admin.Controllers
                     ViewData["model"] = model;
                 }
                 return View();
-            }, PermissionList: null);
+            });
         }
 
         [HttpPost]
@@ -52,7 +52,7 @@ namespace WebApp.Areas.Admin.Controllers
                     res = _TagBll.AddTag(model);
                 }
                 return GetJsonRes(res);
-            }, PermissionList: null);
+            });
         }
 
         [HttpPost]
@@ -64,7 +64,7 @@ namespace WebApp.Areas.Admin.Controllers
                 if (id <= 0) { return GetJsonRes("参数错误"); }
                 var res = _TagBll.DeleteTag(id.Value);
                 return GetJsonRes(res);
-            }, PermissionList: null);
+            });
         }
 
     }
