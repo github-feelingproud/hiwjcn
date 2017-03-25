@@ -19,19 +19,6 @@ namespace Hiwjcn.Test
             public node right { get; set; }
         }
 
-        public void FindNode(node parent, node left, node right)
-        {
-            if (left != null)
-            {
-
-                FindNode(left, left.left, left.right);
-            }
-            if (right != null)
-            {
-                FindNode(right, right.left, right.right);
-            }
-        }
-
         [TestMethod]
         public void TestMethod1()
         {
@@ -73,5 +60,19 @@ Equal-System.Boolean
                 FindExpress(right.Left as BinaryExpression, right.Right as BinaryExpression);
             }
         }
+
+        public class ConditionNode
+        {
+            public BinaryExpression node;
+
+            public ConditionNode LeftNode { get; set; }
+            public ConditionNode RightNode { get; set; }
+
+            public override string ToString()
+            {
+                return $"({LeftNode?.ToString()} AND {RightNode?.ToString()}) AND {node?.NodeType}";
+            }
+        }
+
     }
 }
