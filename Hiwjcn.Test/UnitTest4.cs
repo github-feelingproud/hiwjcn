@@ -4,6 +4,8 @@ using System.Linq.Expressions;
 using Hiwjcn.Core.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Model.User;
+using System.Diagnostics;
+using Lib.extension;
 
 namespace Hiwjcn.Test
 {
@@ -40,13 +42,36 @@ namespace Hiwjcn.Test
 
             var body = (BinaryExpression)ex.Body;
 
-            var left = (ParameterExpression)body.Left;
+            var left = (BinaryExpression)body.Left;
+            var right = (BinaryExpression)body.Right;
 
-            var node = new node();
+            Debug.WriteLine("开始调试");
+            FindExpress(left, right);
+            Debug.WriteLine("结束调试");
 
+            /*
+             开始调试
+AndAlso-System.Boolean
+Equal-System.Boolean
+OrElse-System.Boolean
+GreaterThan-System.Boolean
+Equal-System.Boolean
+结束调试
+             */
+        }
 
-
-
+        public void FindExpress(BinaryExpression left, BinaryExpression right)
+        {
+            if (left != null)
+            {
+                Debug.WriteLine($"{(ExpressionType)left.NodeType}-{left.Type}");
+                FindExpress(left.Left as BinaryExpression, left.Right as BinaryExpression);
+            }
+            if (right != null)
+            {
+                Debug.WriteLine($"{(ExpressionType)right.NodeType}-{right.Type}");
+                FindExpress(right.Left as BinaryExpression, right.Right as BinaryExpression);
+            }
         }
     }
 }
