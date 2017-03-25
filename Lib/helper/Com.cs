@@ -43,7 +43,7 @@ namespace Lib.helper
                 }
             }
 
-            return dict;
+            return dict.ToDictionary(x => x.Key, x => EncodingHelper.UrlDecode(x.Value));
         }
 
         /// <summary>
