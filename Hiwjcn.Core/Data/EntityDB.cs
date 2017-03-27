@@ -5,6 +5,7 @@ using Model;
 using Model.Category;
 using Model.Sys;
 using Model.User;
+using MySql.Data.Entity;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
@@ -16,10 +17,23 @@ using WebLogic.Model.User;
 namespace Hiwjcn.Dal
 {
     /// <summary>
+    /// 数据库配置
+    /// </summary>
+    public class MySqlConfiguration : DbConfiguration
+    {
+        public MySqlConfiguration()
+        {
+            SetExecutionStrategy(MySqlProviderInvariantName.ProviderName, () => new MySqlExecutionStrategy());
+            SetDefaultConnectionFactory(new MySqlConnectionFactory());
+        }
+    }
+
+    /// <summary>
     /// EF容器上下文
     /// EF做映射的时候也可以数据库是int，代码里是string，
     /// 用attribute mapping测试成功，用fluent测试失败
     /// </summary>
+    [DbConfigurationType(typeof(MySqlConfiguration))]
     public class EntityDB : DbContext
     {
         public EntityDB() : base(ConfigHelper.Instance.MySqlConnectionString)
