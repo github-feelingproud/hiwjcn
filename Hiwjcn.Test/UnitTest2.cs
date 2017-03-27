@@ -56,14 +56,7 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void mq()
         {
-            var p = RabbitMQClient.DefaultClient.CreateProducer("ex");
-            p.Send("", "");
-
-            var c = RabbitMQClient.DefaultClient.CreateNoackConsumer();
-            c.Subscribe("", x =>
-            {
-                //
-            });
+            //
         }
 
         [TestMethod]

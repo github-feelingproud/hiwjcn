@@ -49,7 +49,7 @@ namespace Lib.core
             try
             {
                 //关闭rabbitmq
-                RabbitMQClient.DefaultClient.Dispose();
+                RabbitMQClientManager.Instance.Dispose();
             }
             catch (Exception e)
             {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.core;
 
 namespace Lib.mq
 {
@@ -11,9 +12,6 @@ namespace Lib.mq
     {
         private readonly IConnectionFactory _rabbitMqFactory;
         private readonly Lazy<IConnection> _rabbitMqConnection;
-
-        private static readonly Lazy<RabbitMQClient> defaultClient = new Lazy<RabbitMQClient>();
-        public static RabbitMQClient DefaultClient => defaultClient.Value;
 
         #region ctor
         public RabbitMQClient() : this("_rabbitmq_") { }
@@ -97,5 +95,33 @@ namespace Lib.mq
         /// <param name="consumerName">消费都名称后缀</param>
         public RabbitMQNoackConsumer CreateNoackConsumer(string consumerName) => new RabbitMQNoackConsumer(Connection.CreateModel(), consumerName);
         #endregion
+    }
+
+    public class RabbitMQClientManager : StaticClientManager<RabbitMQClient>
+    {
+        public static readonly RabbitMQClientManager Instance = new RabbitMQClientManager();
+
+        public override bool CheckInstance(RabbitMQClient ins)
+        {
+            return ins != null && ins.Connection.IsOpen;
+        }
+
+        public override RabbitMQClient CreateInstance(string key)
+        {
+            return new RabbitMQClient(key);
+        }
+
+        public override void Dispose()
+        {
+            foreach (var kv in db)
+            {
+                kv.Value?.Dispose();
+            }
+        }
+
+        public override void DisposeBrokenInstance(RabbitMQClient ins)
+        {
+            ins?.Dispose();
+        }
     }
 }
