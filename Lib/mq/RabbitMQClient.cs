@@ -16,7 +16,7 @@ namespace Lib.mq
         public static RabbitMQClient DefaultClient => defaultClient.Value;
 
         #region ctor
-        public RabbitMQClient() : this("rabbitmq") { }
+        public RabbitMQClient() : this("_rabbitmq_") { }
         public RabbitMQClient(string configurationName) : this(RabbitMQSection.FromSection(configurationName)) { }
         public RabbitMQClient(RabbitMQSection configuration)
         {

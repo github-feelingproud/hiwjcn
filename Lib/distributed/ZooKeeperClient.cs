@@ -31,7 +31,7 @@ namespace Lib.distributed
 
         private readonly ManualResetEvent _resetEvent = new ManualResetEvent(false);
 
-        public ZooKeeperClient(string configurationName = "zookeeper") : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
+        public ZooKeeperClient(string configurationName = "_zookeeper_") : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
         public ZooKeeperClient(ZooKeeperConfigSection configuration)
         {
