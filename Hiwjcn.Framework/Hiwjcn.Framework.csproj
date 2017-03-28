@@ -107,6 +107,7 @@
   <ItemGroup>
     <Compile Include="AttributeBundle.cs" />
     <Compile Include="Tasks\CleanDatabaseTask.cs" />
+    <Compile Include="Tasks\ConcurrentTestTask.cs" />
     <Compile Include="Tasks\DataReportTask.cs" />
     <Compile Include="UserController.cs" />
     <Compile Include="Simple_CRUD.cs" />
