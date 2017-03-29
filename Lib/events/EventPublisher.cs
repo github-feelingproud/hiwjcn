@@ -57,7 +57,7 @@ namespace Lib.events
         {
             if (!AppContext.IsRegistered<IConsumer<T>>())
             {
-                $"无法触发事件，没有再ioc中注册{typeof(IConsumer<T>)}的实例".AddBusinessInfoLog();
+                $"无法触发事件，没有在ioc中注册{typeof(IConsumer<T>)}的实例".AddBusinessInfoLog();
                 return;
             }
             var subscriptions = AppContext.GetAllObject<IConsumer<T>>();

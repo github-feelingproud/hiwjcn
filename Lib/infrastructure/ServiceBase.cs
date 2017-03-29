@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using Lib.data;
 using System.Linq.Expressions;
+using System.Collections.Generic;
 
 namespace Lib.infrastructure
 {
@@ -206,5 +207,14 @@ namespace Lib.infrastructure
             return _DalBase.Update(model) > 0 ? SUCCESS : "更新失败";
         }
 
+        /// <summary>
+        /// 通过标签检查实体
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private List<string> CheckEntity(T model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
