@@ -70,7 +70,6 @@ namespace Bll.User
 
             return Cache(key, () =>
             {
-                int[] range = PagerHelper.GetQueryRange(page, pageSize);
                 var data = new PagerData<UserModel>();
 
                 #region 查询
@@ -105,10 +104,8 @@ namespace Bll.User
                         data.UrlParams["q"] = keywords;
                     }
 
-                    query = query.OrderByDescending(x => x.UserID);
-
                     data.ItemCount = query.Count();
-                    data.DataList = query.Skip(range[0]).Take(range[1]).ToList();
+                    data.DataList = query.OrderByDescending(x => x.UserID).QueryPage(page, pageSize).ToList();
                     return true;
                 });
                 #endregion

@@ -22,6 +22,20 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 分页
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sd"></param>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <returns></returns>
+        public static SearchDescriptor<T> QueryPage<T>(this SearchDescriptor<T> sd, int page, int pagesize) where T : class
+        {
+            var range = PagerHelper.GetQueryRange(page, pagesize);
+            return sd.Skip(range[0]).Take(range[1]);
+        }
+
+        /// <summary>
         /// 如果索引不存在就创建
         /// </summary>
         /// <param name="client"></param>
@@ -372,8 +386,9 @@ namespace Lib.extension
 
                 sd = sd.Sort(x => BuildSort(model));
 
-                var range = PagerHelper.GetQueryRange(model.page, model.pagesize);
-                sd = sd.Skip(range[0]).Take(range[1]);
+                //var range = PagerHelper.GetQueryRange(model.page, model.pagesize);
+                //sd = sd.Skip(range[0]).Take(range[1]);
+                sd = sd.QueryPage(model.page, model.pagesize);
 
                 response = client.Search<ProductListV2>(x => sd);
 

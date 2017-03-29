@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WebLogic.Dal.Page;
 using WebLogic.Model.Page;
+using Lib.extension;
 
 namespace WebLogic.Bll.Page
 {
@@ -196,8 +197,7 @@ namespace WebLogic.Bll.Page
                         query = query.Where(x => x.SectionType == sectionType);
                     }
                     data.ItemCount = query.Count();
-                    var range = PagerHelper.GetQueryRange(page, pagesize);
-                    data.DataList = query.OrderByDescending(x => x.UpdateTime).Skip(range[0]).Take(range[1]).ToList();
+                    data.DataList = query.OrderByDescending(x => x.UpdateTime).QueryPage(page, pagesize).ToList();
                     return true;
                 });
                 return data;

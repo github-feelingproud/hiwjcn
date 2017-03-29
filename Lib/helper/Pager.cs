@@ -219,7 +219,10 @@ namespace Lib.helper
         {
             if (current_page < 1) { throw new Exception("页码不能小于1"); }
             if (page_size < 1) { throw new Exception("pagesize不能小于1"); }
-            return new int[] { ((current_page - 1) * page_size), page_size };
+
+            var data = Tuple.Create((current_page - 1) * page_size, page_size);
+
+            return new int[] { data.Item1, data.Item2 };
         }
     }
 

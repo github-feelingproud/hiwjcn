@@ -27,6 +27,20 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 分页
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <returns></returns>
+        public static IQueryable<T> QueryPage<T>(this IOrderedQueryable<T> query, int page, int pagesize)
+        {
+            var range = PagerHelper.GetQueryRange(page, pagesize);
+            return query.Skip(range[0]).Take(range[1]);
+        }
+
+        /// <summary>
         /// 动态生成or条件
         /// http://www.albahari.com/nutshell/predicatebuilder.aspx
         /// </summary>
