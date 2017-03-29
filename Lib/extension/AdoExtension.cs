@@ -228,6 +228,15 @@ namespace Lib.extension
             }
         }
 
+        [Obsolete("添加参数")]
+        public static void AddParameters(this IDbCommand command, string key, object value)
+        {
+            var p = command.CreateParameter();
+            p.ParameterName = key;
+            p.Value = value ?? System.DBNull.Value;
+            command.Parameters.Add(p);
+        }
+
         /// <summary>
         /// 执行SQL
         /// </summary>
