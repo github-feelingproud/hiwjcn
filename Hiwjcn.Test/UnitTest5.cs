@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Castle.DynamicProxy;
 using Hiwjcn.Bll;
 using Castle.Core.Interceptor;
+using Model.User;
+using Lib.helper;
 
 namespace Hiwjcn.Test
 {
@@ -17,6 +19,19 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest5
     {
+        [TestMethod]
+        public void CheckModel()
+        {
+            var model = new UserModel();
+
+            model.UID = Com.GetUUID();
+            model.NickName = "a";
+            model.PassWord = "fa";
+            model.Email = "fafa";
+
+            var errors = ValidateHelper.CheckEntity(model);
+        }
+
         [TestMethod]
         public void TestMethod1()
         {

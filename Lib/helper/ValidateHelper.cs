@@ -8,6 +8,10 @@ using System.Drawing;
 using Lib.core;
 using System.Globalization;
 using Lib.io;
+using Lib.data;
+using System.Reflection;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lib.helper
 {
@@ -446,6 +450,58 @@ namespace Lib.helper
         public static bool IsReferenceEquals(object obj1, object obj2)
         {
             return object.ReferenceEquals(obj1, obj2);
+        }
+
+        public static List<string> CheckEntity<T>(T model) where T : IDBTable
+        {
+            var list = new List<string>();
+            if (model == null)
+            {
+                list.Add("实体对象不能为Null");
+                return list;
+            }
+
+            foreach (var prop in model.GetType().GetProperties())
+            {
+                if (prop.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
+
+                var value = prop.GetValue(model);
+
+                Func<ValidationAttribute, bool> CheckProp = validator =>
+                {
+                    if (validator != null && !validator.IsValid(value))
+                    {
+                        list.Add(validator.ErrorMessage);
+                        return false;
+                    }
+                    return true;
+                };
+
+                //是否可为空
+                if (!CheckProp(prop.GetCustomAttributes<RequiredAttribute>().FirstOrDefault())) { continue; }
+                //字符串长度
+                if (!CheckProp(prop.GetCustomAttributes<StringLengthAttribute>().FirstOrDefault())) { continue; }
+                //正则表达式
+                if (!CheckProp(prop.GetCustomAttributes<RegularExpressionAttribute>().FirstOrDefault())) { continue; }
+                //范围
+                if (!CheckProp(prop.GetCustomAttributes<RangeAttribute>().FirstOrDefault())) { continue; }
+                //最大长度
+                if (!CheckProp(prop.GetCustomAttributes<MaxLengthAttribute>().FirstOrDefault())) { continue; }
+                //最小长度
+                if (!CheckProp(prop.GetCustomAttributes<MinLengthAttribute>().FirstOrDefault())) { continue; }
+                //电话
+                if (!CheckProp(prop.GetCustomAttributes<PhoneAttribute>().FirstOrDefault())) { continue; }
+                //邮件
+                if (!CheckProp(prop.GetCustomAttributes<EmailAddressAttribute>().FirstOrDefault())) { continue; }
+                //URL
+                if (!CheckProp(prop.GetCustomAttributes<UrlAttribute>().FirstOrDefault())) { continue; }
+                //信用卡
+                if (!CheckProp(prop.GetCustomAttributes<CreditCardAttribute>().FirstOrDefault())) { continue; }
+                //自定义
+                if (!CheckProp(prop.GetCustomAttributes<CustomValidationAttribute>().FirstOrDefault())) { continue; }
+            }
+
+            return list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
         }
 
     }

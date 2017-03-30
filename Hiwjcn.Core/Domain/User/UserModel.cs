@@ -26,21 +26,23 @@ namespace Model.User
 
         [Column(nameof(UID))]
         [Editable(false)]
-        [Required]
-        [MinLength(30)]
-        [MaxLength(40)]
+        [Required(ErrorMessage = "UID不能为空")]
+        [MinLength(30, ErrorMessage = "UID最短长度30")]
+        [MaxLength(40, ErrorMessage = "UID长度最长40")]
         public virtual string UID { get; set; }
 
         /// <summary>
         /// 昵称
         /// </summary>
         [Column("nick_name")]
+        [StringLength(10, MinimumLength = 5, ErrorMessage = "昵称长度不匹配")]
         public virtual string NickName { get; set; }
 
         /// <summary>
         /// md5加密的密码
         /// </summary>
         [Column("user_pass")]
+        [StringLength(50, MinimumLength = 10, ErrorMessage = "密码长度错误")]
         public virtual string PassWord { get; set; }
 
         /// <summary>
@@ -59,6 +61,7 @@ namespace Model.User
         /// 邮箱
         /// </summary>
         [Column("user_email")]
+        [EmailAddress(ErrorMessage = "邮件格式错误")]
         public virtual string Email { get; set; }
 
         /// <summary>
