@@ -452,6 +452,12 @@ namespace Lib.helper
             return object.ReferenceEquals(obj1, obj2);
         }
 
+        /// <summary>
+        /// 根据attribute验证model
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public static List<string> CheckEntity<T>(T model) where T : IDBTable
         {
             var list = new List<string>();
@@ -464,6 +470,11 @@ namespace Lib.helper
             foreach (var prop in model.GetType().GetProperties())
             {
                 if (prop.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
+                //自定义
+                if (prop.GetCustomAttributes<CustomValidationAttribute>().FirstOrDefault() != null)
+                {
+                    throw new NotSupportedException("不支持CustomValidationAttribute");
+                }
 
                 var value = prop.GetValue(model);
 
@@ -497,8 +508,6 @@ namespace Lib.helper
                 if (!CheckProp(prop.GetCustomAttributes<UrlAttribute>().FirstOrDefault())) { continue; }
                 //信用卡
                 if (!CheckProp(prop.GetCustomAttributes<CreditCardAttribute>().FirstOrDefault())) { continue; }
-                //自定义
-                if (!CheckProp(prop.GetCustomAttributes<CustomValidationAttribute>().FirstOrDefault())) { continue; }
             }
 
             return list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
