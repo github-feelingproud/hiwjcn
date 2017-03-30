@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.extension;
+using System.Transactions;
 
 namespace Hiwjcn.Bll
 {
@@ -18,6 +19,9 @@ namespace Hiwjcn.Bll
          
     */
 
+    /// <summary>
+    /// 捕获异常
+    /// </summary>
     public class AopLogError : IInterceptor
     {
         public void Intercept(IInvocation invocation)
@@ -37,4 +41,35 @@ namespace Hiwjcn.Bll
 
         }
     }
+
+    /// <summary>
+    /// 分布事务
+    /// </summary>
+    public class DistributeTransaction : IInterceptor
+    {
+        public void Intercept(IInvocation invocation)
+        {
+            var transactionOption = new TransactionOptions();
+            //设置事务隔离级别
+            transactionOption.IsolationLevel = IsolationLevel.ReadCommitted;
+            // 设置事务超时时间为60秒
+            transactionOption.Timeout = TimeSpan.FromSeconds(3);
+
+            using (var tran = new TransactionScope(TransactionScopeOption.Required, transactionOption))
+            {
+                try
+                {
+                    invocation.Proceed();
+
+                    //没有错误,提交事务
+                    tran.Complete();
+                }
+                catch (Exception e)
+                {
+                    e.AddErrorLog();
+                }
+            }
+        }
+    }
+
 }

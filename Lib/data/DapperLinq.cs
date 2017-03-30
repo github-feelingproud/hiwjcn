@@ -21,9 +21,19 @@ namespace Lib.data
             switch (e.NodeType)
             {
                 case ExpressionType.Lambda:
-                    return null;
+                    return BuildWhere(((LambdaExpression)e).Body);
 
                 case ExpressionType.AndAlso:
+                    var ee = (BinaryExpression)e;
+                    return null;
+
+                case ExpressionType.OrElse:
+                    return null;
+
+                case ExpressionType.Equal:
+                    return null;
+
+                case ExpressionType.NotEqual:
                     return null;
 
                 case ExpressionType.GreaterThan:
@@ -42,6 +52,13 @@ namespace Lib.data
                     return null;
 
                 case ExpressionType.Call:
+                    //var ee = (MethodCallExpression)e;
+                    return null;
+
+                case ExpressionType.Parameter:
+                    return null;
+
+                case ExpressionType.Constant:
                     return null;
 
                 default:
@@ -57,6 +74,7 @@ namespace Lib.data
             }
             return WhereSql;
         }
+        
     }
     public static class DapperLinqExtension
     {

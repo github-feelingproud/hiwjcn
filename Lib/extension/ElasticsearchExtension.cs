@@ -29,7 +29,7 @@ namespace Lib.extension
         /// <param name="page"></param>
         /// <param name="pagesize"></param>
         /// <returns></returns>
-        public static SearchDescriptor<T> QueryPage<T>(this SearchDescriptor<T> sd, int page, int pagesize) where T : class
+        public static SearchDescriptor<T> QueryPage_<T>(this SearchDescriptor<T> sd, int page, int pagesize) where T : class
         {
             var range = PagerHelper.GetQueryRange(page, pagesize);
             return sd.Skip(range[0]).Take(range[1]);
@@ -388,7 +388,7 @@ namespace Lib.extension
 
                 //var range = PagerHelper.GetQueryRange(model.page, model.pagesize);
                 //sd = sd.Skip(range[0]).Take(range[1]);
-                sd = sd.QueryPage(model.page, model.pagesize);
+                sd = sd.QueryPage_(model.page, model.pagesize);
 
                 response = client.Search<ProductListV2>(x => sd);
 
