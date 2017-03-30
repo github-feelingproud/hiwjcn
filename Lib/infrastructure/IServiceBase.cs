@@ -1,6 +1,7 @@
 ﻿using Lib.core;
 using Lib.data;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Lib.infrastructure
@@ -18,6 +19,8 @@ namespace Lib.infrastructure
         string SUCCESS { get; }
 
         string CheckModel(T model);
+
+        List<string> CheckEntity(T model);
 
         T FindFirstEntity(Expression<Func<T, bool>> where);
 

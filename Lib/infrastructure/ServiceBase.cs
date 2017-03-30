@@ -6,6 +6,9 @@ using System.Linq;
 using Lib.data;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using System.Reflection;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Lib.infrastructure
 {
@@ -124,13 +127,18 @@ namespace Lib.infrastructure
 
         /// <summary>
         /// 检查model约束（约等于数据库约束）
+        /// 默认使用attribute验证
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         public virtual string CheckModel(T model)
         {
-            if (model == null) { return "实体为空"; }
-            return string.Empty;
+            var errors = CheckEntity(model);
+            if (ValidateHelper.IsPlumpList(errors))
+            {
+                return errors[0];
+            }
+            return SUCCESS;
         }
 
         /// <summary>
@@ -212,9 +220,56 @@ namespace Lib.infrastructure
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private List<string> CheckEntity(T model)
+        public List<string> CheckEntity(T model)
         {
-            throw new NotImplementedException();
+            var list = new List<string>();
+            if (model == null)
+            {
+                list.Add("实体对象不能为Null");
+                return list;
+            }
+
+            foreach (var prop in model.GetType().GetProperties(BindingFlags.Public))
+            {
+                if (prop.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
+
+                var value = prop.GetValue(model);
+
+                Func<ValidationAttribute, bool> CheckProp = validator =>
+                {
+                    if (validator != null && !validator.IsValid(value))
+                    {
+                        list.Add(validator.ErrorMessage);
+                        return false;
+                    }
+                    return true;
+                };
+
+                //是否可为空
+                if (!CheckProp(prop.GetCustomAttribute<RequiredAttribute>())) { continue; }
+                //字符串长度
+                if (!CheckProp(prop.GetCustomAttribute<StringLengthAttribute>())) { continue; }
+                //正则表达式
+                if (!CheckProp(prop.GetCustomAttribute<RegularExpressionAttribute>())) { continue; }
+                //范围
+                if (!CheckProp(prop.GetCustomAttribute<RangeAttribute>())) { continue; }
+                //最大长度
+                if (!CheckProp(prop.GetCustomAttribute<MaxLengthAttribute>())) { continue; }
+                //最小长度
+                if (!CheckProp(prop.GetCustomAttribute<MinLengthAttribute>())) { continue; }
+                //电话
+                if (!CheckProp(prop.GetCustomAttribute<PhoneAttribute>())) { continue; }
+                //邮件
+                if (!CheckProp(prop.GetCustomAttribute<EmailAddressAttribute>())) { continue; }
+                //URL
+                if (!CheckProp(prop.GetCustomAttribute<UrlAttribute>())) { continue; }
+                //信用卡
+                if (!CheckProp(prop.GetCustomAttribute<CreditCardAttribute>())) { continue; }
+                //自定义
+                if (!CheckProp(prop.GetCustomAttribute<CustomValidationAttribute>())) { continue; }
+            }
+
+            return list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
         }
     }
 }
