@@ -132,15 +132,38 @@ namespace Lib.data
         Task<bool> ExistAsync(Expression<Func<T, bool>> where);
         #endregion
 
+        #region 获取查询上下文
         /// <summary>
         /// 获取IQueryable对象，用于linq查询
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="Transaction"></param>
+        [Obsolete("通用接口本不应该有EF专属的特性，目前为偷懒先放着")]
         void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = true);
+
+        /// <summary>
+        /// 获取IQueryable对象，用于linq查询
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
+        [Obsolete("通用接口本不应该有EF专属的特性，目前为偷懒先放着")]
         Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = true);
 
+        /// <summary>
+        /// 获取session
+        /// </summary>
+        /// <param name="callback"></param>
+        [Obsolete("通用接口本不应该有EF专属的特性，目前为偷懒先放着")]
         void PrepareSession(Func<DbContext, bool> callback);
+
+        /// <summary>
+        /// 获取session
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        [Obsolete("通用接口本不应该有EF专属的特性，目前为偷懒先放着")]
         Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback);
+        #endregion
     }
 }

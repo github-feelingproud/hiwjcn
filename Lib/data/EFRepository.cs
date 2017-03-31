@@ -173,7 +173,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(keys)) { throw new Exception("参数为空"); }
             T model = default(T);
-            PrepareSession((db) =>
+            PrepareSession(db =>
             {
                 model = db.Set<T>().Find(keys);
                 return true;
@@ -213,7 +213,7 @@ namespace Lib.data
             int count = DEFAULT_COUNT)
         {
             List<T> list = null;
-            PrepareIQueryable((query) =>
+            PrepareIQueryable(query =>
             {
                 if (where != null)
                 {
@@ -375,7 +375,7 @@ namespace Lib.data
                 ret = query.Any();
                 return true;
             });
-            if (ret == null) { throw new Exception("是否存在查询失败"); }
+            if (ret == null) { throw new Exception("Exist查询失败"); }
             return ret.Value;
         }
         public async Task<bool> ExistAsync(Expression<Func<T, bool>> where)
@@ -390,11 +390,12 @@ namespace Lib.data
                 ret = await query.AnyAsync();
                 return true;
             });
-            if (ret == null) { throw new Exception("是否存在查询失败"); }
+            if (ret == null) { throw new Exception("Exist查询失败"); }
             return ret.Value;
         }
         #endregion
 
+        #region 获取查询上下文
         /// <summary>
         /// 获取IQueryable对象，用于linq查询
         /// </summary>
@@ -417,6 +418,7 @@ namespace Lib.data
         {
             await this._EFManager.PrepareSessionAsync(callback);
         }
+        #endregion
     }
 
     /// <summary>
