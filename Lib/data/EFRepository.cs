@@ -16,7 +16,7 @@ namespace Lib.data
     /// 如果使用groupby查询请手写session或者iqueryable查询
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EFRepository<T> : IRepository<T> where T : class, IDBTable
+    public partial class EFRepository<T> : IRepository<T> where T : class, IDBTable
     {
         public EFManager _EFManager { get; private set; }
 
@@ -39,7 +39,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
             int count = 0;
-            _EFManager.PrepareSession(db =>
+            PrepareSession(db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -60,7 +60,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
             int count = 0;
-            await _EFManager.PrepareSessionAsync(async db =>
+            await PrepareSessionAsync(async db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -84,7 +84,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
             int count = 0;
-            _EFManager.PrepareSession(db =>
+            PrepareSession(db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -128,7 +128,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
             int count = 0;
-            _EFManager.PrepareSession(db =>
+            PrepareSession(db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -173,7 +173,7 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(keys)) { throw new Exception("参数为空"); }
             T model = default(T);
-            _EFManager.PrepareSession((db) =>
+            PrepareSession((db) =>
             {
                 model = db.Set<T>().Find(keys);
                 return true;
@@ -239,7 +239,47 @@ namespace Lib.data
                 {
                     query = query.Take(count);
                 }
-                list = query.NotNullList();
+                list = query.ToList();
+                return true;
+            });
+            return ConvertHelper.NotNullList(list);
+        }
+
+        public async Task<List<T>> QueryListAsync<OrderByColumnType>(
+            Expression<Func<T, bool>> where,
+            Expression<Func<T, OrderByColumnType>> orderby = null,
+            bool Desc = true,
+            int start = DEFAULT_START,
+            int count = DEFAULT_COUNT)
+        {
+            List<T> list = null;
+            await PrepareIQueryableAsync(async query =>
+            {
+                if (where != null)
+                {
+                    query = query.Where(where);
+                }
+                if (orderby != null)
+                {
+                    if (Desc)
+                    {
+                        query = query.OrderByDescending(orderby);
+                    }
+                    else
+                    {
+                        query = query.OrderBy(orderby);
+                    }
+                }
+                if (start >= 0)
+                {
+                    if (orderby == null) { throw new Exception("使用skip前必须先用orderby排序"); }
+                    query = query.Skip(start);
+                }
+                if (count > 0)
+                {
+                    query = query.Take(count);
+                }
+                list = await query.ToListAsync();
                 return true;
             });
             return ConvertHelper.NotNullList(list);
@@ -255,6 +295,10 @@ namespace Lib.data
         {
             return QueryList<object>(where: where, count: count);
         }
+        public async Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int count = DEFAULT_COUNT)
+        {
+            return await QueryListAsync<object>(where: where, count: count);
+        }
 
         /// <summary>
         /// 查询第一个
@@ -264,6 +308,15 @@ namespace Lib.data
         public T GetFirst(Expression<Func<T, bool>> where)
         {
             var list = GetList(where: where, count: 1);
+            if (ValidateHelper.IsPlumpList(list))
+            {
+                return list[0];
+            }
+            return default(T);
+        }
+        public async Task<T> GetFirstAsync(Expression<Func<T, bool>> where)
+        {
+            var list = await GetListAsync(where: where, count: 1);
             if (ValidateHelper.IsPlumpList(list))
             {
                 return list[0];
@@ -290,6 +343,20 @@ namespace Lib.data
             });
             return count;
         }
+        public async Task<int> GetCountAsync(Expression<Func<T, bool>> where)
+        {
+            int count = 0;
+            await PrepareIQueryableAsync(async query =>
+            {
+                if (where != null)
+                {
+                    query = query.Where(where);
+                }
+                count = await query.CountAsync();
+                return true;
+            });
+            return count;
+        }
 
         /// <summary>
         /// 查询是否存在 
@@ -311,6 +378,21 @@ namespace Lib.data
             if (ret == null) { throw new Exception("是否存在查询失败"); }
             return ret.Value;
         }
+        public async Task<bool> ExistAsync(Expression<Func<T, bool>> where)
+        {
+            bool? ret = null;
+            await PrepareIQueryableAsync(async query =>
+            {
+                if (where != null)
+                {
+                    query = query.Where(where);
+                }
+                ret = await query.AnyAsync();
+                return true;
+            });
+            if (ret == null) { throw new Exception("是否存在查询失败"); }
+            return ret.Value;
+        }
         #endregion
 
         /// <summary>
@@ -322,10 +404,27 @@ namespace Lib.data
         {
             this._EFManager.PrepareIQueryable<T>(callback, track);
         }
+        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = true)
+        {
+            await this._EFManager.PrepareIQueryableAsync<T>(callback, track);
+        }
 
         public void PrepareSession(Func<DbContext, bool> callback)
         {
             this._EFManager.PrepareSession(callback);
         }
+        public async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        {
+            await this._EFManager.PrepareSessionAsync(callback);
+        }
+    }
+
+    /// <summary>
+    /// TODO 准备把异步方法放到这个里面
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    partial class EFRepository<T>
+    {
+        public void TODO_PLACE_ASYNC_METHOD_TO_THIS_PARTIAL_CLASS() { }
     }
 }

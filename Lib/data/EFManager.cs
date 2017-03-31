@@ -92,10 +92,11 @@ namespace Lib.data
         /// <returns></returns>
         public DbContext GetDbContext()
         {
+            /* 提升性能，不要注册
             if (!AppContext.IsRegistered<DbContext>(db_name))
             {
                 throw new Exception("请在容器中注册dbcontext实例");
-            }
+            }*/
             return AppContext.GetObject<DbContext>(name: db_name);
         }
 
@@ -157,7 +158,7 @@ namespace Lib.data
             });
         }
 
-        public async Task PrepareIQueryableAsync<T>(Func<IQueryable<T>, bool> callback, bool track = true)
+        public async Task PrepareIQueryableAsync<T>(Func<IQueryable<T>, Task<bool>> callback, bool track = true)
             where T : class, IDBTable
         {
             await PrepareSessionAsync(async session =>
@@ -175,7 +176,7 @@ namespace Lib.data
                 {
                     query = session.Set<T>().AsNoTracking();
                 }
-                return await Task.FromResult(callback.Invoke(query));
+                return await callback.Invoke(query);
             });
         }
 

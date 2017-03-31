@@ -13,37 +13,39 @@ namespace Lib.data
     /// <typeparam name="T"></typeparam>
     public interface IRepository<T> where T : IDBTable
     {
+        #region 添加
         /// <summary>
-        /// 数据源选择
-        /// </summary>
-        EFManager _EFManager { get; }
-
-        /// <summary>
-        /// 插入
+        /// 添加多个model
         /// </summary>
         /// <param name="models"></param>
         /// <returns></returns>
         int Add(params T[] models);
         /// <summary>
-        /// 异步插入
+        /// 异步添加
         /// </summary>
         /// <param name="models"></param>
         /// <returns></returns>
         Task<int> AddAsync(params T[] models);
+        #endregion
+
+        #region 删除
         /// <summary>
-        /// 删除
+        /// 删除多个model
         /// </summary>
         /// <param name="models"></param>
         /// <returns></returns>
         int Delete(params T[] models);
         /// <summary>
-        /// 异步删除
+        /// 异步删除 
         /// </summary>
         /// <param name="models"></param>
         /// <returns></returns>
         Task<int> DeleteAsync(params T[] models);
+        #endregion
+
+        #region 修改
         /// <summary>
-        /// 更新
+        /// 更新多个model
         /// </summary>
         /// <param name="models"></param>
         /// <returns></returns>
@@ -54,27 +56,33 @@ namespace Lib.data
         /// <param name="models"></param>
         /// <returns></returns>
         Task<int> UpdateAsync(params T[] models);
+
+        #endregion
+
+        #region 查询
         /// <summary>
-        /// 查询
+        /// 根据主键查询实体
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
         T GetByKeys(params object[] keys);
+
         /// <summary>
-        /// 异步查询
+        /// 异步查找
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
         Task<T> GetByKeysAsync(params object[] keys);
+
         /// <summary>
-        /// 查询
+        /// 获取list
+        /// expression和func的使用注意点，参见lib的readme
         /// </summary>
-        /// <typeparam name="OrderByColumnType"></typeparam>
-        /// <param name="where"></param>
-        /// <param name="orderby"></param>
-        /// <param name="Desc"></param>
-        /// <param name="start"></param>
-        /// <param name="count"></param>
+        /// <param name="where">where条件</param>
+        /// <param name="orderby">排序条件</param>
+        /// <param name="start">开始位置</param>
+        /// <param name="count">读取条数</param>
+        /// <param name="Desc">正序反序</param>
         /// <returns></returns>
         List<T> QueryList<OrderByColumnType>(
             Expression<Func<T, bool>> where,
@@ -82,41 +90,57 @@ namespace Lib.data
             bool Desc = true,
             int start = default(int),
             int count = default(int));
+
+        Task<List<T>> QueryListAsync<OrderByColumnType>(
+            Expression<Func<T, bool>> where,
+            Expression<Func<T, OrderByColumnType>> orderby = null,
+            bool Desc = true,
+            int start = default(int),
+            int count = default(int));
+
         /// <summary>
-        /// 查询
+        /// 获取list
         /// </summary>
         /// <param name="where"></param>
         /// <param name="count"></param>
         /// <returns></returns>
         List<T> GetList(Expression<Func<T, bool>> where, int count = default(int));
+        Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int count = default(int));
+
         /// <summary>
-        /// 查询
+        /// 查询第一个
         /// </summary>
         /// <param name="where"></param>
         /// <returns></returns>
         T GetFirst(Expression<Func<T, bool>> where);
+        Task<T> GetFirstAsync(Expression<Func<T, bool>> where);
+
         /// <summary>
-        /// 查询
+        /// 查询记录数（判断记录是否存在请使用Exist方法，效率更高）
         /// </summary>
         /// <param name="where"></param>
         /// <returns></returns>
         int GetCount(Expression<Func<T, bool>> where);
+        Task<int> GetCountAsync(Expression<Func<T, bool>> where);
+
         /// <summary>
-        /// 是否存在
+        /// 查询是否存在 
         /// </summary>
         /// <param name="where"></param>
         /// <returns></returns>
         bool Exist(Expression<Func<T, bool>> where);
+        Task<bool> ExistAsync(Expression<Func<T, bool>> where);
+        #endregion
+
         /// <summary>
-        /// 获取ef对象
+        /// 获取IQueryable对象，用于linq查询
         /// </summary>
         /// <param name="callback"></param>
-        void PrepareSession(Func<DbContext, bool> callback);
-        /// <summary>
-        /// 获取queryable
-        /// </summary>
-        /// <param name="callback"></param>
-        /// <param name="track"></param>
+        /// <param name="Transaction"></param>
         void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = true);
+        Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = true);
+
+        void PrepareSession(Func<DbContext, bool> callback);
+        Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback);
     }
 }
