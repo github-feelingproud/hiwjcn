@@ -31,12 +31,14 @@ namespace WebLogic.Model.Page
         /// 名称
         /// </summary>
         [Column("section_name")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "页面名称为空")]
         public virtual string SectionName { get; set; }
 
         /// <summary>
         /// 标题
         /// </summary>
         [Column("section_title")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "页面标题为空")]
         public virtual string SectionTitle { get; set; }
 
         /// <summary>
@@ -55,6 +57,7 @@ namespace WebLogic.Model.Page
         /// 内容类型(section/page/news)
         /// </summary>
         [Column("section_type")]
+        [StringLength(20, MinimumLength = 2, ErrorMessage = "页面类型为空")]
         public virtual string SectionType { get; set; }
 
         /// <summary>

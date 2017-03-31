@@ -21,6 +21,7 @@ namespace Model.Category
         /// 节点名称
         /// </summary>
         [Column("category_name")]
+        [StringLength(20, MinimumLength = 1, ErrorMessage = "节点名长度错误")]
         public virtual string CategoryName { get; set; }
 
         /// <summary>
@@ -96,6 +97,7 @@ namespace Model.Category
         /// 节点类型
         /// </summary>
         [Column("category_type")]
+        [Required(ErrorMessage = "节点类型不能为空")]
         public virtual string CategoryType { get; set; }
     }
 }
