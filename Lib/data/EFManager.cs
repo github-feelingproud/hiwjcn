@@ -92,7 +92,7 @@ namespace Lib.data
         /// <returns></returns>
         public DbContext GetDbContext()
         {
-            /* 提升性能，不要注册
+            /* 提升性能，不要检查
             if (!AppContext.IsRegistered<DbContext>(db_name))
             {
                 throw new Exception("请在容器中注册dbcontext实例");
