@@ -471,4 +471,29 @@ namespace Lib.data
 
     }
 
+    class MQTest
+    {
+        public MQTest()
+        {
+            var stop = false;
+            RedisManager.PrepareDataBase(db =>
+            {
+                while (true)
+                {
+                    if (stop) { break; }
+
+                    var data = db.ListRightPop("es-index");
+                    if (!data.HasValue)
+                    {
+                        Thread.Sleep(50);
+                        continue;
+                    }
+                    //handler data
+                    string json = data;
+                    var model = json.JsonToEntity<RedisHelper>();
+                }
+                return true;
+            });
+        }
+    }
 }
