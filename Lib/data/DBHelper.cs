@@ -7,17 +7,25 @@ using Lib.ioc;
 using Lib.helper;
 using Lib.extension;
 using System.Configuration;
+using System.Threading.Tasks;
 
 namespace Lib.data
 {
     public enum DBTypeEnum : int
     {
-        MySQL = 1, SqlServer = 2
+        MySQL = 1,
+        SqlServer = 2,
+        Oracle = 3,
+        DB2 = 4,
+        PostgreSQL = 5,
+        Sqlite = 6
     }
     public static class DBHelper
     {
-        private static readonly string ConStr = ConfigurationManager.AppSettings["db"] ??
-            ConfigurationManager.ConnectionStrings["db"]?.ToString();
+        private static readonly string ConStr =
+            ConfigurationManager.ConnectionStrings["db"]?.ToString() ??
+            ConfigurationManager.AppSettings["db"];
+
         /// <summary>
         /// 使用ioc中注册的数据库
         /// </summary>
@@ -26,20 +34,12 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpString(ConStr))
             {
-                throw new Exception("请在appsetting中配置节点为db的通用链接字符串");
+                throw new Exception("请在connectionstring或者appsetting中配置节点为db的通用链接字符串");
             }
-            IDbConnection con = null;
-            if (!AppContext.IsRegistered<IDbConnection>())
-            {
-                con = new SqlConnection();
-            }
-            else
-            {
-                con = AppContext.GetObject<IDbConnection>();
-            }
+            var con = AppContext.GetObject<IDbConnection>();
             con.ConnectionString = ConStr;
             //打开链接，重试两次
-            new Action(() => { con.Open(); }).InvokeWithRetry(2);
+            new Action(() => { con.OpenIfClosed(); }).InvokeWithRetry(2);
             return con;
         }
         /// <summary>
@@ -54,43 +54,78 @@ namespace Lib.data
             }
         }
         /// <summary>
+        /// 异步链接
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public static async Task PrepareConnectionAsync(Func<IDbConnection, Task> callback)
+        {
+            using (var con = GetConnectionProvider())
+            {
+                await callback.Invoke(con);
+            }
+        }
+        /// <summary>
         /// 使用ioc中注册的数据库
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="iso"></param>
-        public static void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback, IsolationLevel? iso = null)
+        public static void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback,
+            IsolationLevel? iso = null)
         {
             PrepareConnection(con =>
             {
-                IDbTransaction t = null;
-                if (iso == null)
+                using (var t = con.StartTransaction(iso))
                 {
-                    t = con.BeginTransaction();
-                }
-                else
-                {
-                    t = con.BeginTransaction(iso.Value);
-                }
-
-                try
-                {
-                    if (callback.Invoke(con, t))
+                    try
                     {
-                        t.Commit();
+                        if (callback.Invoke(con, t))
+                        {
+                            t.Commit();
+                        }
+                        else
+                        {
+                            t.Rollback();
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
                         t.Rollback();
+                        throw e;
                     }
                 }
-                catch (Exception e)
+            });
+        }
+
+        /// <summary>
+        /// 异步链接，带事务
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="iso"></param>
+        /// <returns></returns>
+        public static async Task PrepareConnectionAsync(Func<IDbConnection, IDbTransaction, Task<bool>> callback,
+            IsolationLevel? iso = null)
+        {
+            await PrepareConnectionAsync(async con =>
+            {
+                using (var t = con.StartTransaction(iso))
                 {
-                    t.Rollback();
-                    throw e;
-                }
-                finally
-                {
-                    t.Dispose();
+                    try
+                    {
+                        if (await callback.Invoke(con, t))
+                        {
+                            t.Commit();
+                        }
+                        else
+                        {
+                            t.Rollback();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        t.Rollback();
+                        throw e;
+                    }
                 }
             });
         }

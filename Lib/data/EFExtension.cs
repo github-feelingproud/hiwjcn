@@ -52,5 +52,41 @@ namespace Lib.data
             }
         }
 
+        /// <summary>
+        /// 获取不跟踪的IQueryable用于查询，效率更高
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="set"></param>
+        /// <returns></returns>
+        public static IQueryable<T> AsNoTrackingQueryable<T>(this DbSet<T> set) where T : class
+        {
+            return set.AsNoTracking().AsQueryable();
+        }
+
+        /// <summary>
+        /// 把实体加载到EF上下文，不重复加载
+        /// Nop中的方法
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="db"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static T AttachEntityToContext<T>(this DbContext db, T entity) where T : DBTable
+        {
+            //little hack here until Entity Framework really supports stored procedures
+            //otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
+            var set = db.Set<T>();
+            var alreadyAttached = set.Local.FirstOrDefault(x => x.IID == entity.IID);
+            if (alreadyAttached == null)
+            {
+                //attach new entity
+                set.Attach(entity);
+                return entity;
+            }
+
+            //entity is already loaded
+            return alreadyAttached;
+        }
+
     }
 }

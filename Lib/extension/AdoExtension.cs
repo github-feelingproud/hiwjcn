@@ -32,6 +32,24 @@ namespace Lib.extension
             }
         }
 
+        /// <summary>
+        /// 开启事务
+        /// </summary>
+        /// <param name="con"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public static IDbTransaction StartTransaction(this IDbConnection con, IsolationLevel? level)
+        {
+            if (level == null)
+            {
+                return con.BeginTransaction();
+            }
+            else
+            {
+                return con.BeginTransaction(level.Value);
+            }
+        }
+
         public static void HowToUseParametersInDapperFramework(this IDbConnection con)
         {
             var args = new DynamicParameters(new { });

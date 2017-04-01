@@ -88,15 +88,25 @@ namespace Lib.data
             Expression<Func<T, bool>> where,
             Expression<Func<T, OrderByColumnType>> orderby = null,
             bool Desc = true,
-            int start = default(int),
-            int count = default(int));
+            int? start = null,
+            int? count = null);
 
+        /// <summary>
+        /// 异步查询
+        /// </summary>
+        /// <typeparam name="OrderByColumnType"></typeparam>
+        /// <param name="where"></param>
+        /// <param name="orderby"></param>
+        /// <param name="Desc"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         Task<List<T>> QueryListAsync<OrderByColumnType>(
             Expression<Func<T, bool>> where,
             Expression<Func<T, OrderByColumnType>> orderby = null,
             bool Desc = true,
-            int start = default(int),
-            int count = default(int));
+            int? start = null,
+            int? count = null);
 
         /// <summary>
         /// 获取list
@@ -104,8 +114,14 @@ namespace Lib.data
         /// <param name="where"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        List<T> GetList(Expression<Func<T, bool>> where, int count = default(int));
-        Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int count = default(int));
+        List<T> GetList(Expression<Func<T, bool>> where, int? count = null);
+        /// <summary>
+        /// 异步获取list
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int? count = null);
 
         /// <summary>
         /// 查询第一个
@@ -113,6 +129,11 @@ namespace Lib.data
         /// <param name="where"></param>
         /// <returns></returns>
         T GetFirst(Expression<Func<T, bool>> where);
+        /// <summary>
+        /// 异步获取第一个
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
         Task<T> GetFirstAsync(Expression<Func<T, bool>> where);
 
         /// <summary>
@@ -121,6 +142,11 @@ namespace Lib.data
         /// <param name="where"></param>
         /// <returns></returns>
         int GetCount(Expression<Func<T, bool>> where);
+        /// <summary>
+        /// 异步获取count
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
         Task<int> GetCountAsync(Expression<Func<T, bool>> where);
 
         /// <summary>
@@ -129,6 +155,11 @@ namespace Lib.data
         /// <param name="where"></param>
         /// <returns></returns>
         bool Exist(Expression<Func<T, bool>> where);
+        /// <summary>
+        /// 异步查询是否存在
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
         Task<bool> ExistAsync(Expression<Func<T, bool>> where);
         #endregion
 
@@ -138,7 +169,7 @@ namespace Lib.data
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="Transaction"></param>
-        void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = true);
+        void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false);
 
         /// <summary>
         /// 获取IQueryable对象，用于linq查询
@@ -146,7 +177,7 @@ namespace Lib.data
         /// <param name="callback"></param>
         /// <param name="track"></param>
         /// <returns></returns>
-        Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = true);
+        Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false);
 
         /// <summary>
         /// 获取session

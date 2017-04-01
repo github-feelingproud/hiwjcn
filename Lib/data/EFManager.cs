@@ -1,9 +1,8 @@
-﻿using Lib.core;
+﻿using Lib.extension;
 using Lib.helper;
 using Lib.ioc;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.Core.Metadata.Edm;
@@ -152,7 +151,7 @@ namespace Lib.data
                 }
                 else
                 {
-                    query = session.Set<T>().AsNoTracking();
+                    query = session.Set<T>().AsNoTrackingQueryable();
                 }
                 return callback.Invoke(query);
             });

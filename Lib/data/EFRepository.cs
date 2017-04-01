@@ -26,8 +26,8 @@ namespace Lib.data
             this._EFManager = EFManager.SelectDB(db_name);
         }
 
-        private const int DEFAULT_START = -1;
-        private const int DEFAULT_COUNT = 1000;
+        //private const int DEFAULT_START = -1;
+        //private const int DEFAULT_COUNT = 1000;
 
         #region 添加
         /// <summary>
@@ -209,8 +209,8 @@ namespace Lib.data
             Expression<Func<T, bool>> where,
             Expression<Func<T, OrderByColumnType>> orderby = null,
             bool Desc = true,
-            int start = DEFAULT_START,
-            int count = DEFAULT_COUNT)
+            int? start = null,
+            int? count = null)
         {
             List<T> list = null;
             PrepareIQueryable(query =>
@@ -230,14 +230,14 @@ namespace Lib.data
                         query = query.OrderBy(orderby);
                     }
                 }
-                if (start >= 0)
+                if (start != null)
                 {
-                    if (orderby == null) { throw new Exception("使用skip前必须先用orderby排序"); }
-                    query = query.Skip(start);
+                    if (orderby == null) { throw new Exception("使用skip前必须先排序"); }
+                    query = query.Skip(start.Value);
                 }
-                if (count > 0)
+                if (count != null)
                 {
-                    query = query.Take(count);
+                    query = query.Take(count.Value);
                 }
                 list = query.ToList();
                 return true;
@@ -249,8 +249,8 @@ namespace Lib.data
             Expression<Func<T, bool>> where,
             Expression<Func<T, OrderByColumnType>> orderby = null,
             bool Desc = true,
-            int start = DEFAULT_START,
-            int count = DEFAULT_COUNT)
+            int? start = null,
+            int? count = null)
         {
             List<T> list = null;
             await PrepareIQueryableAsync(async query =>
@@ -270,14 +270,14 @@ namespace Lib.data
                         query = query.OrderBy(orderby);
                     }
                 }
-                if (start >= 0)
+                if (start != null)
                 {
-                    if (orderby == null) { throw new Exception("使用skip前必须先用orderby排序"); }
-                    query = query.Skip(start);
+                    if (orderby == null) { throw new Exception("使用skip前必须先排序"); }
+                    query = query.Skip(start.Value);
                 }
-                if (count > 0)
+                if (count != null)
                 {
-                    query = query.Take(count);
+                    query = query.Take(count.Value);
                 }
                 list = await query.ToListAsync();
                 return true;
@@ -291,11 +291,11 @@ namespace Lib.data
         /// <param name="where"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public List<T> GetList(Expression<Func<T, bool>> where, int count = DEFAULT_COUNT)
+        public List<T> GetList(Expression<Func<T, bool>> where, int? count = null)
         {
             return QueryList<object>(where: where, count: count);
         }
-        public async Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int count = DEFAULT_COUNT)
+        public async Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int? count = null)
         {
             return await QueryListAsync<object>(where: where, count: count);
         }
@@ -401,11 +401,11 @@ namespace Lib.data
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="Transaction"></param>
-        public void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = true)
+        public void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
         {
             this._EFManager.PrepareIQueryable<T>(callback, track);
         }
-        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = true)
+        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
         {
             await this._EFManager.PrepareIQueryableAsync<T>(callback, track);
         }
