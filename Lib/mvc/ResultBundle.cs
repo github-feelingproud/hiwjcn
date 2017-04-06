@@ -14,11 +14,11 @@ namespace Lib.mvc
 {
     public static class ResultHelper
     {
-        public static ActionResult BadRequest(string msg)
+        public static ActionResult BadRequest(string msg, object data = null)
         {
             return new CustomJsonResult()
             {
-                Data = new ResJson() { success = false, msg = msg },
+                Data = new _() { success = false, msg = msg, data = data },
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }

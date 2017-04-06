@@ -290,30 +290,43 @@ namespace Lib.mvc
         }
 
         public string ConfigKey { get; set; } = "sign_key";
+
+        /// <summary>
+        /// 时间戳误差
+        /// </summary>
+        public int DeviationSeconds { get; set; } = 10;
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var sign_key = ConfigurationManager.AppSettings[ConfigKey];
-            if (!ValidateHelper.IsPlumpString(sign_key)) { throw new Exception("没有配置签名的约定key"); }
+            if (!ValidateHelper.IsPlumpString(sign_key)) { throw new Exception($"没有配置签名的约定key({ConfigKey})"); }
 
             var reqparams = new NameValueCollection();
             AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.Form);
             AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.QueryString);
 
-            #region 验证时间戳
-            var timespan = ConvertHelper.GetInt64(reqparams["timespan"], -1);
-            if (timespan < 0)
+            if (ConfigurationManager.AppSettings["disable_timestamp_check"]?.ToLower() != "true")
             {
-                filterContext.Result = ResultHelper.BadRequest("缺少时间戳");
-                return;
+                #region 验证时间戳
+                var timestamp = ConvertHelper.GetInt64(reqparams["timestamp"], -1);
+                if (timestamp < 0)
+                {
+                    filterContext.Result = ResultHelper.BadRequest("缺少时间戳");
+                    return;
+                }
+                var server_timestamp = DateTimeHelper.GetTimeStamp();
+                //取绝对值
+                if (Math.Abs(server_timestamp - timestamp) > Math.Abs(DeviationSeconds))
+                {
+                    filterContext.Result = ResultHelper.BadRequest("请求时间戳已经过期", new
+                    {
+                        client_timestamp = timestamp,
+                        server_timestamp = server_timestamp
+                    });
+                    return;
+                }
+                #endregion
             }
-            var server_timestamp = DateTimeHelper.GetTimeStamp();
-            //取绝对值
-            if (Math.Abs(server_timestamp - timespan) > 5)
-            {
-                filterContext.Result = ResultHelper.BadRequest("请求内容已经过期");
-                return;
-            }
-            #endregion
 
             #region 验证签名
             var signKey = "sign";
@@ -342,8 +355,12 @@ namespace Lib.mvc
             var md5 = strdata.ToMD5().ToUpper();
             if (sign != md5)
             {
-                var msg = $"服务器加密：{md5}客户端加密：{sign}服务器排序：{strdata}";
-                filterContext.Result = ResultHelper.BadRequest(msg);
+                filterContext.Result = ResultHelper.BadRequest("签名错误", new
+                {
+                    client_sign = md5,
+                    server_sign = sign,
+                    server_order = strdata
+                });
                 return;
             }
             #endregion
