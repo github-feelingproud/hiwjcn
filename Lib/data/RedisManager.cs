@@ -306,6 +306,55 @@ namespace Lib.data
         }
 
         /// <summary>
+        /// pop或者阻塞
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="delay_ms"></param>
+        /// <param name="timeout"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        private T PopOrBlock<T>(string key, int delay_ms, TimeSpan? timeout, Func<IDatabase, RedisValue> func)
+        {
+            return Do(db =>
+            {
+                var timeout_at = default(DateTime?);
+                if (timeout != null)
+                {
+                    timeout_at = DateTime.Now.AddMilliseconds(timeout.Value.Milliseconds);
+                }
+
+                while (true)
+                {
+                    var value = func.Invoke(db);
+                    if (!value.HasValue)
+                    {
+                        Thread.Sleep(delay_ms);
+                        if (timeout_at != null && DateTime.Now > timeout_at.Value)
+                        {
+                            throw new Exception("等待超时");
+                        }
+                        continue;
+                    }
+                    return Deserialize<T>(value);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 拿不到数据就阻塞
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="delay_ms"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public T BListRightPop<T>(string key, int delay_ms = 10, TimeSpan? timeout = null)
+        {
+            return PopOrBlock<T>(key, delay_ms, timeout, db => db.ListRightPop(key));
+        }
+
+        /// <summary>
         /// 入栈
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -329,6 +378,19 @@ namespace Lib.data
                 var value = db.ListLeftPop(key);
                 return Deserialize<T>(value);
             });
+        }
+
+        /// <summary>
+        /// 拿不到数据就阻塞
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="delay_ms"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public T BListLeftPop<T>(string key, int delay_ms = 10, TimeSpan? timeout = null)
+        {
+            return PopOrBlock<T>(key, delay_ms, timeout, db => db.ListLeftPop(key));
         }
 
         /// <summary>
