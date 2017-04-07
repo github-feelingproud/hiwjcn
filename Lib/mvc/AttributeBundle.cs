@@ -385,6 +385,8 @@ namespace Lib.mvc
             }
         }
 
+        public virtual int CacheSeconds { get; set; } = 10;
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var sessionID = filterContext.HttpContext.Session.SessionID;
@@ -399,7 +401,7 @@ namespace Lib.mvc
             {
                 dict[k] = reqparams[k];
             }
-            var submitData = string.Join("&", dict.Select(x => $"{x.Key}={x.Value}"));
+            var submitData = dict.ToUrlParam();
             var AreaName = ConvertHelper.GetString(filterContext.RouteData.Values["Area"]);
             var ControllerName = ConvertHelper.GetString(filterContext.RouteData.Values["Controller"]);
             var ActionName = ConvertHelper.GetString(filterContext.RouteData.Values["Action"]);
@@ -416,8 +418,10 @@ namespace Lib.mvc
                         return;
                     }
                 }
-                //5秒钟不能提交相同的数据
-                cache.Set(key, submitData, 5);
+                //10秒钟不能提交相同的数据
+                CacheSeconds = Math.Abs(CacheSeconds);
+                if (CacheSeconds == 0) { throw new Exception("缓存时间不能为0"); }
+                cache.Set(key, submitData, CacheSeconds);
             }
             base.OnActionExecuting(filterContext);
         }
