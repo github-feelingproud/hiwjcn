@@ -30,6 +30,11 @@ namespace Hiwjcn.Test
             model.Email = "fafa";
 
             var errors = ValidateHelper.CheckEntity(model);
+
+            model.UID = string.Empty;
+            model.NickName = "hiwjcn";
+            model.Email = "hiwjcn@live.com";
+            errors = ValidateHelper.CheckEntity_(model);
         }
 
         [TestMethod]

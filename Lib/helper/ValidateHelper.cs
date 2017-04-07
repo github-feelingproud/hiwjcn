@@ -467,6 +467,17 @@ namespace Lib.helper
                 return list;
             }
 
+            //checker
+            Func<ValidationAttribute, object, bool> CheckProp = (validator, data) =>
+            {
+                if (validator != null && !validator.IsValid(data))
+                {
+                    list.Add(validator.ErrorMessage);
+                    return false;
+                }
+                return true;
+            };
+
             foreach (var prop in model.GetType().GetProperties())
             {
                 if (prop.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
@@ -478,39 +489,71 @@ namespace Lib.helper
 
                 var value = prop.GetValue(model);
 
-                Func<ValidationAttribute, bool> CheckProp = validator =>
+                //是否可为空
+                if (!CheckProp(prop.GetCustomAttributes<RequiredAttribute>().FirstOrDefault(), value)) { continue; }
+                //字符串长度
+                if (!CheckProp(prop.GetCustomAttributes<StringLengthAttribute>().FirstOrDefault(), value)) { continue; }
+                //正则表达式
+                if (!CheckProp(prop.GetCustomAttributes<RegularExpressionAttribute>().FirstOrDefault(), value)) { continue; }
+                //范围
+                if (!CheckProp(prop.GetCustomAttributes<RangeAttribute>().FirstOrDefault(), value)) { continue; }
+                //最大长度
+                if (!CheckProp(prop.GetCustomAttributes<MaxLengthAttribute>().FirstOrDefault(), value)) { continue; }
+                //最小长度
+                if (!CheckProp(prop.GetCustomAttributes<MinLengthAttribute>().FirstOrDefault(), value)) { continue; }
+                //电话
+                if (!CheckProp(prop.GetCustomAttributes<PhoneAttribute>().FirstOrDefault(), value)) { continue; }
+                //邮件
+                if (!CheckProp(prop.GetCustomAttributes<EmailAddressAttribute>().FirstOrDefault(), value)) { continue; }
+                //URL
+                if (!CheckProp(prop.GetCustomAttributes<UrlAttribute>().FirstOrDefault(), value)) { continue; }
+                //信用卡
+                if (!CheckProp(prop.GetCustomAttributes<CreditCardAttribute>().FirstOrDefault(), value)) { continue; }
+            }
+
+            return list.Where(x => IsPlumpString(x)).Distinct().ToList();
+        }
+
+        /// <summary>
+        /// 根据attribute验证model
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static List<string> CheckEntity_<T>(T model) where T : IDBTable
+        {
+            var list = new List<string>();
+            if (model == null)
+            {
+                list.Add("实体对象不能为Null");
+                return list;
+            }
+
+            //checker
+            Func<IEnumerable<ValidationAttribute>, object, bool> CheckProp = (validators, data) =>
+            {
+                if (validators == null) { return true; }
+                foreach (var validator in validators)
                 {
-                    if (validator != null && !validator.IsValid(value))
+                    if (!validator.IsValid(data))
                     {
                         list.Add(validator.ErrorMessage);
                         return false;
                     }
-                    return true;
-                };
+                }
+                return true;
+            };
 
-                //是否可为空
-                if (!CheckProp(prop.GetCustomAttributes<RequiredAttribute>().FirstOrDefault())) { continue; }
-                //字符串长度
-                if (!CheckProp(prop.GetCustomAttributes<StringLengthAttribute>().FirstOrDefault())) { continue; }
-                //正则表达式
-                if (!CheckProp(prop.GetCustomAttributes<RegularExpressionAttribute>().FirstOrDefault())) { continue; }
-                //范围
-                if (!CheckProp(prop.GetCustomAttributes<RangeAttribute>().FirstOrDefault())) { continue; }
-                //最大长度
-                if (!CheckProp(prop.GetCustomAttributes<MaxLengthAttribute>().FirstOrDefault())) { continue; }
-                //最小长度
-                if (!CheckProp(prop.GetCustomAttributes<MinLengthAttribute>().FirstOrDefault())) { continue; }
-                //电话
-                if (!CheckProp(prop.GetCustomAttributes<PhoneAttribute>().FirstOrDefault())) { continue; }
-                //邮件
-                if (!CheckProp(prop.GetCustomAttributes<EmailAddressAttribute>().FirstOrDefault())) { continue; }
-                //URL
-                if (!CheckProp(prop.GetCustomAttributes<UrlAttribute>().FirstOrDefault())) { continue; }
-                //信用卡
-                if (!CheckProp(prop.GetCustomAttributes<CreditCardAttribute>().FirstOrDefault())) { continue; }
+            foreach (var prop in model.GetType().GetProperties())
+            {
+                if (prop.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
+
+                var value = prop.GetValue(model);
+
+                if (!CheckProp(prop.GetCustomAttributes<ValidationAttribute>(), value)) { continue; }
             }
 
-            return list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
+            return list.Where(x => IsPlumpString(x)).Distinct().ToList();
         }
 
     }
