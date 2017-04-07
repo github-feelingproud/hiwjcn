@@ -250,6 +250,7 @@
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="ioc\BaseDependencyRegistrar.cs" />
     <Compile Include="ioc\DependencyRegistrarBase.cs" />
+    <Compile Include="ioc\IAutoRegistered.cs" />
     <Compile Include="ioc\IDependencyRegistrar.cs" />
     <Compile Include="log\ESLogAppender.cs" />
     <Compile Include="mq\MessageConsumer.cs" />

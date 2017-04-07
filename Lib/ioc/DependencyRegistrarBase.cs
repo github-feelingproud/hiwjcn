@@ -24,6 +24,29 @@ namespace Lib.ioc
         public abstract void Register(ref ContainerBuilder builder);
 
         /// <summary>
+        /// 自动注册
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="ass"></param>
+        protected void AutoRegistered(ref ContainerBuilder builder, params Assembly[] ass)
+        {
+            foreach (var a in ass)
+            {
+                var types = a.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<IAutoRegistered>()).ToArray();
+                foreach (var t in types)
+                {
+                    builder.RegisterType(t);
+
+                    var interfaces = t.GetInterfaces();
+                    if (ValidateHelper.IsPlumpList(interfaces))
+                    {
+                        builder.RegisterType(t).As(interfaces);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 注册任务
         /// </summary>
         /// <param name="builder"></param>

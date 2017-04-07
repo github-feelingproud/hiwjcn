@@ -49,6 +49,10 @@ namespace Hiwjcn.Web.App_Start
             builder.RegisterType<GetLocalLoginUrl>().As<IGetLoginUrl>().SingleInstance();
             builder.RegisterInstance(new LoginStatus()).As<LoginStatus>().SingleInstance();
 
+            #region 自动注册
+            AutoRegistered(ref builder, tps.core.Assembly, tps.service.Assembly);
+            #endregion
+
             #region 任务调度
             //自动注册调度任务
             RegTasks(ref builder, tps.framework.Assembly);
