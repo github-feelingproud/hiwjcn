@@ -222,7 +222,7 @@ namespace Lib.infrastructure
         /// <returns></returns>
         public List<string> CheckEntity(T model)
         {
-            return ValidateHelper.CheckEntity(model);
+            return ValidateHelper.CheckEntity_(model);
         }
     }
 }

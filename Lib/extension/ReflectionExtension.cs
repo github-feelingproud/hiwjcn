@@ -13,7 +13,7 @@ namespace Lib.extension
     /// IsGenericType是泛型
     /// GetGenericTypeDefinition()获取泛型类型比如Consumer<string>
     /// </summary>
-    public static class TypeExtension
+    public static class ReflectionExtension
     {
         public static List<Type> FindTypesByBaseType<T>(this Assembly a)
         {
@@ -72,6 +72,18 @@ namespace Lib.extension
         public static bool IsGenericType_(this Type t, Type tt)
         {
             return t.IsGenericType && t.GetGenericTypeDefinition() == tt;
+        }
+
+        /// <summary>
+        /// 获取可以赋值给T的属性
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> GetCustomAttributes_<T>(this MemberInfo prop) where T : Attribute
+        {
+            var attrs = prop.GetCustomAttributes();
+            return attrs.Where(x => x.GetType().IsAssignableTo_<T>()).Select(x => (T)x);
         }
     }
 }

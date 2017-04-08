@@ -234,7 +234,7 @@
     <Compile Include="extension\LogExtension.cs" />
     <Compile Include="extension\PollyExtension.cs" />
     <Compile Include="extension\StringExtension.cs" />
-    <Compile Include="extension\TypeExtension.cs" />
+    <Compile Include="extension\ReflectionExtension.cs" />
     <Compile Include="extension\ValidateExtension.cs" />
     <Compile Include="helper\EncodingHelper.cs" />
     <Compile Include="helper\LanguageHelper.cs" />

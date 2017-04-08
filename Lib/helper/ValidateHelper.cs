@@ -12,6 +12,7 @@ using Lib.data;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Lib.extension;
 
 namespace Lib.helper
 {
@@ -458,6 +459,7 @@ namespace Lib.helper
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
+        [Obsolete("使用CheckEntity_")]
         public static List<string> CheckEntity<T>(T model) where T : IDBTable
         {
             var list = new List<string>();
@@ -550,7 +552,7 @@ namespace Lib.helper
 
                 var value = prop.GetValue(model);
 
-                if (!CheckProp(prop.GetCustomAttributes<ValidationAttribute>(), value)) { continue; }
+                if (!CheckProp(prop.GetCustomAttributes_<ValidationAttribute>(), value)) { continue; }
             }
 
             return list.Where(x => IsPlumpString(x)).Distinct().ToList();
