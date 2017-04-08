@@ -215,7 +215,7 @@ namespace Lib.extension
         public static void Dispose()
         {
             IDisposable pool = ConnectionSettings;
-            pool.Dispose();
+            pool?.Dispose();
         }
     }
 
