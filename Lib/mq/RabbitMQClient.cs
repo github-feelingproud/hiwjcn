@@ -14,7 +14,6 @@ namespace Lib.mq
         private readonly Lazy<IConnection> _rabbitMqConnection;
 
         #region ctor
-        public RabbitMQClient() : this("_rabbitmq_") { }
         public RabbitMQClient(string configurationName) : this(RabbitMQSection.FromSection(configurationName)) { }
         public RabbitMQClient(RabbitMQSection configuration)
         {
@@ -101,12 +100,20 @@ namespace Lib.mq
     {
         public static readonly RabbitMQClientManager Instance = new RabbitMQClientManager();
 
-        public override bool CheckInstance(RabbitMQClient ins)
+        public override RabbitMQClient DefaultClient
+        {
+            get
+            {
+                return GetCachedClient("lib_rabbitmq");
+            }
+        }
+
+        public override bool CheckClient(RabbitMQClient ins)
         {
             return ins != null && ins.Connection.IsOpen;
         }
 
-        public override RabbitMQClient CreateInstance(string key)
+        public override RabbitMQClient CreateNewClient(string key)
         {
             return new RabbitMQClient(key);
         }
@@ -119,7 +126,7 @@ namespace Lib.mq
             }
         }
 
-        public override void DisposeBrokenInstance(RabbitMQClient ins)
+        public override void DisposeBrokenClient(RabbitMQClient ins)
         {
             ins?.Dispose();
         }

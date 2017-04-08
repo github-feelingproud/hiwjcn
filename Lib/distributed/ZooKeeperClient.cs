@@ -31,7 +31,7 @@ namespace Lib.distributed
 
         private readonly ManualResetEvent _resetEvent = new ManualResetEvent(false);
 
-        public ZooKeeperClient(string configurationName = "_zookeeper_") : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
+        public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
         public ZooKeeperClient(ZooKeeperConfigSection configuration)
         {
@@ -170,15 +170,20 @@ namespace Lib.distributed
     {
         public static readonly ZooKeeperClientManager Instance = new ZooKeeperClientManager();
 
-        public ZooKeeperClientManager()
-        { }
+        public override ZooKeeperClient DefaultClient
+        {
+            get
+            {
+                return GetCachedClient("lib_zookeeper");
+            }
+        }
 
-        public override bool CheckInstance(ZooKeeperClient ins)
+        public override bool CheckClient(ZooKeeperClient ins)
         {
             return ins != null && ins.IsAlive;
         }
 
-        public override ZooKeeperClient CreateInstance(string key)
+        public override ZooKeeperClient CreateNewClient(string key)
         {
             var config = ZooKeeperConfigSection.FromSection(key);
             return new ZooKeeperClient(config);
@@ -192,7 +197,7 @@ namespace Lib.distributed
             }
         }
 
-        public override void DisposeBrokenInstance(ZooKeeperClient ins)
+        public override void DisposeBrokenClient(ZooKeeperClient ins)
         {
             ins?.Dispose();
         }

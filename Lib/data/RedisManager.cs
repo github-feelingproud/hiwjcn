@@ -30,7 +30,7 @@ namespace Lib.data
         /// <param name="handler"></param>
         public static void PrepareConnection(Func<ConnectionMultiplexer, bool> handler)
         {
-            handler.Invoke(RedisConnectionManager.StoreInstance());
+            handler.Invoke(RedisClientManager.Instance.DefaultClient);
         }
 
         /// <summary>
@@ -89,81 +89,26 @@ namespace Lib.data
     }
 
     /// <summary>
-    /// ConnectionMultiplexer对象管理帮助类
-    /// https://github.com/qq1206676756/RedisHelp
-    /// </summary>
-    public static class RedisConnectionManager
-    {
-        //"127.0.0.1:6379,allowadmin=true
-        private static readonly string DefaultConnectionString = ConfigHelper.Instance.RedisConnectionString;
-        private static readonly object get_instance_locker = new object();
-        private static readonly StoreInstanceDict<ConnectionMultiplexer> ConnectionCache = new StoreInstanceDict<ConnectionMultiplexer>();
-
-        private static ConnectionMultiplexer _instance { get; set; }
-        /// <summary>
-        /// 单例获取
-        /// </summary>
-        public static ConnectionMultiplexer Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (get_instance_locker)
-                    {
-                        if (_instance == null || !_instance.IsConnected)
-                        {
-                            _instance = StoreInstance();
-                        }
-                    }
-                }
-                return _instance;
-            }
-        }
-
-        /// <summary>
-        /// 存储实例
-        /// </summary>
-        /// <param name="conStr"></param>
-        /// <returns></returns>
-        public static ConnectionMultiplexer StoreInstance(string conStr = null)
-        {
-            conStr = conStr ?? DefaultConnectionString;
-            var ins = ConnectionCache.StoreInstance(conStr
-                , () =>
-                {
-                    return ConnectionMultiplexer.Connect(conStr);
-                }
-                , x =>
-                {
-                    return x != null && x.IsConnected;
-                }
-                , x => x?.Dispose());
-            return ins;
-        }
-
-        public static void Dispose()
-        {
-            foreach (var kv in ConnectionCache)
-            {
-                kv.Value?.Dispose();
-            }
-        }
-    }
-
-    /// <summary>
     /// redis 链接管理
     /// </summary>
     public class RedisClientManager : StaticClientManager<ConnectionMultiplexer>
     {
         public static readonly RedisClientManager Instance = new RedisClientManager();
 
-        public override bool CheckInstance(ConnectionMultiplexer ins)
+        public override ConnectionMultiplexer DefaultClient
+        {
+            get
+            {
+                return GetCachedClient(ConfigHelper.Instance.RedisConnectionString);
+            }
+        }
+
+        public override bool CheckClient(ConnectionMultiplexer ins)
         {
             return ins != null && ins.IsConnected;
         }
 
-        public override ConnectionMultiplexer CreateInstance(string key)
+        public override ConnectionMultiplexer CreateNewClient(string key)
         {
             return ConnectionMultiplexer.Connect(key);
         }
@@ -176,7 +121,7 @@ namespace Lib.data
             }
         }
 
-        public override void DisposeBrokenInstance(ConnectionMultiplexer ins)
+        public override void DisposeBrokenClient(ConnectionMultiplexer ins)
         {
             ins?.Dispose();
         }
@@ -201,8 +146,8 @@ namespace Lib.data
             DbNum = dbNum;
             _conn =
                 string.IsNullOrWhiteSpace(readWriteHosts) ?
-                RedisConnectionManager.Instance :
-                RedisConnectionManager.StoreInstance(readWriteHosts);
+                RedisClientManager.Instance.DefaultClient :
+                RedisClientManager.Instance.GetCachedClient(readWriteHosts);
         }
 
         #region String

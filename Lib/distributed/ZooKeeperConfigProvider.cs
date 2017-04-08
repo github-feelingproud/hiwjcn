@@ -17,11 +17,9 @@ namespace Lib.distributed
         public ZooKeeperConfigProvider(string configurationName, string path)
         {
             //load data from zk
-            using (var client = new ZooKeeperClient(configurationName))
-            {
-                var json = client.Get<string>(path);
-                //parse json and assign data
-            }
+            var client = ZooKeeperClientManager.Instance.DefaultClient;
+            var json = client.Get<string>(path);
+            //parse json and assign data
         }
 
         public List<string> AllowDomains

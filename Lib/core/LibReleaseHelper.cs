@@ -38,7 +38,6 @@ namespace Lib.core
             try
             {
                 //redis
-                RedisConnectionManager.Dispose();
                 RedisClientManager.Instance.Dispose();
             }
             catch (Exception e)

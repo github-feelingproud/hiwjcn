@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Lib.ioc;
 
 namespace Lib.infrastructure
 {
@@ -28,18 +29,18 @@ namespace Lib.infrastructure
         /// </summary>
         public int CacheExpiresMinutes { get; set; }
 
-        private EFRepository<T> _db { get; set; }
+        private IRepository<T> _db { get; set; }
 
         /// <summary>
         /// 数据访问
         /// </summary>
-        protected EFRepository<T> _DalBase
+        protected IRepository<T> _DalBase
         {
             get
             {
                 if (this._db == null)
                 {
-                    this._db = new EFRepository<T>();
+                    this._db = AppContext.GetObject<IRepository<T>>();
                 }
                 return this._db;
             }
@@ -206,7 +207,7 @@ namespace Lib.infrastructure
         {
             var list = _DalBase.GetList(where, 2);
             if (!ValidateHelper.IsPlumpList(list)) { return "数据不存在"; }
-            if (list.Count() > 1) { return "当前条件下有多条记录"; }
+            if (list.Count > 1) { return "当前条件下有多条记录"; }
             var model = list[0];
             var err = handler.Invoke(ref model);
             if (ValidateHelper.IsPlumpString(err)) { return err; }

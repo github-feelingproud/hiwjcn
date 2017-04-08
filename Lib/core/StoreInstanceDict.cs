@@ -99,24 +99,29 @@ namespace Lib.core
 
         #region 等待实现
         /// <summary>
+        /// 默认客户端
+        /// </summary>
+        public abstract T DefaultClient { get; }
+
+        /// <summary>
         /// 创建对象
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public abstract T CreateInstance(K key);
+        public abstract T CreateNewClient(K key);
 
         /// <summary>
         /// 释放对象
         /// </summary>
         /// <param name="ins"></param>
-        public abstract void DisposeBrokenInstance(T ins);
+        public abstract void DisposeBrokenClient(T ins);
 
         /// <summary>
         /// 检查对象
         /// </summary>
         /// <param name="ins"></param>
         /// <returns></returns>
-        public abstract bool CheckInstance(T ins);
+        public abstract bool CheckClient(T ins);
 
         /// <summary>
         /// 释放所有对象
@@ -129,13 +134,12 @@ namespace Lib.core
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public T GetInstance(K key)
+        public T GetCachedClient(K key)
         {
-
             var str_key = CreateStringKey(key);
-            var geter = new Func<T>(() => CreateInstance(key));
-            var check = new Func<T, bool>(CheckInstance);
-            var dispose = new Action<T>(DisposeBrokenInstance);
+            var geter = new Func<T>(() => CreateNewClient(key));
+            var check = new Func<T, bool>(CheckClient);
+            var dispose = new Action<T>(DisposeBrokenClient);
 
             var ins = db.StoreInstance(str_key, geter, check, dispose);
             return ins;
