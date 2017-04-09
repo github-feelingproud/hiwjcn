@@ -115,7 +115,7 @@ namespace Lib.core
                 tt = null;
                 CallFinishFunc();
             });
-            if (!ValidateHelper.IsPlumpString(ThreadName)) { ThreadName = "默认线程名"; }
+            if (!ValidateHelper.IsPlumpString(ThreadName)) { ThreadName = $"默认线程名{Com.GetUUID()}"; }
             tt.Name = ThreadName;
             tt.IsBackground = background;
             tt.Start();
