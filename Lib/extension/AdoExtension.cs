@@ -75,13 +75,11 @@ namespace Lib.extension
         }
 
         /// <summary>
-        /// 插入数据（使用System.ComponentModel.DataAnnotations.Schema配置数据表映射）
+        /// 获取插入SQL
         /// </summary>
-        /// <param name="con"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static int Insert(this IDbConnection con, object model,
-            IDbTransaction transaction = null, int? commandTimeout = default(int?))
+        public static string GetInsertSql(this object model)
         {
             var t = model.GetType();
             var table_name = t.GetCustomAttribute<TableAttribute>()?.Name ?? t.Name;
@@ -100,7 +98,22 @@ namespace Lib.extension
             }
             if (!ValidateHelper.IsPlumpDict(props)) { throw new Exception("无法提取到有效字段"); }
 
-            var sql = $"INSERT INTO {table_name} ({string.Join(",", props.Keys)}) VALUES ({string.Join(",", props.Values.Select(x => "@" + x))})";
+            var k = string.Join(",", props.Keys);
+            var v = string.Join(",", props.Values.Select(x => "@" + x));
+            var sql = $"INSERT INTO {table_name} ({k}) VALUES ({v})";
+            return sql;
+        }
+
+        /// <summary>
+        /// 插入数据（使用System.ComponentModel.DataAnnotations.Schema配置数据表映射）
+        /// </summary>
+        /// <param name="con"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static int Insert(this IDbConnection con, object model,
+            IDbTransaction transaction = null, int? commandTimeout = default(int?))
+        {
+            var sql = model.GetInsertSql();
             try
             {
                 return con.Execute(sql, model, transaction: transaction, commandTimeout: commandTimeout);
@@ -109,6 +122,38 @@ namespace Lib.extension
             {
                 throw new Exception($"无法执行SQL:{sql}", e);
             }
+        }
+
+        /// <summary>
+        /// 异步插入
+        /// </summary>
+        /// <param name="con"></param>
+        /// <param name="model"></param>
+        /// <param name="transaction"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        public static async Task<int> InsertAsync(this IDbConnection con, object model,
+            IDbTransaction transaction = null, int? commandTimeout = default(int?))
+        {
+            var sql = model.GetInsertSql();
+            try
+            {
+                return await con.ExecuteAsync(sql, model, transaction: transaction, commandTimeout: commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"无法执行SQL:{sql}", e);
+            }
+        }
+
+        /// <summary>
+        /// 获取更新sql
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static string GetUpdateSql(this object model)
+        {
+            throw new NotImplementedException();
         }
     }
 
