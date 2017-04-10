@@ -90,10 +90,9 @@ namespace Lib.extension
             foreach (var p in t.GetProperties())
             {
                 //跳过不映射字段
-                if (p.GetCustomAttribute<NotMappedAttribute>() != null) { continue; }
-                //跳过主键
-                if (p.GetCustomAttribute<KeyAttribute>() != null) { continue; }
-                //if (p.GetCustomAttribute<DatabaseGeneratedAttribute>() != null) { continue; }
+                if (p.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
+                //跳过自增
+                if (p.GetCustomAttributes<DatabaseGeneratedAttribute>().Any()) { continue; }
                 //获取字段
                 var column = p.GetCustomAttribute<ColumnAttribute>()?.Name ?? p.Name;
 
@@ -102,7 +101,14 @@ namespace Lib.extension
             if (!ValidateHelper.IsPlumpDict(props)) { throw new Exception("无法提取到有效字段"); }
 
             var sql = $"INSERT INTO {table_name} ({string.Join(",", props.Keys)}) VALUES ({string.Join(",", props.Values.Select(x => "@" + x))})";
-            return con.Execute(sql, model, transaction: transaction, commandTimeout: commandTimeout);
+            try
+            {
+                return con.Execute(sql, model, transaction: transaction, commandTimeout: commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"无法执行SQL:{sql}", e);
+            }
         }
     }
 
