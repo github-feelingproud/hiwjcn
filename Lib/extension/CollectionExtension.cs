@@ -39,6 +39,7 @@ namespace Lib.extension
             var dict = new Dictionary<string, string>();
             foreach (var key in col.AllKeys)
             {
+                if (key == null) { continue; }
                 dict[key] = col[key];
             }
             return dict;

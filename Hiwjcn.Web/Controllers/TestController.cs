@@ -36,6 +36,12 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        [AntiReSubmit]
+        public ActionResult MM()
+        {
+            return Content("ok");
+        }
+
         public ActionResult DLL()
         {
             return RunAction(() =>

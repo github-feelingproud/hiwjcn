@@ -378,9 +378,11 @@ namespace Lib.mvc
         {
             foreach (var key in nv.AllKeys)
             {
-                if (ConvertHelper.GetString(key).Length > 32
-                    || ConvertHelper.GetString(nv[key]).Length > 32) { continue; }
-
+                if (key == null) { continue; }
+                if (key.Length > 32 || ConvertHelper.GetString(nv[key]).Length > 32)
+                {
+                    continue;
+                }
                 col[key] = nv[key];
             }
         }
@@ -396,11 +398,7 @@ namespace Lib.mvc
             AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.Form);
             AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.QueryString);
 
-            var dict = new SortedDictionary<string, string>();
-            foreach (var k in reqparams.AllKeys)
-            {
-                dict[k] = reqparams[k];
-            }
+            var dict = new SortedDictionary<string, string>(reqparams.ToDict(), new MyStringComparer());
             var submitData = dict.ToUrlParam();
             var AreaName = ConvertHelper.GetString(filterContext.RouteData.Values["Area"]);
             var ControllerName = ConvertHelper.GetString(filterContext.RouteData.Values["Controller"]);
