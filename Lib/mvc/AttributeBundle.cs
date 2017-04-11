@@ -118,11 +118,7 @@ namespace Lib.mvc
         {
             if (DateTime.Now > this.Date)
             {
-                filterContext.Result = new CustomJsonResult()
-                {
-                    Data = new ResJson() { success = false, msg = "无法响应请求，请升级客户端" },
-                    JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                };
+                filterContext.Result = ResultHelper.BadRequest("无法响应请求，请升级客户端");
                 return;
             }
             base.OnActionExecuting(filterContext);
@@ -145,7 +141,7 @@ namespace Lib.mvc
                 var ex = filterContext.Exception;
                 if (ex != null && !filterContext.ExceptionHandled)
                 {
-                    ex.AddLog("全局捕捉到错误");
+                    ex.AddErrorLog("全局捕捉到错误");
                 }
                 filterContext.ExceptionHandled = true;
             }
@@ -386,7 +382,7 @@ namespace Lib.mvc
     /// </summary>
     public class AntiReSubmitAttribute : ActionFilterAttribute
     {
-        public virtual int CacheSeconds { get; set; } = 10;
+        public virtual int CacheSeconds { get; set; } = 5;
 
         public virtual string ErrorMessage { get; set; } = "重复提交，请稍后再试";
 

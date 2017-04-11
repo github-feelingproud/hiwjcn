@@ -10,6 +10,7 @@ using MySql.Data.MySqlClient;
 using System.Data;
 using System.Data.Entity;
 using WebCore.MvcLib.Controller;
+using Lib.helper;
 
 namespace Hiwjcn.Web.App_Start
 {
@@ -34,8 +35,7 @@ namespace Hiwjcn.Web.App_Start
             //Aop拦截
             builder.RegisterType<AopLogError>();
             //缓存
-            var UseRedis = false;
-            if (UseRedis)
+            if (ValidateHelper.IsPlumpString(ConfigHelper.Instance.RedisConnectionString))
             {
                 builder.RegisterType<RedisCacheProvider>().As<ICacheProvider>().SingleInstance();
             }
