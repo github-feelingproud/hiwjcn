@@ -10,8 +10,8 @@ namespace Lib.core
     /// <summary>
     /// 存储实例
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class StoreInstanceDict<T> : Dictionary<string, T>
+    /// <typeparam name="Instance"></typeparam>
+    public class StoreInstanceDict<Instance> : Dictionary<string, Instance>
     {
         public readonly object _locker = new object();
     }
@@ -24,18 +24,19 @@ namespace Lib.core
         /// <summary>
         /// 维护多个实例
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="Instance"></typeparam>
         /// <param name="dict"></param>
         /// <param name="key"></param>
         /// <param name="func"></param>
         /// <param name="CheckInstance"></param>
         /// <param name="_locker">一定要是引用类型</param>
         /// <returns></returns>
-        public static T StoreInstance<T>(this StoreInstanceDict<T> dict, string key, Func<T> func,
-            Func<T, bool> CheckInstance = null, Action<T> releaseInstance = null)
+        public static Instance StoreInstance<Instance>(this StoreInstanceDict<Instance> dict,
+            string key, Func<Instance> func,
+            Func<Instance, bool> CheckInstance = null, Action<Instance> releaseInstance = null)
         {
             //如果为空就默认都可以
-            if (CheckInstance == null) { CheckInstance = _ => true; }
+            if (CheckInstance == null) { CheckInstance = _ => _ != null; }
 
             if (dict.ContainsKey(key))
             {
@@ -69,8 +70,8 @@ namespace Lib.core
     /// <summary>
     /// 实例管理
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class StaticClientManager<T> : StaticClientManager<T, string>
+    /// <typeparam name="Instance"></typeparam>
+    public abstract class StaticClientManager<Instance> : StaticClientManager<Instance, string>
     {
         public override string CreateStringKey(string key)
         {
@@ -81,21 +82,49 @@ namespace Lib.core
     /// <summary>
     /// T是缓存对象，K是创建T所需要的参数类型，缓存Key通过K去生成
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="K"></typeparam>
-    public abstract class StaticClientManager<T, K> : IDisposable
+    /// <typeparam name="Instance"></typeparam>
+    /// <typeparam name="Key"></typeparam>
+    public abstract class StaticClientManager<Instance, Key> : IDisposable
     {
-        protected readonly StoreInstanceDict<T> db = new StoreInstanceDict<T>();
+        protected readonly StoreInstanceDict<Instance> db = new StoreInstanceDict<Instance>();
 
         /// <summary>
         /// 创建string key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public virtual string CreateStringKey(K key)
+        public virtual string CreateStringKey(Key key)
         {
             return key.ToJson().ToSHA1();
         }
+
+        /// <summary>
+        /// 获取实例
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public Instance GetCachedClient(Key key)
+        {
+            var str_key = this.CreateStringKey(key);
+            var geter = new Func<Instance>(() => this.CreateNewClient(key));
+            var check = new Func<Instance, bool>(this.CheckClient);
+            var dispose = new Action<Instance>(this.DisposeClient);
+
+            var ins = this.db.StoreInstance(str_key, geter, check, dispose);
+            return ins;
+        }
+
+        /// <summary>
+        /// 默认客户端
+        /// </summary>
+        public virtual Instance DefaultClient
+        {
+            get
+            {
+                return GetCachedClient(DefaultKey);
+            }
+        }
+
         /// <summary>
         /// 释放所有对象
         /// </summary>
@@ -108,46 +137,31 @@ namespace Lib.core
         }
 
         #region 等待实现
+
         /// <summary>
-        /// 默认客户端
+        /// 默认Key
         /// </summary>
-        public abstract T DefaultClient { get; }
+        public abstract Key DefaultKey { get; }
 
         /// <summary>
         /// 创建对象
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public abstract T CreateNewClient(K key);
+        public abstract Instance CreateNewClient(Key key);
 
         /// <summary>
         /// 释放对象
         /// </summary>
         /// <param name="ins"></param>
-        public abstract void DisposeClient(T ins);
+        public abstract void DisposeClient(Instance ins);
 
         /// <summary>
         /// 检查对象
         /// </summary>
         /// <param name="ins"></param>
         /// <returns></returns>
-        public abstract bool CheckClient(T ins);
+        public abstract bool CheckClient(Instance ins);
         #endregion
-
-        /// <summary>
-        /// 获取实例
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public T GetCachedClient(K key)
-        {
-            var str_key = CreateStringKey(key);
-            var geter = new Func<T>(() => CreateNewClient(key));
-            var check = new Func<T, bool>(CheckClient);
-            var dispose = new Action<T>(DisposeClient);
-
-            var ins = db.StoreInstance(str_key, geter, check, dispose);
-            return ins;
-        }
     }
 }

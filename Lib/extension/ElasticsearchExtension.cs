@@ -231,12 +231,11 @@ namespace Lib.extension
     {
         public static readonly ElasticsearchClientManager Instance = new ElasticsearchClientManager();
 
-        public override ConnectionSettings DefaultClient
+        public override string DefaultKey
         {
             get
             {
-                var constr = ConfigurationManager.ConnectionStrings["ES"]?.ConnectionString;
-                return GetCachedClient(constr);
+                return ConfigurationManager.ConnectionStrings["ES"]?.ConnectionString;
             }
         }
 

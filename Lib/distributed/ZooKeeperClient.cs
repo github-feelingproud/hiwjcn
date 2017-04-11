@@ -170,11 +170,11 @@ namespace Lib.distributed
     {
         public static readonly ZooKeeperClientManager Instance = new ZooKeeperClientManager();
 
-        public override ZooKeeperClient DefaultClient
+        public override string DefaultKey
         {
             get
             {
-                return GetCachedClient("lib_zookeeper");
+                return "lib_zookeeper";
             }
         }
 

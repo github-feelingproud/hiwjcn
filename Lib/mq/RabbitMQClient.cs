@@ -100,11 +100,11 @@ namespace Lib.mq
     {
         public static readonly RabbitMQClientManager Instance = new RabbitMQClientManager();
 
-        public override RabbitMQClient DefaultClient
+        public override string DefaultKey
         {
             get
             {
-                return GetCachedClient("lib_rabbitmq");
+                return "lib_rabbitmq";
             }
         }
 

@@ -95,11 +95,11 @@ namespace Lib.data
     {
         public static readonly RedisClientManager Instance = new RedisClientManager();
 
-        public override ConnectionMultiplexer DefaultClient
+        public override string DefaultKey
         {
             get
             {
-                return GetCachedClient(ConfigHelper.Instance.RedisConnectionString);
+                return ConfigHelper.Instance.RedisConnectionString;
             }
         }
 
