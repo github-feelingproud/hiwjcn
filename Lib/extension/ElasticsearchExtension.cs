@@ -173,6 +173,54 @@ namespace Lib.extension
             setting.DisableDirectStreaming();
             setting.OnRequestCompleted(handler);
         }
+
+        /// <summary>
+        /// 根据距离排序
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sort"></param>
+        /// <param name="field"></param>
+        /// <param name="lat"></param>
+        /// <param name="lng"></param>
+        /// <param name="desc"></param>
+        /// <returns></returns>
+        public static SortDescriptor<T> SortByDistance<T>(this SortDescriptor<T> sort,
+            Expression<Func<T, object>> field, double lat, double lng, bool desc = false) where T : class
+        {
+            var geo_sort = new SortGeoDistanceDescriptor<T>().PinTo(new GeoLocation(lat, lng));
+            if (desc)
+            {
+                geo_sort = geo_sort.Descending();
+            }
+            else
+            {
+                geo_sort = geo_sort.Ascending();
+            }
+            return sort.GeoDistance(x => geo_sort);
+            /*
+            if (desc)
+            {
+                return sort.GeoDistance(x => x.Field(field).PinTo(new GeoLocation(lat, lng)).Descending());
+            }
+            else
+            {
+                return sort.GeoDistance(x => x.Field(field).PinTo(new GeoLocation(lat, lng)).Ascending());
+            }*/
+        }
+
+        /// <summary>
+        /// 怎么通过距离筛选，请看源代码
+        /// </summary>
+        /// <param name="qc"></param>
+        public static void HowToFilterByDistance(this QueryContainer qc)
+        {
+            qc = qc && new GeoDistanceRangeQuery()
+            {
+                Field = "Field Name",
+                Location = new GeoLocation(32, 43),
+                LessThanOrEqualTo = Distance.Kilometers(1)
+            };
+        }
     }
 
     /// <summary>
@@ -281,6 +329,15 @@ namespace Lib.extension
             {
                 qc = qc && new NumericRangeQuery() { Field = nameof(temp.SalesPrice), LessThanOrEqualTo = (double)model.max_price };
             }
+
+            new GeoDistanceQuery() { };
+            qc = qc && new GeoDistanceRangeQuery()
+            {
+                Field = "Location",
+                Location = new GeoLocation(32, 43),
+                LessThanOrEqualTo = Distance.Kilometers(1)
+            };
+
             try
             {
                 if (!ValidateHelper.IsPlumpString(model.attr)) { model.attr = "[]"; }
@@ -341,6 +398,10 @@ namespace Lib.extension
             {
                 sort = sort.Descending(x => x.SalesPrice);
             }
+
+            //更具坐标排序
+            sort = sort.GeoDistance(x => x.Field(f => f.IsGroup).PinTo(new GeoLocation(52.310551, 4.404954)).Ascending());
+
             return sort;
         }
 
