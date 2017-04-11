@@ -14,6 +14,25 @@ using System.Web.Mvc;
 
 namespace Lib.mvc
 {
+    public static class NameValueCollectionHelper
+    {
+        /// <summary>
+        /// 移除key和value长度大于32的值
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="nv"></param>
+        public static void AddToNameValueCollection(ref NameValueCollection col, NameValueCollection nv)
+        {
+            foreach (var key in nv.AllKeys)
+            {
+                if (key == null) { continue; }
+                if (key.Length > 32 || nv[key]?.Length > 32) { continue; }
+
+                col[key] = nv[key];
+            }
+        }
+    }
+
     /// <summary>
     /// 阻止CSRF
     /// </summary>
@@ -278,17 +297,9 @@ namespace Lib.mvc
     /// </summary>
     public class ValidateSignAttribute : ActionFilterAttribute
     {
-        private void AddToNameValueCollection(ref NameValueCollection col, NameValueCollection nv)
-        {
-            foreach (var key in nv.AllKeys)
-            {
-                if (ConvertHelper.GetString(key).Length > 32
-                    || ConvertHelper.GetString(nv[key]).Length > 32) { continue; }
-
-                col[key] = nv[key];
-            }
-        }
-
+        /// <summary>
+        /// 配置文件里的key
+        /// </summary>
         public string ConfigKey { get; set; } = "sign_key";
 
         /// <summary>
@@ -302,8 +313,8 @@ namespace Lib.mvc
             if (!ValidateHelper.IsPlumpString(sign_key)) { throw new Exception($"没有配置签名的约定key({ConfigKey})"); }
 
             var reqparams = new NameValueCollection();
-            AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.Form);
-            AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.QueryString);
+            NameValueCollectionHelper.AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.Form);
+            NameValueCollectionHelper.AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.QueryString);
 
             if (ConfigurationManager.AppSettings["disable_timestamp_check"]?.ToLower() != "true")
             {
@@ -374,31 +385,19 @@ namespace Lib.mvc
     /// </summary>
     public class AntiReSubmitAttribute : ActionFilterAttribute
     {
-        private void AddToNameValueCollection(ref NameValueCollection col, NameValueCollection nv)
-        {
-            foreach (var key in nv.AllKeys)
-            {
-                if (key == null) { continue; }
-                if (key.Length > 32 || ConvertHelper.GetString(nv[key]).Length > 32)
-                {
-                    continue;
-                }
-                col[key] = nv[key];
-            }
-        }
-
         public virtual int CacheSeconds { get; set; } = 10;
+
+        public virtual string ErrorMessage { get; set; } = "重复提交，请稍后再试";
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var sessionID = filterContext.HttpContext.Session.SessionID;
             var key = $"{nameof(AntiReSubmitAttribute)}:{sessionID}";
 
-            var reqparams = new NameValueCollection();
-            AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.Form);
-            AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.QueryString);
+            var reqparams = filterContext.HttpContext.Request.Form.ToDict();
+            reqparams = reqparams.AddDict(filterContext.HttpContext.Request.QueryString.ToDict());
 
-            var dict = new SortedDictionary<string, string>(reqparams.ToDict(), new MyStringComparer());
+            var dict = new SortedDictionary<string, string>(reqparams, new MyStringComparer());
             var submitData = dict.ToUrlParam();
             var AreaName = ConvertHelper.GetString(filterContext.RouteData.Values["Area"]);
             var ControllerName = ConvertHelper.GetString(filterContext.RouteData.Values["Controller"]);
@@ -412,7 +411,7 @@ namespace Lib.mvc
                 {
                     if (data.Result == submitData)
                     {
-                        filterContext.Result = ResultHelper.BadRequest("重复提交，请稍后再试");
+                        filterContext.Result = ResultHelper.BadRequest(this.ErrorMessage);
                         return;
                     }
                 }

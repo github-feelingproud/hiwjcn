@@ -42,6 +42,12 @@ namespace Hiwjcn.Web.Controllers
             return Content("ok");
         }
 
+        [ValidateSign]
+        public ActionResult KK()
+        {
+            return Content("ok");
+        }
+
         public ActionResult DLL()
         {
             return RunAction(() =>
