@@ -118,15 +118,7 @@ namespace Lib.mq
             return new RabbitMQClient(key);
         }
 
-        public override void Dispose()
-        {
-            foreach (var kv in db)
-            {
-                kv.Value?.Dispose();
-            }
-        }
-
-        public override void DisposeBrokenClient(RabbitMQClient ins)
+        public override void DisposeClient(RabbitMQClient ins)
         {
             ins?.Dispose();
         }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
+using Lib.core;
 
 namespace Lib.extension
 {
@@ -224,47 +225,60 @@ namespace Lib.extension
     }
 
     /// <summary>
+    /// ES服务器链接管理
+    /// </summary>
+    public class ElasticsearchClientManager : StaticClientManager<ConnectionSettings>
+    {
+        public static readonly ElasticsearchClientManager Instance = new ElasticsearchClientManager();
+
+        public override ConnectionSettings DefaultClient
+        {
+            get
+            {
+                var constr = ConfigurationManager.ConnectionStrings["ES"]?.ConnectionString;
+                return GetCachedClient(constr);
+            }
+        }
+
+        public override bool CheckClient(ConnectionSettings ins)
+        {
+            return ins != null;
+        }
+
+        public override ConnectionSettings CreateNewClient(string key)
+        {
+            var urls = key.Split('|', ';', ',').Select(s => new Uri(s));
+            var ConnectionSettings = new ConnectionSettings(new StaticConnectionPool(urls));
+
+            ConnectionSettings.MaximumRetries(2);
+
+            return ConnectionSettings;
+        }
+
+        public override void DisposeClient(ConnectionSettings ins)
+        {
+            IDisposable dis = ins;
+            dis?.Dispose();
+        }
+    }
+
+    /// <summary>
     /// es
     /// https://www.elastic.co/products/elasticsearch
     /// </summary>
     public static class ElasticsearchHelper
     {
-        //创建连接池Elasticsearch
-        private static readonly ConnectionSettings ConnectionSettings;
-
-        static ElasticsearchHelper()
-        {
-            var constr = ConfigurationManager.ConnectionStrings["ES"]?.ConnectionString;
-            if (!ValidateHelper.IsPlumpString(constr))
-            {
-                return;
-            }
-            var urls = constr.Split('|', ';', ',').Select(s => new Uri(s));
-            ConnectionSettings = new ConnectionSettings(new StaticConnectionPool(urls));
-
-            ConnectionSettings.MaximumRetries(2);
-        }
-
         /// <summary>
         /// 获取连接池
         /// </summary>
         /// <returns></returns>
-        public static ConnectionSettings GetConnectionSettings() => ConnectionSettings;
+        public static ConnectionSettings GetConnectionSettings() => ElasticsearchClientManager.Instance.DefaultClient;
 
         /// <summary>
         /// 获取链接对象
         /// </summary>
         /// <returns></returns>
-        public static IElasticClient CreateClient() => new ElasticClient(ConnectionSettings);
-
-        /// <summary>
-        /// 关闭连接池
-        /// </summary>
-        public static void Dispose()
-        {
-            IDisposable pool = ConnectionSettings;
-            pool?.Dispose();
-        }
+        public static IElasticClient CreateClient() => new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
     }
 
     /// <summary>

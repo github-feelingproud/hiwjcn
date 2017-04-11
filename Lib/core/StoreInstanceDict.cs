@@ -96,6 +96,16 @@ namespace Lib.core
         {
             return key.ToJson().ToSHA1();
         }
+        /// <summary>
+        /// 释放所有对象
+        /// </summary>
+        public virtual void Dispose()
+        {
+            foreach (var kv in db)
+            {
+                DisposeClient(kv.Value);
+            }
+        }
 
         #region 等待实现
         /// <summary>
@@ -114,7 +124,7 @@ namespace Lib.core
         /// 释放对象
         /// </summary>
         /// <param name="ins"></param>
-        public abstract void DisposeBrokenClient(T ins);
+        public abstract void DisposeClient(T ins);
 
         /// <summary>
         /// 检查对象
@@ -122,11 +132,6 @@ namespace Lib.core
         /// <param name="ins"></param>
         /// <returns></returns>
         public abstract bool CheckClient(T ins);
-
-        /// <summary>
-        /// 释放所有对象
-        /// </summary>
-        public abstract void Dispose();
         #endregion
 
         /// <summary>
@@ -139,7 +144,7 @@ namespace Lib.core
             var str_key = CreateStringKey(key);
             var geter = new Func<T>(() => CreateNewClient(key));
             var check = new Func<T, bool>(CheckClient);
-            var dispose = new Action<T>(DisposeBrokenClient);
+            var dispose = new Action<T>(DisposeClient);
 
             var ins = db.StoreInstance(str_key, geter, check, dispose);
             return ins;

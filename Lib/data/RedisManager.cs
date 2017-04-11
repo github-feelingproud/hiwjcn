@@ -113,15 +113,7 @@ namespace Lib.data
             return ConnectionMultiplexer.Connect(key);
         }
 
-        public override void Dispose()
-        {
-            foreach (var kv in db)
-            {
-                kv.Value?.Dispose();
-            }
-        }
-
-        public override void DisposeBrokenClient(ConnectionMultiplexer ins)
+        public override void DisposeClient(ConnectionMultiplexer ins)
         {
             ins?.Dispose();
         }

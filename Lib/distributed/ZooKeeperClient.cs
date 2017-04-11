@@ -189,15 +189,7 @@ namespace Lib.distributed
             return new ZooKeeperClient(config);
         }
 
-        public override void Dispose()
-        {
-            foreach (var kv in db)
-            {
-                kv.Value?.Dispose();
-            }
-        }
-
-        public override void DisposeBrokenClient(ZooKeeperClient ins)
+        public override void DisposeClient(ZooKeeperClient ins)
         {
             ins?.Dispose();
         }

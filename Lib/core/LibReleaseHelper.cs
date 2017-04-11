@@ -57,8 +57,8 @@ namespace Lib.core
 
             try
             {
-                //关闭rabbitmq
-                ElasticsearchHelper.Dispose();
+                //关闭ES搜索
+                ElasticsearchClientManager.Instance.Dispose();
             }
             catch (Exception e)
             {
