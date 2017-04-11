@@ -56,11 +56,11 @@ namespace Lib.mvc
             }
             this.context = context;
 
-            this.IsPost = RequestHelper.IsPost(context.Request);
-            this.IsAjax = RequestHelper.IsAjax(context.Request);
-            this.IP = RequestHelper.GetCurrentIpAddress(context.Request);
-            this.BaseUrl = RequestHelper.GetBaseUrl(context.Request);
-            this.Url = RequestHelper.GetCurrentUrl(context.Request);
+            this.IsPost = context.Request.IsPost();
+            this.IsAjax = context.Request.IsAjax();
+            this.IP = context.Request.Ip();
+            this.BaseUrl = context.Request.GetBaseUrl();
+            this.Url = context.Request.GetCurrentUrl();
             //login user
             LoadLoginUser();
         }

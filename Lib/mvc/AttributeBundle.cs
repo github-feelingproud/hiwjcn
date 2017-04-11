@@ -17,7 +17,8 @@ namespace Lib.mvc
     public static class NameValueCollectionHelper
     {
         /// <summary>
-        /// 移除key和value长度大于32的值
+        /// 移除key为null的数据
+        /// 移除key和value长度大于32的数据
         /// </summary>
         /// <param name="col"></param>
         /// <param name="nv"></param>
@@ -399,9 +400,10 @@ namespace Lib.mvc
 
             var dict = new SortedDictionary<string, string>(reqparams, new MyStringComparer());
             var submitData = dict.ToUrlParam();
-            var AreaName = ConvertHelper.GetString(filterContext.RouteData.Values["Area"]);
-            var ControllerName = ConvertHelper.GetString(filterContext.RouteData.Values["Controller"]);
-            var ActionName = ConvertHelper.GetString(filterContext.RouteData.Values["Action"]);
+            var routedata = filterContext.RouteData.GetA_C_A();
+            var AreaName = routedata.Item1;
+            var ControllerName = routedata.Item2;
+            var ActionName = routedata.Item3;
             submitData = $"{AreaName}/{ControllerName}/{ActionName}/:{submitData}";
             //读取缓存
             using (var cache = CacheManager.CacheProvider())
