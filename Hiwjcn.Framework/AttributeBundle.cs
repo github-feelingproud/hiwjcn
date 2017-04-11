@@ -97,7 +97,7 @@ namespace Hiwjcn.Framework
             }
             catch (Exception e)
             {
-                e.SaveLog(this.GetType());
+                e.AddLog(this.GetType());
             }
 
             base.OnActionExecuted(filterContext);

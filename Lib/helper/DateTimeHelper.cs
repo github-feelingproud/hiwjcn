@@ -128,7 +128,7 @@ namespace Lib.helper
             }
             catch (Exception e)
             {
-                e.SaveLog(typeof(DateTimeHelper));
+                e.AddLog(typeof(DateTimeHelper));
                 return "时间转换错误";
             }
         }

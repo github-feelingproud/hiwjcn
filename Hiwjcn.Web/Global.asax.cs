@@ -52,12 +52,12 @@ namespace Hiwjcn.Web
                 });
 
                 //记录程序开始
-                $"Application_Start|耗时：{(DateTime.Now - start).TotalSeconds}秒".SaveInfoLog(this.GetType());
+                $"Application_Start|耗时：{(DateTime.Now - start).TotalSeconds}秒".AddInfoLog(this.GetType());
                 //"记录数据库的日志".AddBusinessInfoLog();
             }
             catch (Exception e)
             {
-                e.SaveLog("网站启动异常");
+                e.AddLog("网站启动异常");
                 throw e;
             }
         }
@@ -71,11 +71,11 @@ namespace Hiwjcn.Web
                 LibReleaseHelper.DisposeAll();
 
                 //记录程序关闭
-                "Application_End".SaveInfoLog(this.GetType());
+                "Application_End".AddInfoLog(this.GetType());
             }
             catch (Exception ex)
             {
-                ex.SaveLog("网站关闭异常");
+                ex.AddLog("网站关闭异常");
                 throw ex;
             }
         }
@@ -125,7 +125,7 @@ namespace Hiwjcn.Web
             }
             else
             {
-                ex.SaveLog(this.GetType());
+                ex.AddLog(this.GetType());
             }
         }
         #endregion

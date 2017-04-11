@@ -19,7 +19,7 @@ namespace Hiwjcn.Bll.User
         public void HandleEvent(EntityInserted<UserModel> eventMessage)
         {
             var json = eventMessage.Entity.ToJson();
-            $"{json}".SaveInfoLog("添加");
+            $"{json}".AddInfoLog("添加");
         }
 
         public void HandleEvent(string eventMessage)
@@ -30,13 +30,13 @@ namespace Hiwjcn.Bll.User
         public void HandleEvent(EntityUpdated<UserModel> eventMessage)
         {
             var json = eventMessage.Entity.ToJson();
-            $"{json}".SaveInfoLog("更新");
+            $"{json}".AddInfoLog("更新");
         }
 
         public void HandleEvent(EntityDeleted<UserModel> eventMessage)
         {
             var json = eventMessage.Entity.ToJson();
-            $"{json}".SaveInfoLog("删除");
+            $"{json}".AddInfoLog("删除");
         }
     }
 }

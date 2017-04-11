@@ -37,18 +37,18 @@ namespace Lib.extension
         /// </summary>
         /// <param name="e"></param>
         /// <param name="name"></param>
-        public static void SaveLog(this Exception e, string name)
+        public static void AddLog(this Exception e, string name)
         {
-            e.GetInnerExceptionAsJson().SaveErrorLog(name);
+            e.GetInnerExceptionAsJson().AddErrorLog(name);
         }
         /// <summary>
         /// 使用log4net添加日志
         /// </summary>
         /// <param name="e"></param>
         /// <param name="t"></param>
-        public static void SaveLog(this Exception e, Type t)
+        public static void AddLog(this Exception e, Type t)
         {
-            e.GetInnerExceptionAsJson().SaveErrorLog(t);
+            e.GetInnerExceptionAsJson().AddErrorLog(t);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="name"></param>
-        public static void SaveErrorLog(this string log, string name)
+        public static void AddErrorLog(this string log, string name)
         {
             LogHelper.Error(name, log);
         }
@@ -65,7 +65,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="t"></param>
-        public static void SaveErrorLog(this string log, Type t)
+        public static void AddErrorLog(this string log, Type t)
         {
             LogHelper.Error(t, log);
         }
@@ -75,7 +75,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="name"></param>
-        public static void SaveInfoLog(this string log, string name)
+        public static void AddInfoLog(this string log, string name)
         {
             LogHelper.Info(name, log);
         }
@@ -84,7 +84,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="t"></param>
-        public static void SaveInfoLog(this string log, Type t)
+        public static void AddInfoLog(this string log, Type t)
         {
             LogHelper.Info(t, log);
         }
@@ -94,7 +94,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="name"></param>
-        public static void SaveWarnLog(this string log, string name)
+        public static void AddWarnLog(this string log, string name)
         {
             LogHelper.Warn(name, log);
         }
@@ -103,7 +103,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="log"></param>
         /// <param name="t"></param>
-        public static void SaveWarnLog(this string log, Type t)
+        public static void AddWarnLog(this string log, Type t)
         {
             LogHelper.Warn(t, log);
         }
@@ -125,17 +125,7 @@ namespace Lib.extension
                 error_msg = e.GetInnerExceptionAsList(),
                 req_data = ReqData(),
                 extra_data = extra_data
-            }.ToJson().SaveErrorLog(LoggerName);
-        }
-
-        /// <summary>
-        /// 业务日志
-        /// </summary>
-        /// <param name="log"></param>
-        [Obsolete("使用AddBusinessInfoLog或者AddBusinessWarnLog")]
-        public static void AddBusinessLog(this string log)
-        {
-            log.AddBusinessInfoLog();
+            }.ToJson().AddErrorLog(LoggerName);
         }
 
         /// <summary>
@@ -148,7 +138,7 @@ namespace Lib.extension
             {
                 msg = log,
                 req_data = ReqData()
-            }.ToJson().SaveInfoLog(LoggerName);
+            }.ToJson().AddInfoLog(LoggerName);
         }
 
         /// <summary>
@@ -161,7 +151,7 @@ namespace Lib.extension
             {
                 msg = log,
                 req_data = ReqData()
-            }.ToJson().SaveWarnLog(LoggerName);
+            }.ToJson().AddWarnLog(LoggerName);
         }
 
         /// <summary>

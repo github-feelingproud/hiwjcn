@@ -4,6 +4,7 @@ using System.IO;
 using System.Security;
 using System.Web;
 using System.Web.Hosting;
+using Lib.extension;
 
 namespace Lib.mvc
 {
@@ -122,17 +123,22 @@ namespace Lib.mvc
         /// </summary>
         public static void RestartAppDomain(HttpContext context)
         {
-            if (GetTrustLevel() > AspNetHostingPermissionLevel.Medium)//如果当前信任级别大于Medium，则通过卸载应用程序域的方式重启
+            try
             {
-                HttpRuntime.UnloadAppDomain();
-            }
-            else//通过修改web.config方式重启应用程序
-            {
-                try
+                if (GetTrustLevel() > AspNetHostingPermissionLevel.Medium)
                 {
+                    //如果当前信任级别大于Medium，则通过卸载应用程序域的方式重启
+                    HttpRuntime.UnloadAppDomain();
+                }
+                else
+                {
+                    //通过修改web.config方式重启应用程序
                     File.SetLastWriteTime(ServerHelper.GetMapPath(context, "~/Web.config"), DateTime.Now);
                 }
-                catch { }
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
             }
         }
     }

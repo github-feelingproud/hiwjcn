@@ -317,7 +317,7 @@ namespace Lib.net
                 }
                 catch (Exception e)
                 {
-                    e.SaveLog(typeof(HttpClientHelper));
+                    e.AddLog(typeof(HttpClientHelper));
                 }
                 res?.Dispose();
             }
@@ -384,7 +384,7 @@ namespace Lib.net
                 }
                 catch (Exception e)
                 {
-                    e.SaveLog(typeof(HttpClientHelper));
+                    e.AddLog(typeof(HttpClientHelper));
                 }
                 res?.Dispose();
             }

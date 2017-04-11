@@ -74,5 +74,15 @@ namespace Lib.mvc
         {
             return RequestHelper.GetCurrentUrl(req);
         }
+
+        /// <summary>
+        /// 是否是SSL
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        public static bool IsSSL(this HttpRequest req)
+        {
+            return RequestHelper.IsSSL(req);
+        }
     }
 }

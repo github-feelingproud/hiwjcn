@@ -44,7 +44,7 @@ namespace Hiwjcn.Framework.Tasks
             }
             catch (Exception e)
             {
-                e.SaveLog(this.GetType());
+                e.AddLog(this.GetType());
             }
         }
     }

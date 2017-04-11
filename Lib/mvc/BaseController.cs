@@ -172,7 +172,7 @@ namespace Lib.mvc
             }
             catch (Exception e)
             {
-                e.SaveLog(this.GetType());
+                e.AddLog(this.GetType());
                 if (ErrorResult != null)
                 {
                     return ErrorResult;
@@ -200,7 +200,7 @@ namespace Lib.mvc
             }
             catch (Exception e)
             {
-                e.SaveLog(this.GetType());
+                e.AddLog(this.GetType());
                 if (ErrorResult != null)
                 {
                     return ErrorResult;
