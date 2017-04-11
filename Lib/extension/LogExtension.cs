@@ -32,6 +32,7 @@ namespace Lib.extension
         }
         #endregion
 
+        #region 日志扩展
         /// <summary>
         /// 使用log4net添加日志
         /// </summary>
@@ -107,6 +108,7 @@ namespace Lib.extension
         {
             LogHelper.Warn(t, log);
         }
+        #endregion
     }
 
     public static class CommonLogExtension
@@ -120,12 +122,14 @@ namespace Lib.extension
         /// <param name="prefix"></param>
         public static void AddErrorLog(this Exception e, string extra_data = null)
         {
-            new
+            var json = new
             {
                 error_msg = e.GetInnerExceptionAsList(),
                 req_data = ReqData(),
                 extra_data = extra_data
-            }.ToJson().AddErrorLog(LoggerName);
+            }.ToJson();
+
+            json.AddErrorLog(LoggerName);
         }
 
         /// <summary>
@@ -134,11 +138,13 @@ namespace Lib.extension
         /// <param name="log"></param>
         public static void AddBusinessInfoLog(this string log)
         {
-            new
+            var json = new
             {
                 msg = log,
                 req_data = ReqData()
-            }.ToJson().AddInfoLog(LoggerName);
+            }.ToJson();
+
+            json.AddInfoLog(LoggerName);
         }
 
         /// <summary>
@@ -147,11 +153,13 @@ namespace Lib.extension
         /// <param name="log"></param>
         public static void AddBusinessWarnLog(this string log)
         {
-            new
+            var json = new
             {
                 msg = log,
                 req_data = ReqData()
-            }.ToJson().AddWarnLog(LoggerName);
+            }.ToJson();
+
+            json.AddWarnLog(LoggerName);
         }
 
         /// <summary>
