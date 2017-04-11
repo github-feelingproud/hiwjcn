@@ -231,6 +231,7 @@
     <Compile Include="extension\DictExtension.cs" />
     <Compile Include="extension\ElasticsearchExtension.cs" />
     <Compile Include="extension\EnumExtension.cs" />
+    <Compile Include="extension\FileExtension.cs" />
     <Compile Include="extension\LogExtension.cs" />
     <Compile Include="extension\PollyExtension.cs" />
     <Compile Include="extension\StringExtension.cs" />

@@ -73,7 +73,7 @@ namespace Lib.task
         /// <summary>
         /// 初始化任务，只能调用一次
         /// </summary>
-        public static void InitTasks()
+        public static void StartAllTasks()
         {
             if (manager != null)
             {
@@ -125,6 +125,9 @@ namespace Lib.task
 
             manager.Start();
         }
+
+        [Obsolete("请调用StartAllTasks")]
+        public static void InitTasks() => StartAllTasks();
 
         /// <summary>
         /// 关闭时是否等待任务完成
