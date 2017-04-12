@@ -313,7 +313,8 @@ namespace Lib.mvc
             NameValueCollectionHelper.AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.Form);
             NameValueCollectionHelper.AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.QueryString);
 
-            if (ConfigurationManager.AppSettings["disable_timestamp_check"]?.ToLower() != "true")
+            var disable_timestamp_check = ConvertHelper.GetString(ConfigurationManager.AppSettings["disable_timestamp_check"]).ToBool();
+            if (!disable_timestamp_check)
             {
                 #region 验证时间戳
                 var timestamp = ConvertHelper.GetInt64(reqparams["timestamp"], -1);
