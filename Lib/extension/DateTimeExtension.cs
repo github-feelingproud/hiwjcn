@@ -9,6 +9,26 @@ namespace Lib.extension
 {
     public static class DateTimeExtension
     {
+        /// <summary>
+        /// 明天凌晨
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static DateTime ToTomorrowMorning(this DateTime time)
+        {
+            return time.Date.AddDays(1);
+        }
+
+        /// <summary>
+        /// 今天凌晨
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static DateTime ToToDayMorning(this DateTime time)
+        {
+            return time.Date;
+        }
+
         public static int GetAge(this DateTime birthday)
         {
             var today = DateTime.Now;

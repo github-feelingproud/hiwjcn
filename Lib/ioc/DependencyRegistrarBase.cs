@@ -28,7 +28,7 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="ass"></param>
-        protected void AutoRegistered(ref ContainerBuilder builder, params Assembly[] ass)
+        protected virtual void AutoRegistered(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
@@ -51,7 +51,7 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="ass"></param>
-        protected void RegTasks(ref ContainerBuilder builder, params Assembly[] ass)
+        protected virtual void RegTasks(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
@@ -69,7 +69,7 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="ass"></param>
-        protected void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
+        protected virtual void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
         {
             builder.RegisterGeneric(typeof(EFRepository<>)).As(typeof(IRepository<>));
             foreach (var a in ass)
@@ -96,7 +96,7 @@ namespace Lib.ioc
         /// <param name="builder"></param>
         /// <param name="intercept"></param>
         /// <param name="ass"></param>
-        protected void RegService(ref ContainerBuilder builder, bool intercept, params Assembly[] ass)
+        protected virtual void RegService(ref ContainerBuilder builder, bool intercept, params Assembly[] ass)
         {
             builder.RegisterGeneric(typeof(ServiceBase<>)).As(typeof(IServiceBase<>));
             foreach (var a in ass)
@@ -136,7 +136,7 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="ass"></param>
-        protected void RegEvent(ref ContainerBuilder builder, params Assembly[] ass)
+        protected virtual void RegEvent(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
@@ -167,7 +167,7 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        protected List<Assembly> FindPluginAssemblies()
+        protected virtual List<Assembly> FindPluginAssemblies()
         {
             return AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.StartsWith("Hiwjcn.Plugin.")).ToList();
         }
@@ -177,7 +177,7 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="ass"></param>
-        protected void RegController(ref ContainerBuilder builder, params Assembly[] ass)
+        protected virtual void RegController(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
