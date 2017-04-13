@@ -24,6 +24,10 @@ namespace Lib.extension
     /// </summary>
     public static class DapperExtension
     {
+        /// <summary>
+        /// 如果没有打开链接就打开链接
+        /// </summary>
+        /// <param name="con"></param>
         public static void OpenIfClosed(this IDbConnection con)
         {
             if (con.State == ConnectionState.Closed)
@@ -50,6 +54,10 @@ namespace Lib.extension
             }
         }
 
+        /// <summary>
+        /// HowToUseParametersInDapperFramework
+        /// </summary>
+        /// <param name="con"></param>
         public static void HowToUseParametersInDapperFramework(this IDbConnection con)
         {
             var args = new DynamicParameters(new { });
@@ -109,6 +117,8 @@ namespace Lib.extension
         /// </summary>
         /// <param name="con"></param>
         /// <param name="model"></param>
+        /// <param name="transaction"></param>
+        /// <param name="commandTimeout"></param>
         /// <returns></returns>
         public static int Insert(this IDbConnection con, object model,
             IDbTransaction transaction = null, int? commandTimeout = default(int?))
@@ -162,6 +172,11 @@ namespace Lib.extension
     /// </summary>
     public static class MysqlAdoExtension
     {
+        /// <summary>
+        /// 获取带timeout的链接字符串
+        /// </summary>
+        /// <param name="con"></param>
+        /// <returns></returns>
         public static string GetTimeoutConnectionString(this MySqlConnection con)
         {
             var b = new MySqlConnectionStringBuilder(ConfigHelper.Instance.MySqlConnectionString);
@@ -297,6 +312,12 @@ namespace Lib.extension
             }
         }
 
+        /// <summary>
+        /// AddParameters
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         [Obsolete("添加参数")]
         public static void AddParameters(this IDbCommand command, string key, object value)
         {

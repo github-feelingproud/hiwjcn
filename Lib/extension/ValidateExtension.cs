@@ -2,6 +2,9 @@
 
 namespace Lib.extension
 {
+    /// <summary>
+    /// ValidateExtension
+    /// </summary>
     public static class ValidateExtension
     {
         /// <summary>
@@ -9,9 +12,9 @@ namespace Lib.extension
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsMobilePhone(this string data)
+        public static bool IsMobilePhone(this string s)
         {
-            return ValidateHelper.IsMobilePhone(data);
+            return ValidateHelper.IsMobilePhone(s);
         }
 
         /// <summary>
@@ -19,9 +22,9 @@ namespace Lib.extension
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsDomain(this string data)
+        public static bool IsDomain(this string s)
         {
-            return ValidateHelper.IsDomain(data);
+            return ValidateHelper.IsDomain(s);
         }
 
         /// <summary>
@@ -29,19 +32,19 @@ namespace Lib.extension
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsChinese(this string data)
+        public static bool IsChinese(this string s)
         {
-            return ValidateHelper.IsChinese(data);
+            return ValidateHelper.IsChinese(s);
         }
 
         /// <summary>
         /// 判断是否是中文字符串
         /// </summary>
-        /// <param name="str"></param>
+        /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsChineaseStr(this string data)
+        public static bool IsChineaseStr(this string s)
         {
-            return ValidateHelper.IsChineaseStr(data);
+            return ValidateHelper.IsChineaseStr(s);
         }
 
         /// <summary>
@@ -49,9 +52,9 @@ namespace Lib.extension
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsIDCardNo(this string data)
+        public static bool IsIDCardNo(this string s)
         {
-            return ValidateHelper.IsIDCardNo(data);
+            return ValidateHelper.IsIDCardNo(s);
         }
 
         /// <summary>
@@ -59,9 +62,9 @@ namespace Lib.extension
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsIP(this string data)
+        public static bool IsIP(this string s)
         {
-            return ValidateHelper.IsIP(data);
+            return ValidateHelper.IsIP(s);
         }
 
         /// <summary>
@@ -69,9 +72,9 @@ namespace Lib.extension
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsNUMBER_OR_CHAR(this string data)
+        public static bool IsNUMBER_OR_CHAR(this string s)
         {
-            return ValidateHelper.IsNUMBER_OR_CHAR(data);
+            return ValidateHelper.IsNUMBER_OR_CHAR(s);
         }
 
         /// <summary>
@@ -79,19 +82,19 @@ namespace Lib.extension
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsNumber(this string data)
+        public static bool IsNumber(this string s)
         {
-            return ValidateHelper.IsNumber(data);
+            return ValidateHelper.IsNumber(s);
         }
 
         /// <summary>
         /// 是否是邮箱
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsEmail(this string data)
+        public static bool IsEmail(this string s)
         {
-            return ValidateHelper.IsEmail(data);
+            return ValidateHelper.IsEmail(s);
         }
         /// <summary>
         /// 是否是电话

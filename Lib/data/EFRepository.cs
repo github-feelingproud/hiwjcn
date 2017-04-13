@@ -400,7 +400,7 @@ namespace Lib.data
         /// 获取IQueryable对象，用于linq查询
         /// </summary>
         /// <param name="callback"></param>
-        /// <param name="Transaction"></param>
+        /// <param name="track"></param>
         public void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
         {
             this._EFManager.PrepareIQueryable<T>(callback, track);
@@ -424,7 +424,6 @@ namespace Lib.data
     /// <summary>
     /// TODO 准备把异步方法放到这个里面
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     partial class EFRepository<T>
     {
         public void TODO_PLACE_ASYNC_METHOD_TO_THIS_PARTIAL_CLASS() { }

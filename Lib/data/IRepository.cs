@@ -13,6 +13,8 @@ namespace Lib.data
     /// <typeparam name="T"></typeparam>
     public interface IRepository<T> where T : IDBTable
     {
+        EFManager _EFManager { get; }
+
         #region 添加
         /// <summary>
         /// 添加多个model

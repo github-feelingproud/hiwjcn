@@ -7,6 +7,9 @@ using Lib.helper;
 
 namespace Lib.extension
 {
+    /// <summary>
+    /// StringExtension
+    /// </summary>
     public static class StringExtension
     {
         /// <summary>

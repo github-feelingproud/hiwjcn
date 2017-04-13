@@ -29,6 +29,11 @@ namespace Lib.extension
             return time.Date;
         }
 
+        /// <summary>
+        /// 获取年龄
+        /// </summary>
+        /// <param name="birthday"></param>
+        /// <returns></returns>
         public static int GetAge(this DateTime birthday)
         {
             var today = DateTime.Now;
@@ -60,14 +65,6 @@ namespace Lib.extension
         public static string ToDateString(this DateTime dateTime)
         {
             return dateTime.ToString("yyyy-MM-dd");
-        }
-        /// <summary>
-        /// 获取格式化字符串，不带时分秒，格式："yyyy-MM-dd"
-        /// </summary>
-        /// <param name="dateTime">日期</param>
-        public static string ToDateString()
-        {
-            return DateTime.Now.ToString("yyyy-MM-dd");
         }
 
         /// <summary>
