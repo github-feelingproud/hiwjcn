@@ -67,11 +67,11 @@ namespace Lib.extension
         /// <param name="client"></param>
         /// <param name="indexName"></param>
         /// <param name="data"></param>
-        public static void AddToIndex<T>(this IElasticClient client, string indexName, List<T> data) where T : class
+        public static void AddToIndex<T>(this IElasticClient client, string indexName, params T[] data) where T : class
         {
             var bulk = new BulkRequest(indexName)
             {
-                Operations = data.Select(x => new BulkIndexOperation<T>(x)).ToArray()
+                Operations = ConvertHelper.NotNullList(data).Select(x => new BulkIndexOperation<T>(x)).ToArray()
             };
             var response = client.Bulk(bulk);
             if (!response.IsValid)
