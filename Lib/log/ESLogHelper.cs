@@ -25,7 +25,7 @@ namespace Lib.log
         /// <param name="page"></param>
         /// <param name="pagesize"></param>
         /// <returns></returns>
-        public static PagerData<ESLogLine> Search(
+        public static async Task<PagerData<ESLogLine>> Search(
             DateTime? start, DateTime? end,
             string keyword, string logger_name,
             int page, int pagesize)
@@ -63,7 +63,7 @@ namespace Lib.log
             sd = sd.Sort(_ => sort);
 
             var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
-            var re = client.Search<ESLogLine>(_ => sd);
+            var re = await client.SearchAsync<ESLogLine>(_ => sd);
             if (!re.IsValid)
             {
                 re.LogError();
@@ -76,6 +76,7 @@ namespace Lib.log
             var data = new PagerData<ESLogLine>();
             data.ItemCount = (int)re.Total;
             data.DataList = re.Hits.Select(x => x.Source).ToList();
+
             return data;
         }
 

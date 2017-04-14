@@ -61,6 +61,28 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 删除索引
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public static bool DeleteIndexIfExists(this IElasticClient client, string indexName)
+        {
+            indexName = indexName.ToLower();
+
+            if (!client.IndexExists(indexName).Exists)
+                return true;
+
+            var response = client.DeleteIndex(indexName);
+            if (response.IsValid)
+                return true;
+
+            response.LogError();
+
+            return false;
+        }
+
+        /// <summary>
         /// 添加到索引
         /// </summary>
         /// <typeparam name="T"></typeparam>
