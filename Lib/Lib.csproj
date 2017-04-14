@@ -263,6 +263,15 @@
     <Compile Include="mq\RabbitMQClient.cs" />
     <Compile Include="mq\RabbitMQExtension.cs" />
     <Compile Include="mq\RabbitMQSection.cs" />
+    <Compile Include="mvc\attr\AntiReSubmitAttribute.cs" />
+    <Compile Include="mvc\attr\ApiExpireAtAttribute.cs" />
+    <Compile Include="mvc\attr\CheckReferrerUrlAttribute.cs" />
+    <Compile Include="mvc\attr\CrossDomainAjaxAttribute.cs" />
+    <Compile Include="mvc\attr\HtmlCacheAttribute.cs" />
+    <Compile Include="mvc\attr\LogErrorAttribute.cs" />
+    <Compile Include="mvc\attr\SetEncodingAttribute.cs" />
+    <Compile Include="mvc\attr\ValidateSignAttribute.cs" />
+    <Compile Include="mvc\attr\ValidCSRFAttribute.cs" />
     <Compile Include="mvc\CookieHelper.cs" />
     <Compile Include="mvc\MvcExtension.cs" />
     <Compile Include="mvc\plugin\BasePaymentController.cs" />
@@ -298,7 +307,7 @@
     <Compile Include="mvc\plugin\PluginManager.cs" />
     <Compile Include="mvc\plugin\PluginRouteConfig.cs" />
     <Compile Include="mvc\user\AccountHelper.cs" />
-    <Compile Include="mvc\AttributeBundle.cs" />
+    <Compile Include="mvc\NameValueCollectionHelper.cs" />
     <Compile Include="mvc\user\CheckLoginInfoData.cs" />
     <Compile Include="mvc\HtmlExtensions.cs" />
     <Compile Include="mvc\user\IGetLoginUrl.cs" />

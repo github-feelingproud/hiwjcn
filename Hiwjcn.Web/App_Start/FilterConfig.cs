@@ -2,6 +2,7 @@
 using Lib.mvc;
 using System.Web;
 using System.Web.Mvc;
+using Lib.mvc.attr;
 
 namespace Hiwjcn.Web
 {

@@ -8,7 +8,31 @@ namespace Lib.mvc.user
 {
     public interface ILoginStatus
     {
-        //
+        //COOKIE
+        string COOKIE_LOGIN_UID { get; }
+        //TOKEN
+        string COOKIE_LOGIN_TOKEN { get; }
+        //SESSION
+        string LOGIN_USER_SESSION { get; }
+        //DOMAIN
+        string COOKIE_DOMAIN { get; }
+        //cookie过期的时间
+        int CookieExpiresMinutes { get; }
+        
+        string GetCookieUID(HttpContext context = null);
+
+        string GetCookieToken(HttpContext context = null);
+        
+        void SetUserLogin(HttpContext context = null, LoginUserInfo loginuser = null);
+        
+        void SetUserLogout(HttpContext context = null);
+        
+        void DeleteExtraCookie(HttpContext context = null);
+        
+        void DeleteCookie(HttpContext context = null, bool cookies_with_domain = true);
+        
+        LoginUserInfo GetLoginUser(HttpContext context = null);
+        
     }
 
     /// <summary>
@@ -67,7 +91,6 @@ namespace Lib.mvc.user
         /// </summary>
         /// <param name="context"></param>
         /// <param name="loginuser"></param>
-        /// <param name="SaveCookie"></param>
         /// <returns></returns>
         public void SetUserLogin(HttpContext context = null, LoginUserInfo loginuser = null)
         {
@@ -182,7 +205,6 @@ namespace Lib.mvc.user
         /// <summary>
         /// 获取上下文
         /// </summary>
-        /// <param name="context"></param>
         /// <returns></returns>
         private HttpContext GetContext(HttpContext _context)
         {

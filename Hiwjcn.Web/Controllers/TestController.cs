@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Linq;
 using Lib.mvc;
+using Lib.mvc.attr;
 
 namespace Hiwjcn.Web.Controllers
 {
