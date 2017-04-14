@@ -12,15 +12,26 @@ namespace Lib.log
 {
     public static class ESLogHelper
     {
+        public static readonly string IndexName = "lib_es_log_index";
         private static readonly ESLogLine temp = new ESLogLine();
 
+        /// <summary>
+        /// 搜索日志
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="keyword"></param>
+        /// <param name="logger_name"></param>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <returns></returns>
         public static PagerData<ESLogLine> Search(
             DateTime? start, DateTime? end,
             string keyword, string logger_name,
             int page, int pagesize)
         {
-            var data = new PagerData<ESLogLine>();
-            var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
+            var sd = new SearchDescriptor<ESLogLine>();
+            sd = sd.Index(IndexName);
 
             var query = new QueryContainer();
             if (start != null)
@@ -43,9 +54,28 @@ namespace Lib.log
             }
             if (ValidateHelper.IsPlumpString(logger_name))
             {
-                //
+                query &= new TermQuery() { Field = nameof(temp.LoggerName), Value = logger_name };
             }
+            sd = sd.Query(_ => query);
 
+            var sort = new SortDescriptor<ESLogLine>();
+            sort = sort.Descending(x => x.UpdateTime);
+            sd = sd.Sort(_ => sort);
+
+            var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
+            var re = client.Search<ESLogLine>(_ => sd);
+            if (!re.IsValid)
+            {
+                re.LogError();
+                if (re.OriginalException != null)
+                {
+                    throw re.OriginalException;
+                }
+                throw new Exception("log搜索错误");
+            }
+            var data = new PagerData<ESLogLine>();
+            data.ItemCount = (int)re.Total;
+            data.DataList = re.Hits.Select(x => x.Source).ToList();
             return data;
         }
 
