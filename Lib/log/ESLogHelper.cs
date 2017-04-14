@@ -10,6 +10,9 @@ using Nest;
 
 namespace Lib.log
 {
+    /// <summary>
+    /// nest用法搜索邮箱
+    /// </summary>
     public static class ESLogHelper
     {
         public static readonly string IndexName = "lib_es_log_index";
@@ -80,7 +83,21 @@ namespace Lib.log
             return data;
         }
 
-        public static void ClearExpireData()
-        { }
+        /// <summary>
+        /// 删除此日期之前的数据
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static async Task DeleteDataBefore(DateTime time)
+        {
+            var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
+
+            var req = new DeleteByQueryRequest<ESLogLine>(IndexName);
+            req.Query = new QueryContainer();
+            req.Query &= new DateRangeQuery() { Field = nameof(temp.UpdateTime), LessThan = time };
+
+            var response = await client.DeleteByQueryAsync(req);
+            response.ThrowIfException();
+        }
     }
 }

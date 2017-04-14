@@ -13,6 +13,19 @@ namespace Lib.extension
     public static class ElasticsearchExtension
     {
         /// <summary>
+        /// 如果有错误就抛出异常
+        /// </summary>
+        /// <param name="response"></param>
+        public static void ThrowIfException(this IResponse response)
+        {
+            if (!response.IsValid)
+            {
+                response.LogError();
+                throw response.OriginalException;
+            }
+        }
+
+        /// <summary>
         /// 默认的shards和replicas
         /// </summary>
         /// <param name="x"></param>
