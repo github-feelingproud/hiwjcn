@@ -37,6 +37,12 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        public ActionResult es_log()
+        {
+            new Exception("es保存错误日志").AddErrorLog("es_error");
+            return Content("ok");
+        }
+
         [AntiReSubmit]
         public ActionResult MM()
         {

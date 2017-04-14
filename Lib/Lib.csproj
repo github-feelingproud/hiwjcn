@@ -258,6 +258,7 @@
     <Compile Include="ioc\IDependencyRegistrar.cs" />
     <Compile Include="log\ESLogAppender.cs" />
     <Compile Include="log\ESLogLine.cs" />
+    <Compile Include="log\ESLogHelper.cs" />
     <Compile Include="mq\MessageConsumer.cs" />
     <Compile Include="mq\MessageProducer.cs" />
     <Compile Include="mq\RabbitMQChannel.cs" />

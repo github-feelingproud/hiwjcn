@@ -22,6 +22,11 @@ namespace Lib.log
 
         public const string IndexName = "lib_es_log_index";
 
+        public ESLogAppender()
+        {
+            //
+        }
+
         public override void ActivateOptions()
         {
             try

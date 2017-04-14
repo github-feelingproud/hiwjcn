@@ -14,6 +14,9 @@ namespace Lib.log
     {
         private static readonly DateTime EpochStart = new DateTime(1970, 1, 1);
 
+        [Obsolete("不要调用")]
+        public ESLogLine() { }
+
         public ESLogLine(LoggingEvent loggingEvent)
         {
             if (loggingEvent == null) { throw new Exception("loggingEvent不能为null"); }
