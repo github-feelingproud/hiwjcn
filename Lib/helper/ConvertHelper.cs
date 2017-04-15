@@ -15,7 +15,7 @@ namespace Lib.helper
     /// <summary>
     /// 类型帮助类
     /// </summary>
-    public class ConvertHelper
+    public static class ConvertHelper
     {
         #region 字符串转换
         /// <summary>
@@ -226,7 +226,7 @@ Console.WriteLine(BitConverter.ToString(buffer)); // 这是把字节数组当作
 Console.WriteLine(Convert.ToBase64String(buffer)); //这是把字节数组当作一种所谓的Base64的字符串格式输出
          */
 
-        public string GetByteString(string str, Encoding encode = null)
+        public static string GetByteString(string str, Encoding encode = null)
         {
             if (encode == null) { encode = Encoding.UTF8; }
             byte[] b = encode.GetBytes(ConvertHelper.GetString(str));
@@ -329,14 +329,19 @@ Console.WriteLine(Convert.ToBase64String(buffer)); //这是把字节数组当作
         /// 通用数据转换
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="targetType"></param>
         /// <param name="deft"></param>
         /// <returns></returns>
         public static T ChangeType<T>(object obj, T deft = default(T))
         {
             try
             {
-                return (T)Convert.ChangeType(obj, typeof(T));
+                var o = Convert.ChangeType(obj, typeof(T));
+                if (o is T re)
+                {
+                    return re;
+                }
+                //强转
+                return (T)o;
             }
             catch
             {

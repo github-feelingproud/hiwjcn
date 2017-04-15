@@ -5,6 +5,7 @@ using System;
 using Lib.extension;
 using System.Collections.Generic;
 using Nest;
+using System.Diagnostics;
 using Lib.helper;
 using Polly;
 using Polly.CircuitBreaker;
@@ -20,8 +21,6 @@ namespace Lib.log
         private static readonly CircuitBreakerPolicy p =
             Policy.Handle<Exception>().CircuitBreaker(10, TimeSpan.FromMinutes(1));
 
-        public const string IndexName = "lib_es_log_index";
-
         public ESLogAppender()
         {
             //
@@ -36,11 +35,13 @@ namespace Lib.log
                     var pool = ElasticsearchClientManager.Instance.DefaultClient;
                     var client = new ElasticClient(pool);
 
-                    client.CreateIndexIfNotExists(IndexName);
+                    client.CreateIndexIfNotExists(ESLogHelper.IndexName);
                 });
             }
-            catch
-            { }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.GetInnerExceptionAsJson());
+            }
         }
 
         protected override void SendBuffer(LoggingEvent[] events)
@@ -52,11 +53,13 @@ namespace Lib.log
                     var pool = ElasticsearchClientManager.Instance.DefaultClient;
                     var client = new ElasticClient(pool);
 
-                    client.AddToIndex(IndexName, events);
+                    client.AddToIndex(ESLogHelper.IndexName, events);
                 });
             }
-            catch
-            { }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.GetInnerExceptionAsJson());
+            }
         }
     }
 }

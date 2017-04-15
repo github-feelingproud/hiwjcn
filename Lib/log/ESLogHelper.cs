@@ -85,10 +85,11 @@ namespace Lib.log
 
         /// <summary>
         /// 删除此日期之前的数据
+        /// 由定时任务调用，不用异步
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
-        public static async Task DeleteDataBefore(DateTime time)
+        public static void DeleteDataBefore(DateTime time)
         {
             var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
 
@@ -96,7 +97,7 @@ namespace Lib.log
             req.Query = new QueryContainer();
             req.Query &= new DateRangeQuery() { Field = nameof(temp.UpdateTime), LessThan = time };
 
-            var response = await client.DeleteByQueryAsync(req);
+            var response = client.DeleteByQuery(req);
             response.ThrowIfException();
         }
     }

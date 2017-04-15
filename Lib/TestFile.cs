@@ -13,6 +13,56 @@ namespace Lib
         public static readonly string CodingPage = "https://coding.net/u/wjcodestore";
     }
 
+    public class DectorTest
+    {
+        public int name { get; set; }
+        public int age { get; set; }
+
+        public void hold()
+        {
+            if (getage() < 18)
+            {
+                throw new Exception("");
+            }
+            //学python那一套，内部函数
+            int getage()
+            {
+                return 0;
+            }
+        }
+
+        public static ref int change(ref int i)
+        {
+            return ref i;
+        }
+
+        /// <summary>
+        /// 结构函数，目前感觉好多余的功能，增加了不必要的语法糖
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="a"></param>
+        public void Deconstruct(out int n, out int a)
+        {
+            n = name;
+            a = age;
+        }
+    }
+
+    public class fasdf
+    {
+        public fasdf()
+        {
+            (int a, int b) = new DectorTest();
+
+
+            int age = 10;
+
+            var getage = DectorTest.change(ref age);
+            getage = 18;
+            //print age
+        }
+    }
+
     public class Test
     {
         #region 二叉树结点数据结构的定义
