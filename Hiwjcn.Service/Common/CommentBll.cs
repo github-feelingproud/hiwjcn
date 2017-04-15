@@ -13,6 +13,7 @@ using Autofac;
 using Hiwjcn.Core.Infrastructure.User;
 using Lib.ioc;
 using Lib.infrastructure;
+using Lib.extension;
 
 namespace Hiwjcn.Bll.Sys
 {
@@ -97,14 +98,12 @@ namespace Hiwjcn.Bll.Sys
             return Cache(key, () =>
             {
                 var data = new PagerData<CommentModel>();
-                int[] range = PagerHelper.GetQueryRange(page, pagesize);
                 var _commentDal = new CommentDal();
                 _commentDal.PrepareIQueryable((query) =>
                 {
                     query = query.Where(x => x.ThreadID == threadID);
                     data.ItemCount = query.Count();
-                    data.DataList = query.OrderByDescending(x => x.CommentID)
-                        .Skip(range[0]).Take(range[1]).ToList();
+                    data.DataList = query.OrderByDescending(x => x.CommentID).QueryPage(page, pagesize).ToList();
                     return true;
                 });
                 if (ValidateHelper.IsPlumpList(data.DataList))

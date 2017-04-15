@@ -215,23 +215,7 @@ namespace Lib.helper
 		/// <param name="current_page"></param>
 		/// <param name="page_size"></param>
 		/// <returns></returns>
-		public static int[] GetQueryRange(int current_page, int page_size)
-		{
-			if (current_page < 1) { throw new Exception("页码不能小于1"); }
-			if (page_size < 1) { throw new Exception("pagesize不能小于1"); }
-
-			var data = Tuple.Create((current_page - 1) * page_size, page_size);
-
-			return new int[] { data.Item1, data.Item2 };
-		}
-
-		/// <summary>
-		/// 计算mysql 的limit参数
-		/// </summary>
-		/// <param name="current_page"></param>
-		/// <param name="page_size"></param>
-		/// <returns></returns>
-		public static (long skip, long take) GetQueryRange_(int current_page, int page_size)
+		public static (int skip, int take) GetQueryRange(int current_page, int page_size)
 		{
 			if (current_page < 1) { throw new Exception("页码不能小于1"); }
 			if (page_size < 1) { throw new Exception("pagesize不能小于1"); }

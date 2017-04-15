@@ -36,8 +36,8 @@ namespace Lib.extension
         /// <returns></returns>
         public static IQueryable<T> QueryPage<T>(this IOrderedQueryable<T> query, int page, int pagesize)
         {
-            var range = PagerHelper.GetQueryRange(page, pagesize);
-            return query.Skip(range[0]).Take(range[1]);
+            var pager = PagerHelper.GetQueryRange(page, pagesize);
+            return query.Skip(pager.skip).Take(pager.take);
         }
 
         /// <summary>

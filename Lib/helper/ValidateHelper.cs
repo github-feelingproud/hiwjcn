@@ -13,6 +13,7 @@ using System.Reflection;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Lib.extension;
+using Newtonsoft.Json;
 
 namespace Lib.helper
 {
@@ -118,7 +119,8 @@ namespace Lib.helper
         /// </summary>
         public static bool IsDate(string s)
         {
-            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"(\d{4})-(\d{1,2})-(\d{1,2})");
+            //return IsPlumpString(s) && RegexHelper.IsMatch(s, @"(\d{4})-(\d{1,2})-(\d{1,2})");
+            return DateTime.TryParse(s, out var re);
         }
 
         /// <summary>
@@ -166,8 +168,17 @@ namespace Lib.helper
         /// </summary>
         public static bool IsFloat(string s)
         {
-            float re;
-            return float.TryParse(s, out re);
+            return float.TryParse(s, out var re);
+        }
+
+        /// <summary>
+        /// 是否是double
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsDouble(string s)
+        {
+            return double.TryParse(s, out var re);
         }
 
         /// <summary>
@@ -177,8 +188,7 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsInt(string s)
         {
-            int re;
-            return int.TryParse(s, out re);
+            return int.TryParse(s, out var re);
         }
 
         /// <summary>
@@ -213,9 +223,14 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsJson(string json)
         {
-            json = ConvertHelper.GetString(json);
-            return (json.StartsWith("{") && json.EndsWith("}"))
-                || (json.StartsWith("[") && json.EndsWith("]"));
+            try
+            {
+                return JsonConvert.DeserializeObject(json) != null;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -265,23 +280,19 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsImage(byte[] b)
         {
-            if (!IsPlumpList(b)) { return false; }
-            MemoryStream ms = null;
-            Image img = null;
             try
             {
-                ms = new MemoryStream(b);
-                img = Image.FromStream(ms);
-                return !img.Size.IsEmpty;
+                using (var ms = new MemoryStream(b))
+                {
+                    using (var img = Image.FromStream(ms))
+                    {
+                        return !img.Size.IsEmpty;
+                    }
+                }
             }
             catch
             {
                 return false;
-            }
-            finally
-            {
-                img?.Dispose();
-                ms?.Dispose();
             }
         }
 

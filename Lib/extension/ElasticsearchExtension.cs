@@ -45,8 +45,8 @@ namespace Lib.extension
         /// <returns></returns>
         public static SearchDescriptor<T> QueryPage_<T>(this SearchDescriptor<T> sd, int page, int pagesize) where T : class
         {
-            var range = PagerHelper.GetQueryRange(page, pagesize);
-            return sd.Skip(range[0]).Take(range[1]);
+            var pager = PagerHelper.GetQueryRange(page, pagesize);
+            return sd.Skip(pager.skip).Take(pager.take);
         }
 
         /// <summary>
