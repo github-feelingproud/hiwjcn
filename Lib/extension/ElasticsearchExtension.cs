@@ -20,8 +20,14 @@ namespace Lib.extension
         {
             if (!response.IsValid)
             {
-                response.LogError();
-                throw response.OriginalException;
+                if (response.ServerError?.Error != null)
+                {
+                    throw new Exception($"server errors:{response.ServerError.Error.ToJson()}");
+                }
+                if (response.OriginalException != null)
+                {
+                    throw response.OriginalException;
+                }
             }
         }
 
@@ -65,12 +71,8 @@ namespace Lib.extension
                 return true;
 
             var response = client.CreateIndex(indexName, selector);
-            if (response.IsValid)
-                return true;
 
-            response.LogError();
-
-            return false;
+            return response.IsValid;
         }
 
         /// <summary>
@@ -87,12 +89,8 @@ namespace Lib.extension
                 return true;
 
             var response = client.DeleteIndex(indexName);
-            if (response.IsValid)
-                return true;
 
-            response.LogError();
-
-            return false;
+            return response.IsValid;
         }
 
         /// <summary>
@@ -109,11 +107,8 @@ namespace Lib.extension
                 Operations = ConvertHelper.NotNullList(data).Select(x => new BulkIndexOperation<T>(x)).ToArray()
             };
             var response = client.Bulk(bulk);
-            if (!response.IsValid)
-            {
-                response.LogError();
-                throw new Exception("创建索引错误", response.OriginalException);
-            }
+
+            response.ThrowIfException();
         }
 
         /// <summary>
@@ -130,11 +125,8 @@ namespace Lib.extension
                 x => x.Phrase("phrase_suggest",
                 m => m.Field(targetField).Text(text)));
 
-            if (!response.IsValid)
-            {
-                response.LogError();
-                throw new Exception("建议错误", response.OriginalException);
-            }
+            response.ThrowIfException();
+
             return response.Suggestions;
         }
 
@@ -145,7 +137,8 @@ namespace Lib.extension
         /// <param name="sd"></param>
         /// <param name="pre"></param>
         /// <param name="after"></param>
-        public static SearchDescriptor<T> AddHighlightWrapper<T>(this SearchDescriptor<T> sd, string pre = "<em>", string after = "</em>") where T : class
+        public static SearchDescriptor<T> AddHighlightWrapper<T>(this SearchDescriptor<T> sd,
+            string pre = "<em>", string after = "</em>") where T : class
         {
             return sd.Highlight(x => x.PreTags(pre).PostTags(after));
         }
@@ -157,29 +150,30 @@ namespace Lib.extension
         /// <typeparam name="T"></typeparam>
         /// <param name="response"></param>
         /// <returns></returns>
-        private static Dictionary<string, List<KeyedBucket>> GetAggs<T>(this ISearchResponse<T> response) where T : class, new()
+        public static Dictionary<string, List<KeyedBucket>> GetAggs<T>(this ISearchResponse<T> response) where T : class, new()
         {
-            return response?.Aggregations?.ToDictionary(
-                    x => x.Key,
-                    x => (x.Value as BucketAggregate)?.Items.Select(i => (i as KeyedBucket)).Where(i => i?.DocCount > 0).ToList()
-                    )?.Where(x => ValidateHelper.IsPlumpList(x.Value)).ToDictionary(x => x.Key, x => x.Value);
-        }
-
-        /// <summary>
-        /// 记录返回错误
-        /// </summary>
-        /// <param name="response"></param>
-        public static void LogError(this IResponse response)
-        {
-            string server_error = null;
-            if (response.ServerError?.Error != null)
+            List<KeyedBucket> C(IAggregate x)
             {
-                server_error = "ES服务器错误";
+                if (x is BucketAggregate _BucketAggregate)
+                {
+                    var data = new List<KeyedBucket>();
+                    foreach (var i in _BucketAggregate.Items)
+                    {
+                        if (i is KeyedBucket _KeyedBucket)
+                        {
+                            if (_KeyedBucket.DocCount > 0)
+                            {
+                                data.Add(_KeyedBucket);
+                            }
+                        }
+                    }
+                    return data;
+                }
+                //老方式
+                return (x as BucketAggregate)?.Items?.Select(i => (i as KeyedBucket)).Where(i => i?.DocCount > 0).ToList();
             }
-            if (response.OriginalException != null)
-            {
-                response.OriginalException.AddErrorLog(server_error);
-            }
+            var aggs = response.Aggregations?.ToDictionary(x => x.Key, x => C(x.Value));
+            return aggs.Where(x => ValidateHelper.IsPlumpList(x.Value)).ToDictionary(x => x.Key, x => x.Value);
         }
 
         /// <summary>

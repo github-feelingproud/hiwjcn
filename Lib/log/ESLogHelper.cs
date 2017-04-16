@@ -21,6 +21,7 @@ namespace Lib.log
         /// <summary>
         /// 搜索日志
         /// </summary>
+        /// <param name="highlight"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <param name="keyword"></param>
@@ -28,10 +29,11 @@ namespace Lib.log
         /// <param name="page"></param>
         /// <param name="pagesize"></param>
         /// <returns></returns>
-        public static async Task<PagerData<ESLogLine>> Search(
-            DateTime? start, DateTime? end,
-            string keyword, string logger_name,
-            int page, int pagesize)
+        public static async Task<PagerData<ESLogLine, Dictionary<string, List<KeyedBucket>>>> Search(
+            bool highlight = true,
+            DateTime? start = null, DateTime? end = null,
+            string keyword = null, string logger_name = null,
+            int page = 1, int pagesize = 10)
         {
             var sd = new SearchDescriptor<ESLogLine>();
             sd = sd.Index(IndexName);
@@ -59,26 +61,34 @@ namespace Lib.log
             {
                 query &= new TermQuery() { Field = nameof(temp.LoggerName), Value = logger_name };
             }
+            //查询条件
             sd = sd.Query(_ => query);
-
+            //聚合
+            sd = sd.Aggregations(x =>
+            x.Terms(nameof(temp.LoggerName), av => av.Field(nameof(temp.LoggerName)).Size(1000))
+            .Terms(nameof(temp.Level), av => av.Field(nameof(temp.Level)).Size(1000))
+            .Terms(nameof(temp.Domain), av => av.Field(nameof(temp.Domain)).Size(1000)));
+            //高亮
+            if (highlight)
+            {
+                sd = sd.AddHighlightWrapper("<em class='kwd'>", "</em>");
+            }
+            //排序
             var sort = new SortDescriptor<ESLogLine>();
             sort = sort.Descending(x => x.UpdateTime);
             sd = sd.Sort(_ => sort);
 
+            //请求服务器
             var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
             var re = await client.SearchAsync<ESLogLine>(_ => sd);
-            if (!re.IsValid)
-            {
-                re.LogError();
-                if (re.OriginalException != null)
-                {
-                    throw re.OriginalException;
-                }
-                throw new Exception("log搜索错误");
-            }
-            var data = new PagerData<ESLogLine>();
+
+            re.ThrowIfException();
+
+            var data = new PagerData<ESLogLine, Dictionary<string, List<KeyedBucket>>>();
             data.ItemCount = (int)re.Total;
             data.DataList = re.Hits.Select(x => x.Source).ToList();
+            //聚合数据
+            data.ExtData = re.GetAggs();
 
             return data;
         }
@@ -91,12 +101,11 @@ namespace Lib.log
         /// <returns></returns>
         public static void DeleteDataBefore(DateTime time)
         {
-            var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
-
             var req = new DeleteByQueryRequest<ESLogLine>(IndexName);
             req.Query = new QueryContainer();
             req.Query &= new DateRangeQuery() { Field = nameof(temp.UpdateTime), LessThan = time };
-
+            //delete by query
+            var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
             var response = client.DeleteByQuery(req);
             response.ThrowIfException();
         }
