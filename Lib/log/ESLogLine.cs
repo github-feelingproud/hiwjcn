@@ -86,10 +86,10 @@ namespace Lib.log
         [String(Name = nameof(Line), Index = FieldIndexOption.NotAnalyzed)]
         public string Line { get; set; }
 
-        [Date(Name = nameof(CreateTime))]
+        [Date(Name = nameof(CreateTime), Index = NonStringIndexOption.NotAnalyzed)]
         public DateTime CreateTime { get; set; }
 
-        [Date(Name = nameof(UpdateTime))]
+        [Date(Name = nameof(UpdateTime), Index = NonStringIndexOption.NotAnalyzed)]
         public DateTime UpdateTime { get; set; }
     }
 }

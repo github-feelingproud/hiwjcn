@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Lib.extension;
 
 namespace Lib.mvc.attr
 {
@@ -53,26 +54,33 @@ namespace Lib.mvc.attr
         /// <param name="filterContext"></param>
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            //URL作为key
-            URL = ConvertHelper.GetString(filterContext.HttpContext.Request.Url);
-
-            var data = cache.Get<string>(URL);
-
-            if (data.Success)
+            try
             {
-                ReadFromCache = true;
-                filterContext.Result = new ContentResult()
+                //URL作为key
+                URL = ConvertHelper.GetString(filterContext.HttpContext.Request.Url);
+
+                var data = cache.Get<string>(URL);
+
+                if (data.Success)
                 {
-                    Content = data.Result,
-                    ContentEncoding = Encoding.UTF8,
-                    ContentType = "text/html"
-                };
-                return;
+                    ReadFromCache = true;
+                    filterContext.Result = new ContentResult()
+                    {
+                        Content = data.Result,
+                        ContentEncoding = Encoding.UTF8,
+                        ContentType = "text/html"
+                    };
+                    return;
+                }
+                else
+                {
+                    //attribute好像只实例化了一次，这里必须手动设置，不然会用上一次的值
+                    ReadFromCache = false;
+                }
             }
-            else
+            catch (Exception e)
             {
-                //attribute好像只实例化了一次，这里必须手动设置，不然会用上一次的值
-                ReadFromCache = false;
+                e.AddErrorLog();
             }
             base.OnActionExecuting(filterContext);
         }
@@ -93,29 +101,36 @@ namespace Lib.mvc.attr
         /// <param name="filterContext"></param>
         public override void OnResultExecuted(ResultExecutedContext filterContext)
         {
-            //如果不是从缓存中读取的就添加到缓存
-            if (!ReadFromCache)
+            try
             {
-                //获取view的名称
-                string viewName = filterContext.RouteData.GetRequiredString("action");
-                viewName = ConvertHelper.GetString(viewName);
-                using (var sw = new StringWriter())
+                //如果不是从缓存中读取的就添加到缓存
+                if (!ReadFromCache)
                 {
-                    //找到view
-                    var view = System.Web.Mvc.ViewEngines.Engines.FindView(
-                        filterContext.Controller.ControllerContext, viewName, string.Empty).View;
-                    //初始化view上下文
-                    var vc = new ViewContext(
-                        filterContext.Controller.ControllerContext,
-                        view,
-                        filterContext.Controller.ViewData, filterContext.Controller.TempData,
-                        sw);
-                    //渲染view
-                    view.Render(vc, sw);
-                    //获取渲染后的html
-                    var html = sw.ToString();
-                    cache.Set(URL, html, Minute * 60);
+                    //获取view的名称
+                    string viewName = filterContext.RouteData.GetRequiredString("action");
+                    viewName = ConvertHelper.GetString(viewName);
+                    using (var sw = new StringWriter())
+                    {
+                        //找到view
+                        var view = System.Web.Mvc.ViewEngines.Engines.FindView(
+                            filterContext.Controller.ControllerContext, viewName, string.Empty).View;
+                        //初始化view上下文
+                        var vc = new ViewContext(
+                            filterContext.Controller.ControllerContext,
+                            view,
+                            filterContext.Controller.ViewData, filterContext.Controller.TempData,
+                            sw);
+                        //渲染view
+                        view.Render(vc, sw);
+                        //获取渲染后的html
+                        var html = sw.ToString();
+                        cache.Set(URL, html, Minute * 60);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
             }
             base.OnResultExecuted(filterContext);
         }

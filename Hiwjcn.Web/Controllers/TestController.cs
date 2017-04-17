@@ -17,6 +17,7 @@ using System.Web.Mvc;
 using System.Linq;
 using Lib.mvc;
 using Lib.mvc.attr;
+using Lib.log;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -41,6 +42,15 @@ namespace Hiwjcn.Web.Controllers
         {
             new Exception("es保存错误日志").AddErrorLog("es_error");
             return Content("ok");
+        }
+
+        public async Task<ActionResult> es_log_list()
+        {
+            return await RunActionAsync(async () =>
+            {
+                var data = await ESLogHelper.Search();
+                return GetJson(new _() { success = true, data = data });
+            });
         }
 
         [AntiReSubmit]

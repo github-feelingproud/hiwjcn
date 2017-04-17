@@ -78,10 +78,13 @@ namespace Lib.log
             sort = sort.Descending(x => x.UpdateTime);
             sd = sd.Sort(_ => sort);
 
+            //分页
+            sd = sd.QueryPage_(page, pagesize);
+
             //请求服务器
             var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
             var re = await client.SearchAsync<ESLogLine>(_ => sd);
-
+            
             re.ThrowIfException();
 
             var data = new PagerData<ESLogLine, Dictionary<string, List<KeyedBucket>>>();

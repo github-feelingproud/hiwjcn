@@ -282,10 +282,8 @@ namespace Lib.extension
         public override ConnectionSettings CreateNewClient(string key)
         {
             var urls = key.Split('|', ';', ',').Select(s => new Uri(s));
-            var ConnectionSettings = new ConnectionSettings(new StaticConnectionPool(urls));
-
-            ConnectionSettings.MaximumRetries(2);
-
+            var ConnectionSettings = new ConnectionSettings(new StaticConnectionPool(urls)).DisableDirectStreaming(true).MaximumRetries(2);
+            
             return ConnectionSettings;
         }
 

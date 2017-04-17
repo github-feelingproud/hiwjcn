@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Nest;
 using System.Diagnostics;
 using Lib.helper;
+using System.Linq;
 using Polly;
 using Polly.CircuitBreaker;
 
@@ -53,7 +54,7 @@ namespace Lib.log
                     var pool = ElasticsearchClientManager.Instance.DefaultClient;
                     var client = new ElasticClient(pool);
 
-                    client.AddToIndex(ESLogHelper.IndexName, events);
+                    client.AddToIndex(ESLogHelper.IndexName, events.Select(x => new ESLogLine(x)).ToArray());
                 });
             }
             catch (Exception e)
