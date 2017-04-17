@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Lib
 {
@@ -45,6 +46,9 @@ namespace Lib
         {
             n = name;
             a = age;
+
+            Action<int> OnGetAge = async age => await Task.FromResult(1);
+            OnGetAge(1);
         }
     }
 

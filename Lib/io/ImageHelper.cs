@@ -42,10 +42,11 @@ namespace Lib.io
     public static class ImageHelper
     {
         /// <summary>
-        /// imageprocessor官网例子
+        /// imageprogress 官方例子
         /// </summary>
         /// <param name="filePath"></param>
-        public static void ResizeImage(string filePath, string newFilePath)
+        /// <param name="newFilePath"></param>
+        public static void _ResizeImage(string filePath, string newFilePath)
         {
             var photoBytes = File.ReadAllBytes(filePath);
             // Format is automatically detected though can be changed.
@@ -64,6 +65,54 @@ namespace Lib.io
                                 .Save(newFilePath);
                 }
             }
+        }
+
+        /// <summary>
+        /// resize img
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="newFilePath"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public static void ResizeImage(string filePath, string newFilePath, int width, int height)
+        {
+            var photoBytes = File.ReadAllBytes(filePath);
+            var size = new Size(width, height);
+
+            using (var inStream = new MemoryStream(photoBytes))
+            {
+                // Initialize the ImageFactory using the overload to preserve EXIF metadata.
+                using (var imageFactory = new ImageFactory(preserveExifData: true))
+                {
+                    // Load, resize, set the format and quality and save an image.
+                    imageFactory.Load(inStream).Resize(size).Save(newFilePath);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 计算压缩比例
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="max_width"></param>
+        /// <param name="max_height"></param>
+        /// <returns></returns>
+        public static (int width, int height) NewSize(int width, int height,
+            int? max_width = 500, int? max_height = 500)
+        {
+            var box = (w: width, h: height);
+            if (max_width != null && box.w > max_width.Value)
+            {
+                box.w = max_width.Value;
+                box.h = (max_width.Value / box.w) * box.h;
+            }
+            if (max_height != null && box.h > max_height.Value)
+            {
+                box.h = max_height.Value;
+                box.w = (max_height.Value / box.h) * box.w;
+            }
+            return box;
         }
 
         /// <summary>
