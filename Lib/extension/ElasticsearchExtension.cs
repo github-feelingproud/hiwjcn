@@ -32,13 +32,19 @@ namespace Lib.extension
         }
 
         /// <summary>
-        /// 默认的shards和replicas
+        /// 设置shards和replicas和model搜索deep
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="x"></param>
+        /// <param name="shards"></param>
+        /// <param name="replicas"></param>
+        /// <param name="deep"></param>
         /// <returns></returns>
-        public static CreateIndexDescriptor DeaultCreateIndexDescriptor<T>(this CreateIndexDescriptor x) where T : class
+        public static CreateIndexDescriptor GetCreateIndexDescriptor<T>(this CreateIndexDescriptor x,
+            int shards = 5, int replicas = 1, int deep = 5) where T : class
         {
-            return x.Settings(s => s.NumberOfShards(5).NumberOfReplicas(1)).Mappings(map => map.Map<T>(m => m.AutoMap(5)));
+            return x.Settings(s => 
+            s.NumberOfShards(shards).NumberOfReplicas(replicas)).Mappings(map => map.Map<T>(m => m.AutoMap(deep)));
         }
 
         /// <summary>

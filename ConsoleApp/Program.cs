@@ -68,7 +68,7 @@ namespace ConsoleApp
                 var indexName = nameof(DiskFileIndex).ToLower();
                 try
                 {
-                    client.CreateIndexIfNotExists(indexName, x => x.DeaultCreateIndexDescriptor<DiskFileIndex>());
+                    client.CreateIndexIfNotExists(indexName, x => x.GetCreateIndexDescriptor<DiskFileIndex>());
                 }
                 catch (Exception e)
                 {
