@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using Nest;
 using log4net.Core;
 using Lib.helper;
+using Lib.extension;
 
 namespace Lib.log
 {
     [ElasticsearchType(IdProperty = nameof(UID), Name = nameof(ESLogLine))]
-    public class ESLogLine
+    public class ESLogLine : IElasticSearchIndex
     {
         private static readonly DateTime EpochStart = new DateTime(1970, 1, 1);
 

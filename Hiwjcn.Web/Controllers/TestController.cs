@@ -40,7 +40,8 @@ namespace Hiwjcn.Web.Controllers
 
         public ActionResult es_log()
         {
-            new Exception("es保存错误日志").AddErrorLog("es_error");
+            new Exception($"es保存错误日志{Com.GetRandomNumString()}").AddErrorLog("es_error");
+            new Exception($"es保存错误日志{Com.GetRandomNumString()}").AddLog("ES日志");
             return Content("ok");
         }
 

@@ -10,6 +10,8 @@ using Lib.core;
 
 namespace Lib.extension
 {
+    public interface IElasticSearchIndex { }
+
     public static class ElasticsearchExtension
     {
         /// <summary>
@@ -22,7 +24,8 @@ namespace Lib.extension
             {
                 if (response.ServerError?.Error != null)
                 {
-                    throw new Exception($"server errors:{response.ServerError.Error.ToJson()}");
+                    var msg = $"server errors:{response.ServerError.Error.ToJson()}";
+                    throw new Exception(msg);
                 }
                 if (response.OriginalException != null)
                 {
@@ -41,9 +44,10 @@ namespace Lib.extension
         /// <param name="deep"></param>
         /// <returns></returns>
         public static CreateIndexDescriptor GetCreateIndexDescriptor<T>(this CreateIndexDescriptor x,
-            int shards = 5, int replicas = 1, int deep = 5) where T : class
+            int shards = 5, int replicas = 1, int deep = 5)
+            where T : class, IElasticSearchIndex
         {
-            return x.Settings(s => 
+            return x.Settings(s =>
             s.NumberOfShards(shards).NumberOfReplicas(replicas)).Mappings(map => map.Map<T>(m => m.AutoMap(deep)));
         }
 
@@ -55,7 +59,8 @@ namespace Lib.extension
         /// <param name="page"></param>
         /// <param name="pagesize"></param>
         /// <returns></returns>
-        public static SearchDescriptor<T> QueryPage_<T>(this SearchDescriptor<T> sd, int page, int pagesize) where T : class
+        public static SearchDescriptor<T> QueryPage_<T>(this SearchDescriptor<T> sd, int page, int pagesize)
+            where T : class, IElasticSearchIndex
         {
             var pager = PagerHelper.GetQueryRange(page, pagesize);
             return sd.Skip(pager.skip).Take(pager.take);
@@ -106,7 +111,8 @@ namespace Lib.extension
         /// <param name="client"></param>
         /// <param name="indexName"></param>
         /// <param name="data"></param>
-        public static void AddToIndex<T>(this IElasticClient client, string indexName, params T[] data) where T : class
+        public static void AddToIndex<T>(this IElasticClient client, string indexName, params T[] data)
+            where T : class, IElasticSearchIndex
         {
             var bulk = new BulkRequest(indexName)
             {
@@ -125,7 +131,9 @@ namespace Lib.extension
         /// <param name="targetField"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static IDictionary<string, Suggest[]> SuggestKeyword<T>(this IElasticClient client, Expression<Func<T, object>> targetField, string text) where T : class
+        public static IDictionary<string, Suggest[]> SuggestKeyword<T>(this IElasticClient client,
+            Expression<Func<T, object>> targetField, string text)
+            where T : class, IElasticSearchIndex
         {
             var response = client.Suggest<T>(
                 x => x.Phrase("phrase_suggest",
@@ -144,7 +152,8 @@ namespace Lib.extension
         /// <param name="pre"></param>
         /// <param name="after"></param>
         public static SearchDescriptor<T> AddHighlightWrapper<T>(this SearchDescriptor<T> sd,
-            string pre = "<em>", string after = "</em>") where T : class
+            string pre = "<em>", string after = "</em>")
+            where T : class, IElasticSearchIndex
         {
             return sd.Highlight(x => x.PreTags(pre).PostTags(after));
         }
@@ -156,7 +165,8 @@ namespace Lib.extension
         /// <typeparam name="T"></typeparam>
         /// <param name="response"></param>
         /// <returns></returns>
-        public static Dictionary<string, List<KeyedBucket>> GetAggs<T>(this ISearchResponse<T> response) where T : class, new()
+        public static Dictionary<string, List<KeyedBucket>> GetAggs<T>(this ISearchResponse<T> response)
+            where T : class, IElasticSearchIndex
         {
             List<KeyedBucket> C(IAggregate x)
             {
@@ -221,7 +231,8 @@ namespace Lib.extension
         /// <param name="desc"></param>
         /// <returns></returns>
         public static SortDescriptor<T> SortByDistance<T>(this SortDescriptor<T> sort,
-            Expression<Func<T, object>> field, double lat, double lng, bool desc = false) where T : class
+            Expression<Func<T, object>> field, double lat, double lng, bool desc = false)
+            where T : class, IElasticSearchIndex
         {
             var geo_sort = new SortGeoDistanceDescriptor<T>().PinTo(new GeoLocation(lat, lng));
             if (desc)
@@ -282,9 +293,9 @@ namespace Lib.extension
         public override ConnectionSettings CreateNewClient(string key)
         {
             var urls = key.Split('|', ';', ',').Select(s => new Uri(s));
-            var ConnectionSettings = new ConnectionSettings(new StaticConnectionPool(urls)).DisableDirectStreaming(true).MaximumRetries(2);
-            
-            return ConnectionSettings;
+            var pool = new ConnectionSettings(new StaticConnectionPool(urls)).DisableDirectStreaming(true).MaximumRetries(2);
+
+            return pool;
         }
 
         public override void DisposeClient(ConnectionSettings ins)
@@ -525,7 +536,7 @@ namespace Lib.extension
         /// just for example
         /// </summary>
         [ElasticsearchType(IdProperty = "UKey", Name = "ProductList")]
-        public class ProductListV2
+        public class ProductListV2 : IElasticSearchIndex
         {
             [String(Name = "UKey", Index = FieldIndexOption.NotAnalyzed)]
             public string UKey { get; set; }
