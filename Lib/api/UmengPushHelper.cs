@@ -20,7 +20,7 @@ namespace Lib.api
         /// <summary>
         /// 连续错误10就熔断1分钟
         /// </summary>
-        private static readonly CircuitBreakerPolicy p = Policy.Handle<Exception>().CircuitBreaker(10, TimeSpan.FromMinutes(1));
+        private static readonly CircuitBreakerPolicy p_async = Policy.Handle<Exception>().CircuitBreakerAsync(10, TimeSpan.FromMinutes(1));
 
         public static readonly string UMENG_PUSH_URL = ConfigurationManager.AppSettings[nameof(UMENG_PUSH_URL)] ?? "http://msg.umeng.com/api/send";
 
@@ -47,7 +47,7 @@ namespace Lib.api
             var sign = BuildSign(data_json, SK);
             var url = $"{UMENG_PUSH_URL}?sign={sign}";
 
-            var json = await p.ExecuteAsync(async () => { return await HttpClientHelper.PostJsonAsync(url, post_body); });
+            var json = await p_async.ExecuteAsync(async () => { return await HttpClientHelper.PostJsonAsync(url, post_body); });
 
             return UmengReturn.FromJson(json);
         }

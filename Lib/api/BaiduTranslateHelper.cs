@@ -16,7 +16,7 @@ namespace Lib.api
         /// <summary>
         /// 连续错误10就熔断1分钟
         /// </summary>
-        private static readonly CircuitBreakerPolicy p = Policy.Handle<Exception>().CircuitBreaker(10, TimeSpan.FromMinutes(1));
+        private static readonly CircuitBreakerPolicy p_async = Policy.Handle<Exception>().CircuitBreakerAsync(10, TimeSpan.FromMinutes(1));
 
         #region 百度翻译接口
         class BaiduTransResult
@@ -55,7 +55,7 @@ namespace Lib.api
 
             var urlparam = $"{url}?{dict.ToUrlParam()}";
             //trans = await HttpClientHelper.GetAsync(urlparam);
-            trans = await p.ExecuteAsync(async () => await HttpClientHelper.GetAsync(urlparam));
+            trans = await p_async.ExecuteAsync(async () => await HttpClientHelper.GetAsync(urlparam));
             if (!ValidateHelper.IsPlumpString(trans)) { throw new Exception("翻译失败"); }
             return trans;
         }

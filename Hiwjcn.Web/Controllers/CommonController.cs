@@ -241,7 +241,6 @@ namespace Hiwjcn.Web.Controllers
                     return Http403();
                 }
                 var code = new DrawVerifyCode();
-                code.CodeType = 2;
                 byte[] bs = code.GetImageBytes();
                 if (!ValidateHelper.IsPlumpList(bs)) { return Content("没有数据"); }
 

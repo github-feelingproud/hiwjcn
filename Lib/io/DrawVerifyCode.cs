@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -6,6 +7,14 @@ using System.Text;
 
 namespace Lib.io
 {
+    public enum VerifyCodeTypeEnum : int
+    {
+        数字 = 1,
+        字母 = 2,
+        混合 = 3,
+        汉字 = 4
+    }
+
     /// <summary>
     ///用于生成多种样式的验证码
     /// </summary>
@@ -28,7 +37,7 @@ namespace Lib.io
         /// <summary>
         /// 字符类型，数字，字母，混合，汉字
         /// </summary>
-        public int CodeType { get; set; }
+        public VerifyCodeTypeEnum CodeType { get; set; }
 
         /// <summary>
         /// 字体大小，【默认15px】为了使字符居中显示，请设置一个合适的值
@@ -50,13 +59,12 @@ namespace Lib.io
         /// <summary>
         /// 构造函数，设置response对象
         /// </summary>
-        /// <param name="res"></param>
         public DrawVerifyCode()
         {
             this.CharCount = 4;
             this.FontSize = 15;
             this.LineCount = 5;
-            this.CodeType = 1;
+            this.CodeType = VerifyCodeTypeEnum.混合;
             this.Height = 40;
             this.Width = 110;
 
@@ -68,63 +76,53 @@ namespace Lib.io
         #region 主体程序
         public byte[] GetImageBytes()
         {
-            Bitmap bm = null;
-            Graphics g = null;
-            MemoryStream ms = null;
-            try
+            RandomFunc randomchar;
+            //判断使用中文或者英文
+            switch (CodeType)
             {
-                RandomFunc randomchar;
-                //判断使用中文或者英文
-                switch (CodeType)
+                case VerifyCodeTypeEnum.字母: randomchar = randomChar_en; break;
+                case VerifyCodeTypeEnum.数字: randomchar = randomChar_num; break;
+                case VerifyCodeTypeEnum.汉字: randomchar = randomChar_cn; break;
+                default: randomchar = randomChar_en; break;
+            }
+            //获取随机字体，颜色
+            using (var bm = new Bitmap(Width, Height))
+            {
+                using (var g = Graphics.FromImage(bm))
                 {
-                    case 1: randomchar = randomChar_en; break;
-                    case 2: randomchar = randomChar_num; break;
-                    case 3: randomchar = randomChar_cn; break;
-                    default: randomchar = randomChar_en; break;
-                }
-                //获取随机字体，颜色
-                bm = new Bitmap(Width, Height);
-                g = Graphics.FromImage(bm);
-                g.Clear(Color.White);
-                ms = new MemoryStream();
-                //判断是否画噪线
-                if (LineCount > 0)
-                {
-                    int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-                    for (int k = 0; k < LineCount; ++k)
+                    g.Clear(Color.White);
+                    using (var ms = new MemoryStream())
                     {
-                        x1 = ran.Next(Width);
-                        y1 = ran.Next(Height);
-                        x2 = ran.Next(Width);
-                        y2 = ran.Next(Height);
-                        g.DrawLine(new Pen(randomColor()), x1, y1, x2, y2);
+                        //判断是否画噪线
+                        if (LineCount > 0)
+                        {
+                            int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+                            for (int k = 0; k < LineCount; ++k)
+                            {
+                                x1 = ran.Next(Width);
+                                y1 = ran.Next(Height);
+                                x2 = ran.Next(Width);
+                                y2 = ran.Next(Height);
+                                g.DrawLine(new Pen(randomColor()), x1, y1, x2, y2);
+                            }
+                        }
+                        //画验证码
+                        for (int i = 0; i < CharCount; ++i)
+                        {
+                            string c = randomchar();
+                            this.Code += c;//把验证码保存起来
+                            float x = 0, y = 0;
+                            getCharPosition(i + 1, ref x, ref y);//计算字符的位置
+                            g.DrawString(c, randomFont(), new SolidBrush(randomColor()), x, y);
+                        }
+                        bm.Save(ms, ImageFormat.Png);
+                        return ms.ToArray();
+                        /*
+                        byte[] bs = ms.ToArray();
+                        response.OutputStream.Write(bs, 0, bs.Length);
+                         * */
                     }
                 }
-                //画验证码
-                for (int i = 0; i < CharCount; ++i)
-                {
-                    string c = randomchar();
-                    this.Code += c;//把验证码保存起来
-                    float x = 0, y = 0;
-                    getCharPosition(i + 1, ref x, ref y);//计算字符的位置
-                    g.DrawString(c, randomFont(), new SolidBrush(randomColor()), x, y);
-                }
-                bm.Save(ms, ImageFormat.Png);
-                return ms.ToArray();
-                /*
-                byte[] bs = ms.ToArray();
-                response.OutputStream.Write(bs, 0, bs.Length);
-                 * */
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                bm?.Dispose();
-                g?.Dispose();
-                ms?.Dispose();
             }
         }
 
@@ -149,10 +147,18 @@ namespace Lib.io
         /// </summary>
         private string randomChar_en()
         {
-            char[] chars = { 'a','b','c','d','e','f','g','h','i','j','k','m','n'
-                           ,'p','q','r','s','t','v','w','x','y','z'
-                       ,'1','2','3','4','5','6','7','8','9','0'};
-            return chars[ran.Next(chars.Length)].ToString();
+            var chars = new List<char>();
+            void FindChar(char start, char end)
+            {
+                for (var i = start; i <= end; ++i)
+                {
+                    chars.Add((char)i);
+                }
+            }
+            FindChar('a', 'z');
+            FindChar('A', 'Z');
+            FindChar('0', '9');
+            return chars[ran.Next(chars.Count)].ToString();
         }
         /// <summary>
         /// 产生随机中文字符
@@ -241,7 +247,7 @@ namespace Lib.io
         /// <returns></returns>
         private Font randomFont()
         {
-            if (CodeType == 3)
+            if (CodeType == VerifyCodeTypeEnum.汉字)
             {
                 FontSize = 15;
             }
@@ -254,7 +260,7 @@ namespace Lib.io
         /// <returns></returns>
         private Color randomColor()
         {
-            Color[] colors = { Color.Purple, Color.Black, Color.DarkBlue, Color.DarkRed };
+            var colors = new Color[] { Color.Purple, Color.Black, Color.DarkBlue, Color.DarkRed };
             return colors[ran.Next(colors.Length)];
         }
 

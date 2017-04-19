@@ -44,5 +44,17 @@ namespace Lib.extension
             }
             return dict;
         }
+
+
+        public static string ToBootStrapTableHtml<T>(this IEnumerable<T> list) where T : class
+        {
+            var html = new StringBuilder();
+            var props = typeof(T).GetProperties();
+            foreach (var m in list)
+            {
+
+            }
+            return html.ToString();
+        }
     }
 }
