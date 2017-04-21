@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using Lib.extension;
+using System.Linq;
 
 namespace Lib.io
 {
@@ -13,6 +14,12 @@ namespace Lib.io
     /// </summary>
     public class DrawVerifyCode
     {
+        class CharItem
+        {
+            public string c { get; set; }
+            public Font font { get; set; }
+        }
+
         #region 各种参数
         private readonly Random random = new Random(DateTime.Now.Millisecond);
 
@@ -35,14 +42,6 @@ namespace Lib.io
         /// 验证码字符数
         /// </summary>
         public int CharCount { get; set; } = 4;
-        /// <summary>
-        /// 宽
-        /// </summary>
-        public int Width { get; set; } = 110;
-        /// <summary>
-        /// 高
-        /// </summary>
-        public int Height { get; set; } = 40;
 
         private readonly List<Color> colors = new List<Color>() { Color.Purple, Color.Black, Color.DarkBlue, Color.DarkRed };
         private readonly List<string> fonts = new List<string>() { "Times New Roman", "MS Mincho", "Gungsuh", "PMingLiU", "Impact" };
@@ -64,6 +63,7 @@ namespace Lib.io
             FindChar('a', 'z');
             FindChar('A', 'Z');
             FindChar('0', '9');
+
             chars.Remove('0');
             chars.Remove('O');
             chars.Remove('o');
@@ -81,9 +81,29 @@ namespace Lib.io
         #endregion
 
         #region 主体程序
+        /// <summary>
+        /// 获取图片bytes
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetImageBytes()
         {
+            return GetImageBytesAndSize().bs;
+        }
+        /// <summary>
+        /// 获取图片bytes和宽高
+        /// </summary>
+        /// <returns></returns>
+        public (byte[] bs, int width, int height) GetImageBytesAndSize()
+        {
             if (CharCount <= 0) { throw new Exception("字符数必须大于0"); }
+
+            var items = new int[CharCount].Select(_ => new CharItem()
+            {
+                c = random.Choice(chars).ToString(),
+                font = new Font(random.Choice(fonts), FontSize)
+            }).ToList();
+            int Height = (int)(items.Select(x => x.font).Max(x => x.Height) * 1.3);
+            int Width = (int)(Height * 0.8 * CharCount);
             //获取随机字体，颜色
             using (var bm = new Bitmap(Width, Height))
             {
@@ -97,34 +117,32 @@ namespace Lib.io
                         {
                             for (int k = 0; k < LineCount; ++k)
                             {
-                                var x1 = random.Next(Width);
-                                var y1 = random.Next(Height);
-                                var x2 = random.Next(Width);
-                                var y2 = random.Next(Height);
+                                var x1 = random.Next(bm.Width);
+                                var y1 = random.Next(bm.Height);
+                                var x2 = random.Next(bm.Width);
+                                var y2 = random.Next(bm.Height);
                                 g.DrawLine(new Pen(random.Choice(colors)), x1, y1, x2, y2);
                             }
                         }
                         //画验证码
-                        for (int i = 0; i < CharCount; ++i)
+                        var i = 0;
+                        foreach (var itm in items)
                         {
-                            var c = random.Choice(chars).ToString();
-                            var font = new Font(random.Choice(fonts), FontSize);
-
                             //计算位置
-                            var (x, y) = ComputePosition(i, font);
+                            var (x, y) = ComputePosition(i++, itm.font, bm);
 
                             var angle = random.Next(-5, 5);
                             g.RotateTransform(angle);
 
-                            g.DrawString(c, font, new SolidBrush(random.Choice(colors)), x, y);
+                            g.DrawString(itm.c, itm.font, new SolidBrush(random.Choice(colors)), x, y);
 
                             g.RotateTransform(-angle);
 
-                            this.Code += c;//把验证码保存起来
+                            this.Code += itm.c;//把验证码保存起来
                         }
 
                         bm.Save(ms, ImageFormat.Png);
-                        return ms.ToArray();
+                        return (ms.ToArray(), Width, Height);
                         /*
                         byte[] bs = ms.ToArray();
                         response.OutputStream.Write(bs, 0, bs.Length);
@@ -137,15 +155,15 @@ namespace Lib.io
         #endregion
 
         #region 方法
-        private (float x, float y) ComputePosition(int i, Font font)
+        private (float x, float y) ComputePosition(int i, Font font, Bitmap bm)
         {
             var font_h = font.Height;
             var font_w = font.Size;
-            var box_w = Width / CharCount;
+            var box_w = bm.Width / CharCount;
 
             var x = box_w * i + (box_w - font_w) / 2;
 
-            var y = (Height - font_h) / 2;
+            var y = (bm.Height - font_h) / 2;
 
             return (x, y);
         }
