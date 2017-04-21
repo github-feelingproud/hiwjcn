@@ -17,12 +17,12 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static Tuple<string, string, string> GetA_C_A(this RouteData data)
+        public static (string area, string controller, string action) GetA_C_A(this RouteData data)
         {
             var AreaName = ConvertHelper.GetString(data.Values["Area"]);
             var ControllerName = ConvertHelper.GetString(data.Values["Controller"]);
             var ActionName = ConvertHelper.GetString(data.Values["Action"]);
-            return Tuple.Create(AreaName, ControllerName, ActionName);
+            return (AreaName, ControllerName, ActionName);
         }
 
         /// <summary>

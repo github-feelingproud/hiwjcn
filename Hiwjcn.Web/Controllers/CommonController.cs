@@ -231,7 +231,7 @@ namespace Hiwjcn.Web.Controllers
         /// 验证码
         /// </summary>
         /// <returns></returns>
-        [CheckReferrerUrl]
+        //[CheckReferrerUrl]
         public ActionResult VerifyCode(string key)
         {
             return RunAction(() =>

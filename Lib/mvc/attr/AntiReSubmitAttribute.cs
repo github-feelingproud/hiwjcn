@@ -29,10 +29,7 @@ namespace Lib.mvc.attr
 
             var dict = new SortedDictionary<string, string>(reqparams, new MyStringComparer());
             var submitData = dict.ToUrlParam();
-            var routedata = filterContext.RouteData.GetA_C_A();
-            var AreaName = routedata.Item1;
-            var ControllerName = routedata.Item2;
-            var ActionName = routedata.Item3;
+            var (AreaName, ControllerName, ActionName) = filterContext.RouteData.GetA_C_A();
             submitData = $"{AreaName}/{ControllerName}/{ActionName}/:{submitData}";
             //读取缓存
             using (var cache = CacheManager.CacheProvider())

@@ -28,7 +28,9 @@ namespace Lib.extension
         /// <returns></returns>
         public static T Choice<T>(this Random ran, IList<T> list)
         {
-            return list[ran.Next(minValue: 0, maxValue: list.Count() - 1)];
+            //The maxValue for the upper-bound in the Next() method is exclusive—
+            //the range includes minValue, maxValue-1, and all numbers in between.
+            return list[ran.Next(minValue: 0, maxValue: list.Count())];
         }
     }
 }
