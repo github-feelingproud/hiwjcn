@@ -45,6 +45,19 @@ namespace Lib.extension
             return dict;
         }
 
+        /// <summary>
+        /// 获取成员，超过索引返回默认值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="index"></param>
+        /// <param name="deft"></param>
+        /// <returns></returns>
+        public static T GetItem<T>(this IList<T> list, int index, T deft = default(T))
+        {
+            if (index > list.Count() - 1) { return deft; }
+            return list[index];
+        }
 
         public static string ToBootStrapTableHtml<T>(this IEnumerable<T> list) where T : class
         {
@@ -55,6 +68,66 @@ namespace Lib.extension
 
             }
             return html.ToString();
+        }
+    }
+
+    /// <summary>
+    /// 可以计算的list《int》
+    /// </summary>
+    public class ComputableList : List<int>
+    {
+        public ComputableList() { }
+
+        public ComputableList(IEnumerable<int> list) : base(list) { }
+
+        public static ComputableList operator +(ComputableList a, ComputableList b)
+        {
+            var list = new ComputableList();
+            for (var i = 0; i < a.Count || i < b.Count; ++i)
+            {
+                list.Add(a.GetItem(i, 0) + b.GetItem(i, 0));
+            }
+            return list;
+        }
+
+        public static List<bool> operator >(ComputableList a, int b)
+        {
+            return a.Select(x => x > b).ToList();
+        }
+
+        public static List<bool> operator <(ComputableList a, int b)
+        {
+            return a.Select(x => x < b).ToList();
+        }
+
+        public static List<bool> operator >=(ComputableList a, int b)
+        {
+            return a.Select(x => x >= b).ToList();
+        }
+
+        public static List<bool> operator <=(ComputableList a, int b)
+        {
+            return a.Select(x => x <= b).ToList();
+        }
+
+        public static ComputableList operator *(ComputableList a, int b)
+        {
+            return new ComputableList(a.Select(x => x * b));
+        }
+
+        public static ComputableList operator /(ComputableList a, int b)
+        {
+            return new ComputableList(a.Select(x => x / b));
+        }
+
+        public static ComputableList operator +(ComputableList a, int b)
+        {
+            return new ComputableList(a.Select(x => x + b));
+        }
+
+        public static ComputableList operator -(ComputableList a, int b)
+        {
+            return new ComputableList(a.Select(x => x - b));
         }
     }
 }
