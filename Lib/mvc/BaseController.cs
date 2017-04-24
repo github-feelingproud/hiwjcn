@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Configuration;
 
 namespace Lib.mvc
 {
@@ -156,12 +157,30 @@ namespace Lib.mvc
         protected ActionResult NoLoginResult { get; set; }
         protected ActionResult NoPermissionResult { get; set; }
         protected List<string> PermissionList { get; set; }
+        protected readonly bool ShowExceptionResult = (ConfigurationManager.AppSettings["ShowExceptionResult"] ?? "true").ToBool();
+
+        [NonAction]
+        private ActionResult ExceptionResult(Exception e)
+        {
+            e.AddLog(this.GetType());
+            //自定义错误
+            if (this.ErrorResult != null)
+            {
+                return this.ErrorResult;
+            }
+            //捕获的错误
+            if (this.ShowExceptionResult)
+            {
+                return GetJson(e.GetInnerExceptionAsList());
+            }
+            //默认500页面
+            return Http500();
+        }
 
         /// <summary>
         /// 获取action的时候捕获异常
         /// </summary>
         /// <param name="GetActionFunc"></param>
-        /// <param name="controller"></param>
         /// <returns></returns>
         [NonAction]
         public ActionResult RunAction(Func<ActionResult> GetActionFunc)
@@ -172,15 +191,7 @@ namespace Lib.mvc
             }
             catch (Exception e)
             {
-                e.AddLog(this.GetType());
-                if (ErrorResult != null)
-                {
-                    return ErrorResult;
-                }
-                else
-                {
-                    return Http500();
-                }
+                return ExceptionResult(e);
             }
         }
 
@@ -188,8 +199,6 @@ namespace Lib.mvc
         /// 异步，还没有使用
         /// </summary>
         /// <param name="GetActionFunc"></param>
-        /// <param name="controller"></param>
-        /// <param name="ErrorResult"></param>
         /// <returns></returns>
         [NonAction]
         public async Task<ActionResult> RunActionAsync(Func<Task<ActionResult>> GetActionFunc)
@@ -200,15 +209,7 @@ namespace Lib.mvc
             }
             catch (Exception e)
             {
-                e.AddLog(this.GetType());
-                if (ErrorResult != null)
-                {
-                    return ErrorResult;
-                }
-                else
-                {
-                    return Http500();
-                }
+                return ExceptionResult(e);
             }
         }
 
@@ -218,12 +219,6 @@ namespace Lib.mvc
         /// loginuser为有效登陆用户，用户ID>0
         /// </summary>
         /// <param name="GetActionFunc"></param>
-        /// <param name="controller"></param>
-        /// <param name="loginuser">有效登陆用户</param>
-        /// <param name="ForAdminLogin"></param>
-        /// <param name="NeedRoleList"></param>
-        /// <param name="NoPermissionResult"></param>
-        /// <param name="DefaultErrorResult"></param>
         /// <returns></returns>
         [NonAction]
         public ActionResult RunActionWhenLogin(Func<LoginUserInfo, ActionResult> GetActionFunc)
@@ -246,9 +241,6 @@ namespace Lib.mvc
         /// 异步实现
         /// </summary>
         /// <param name="GetActionFunc"></param>
-        /// <param name="PermissionList"></param>
-        /// <param name="NoPermissionResult"></param>
-        /// <param name="ErrorResult"></param>
         /// <returns></returns>
         [NonAction]
         public async Task<ActionResult> RunActionWhenLoginAsync(Func<LoginUserInfo, Task<ActionResult>> GetActionFunc)
