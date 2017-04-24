@@ -16,7 +16,8 @@ namespace Lib.api
         /// <summary>
         /// 连续错误10就熔断1分钟
         /// </summary>
-        private static readonly CircuitBreakerPolicy p_async = Policy.Handle<Exception>().CircuitBreakerAsync(10, TimeSpan.FromMinutes(1));
+        private static readonly CircuitBreakerPolicy p_async =
+            Policy.Handle<Exception>().CircuitBreakerAsync(50, TimeSpan.FromMinutes(1));
 
         #region 百度翻译接口
         class BaiduTransResult

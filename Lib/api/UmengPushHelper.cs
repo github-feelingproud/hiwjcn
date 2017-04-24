@@ -15,20 +15,46 @@ using Polly;
 
 namespace Lib.api
 {
+    /// <summary>
+    /// Umeng app key配置
+    /// </summary>
+    public class UmengPushKeyConfig
+    {
+        public virtual string UMENG_PUSH_APP_KEY_ANDROID { get; set; }
+        public virtual string UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID { get; set; }
+
+        public virtual string UMENG_PUSH_APP_KEY_IOS { get; set; }
+        public virtual string UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS { get; set; }
+
+        //public virtual bool UseCircuitBreaker { get; set; } = false;
+
+        public UmengPushKeyConfig()
+        {
+            this.UMENG_PUSH_APP_KEY_ANDROID =
+                ConfigurationManager.AppSettings[nameof(UMENG_PUSH_APP_KEY_ANDROID)];
+            this.UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID =
+                ConfigurationManager.AppSettings[nameof(UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID)];
+
+            this.UMENG_PUSH_APP_KEY_IOS =
+                ConfigurationManager.AppSettings[nameof(UMENG_PUSH_APP_KEY_IOS)];
+            this.UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS =
+                ConfigurationManager.AppSettings[nameof(UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS)];
+        }
+    }
+
+    /// <summary>
+    /// 友盟推送
+    /// </summary>
     public static class UmengPushHelper
     {
         /// <summary>
         /// 连续错误10就熔断1分钟
         /// </summary>
-        private static readonly CircuitBreakerPolicy p_async = Policy.Handle<Exception>().CircuitBreakerAsync(10, TimeSpan.FromMinutes(1));
+        private static readonly CircuitBreakerPolicy p_async =
+            Policy.Handle<Exception>().CircuitBreakerAsync(50, TimeSpan.FromMinutes(1));
 
-        public static readonly string UMENG_PUSH_URL = ConfigurationManager.AppSettings[nameof(UMENG_PUSH_URL)] ?? "http://msg.umeng.com/api/send";
-
-        public static readonly string UMENG_PUSH_APP_KEY_ANDROID = ConfigurationManager.AppSettings[nameof(UMENG_PUSH_APP_KEY_ANDROID)];
-        public static readonly string UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID = ConfigurationManager.AppSettings[nameof(UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID)];
-
-        public static readonly string UMENG_PUSH_APP_KEY_IOS = ConfigurationManager.AppSettings[nameof(UMENG_PUSH_APP_KEY_IOS)];
-        public static readonly string UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS = ConfigurationManager.AppSettings[nameof(UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS)];
+        public static readonly string UMENG_PUSH_URL =
+            ConfigurationManager.AppSettings[nameof(UMENG_PUSH_URL)] ?? "http://msg.umeng.com/api/send";
 
         public static string BuildSign(string post_body, string SK)
         {
@@ -47,21 +73,21 @@ namespace Lib.api
             var sign = BuildSign(data_json, SK);
             var url = $"{UMENG_PUSH_URL}?sign={sign}";
 
-            var json = await p_async.ExecuteAsync(async () => { return await HttpClientHelper.PostJsonAsync(url, post_body); });
+            var json = await p_async.ExecuteAsync(async () => await HttpClientHelper.PostJsonAsync(url, post_body));
 
             return UmengReturn.FromJson(json);
         }
 
-        public static async Task<UmengReturn> PushAndroid(PayLoadAndroid payload, List<string> device_tokens)
+        public static async Task<UmengReturn> PushAndroid(UmengPushKeyConfig config, PayLoadAndroid payload, List<string> device_tokens)
         {
             var list = new List<string>();
-            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_APP_KEY_ANDROID))
+            if (!ValidateHelper.IsPlumpString(config.UMENG_PUSH_APP_KEY_ANDROID))
             {
-                list.Add(nameof(UMENG_PUSH_APP_KEY_ANDROID));
+                list.Add(nameof(config.UMENG_PUSH_APP_KEY_ANDROID));
             }
-            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID))
+            if (!ValidateHelper.IsPlumpString(config.UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID))
             {
-                list.Add(nameof(UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID));
+                list.Add(nameof(config.UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID));
             }
             if (list.Count > 0)
             {
@@ -69,26 +95,26 @@ namespace Lib.api
             }
             var data = new
             {
-                appkey = UMENG_PUSH_APP_KEY_ANDROID,
+                appkey = config.UMENG_PUSH_APP_KEY_ANDROID,
                 timestamp = DateTimeHelper.GetTimeStamp().ToString(),
                 alias_type = "qpl",
                 type = "customizedcast",
                 alias = string.Join(",", device_tokens),
                 payload = payload
             };
-            return await Send(data, UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID);
+            return await Send(data, config.UMENG_PUSH_APP_MASTER_SECRET_KEY_ANDROID);
         }
 
-        public static async Task<UmengReturn> PushIOS(object payload, List<string> device_tokens)
+        public static async Task<UmengReturn> PushIOS(UmengPushKeyConfig config, object payload, List<string> device_tokens)
         {
             var list = new List<string>();
-            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_APP_KEY_IOS))
+            if (!ValidateHelper.IsPlumpString(config.UMENG_PUSH_APP_KEY_IOS))
             {
-                list.Add(nameof(UMENG_PUSH_APP_KEY_IOS));
+                list.Add(nameof(config.UMENG_PUSH_APP_KEY_IOS));
             }
-            if (!ValidateHelper.IsPlumpString(UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS))
+            if (!ValidateHelper.IsPlumpString(config.UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS))
             {
-                list.Add(nameof(UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS));
+                list.Add(nameof(config.UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS));
             }
             if (list.Count > 0)
             {
@@ -96,14 +122,14 @@ namespace Lib.api
             }
             var data = new
             {
-                appkey = UMENG_PUSH_APP_KEY_IOS,
+                appkey = config.UMENG_PUSH_APP_KEY_IOS,
                 timestamp = DateTimeHelper.GetTimeStamp().ToString(),
                 alias_type = "qpl",
                 type = "customizedcast",
                 alias = string.Join(",", device_tokens),
                 payload = payload
             };
-            return await Send(data, UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS);
+            return await Send(data, config.UMENG_PUSH_APP_MASTER_SECRET_KEY_IOS);
         }
     }
 
