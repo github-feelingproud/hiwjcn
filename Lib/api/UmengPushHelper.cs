@@ -16,7 +16,7 @@ using Polly;
 namespace Lib.api
 {
     /// <summary>
-    /// Umeng app key配置
+    /// Umeng app key配置，默认读配置，也可以手动指定
     /// </summary>
     public class UmengPushKeyConfig
     {

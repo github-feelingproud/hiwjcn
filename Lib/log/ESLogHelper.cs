@@ -30,7 +30,7 @@ namespace Lib.log
         /// <param name="page"></param>
         /// <param name="pagesize"></param>
         /// <returns></returns>
-        public static async Task<PagerData<ESLogLine, Dictionary<string, List<KeyedBucket>>>> Search(
+        public static async Task<PagerData<ESLogLine, QueryExtData>> Search(
             bool highlight = true,
             DateTime? start = null, DateTime? end = null,
             string keyword = null, string logger_name = null,
@@ -87,17 +87,33 @@ namespace Lib.log
             var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
             var re = await client.SearchAsync<ESLogLine>(_ => sd);
 
-            var highlights = re.Highlights.Select(x => x.Value?.Select(m => m.Value).ToList()).ToList();
-
             re.ThrowIfException();
 
-            var data = new PagerData<ESLogLine, Dictionary<string, List<KeyedBucket>>>();
+            var data = new PagerData<ESLogLine, QueryExtData>();
             data.ItemCount = (int)re.Total;
             data.DataList = re.Hits.Select(x => x.Source).ToList();
             //聚合数据
-            data.ExtData = re.GetAggs();
+            data.ExtData = new QueryExtData();
+            data.ExtData.Ass = re.GetAggs();
+            data.ExtData.Highlight = re.GetHighlights();
 
             return data;
+        }
+
+        /// <summary>
+        /// 查询额外数据
+        /// </summary>
+        public class QueryExtData
+        {
+            /// <summary>
+            /// 分组聚合
+            /// </summary>
+            public Dictionary<string, List<KeyedBucket>> Ass { get; set; }
+
+            /// <summary>
+            /// 高亮
+            /// </summary>
+            public List<HighlightHit> Highlight { get; set; }
         }
 
         /// <summary>

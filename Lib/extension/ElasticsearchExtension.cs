@@ -177,7 +177,7 @@ namespace Lib.extension
             var data = re.Highlights.Select(x => x.Value?.Select(m => m.Value).ToList()).ToList();
             data = data.Where(x => ValidateHelper.IsPlumpList(x)).ToList();
 
-            return data.Reduce((a, b) => a.Concat(b).ToList());
+            return data.Reduce((a, b) => ConvertHelper.NotNullList(a).Concat(ConvertHelper.NotNullList(b)).ToList());
         }
 
         /// <summary>
