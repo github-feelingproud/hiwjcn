@@ -7,6 +7,7 @@ using Lib.core;
 using Lib.helper;
 using Lib.extension;
 using Nest;
+using System.Configuration;
 
 namespace Lib.log
 {
@@ -15,7 +16,7 @@ namespace Lib.log
     /// </summary>
     public static class ESLogHelper
     {
-        public static readonly string IndexName = "lib_es_log_index";
+        public static readonly string IndexName = ConfigurationManager.AppSettings["es_log_index"] ?? "lib_es_log_index";
         private static readonly ESLogLine temp = new ESLogLine();
 
         /// <summary>
@@ -71,11 +72,12 @@ namespace Lib.log
             //高亮
             if (highlight)
             {
-                sd = sd.AddHighlightWrapper("<em class='kwd'>", "</em>");
+                sd = sd.AddHighlightWrapper("<em class='kwd'>", "</em>", x => x.Field(nameof(temp.Message)));
             }
             //排序
             var sort = new SortDescriptor<ESLogLine>();
             sort = sort.Descending(x => x.UpdateTime);
+            sort = sort.Descending(Field.Create("_score", boost: null));
             sd = sd.Sort(_ => sort);
 
             //分页
@@ -84,7 +86,9 @@ namespace Lib.log
             //请求服务器
             var client = new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
             var re = await client.SearchAsync<ESLogLine>(_ => sd);
-            
+
+            var highlights = re.Highlights.Select(x => x.Value?.Select(m => m.Value).ToList()).ToList();
+
             re.ThrowIfException();
 
             var data = new PagerData<ESLogLine, Dictionary<string, List<KeyedBucket>>>();

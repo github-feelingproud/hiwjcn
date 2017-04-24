@@ -45,11 +45,11 @@ namespace Hiwjcn.Web.Controllers
             return Content("ok");
         }
 
-        public async Task<ActionResult> es_log_list()
+        public async Task<ActionResult> es_log_list(string q)
         {
             return await RunActionAsync(async () =>
             {
-                var data = await ESLogHelper.Search();
+                var data = await ESLogHelper.Search(keyword: q);
                 return GetJson(new _() { success = true, data = data });
             });
         }

@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.helper;
 
 namespace Lib.extension
 {
@@ -59,6 +60,12 @@ namespace Lib.extension
             return list[index];
         }
 
+        /// <summary>
+        /// 生成bootstrap的表格html，未完成
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
         public static string ToBootStrapTableHtml<T>(this IEnumerable<T> list) where T : class
         {
             var html = new StringBuilder();
@@ -68,6 +75,28 @@ namespace Lib.extension
 
             }
             return html.ToString();
+        }
+
+        /// <summary>
+        /// 执行Reduce（逻辑和python一样）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static T Reduce<T>(this IList<T> list, Func<T, T, T> func)
+        {
+            if (!ValidateHelper.IsPlumpList(list))
+            {
+                throw new Exception($"空list无法执行{nameof(Reduce)}操作");
+            }
+
+            var res = func(list[0], list.GetItem(1));
+            for (var i = 2; i < list.Count(); ++i)
+            {
+                res = func(res, list[i]);
+            }
+            return res;
         }
     }
 

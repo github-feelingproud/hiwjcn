@@ -40,7 +40,7 @@ namespace Lib.mvc.user
 
         public virtual List<string> Permissions { get; set; }
 
-        public virtual Dictionary<string, string> ExtraData { get; set; }
+        public virtual Dictionary<string, object> ExtraData { get; set; }
 
         public virtual T GetExtraData<T>(string key)
         {

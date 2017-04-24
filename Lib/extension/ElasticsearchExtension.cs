@@ -151,11 +151,33 @@ namespace Lib.extension
         /// <param name="sd"></param>
         /// <param name="pre"></param>
         /// <param name="after"></param>
+        /// <param name="fieldHighlighters"></param>
+        /// <returns></returns>
         public static SearchDescriptor<T> AddHighlightWrapper<T>(this SearchDescriptor<T> sd,
-            string pre = "<em>", string after = "</em>")
+            string pre = "<em>", string after = "</em>",
+            params Func<HighlightFieldDescriptor<T>, IHighlightField>[] fieldHighlighters)
             where T : class, IElasticSearchIndex
         {
-            return sd.Highlight(x => x.PreTags(pre).PostTags(after));
+            if (fieldHighlighters.Length <= 0)
+            {
+                throw new Exception("关键词高亮，但是没有指定高亮字段");
+            }
+            return sd.Highlight(x => x.PreTags(pre).PostTags(after).Fields(fieldHighlighters));
+        }
+
+        /// <summary>
+        /// 获取高亮对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="re"></param>
+        /// <returns></returns>
+        public static List<HighlightHit> GetHighlights<T>(this ISearchResponse<T> re)
+            where T : class, IElasticSearchIndex
+        {
+            var data = re.Highlights.Select(x => x.Value?.Select(m => m.Value).ToList()).ToList();
+            data = data.Where(x => ValidateHelper.IsPlumpList(x)).ToList();
+
+            return data.Reduce((a, b) => a.Concat(b).ToList());
         }
 
         /// <summary>
