@@ -26,7 +26,7 @@ namespace Lib.mvc.attr
                 {
                     ex.AddErrorLog("全局捕捉到错误");
                 }
-                filterContext.ExceptionHandled = true;
+                //filterContext.ExceptionHandled = true;
             }
             base.OnException(filterContext);
         }
