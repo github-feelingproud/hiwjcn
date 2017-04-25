@@ -20,7 +20,7 @@ namespace Lib.log
     public class ESLogAppender : BufferingAppenderSkeleton
     {
         private static readonly CircuitBreakerPolicy p =
-            Policy.Handle<Exception>().CircuitBreaker(10, TimeSpan.FromMinutes(1));
+            Policy.Handle<Exception>().CircuitBreaker(50, TimeSpan.FromMinutes(1));
 
         public ESLogAppender()
         {
@@ -51,10 +51,13 @@ namespace Lib.log
             {
                 p.Execute(() =>
                 {
-                    var pool = ElasticsearchClientManager.Instance.DefaultClient;
-                    var client = new ElasticClient(pool);
+                    Policy.Handle<Exception>().WaitAndRetry(3, i => TimeSpan.FromMilliseconds(i * 100)).Execute(() =>
+                    {
+                        var pool = ElasticsearchClientManager.Instance.DefaultClient;
+                        var client = new ElasticClient(pool);
 
-                    client.AddToIndex(ESLogHelper.IndexName, events.Select(x => new ESLogLine(x)).ToArray());
+                        client.AddToIndex(ESLogHelper.IndexName, events.Select(x => new ESLogLine(x)).ToArray());
+                    });
                 });
             }
             catch (Exception e)

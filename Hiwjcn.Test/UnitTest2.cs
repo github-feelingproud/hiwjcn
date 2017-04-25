@@ -152,7 +152,7 @@ namespace Hiwjcn.Test
                     PositionMackTitle = "网页",
                     Url = "http://www.qq.com/"
                 };
-                var t = UmengPushHelper.PushAndroid(payload, new List<string>() { "6d28395cac6c427bb77fba889b9e54a5", "b11dfe19ef4d4f60860dda673dfa7863" });
+                var t = UmengPushHelper.PushAndroid(new UmengPushKeyConfig(), payload, new List<string>() { "6d28395cac6c427bb77fba889b9e54a5", "b11dfe19ef4d4f60860dda673dfa7863" });
                 var data = Lib.core.AsyncHelper.RunSync(() => t);
             }
             catch (Exception e)
@@ -173,7 +173,7 @@ namespace Hiwjcn.Test
                     PositionMackTitle = "网页",
                     Url = "http://www.qq.com/"
                 };
-                var t = UmengPushHelper.PushIOS(payload, new List<string>() { "6d28395cac6c427bb77fba889b9e54a5", "b11dfe19ef4d4f60860dda673dfa7863" });
+                var t = UmengPushHelper.PushIOS(new UmengPushKeyConfig(), payload, new List<string>() { "6d28395cac6c427bb77fba889b9e54a5", "b11dfe19ef4d4f60860dda673dfa7863" });
                 var data = Lib.core.AsyncHelper.RunSync(() => t);
             }
             catch (Exception e)

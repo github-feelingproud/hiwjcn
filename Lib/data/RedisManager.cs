@@ -110,7 +110,12 @@ namespace Lib.data
 
         public override ConnectionMultiplexer CreateNewClient(string key)
         {
-            return ConnectionMultiplexer.Connect(key);
+            var pool = ConnectionMultiplexer.Connect(key);
+            pool.ConnectionFailed += (sender, e) => { e.Exception?.AddErrorLog("Redis连接失败:" + e.FailureType); };
+            pool.ConnectionRestored += (sender, e) => { "Redis连接恢复".AddBusinessInfoLog(); };
+            pool.ErrorMessage += (sender, e) => { e.Message?.AddErrorLog("Redis-ErrorMessage"); };
+            pool.InternalError += (sender, e) => { e.Exception?.AddErrorLog("Redis内部错误"); };
+            return pool;
         }
 
         public override void DisposeClient(ConnectionMultiplexer ins)
