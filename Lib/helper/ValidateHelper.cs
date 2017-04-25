@@ -421,7 +421,6 @@ namespace Lib.helper
         /// <param name="str"></param>
         /// <param name="min"></param>
         /// <param name="max"></param>
-        /// <param name="withBorder"></param>
         /// <returns></returns>
         public static bool IsLenInRange(string str, int min, int max)
         {

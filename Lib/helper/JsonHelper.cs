@@ -60,7 +60,6 @@ namespace Lib.helper
         /// <summary>
         /// datatable转json
         /// </summary>
-        /// <param name="tb">表</param>
         /// <returns>json</returns>
         public static string DataTableToJson(DataTable dt)
         {

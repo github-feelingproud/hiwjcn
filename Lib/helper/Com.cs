@@ -113,7 +113,6 @@ namespace Lib.helper
         /// <summary>
         /// 包含在一个try catch的域里
         /// </summary>
-        /// <param name="func"></param>
         public static void TryScope(Action func, Action<Exception> onException = null, Action onFinally = null)
         {
             try

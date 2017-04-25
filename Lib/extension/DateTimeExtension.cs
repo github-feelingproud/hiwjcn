@@ -105,6 +105,16 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 转为n秒前，n分钟前 etc
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static string GetSimpleFriendlyDateTime(this DateTime dateTime)
+        {
+            return DateTimeHelper.GetSimpleFriendlyDateTime(dateTime);
+        }
+
+        /// <summary>
         /// 获取一天的开始和第二天的开始
         /// </summary>
         /// <param name="dateTime"></param>

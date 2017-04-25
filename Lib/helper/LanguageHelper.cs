@@ -7,6 +7,7 @@ using System.Xml;
 using System.IO;
 using System.Web;
 using Lib.core;
+using Lib.mvc;
 
 namespace Lib.helper
 {
@@ -42,9 +43,7 @@ namespace Lib.helper
                 {
                     if (data == null)
                     {
-                        var context = System.Web.HttpContext.Current;
-                        if (context == null) { throw new Exception("非网络环境"); }
-                        string path = context.Server.MapPath("~/App_Data/Lang/");
+                        string path = ServerHelper.GetMapPath("~/App_Data/Lang/");
                         if (!Directory.Exists(path)) { throw new Exception("语言目录不存在"); }
                         var files = Directory.GetFiles(path, "*.json");
 

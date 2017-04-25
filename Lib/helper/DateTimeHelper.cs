@@ -77,6 +77,7 @@ namespace Lib.helper
             }
             return week;
         }
+
         /// <summary>
         /// 获取友好的时间格式
         /// </summary>
@@ -124,6 +125,54 @@ namespace Lib.helper
                 else
                 {
                     return $"今年{date.Month}月{date.Day}日 {date.Hour}:{date.Minute}";
+                }
+            }
+            catch (Exception e)
+            {
+                e.AddLog(typeof(DateTimeHelper));
+                return "时间转换错误";
+            }
+        }
+
+        /// <summary>
+        /// 获取友好的时间格式
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static string GetSimpleFriendlyDateTime(DateTime date)
+        {
+            try
+            {
+                if (date == null) { return string.Empty; }
+                var now = DateTime.Now;
+                if (date > now) { return date.ToString(); }
+
+                //计算时间差
+                var span = now - date;
+
+                if (span.TotalDays >= 365)
+                {
+                    return $"{(int)(span.TotalDays / 365)}年前";
+                }
+                else if (span.TotalDays >= 31)
+                {
+                    return $"{(int)(span.TotalDays / 31)}月前";
+                }
+                else if (span.TotalHours >= 24)
+                {
+                    return $"{(int)span.TotalDays}天前";
+                }
+                else if (span.TotalHours >= 1)
+                {
+                    return $"{(int)span.TotalHours}小时前";
+                }
+                else if (span.TotalMinutes >= 1)
+                {
+                    return $"{(int)span.TotalMinutes}分钟前";
+                }
+                else
+                {
+                    return "刚刚";
                 }
             }
             catch (Exception e)
