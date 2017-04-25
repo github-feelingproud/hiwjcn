@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Lib.net
 {
@@ -99,23 +100,25 @@ namespace Lib.net
 
         public static bool SendMail(EmailModel model)
         {
-            System.Net.Mail.MailMessage mail = null;
-            SmtpClient smtp = null;
-            try
+            using (var mail = BuildMail(model))
             {
-                mail = BuildMail(model);
-                smtp = BuildSmtp(model);
-                smtp.Send(mail);
-                return true;
+                using (var smtp = BuildSmtp(model))
+                {
+                    smtp.Send(mail);
+                    return true;
+                }
             }
-            catch (Exception e)
+        }
+
+        public static async Task<bool> SendMailAsync(EmailModel model)
+        {
+            using (var mail = BuildMail(model))
             {
-                throw e;
-            }
-            finally
-            {
-                if (smtp != null) { smtp.Dispose(); }
-                if (mail != null) { mail.Dispose(); }
+                using (var smtp = BuildSmtp(model))
+                {
+                    await smtp.SendMailAsync(mail);
+                    return true;
+                }
             }
         }
     }
