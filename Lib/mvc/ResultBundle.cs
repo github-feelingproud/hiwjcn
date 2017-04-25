@@ -25,6 +25,18 @@ namespace Lib.mvc
     }
 
     /// <summary>
+    /// 通用返回错误代码
+    /// </summary>
+    public enum ErrorCodeEnum : int
+    {
+        未登录 = -1,
+        没有权限 = -2,
+        跳转SSO = -3,
+        账户未验证 = -4,
+        账户被冻结 = -5
+    }
+
+    /// <summary>
     /// 接口公共返回值的缩写
     /// </summary>
     [Serializable]

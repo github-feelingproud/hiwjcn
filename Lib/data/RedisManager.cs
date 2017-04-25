@@ -33,7 +33,8 @@ namespace Lib.data
         private static readonly CircuitBreakerPolicy p = Policy.Handle<Exception>()
             .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 8, TimeSpan.FromSeconds(30));
 
-        private static readonly bool UseCircuitBreaker = (ConfigurationManager.AppSettings["RedisManagerUseCircuitBreaker"] ?? "true").ToBool();
+        private static readonly bool UseCircuitBreaker = 
+            (ConfigurationManager.AppSettings["RedisManagerUseCircuitBreaker"] ?? "true").ToBool();
 
         /// <summary>
         /// 获取redis连接

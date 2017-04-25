@@ -13,6 +13,9 @@ namespace Lib.data
     /// <typeparam name="T"></typeparam>
     public interface IRepository<T> where T : IDBTable
     {
+        /// <summary>
+        /// 用来获取EF对象
+        /// </summary>
         EFManager _EFManager { get; }
 
         #region 添加
@@ -170,7 +173,7 @@ namespace Lib.data
         /// 获取IQueryable对象，用于linq查询
         /// </summary>
         /// <param name="callback"></param>
-        /// <param name="Transaction"></param>
+        /// <param name="track"></param>
         void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false);
 
         /// <summary>
