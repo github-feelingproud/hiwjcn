@@ -27,3 +27,6 @@
 /Hiwjcn.Service/bin/Debug
 /Hiwjcn.Service/obj/Debug
 /lib.zip
+/Hiwjcn.Service/obj/Release/CoreCompileInputs.cache
+/Hiwjcn.Service/obj/Release/CoreCompileInputs.cache
+*.cache

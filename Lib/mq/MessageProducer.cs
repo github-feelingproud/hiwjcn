@@ -4,6 +4,7 @@ using System.Threading;
 using System.Text;
 using Lib.extension;
 using RabbitMQ.Client;
+using Polly;
 
 namespace Lib.mq
 {
@@ -74,9 +75,13 @@ namespace Lib.mq
         public virtual void Send(string to, object message, long delay)
         {
             if (delay > 0)
-                Send(to, message, new Dictionary<string, object> { { "x-delay", delay } });
+            {
+                Send(to, message, new Dictionary<string, object> { ["x-delay"] = delay });
+            }
             else
+            {
                 Send(to, message);
+            }
         }
 
         /// <summary>发送消息</summary>
