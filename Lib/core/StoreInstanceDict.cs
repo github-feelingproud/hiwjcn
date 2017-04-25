@@ -126,7 +126,7 @@ namespace Lib.core
         }
 
         /// <summary>
-        /// 释放所有对象
+        /// 释放所有对象,会默认调用DisposeClient
         /// </summary>
         public virtual void Dispose()
         {

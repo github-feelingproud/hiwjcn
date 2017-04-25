@@ -5,6 +5,7 @@ using StackExchange.Redis;
 using Lib.core;
 using Lib.helper;
 using Lib.data;
+using System.Configuration;
 
 namespace Lib.cache
 {
@@ -15,7 +16,8 @@ namespace Lib.cache
     /// </summary>
     public class RedisCacheProvider : CacheBase, ICacheProvider
     {
-        private readonly int CACHE_DB = 1;
+        private readonly int CACHE_DB =
+            Lib.helper.ConvertHelper.GetInt(ConfigurationManager.AppSettings["RedisCacheDB"], 1);
 
         #region Methods
 
@@ -44,9 +46,6 @@ namespace Lib.cache
         /// <summary>
         /// Adds the specified key and object to the cache.
         /// </summary>
-        /// <param name="key">key</param>
-        /// <param name="data">Data</param>
-        /// <param name="cacheTime">Cache time</param>
         public virtual void Set(string key, object data, int cacheSeconds)
         {
             RedisManager.PrepareDataBase(_db =>

@@ -8,6 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Lib.extension;
+using Polly.CircuitBreaker;
+using System.Configuration;
+using Polly;
 
 namespace Lib.data
 {
@@ -25,12 +28,28 @@ namespace Lib.data
     public static class RedisManager
     {
         /// <summary>
+        /// 10秒钟超过8次请求并且一半以上错误就熔断30秒
+        /// </summary>
+        private static readonly CircuitBreakerPolicy p = Policy.Handle<Exception>()
+            .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 8, TimeSpan.FromSeconds(30));
+
+        private static readonly bool UseCircuitBreaker = (ConfigurationManager.AppSettings["RedisManagerUseCircuitBreaker"] ?? "true").ToBool();
+
+        /// <summary>
         /// 获取redis连接
         /// </summary>
         /// <param name="handler"></param>
         public static void PrepareConnection(Func<ConnectionMultiplexer, bool> handler)
         {
-            handler.Invoke(RedisClientManager.Instance.DefaultClient);
+            if (UseCircuitBreaker)
+            {
+                //使用熔断器
+                p.Execute(() => handler.Invoke(RedisClientManager.Instance.DefaultClient));
+            }
+            else
+            {
+                handler.Invoke(RedisClientManager.Instance.DefaultClient);
+            }
         }
 
         /// <summary>
@@ -56,35 +75,6 @@ namespace Lib.data
 
                 return true;
             });
-        }
-
-        /// <summary>
-        /// 防止多次尝试密码逻辑，还没开始使用
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public static string RedisPreventTryLogin(string key, Func<bool> func)
-        {
-            var time = DateTime.Now.AddMinutes(-30);
-
-            var client = new RedisHelper();
-            var list = client.StringGet<List<DateTime>>(key);
-            list = Lib.helper.ConvertHelper.NotNullList(list).Where(x => x > time).ToList();
-
-            if (list.Count >= 3)
-            {
-                //先判断验证码，否则提示错误
-                return "超过尝试次数";
-            }
-
-            if (!func.Invoke())
-            {
-                //登录失败，添加错误时间
-                list.Add(DateTime.Now);
-            }
-            client.StringSet(key, list);
-            return "";
         }
     }
 
@@ -136,7 +126,7 @@ namespace Lib.data
 
         public ConnectionMultiplexer Connection { get { return _conn; } }
 
-        public RedisHelper(int dbNum = 0) : this(dbNum, null) { }
+        public RedisHelper(int dbNum = 1) : this(dbNum, null) { }
 
         public RedisHelper(int dbNum, string readWriteHosts)
         {
