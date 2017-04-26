@@ -108,7 +108,19 @@ namespace Lib.extension
         {
             return MapperHelper.GetMappedEntity<T>(data);
         }
-        
+
+        /// <summary>
+        /// 映射
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <param name="entity"></param>
+        /// <param name="notmap"></param>
+        public static void MapTo<T>(this object data, ref T entity, string[] notmap = null)
+        {
+            MapperHelper.MapEntity(ref entity, data, notmap);
+        }
+
         /// <summary>
         /// 格式化数字，获取xxx xxxk xxxw
         /// </summary>

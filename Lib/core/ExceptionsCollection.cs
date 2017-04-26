@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lib.core
 {
+    [Serializable]
     public class MsgException : Exception
     {
         public MsgException(string msg) : base(msg)

@@ -150,29 +150,29 @@ namespace Lib.helper
                 //计算时间差
                 var span = now - date;
 
-                if (span.TotalDays >= 365)
+                if (span.TotalMinutes < 1)
                 {
-                    return $"{(int)(span.TotalDays / 365)}年前";
+                    return "刚刚";
                 }
-                else if (span.TotalDays >= 31)
-                {
-                    return $"{(int)(span.TotalDays / 31)}月前";
-                }
-                else if (span.TotalHours >= 24)
-                {
-                    return $"{(int)span.TotalDays}天前";
-                }
-                else if (span.TotalHours >= 1)
-                {
-                    return $"{(int)span.TotalHours}小时前";
-                }
-                else if (span.TotalMinutes >= 1)
+                else if (span.TotalHours < 1)
                 {
                     return $"{(int)span.TotalMinutes}分钟前";
                 }
+                else if (span.TotalDays < 1)
+                {
+                    return $"{(int)span.TotalHours}小时前";
+                }
+                else if (span.TotalDays < 31)
+                {
+                    return $"{(int)span.TotalDays}天前";
+                }
+                else if (span.TotalDays < 365)
+                {
+                    return $"{(int)(span.TotalDays / 31)}月前";
+                }
                 else
                 {
-                    return "刚刚";
+                    return $"{(int)(span.TotalDays / 365)}年前";
                 }
             }
             catch (Exception e)

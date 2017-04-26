@@ -32,26 +32,28 @@ namespace Lib.helper
         /// <summary>
         /// 获取map(测试可用)
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <param name="model"></param>
         public static void MapEntity<T>(ref T entity, object model, string[] notmap = null)
         {
             if (model == null) { throw new Exception("对象为空"); }
-            if (notmap == null) { notmap = new string[] { }; }
 
+            //读取
             var modelproperties = ConvertHelper.NotNullList(model.GetType().GetProperties());
+            modelproperties = modelproperties.Where(x => x.CanRead).ToList();
 
+            //写入
             var entityproperties = ConvertHelper.NotNullList(entity.GetType().GetProperties());
+            entityproperties = entityproperties.Where(x => x.CanWrite).ToList();
+            if (ValidateHelper.IsPlumpList(notmap))
+            {
+                entityproperties = entityproperties.Where(x => !notmap.Contains(x.Name)).ToList();
+            }
 
             foreach (var pi in entityproperties)
             {
-                if (notmap.Contains(pi.Name)) { continue; }
-
                 //属性名和属性类型一样
                 var modelpi = modelproperties
                     .Where(x => x.Name == pi.Name)
-                    .Where(x => x.GetType().Name == pi.GetType().Name)
+                    .Where(x => x.GetType() == pi.GetType())
                     .FirstOrDefault();
 
                 if (modelpi == null) { continue; }
