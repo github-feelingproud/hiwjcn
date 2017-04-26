@@ -92,11 +92,25 @@ namespace Lib.extension
             }
 
             var res = func(list[0], list.GetItem(1));
-            for (var i = 2; i < list.Count(); ++i)
+            for (var i = 2; i < list.Count; ++i)
             {
                 res = func(res, list[i]);
             }
             return res;
+        }
+
+        /// <summary>
+        /// 迭代相邻两个item
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="func"></param>
+        public static void IterateItems<T>(this IList<T> list, Action<T, T, int, int> func)
+        {
+            for (var i = 0; i < list.Count - 1; ++i)
+            {
+                func(list[i], list[i + 1], i, i + 1);
+            }
         }
     }
 

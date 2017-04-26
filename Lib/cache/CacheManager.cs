@@ -23,11 +23,6 @@ namespace Lib.cache
         /// 如果使用缓存：如果缓存中有，就直接取。如果没有就先获取并加入缓存
         /// 如果不使用缓存：直接从数据源取。
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="context"></param>
-        /// <param name="key"></param>
-        /// <param name="dataSource"></param>
-        /// <param name="UseCache"></param>
         /// <returns></returns>
         public static T Cache<T>(string key, Func<T> dataSource, bool UseCache = true, double expires_minutes = 3)
         {

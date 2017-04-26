@@ -199,6 +199,7 @@
     <Compile Include="cache\CacheManager.cs" />
     <Compile Include="cache\ICacheProvider.cs" />
     <Compile Include="cache\MemoryCacheProvider.cs" />
+    <Compile Include="cache\MultiLayerCache.cs" />
     <Compile Include="cache\RedisCacheProvider.cs" />
     <Compile Include="core\CircuitBreaker.cs" />
     <Compile Include="core\DelegateCollection.cs" />
