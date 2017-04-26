@@ -150,6 +150,14 @@ namespace Lib.extension
         {
             return ValidateHelper.IsInt(data);
         }
+
+        /// <summary>
+        /// 是否是Json
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool IsJson(this string data) => ValidateHelper.IsJson(data);
+
         /// <summary>
         /// 长度是否在范围内
         /// </summary>

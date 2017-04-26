@@ -287,10 +287,8 @@ Console.WriteLine(Convert.ToBase64String(buffer)); //这是把字节数组当作
         /// <summary>
         /// 返回memorystream，即便流已经关闭
         /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="autoClose"></param>
         /// <returns></returns>
-        public static byte[] MemoryStreamToBytes(MemoryStream stream, bool autoClose = false)
+        public static byte[] MemoryStreamToBytes(MemoryStream stream)
         {
             return stream.ToArray();
         }

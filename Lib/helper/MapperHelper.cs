@@ -74,7 +74,7 @@ namespace Lib.helper
 
             var model = new T();
 
-            var props = model.GetType().GetProperties();
+            var props = model.GetType().GetProperties().Where(x => x.CanWrite);
             var cols = new List<string>();
             for (int i = 0; i < reader.FieldCount; ++i)
             {
