@@ -6,12 +6,24 @@ using Model.User;
 using Lib.extension;
 using StackExchange.Redis;
 using System.Linq;
+using Lib.helper;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest6
     {
+        [TestMethod]
+        public void jiami()
+        {
+            var str = "123";
+            var s = SecureHelper.GetMD5(str);
+            s = SecureHelper.GetSHA1(str);
+            s = SecureHelper.GetSHA256(str);
+            s = SecureHelper.GetHMACMD5(str, "1");
+            s = SecureHelper.GetHMACSHA1(str, "1");
+        }
+
         [TestMethod]
         public void time()
         {

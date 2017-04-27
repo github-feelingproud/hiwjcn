@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Lib.helper
 {
@@ -11,38 +12,20 @@ namespace Lib.helper
     /// </summary>
     public static class SecureHelper
     {
+        private static string BsToStr(byte[] bs) => string.Join(string.Empty, bs.Select(x => x.ToString("x2"))).Replace("-", string.Empty);
+
         /// <summary>
         /// 获取MD5
         /// </summary>
         /// <param name="str"></param>
-        /// <param name="getShort"></param>
         /// <returns></returns>
-        public static string GetMD5(string str, bool getShort = false)
+        public static string GetMD5(string str)
         {
             using (var md5 = new MD5CryptoServiceProvider())
             {
-                byte[] bytes_md5_in = Encoding.UTF8.GetBytes(str);
-                //把字节数组（byte[]）转换成16进制
-                string md5_ret = BitConverter.ToString(md5.ComputeHash(bytes_md5_in));
-                md5_ret = ConvertHelper.GetString(md5_ret).Trim().Replace("-", "");
-                if (md5_ret.Length != 32) { return string.Empty; }
-                if (getShort) { return md5_ret.Substring(8, 16); }
-                return md5_ret;
-            }
-        }
-
-        /// <summary>
-        /// SHA256函数
-        /// </summary>
-        /// /// <param name="str">原始字符串</param>
-        /// <returns>SHA256结果</returns>
-        public static string SHA256(string str)
-        {
-            using (var Sha256 = new SHA256Managed())
-            {
-                byte[] SHA256Data = Encoding.UTF8.GetBytes(str);
-                byte[] Result = Sha256.ComputeHash(SHA256Data);
-                return Convert.ToBase64String(Result);  //返回长度为44字节的字符串
+                var bs = Encoding.UTF8.GetBytes(str);
+                bs = md5.ComputeHash(bs);
+                return BsToStr(bs);
             }
         }
 
@@ -58,12 +41,7 @@ namespace Lib.helper
                 using (var md5 = new MD5CryptoServiceProvider())
                 {
                     var bs = md5.ComputeHash(file);
-                    var sb = new StringBuilder();
-                    foreach (var b in bs)
-                    {
-                        sb.Append(b.ToString("x2"));
-                    }
-                    return sb.ToString();
+                    return BsToStr(bs);
                 }
             }
         }
@@ -75,12 +53,26 @@ namespace Lib.helper
         /// <returns></returns>
         public static string GetSHA1(string str)
         {
-            using (SHA1 sha1 = new SHA1CryptoServiceProvider())
+            using (var sha1 = new SHA1CryptoServiceProvider())
             {
-                //把字节数组（byte[]）转换成16进制
-                string sha1_ret = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(str)));
-                if (sha1_ret == null || (sha1_ret = sha1_ret.Replace("-", "")).Length != 40) { return ""; }
-                return sha1_ret;
+                var bs = Encoding.UTF8.GetBytes(str);
+                bs = sha1.ComputeHash(bs);
+                return BsToStr(bs);
+            }
+        }
+
+        /// <summary>
+        /// SHA256函数
+        /// </summary>
+        /// /// <param name="str">原始字符串</param>
+        /// <returns>SHA256结果</returns>
+        public static string GetSHA256(string str)
+        {
+            using (var Sha256 = new SHA256CryptoServiceProvider())
+            {
+                var bs = Encoding.UTF8.GetBytes(str);
+                bs = Sha256.ComputeHash(bs);
+                return BsToStr(bs);
             }
         }
 
@@ -95,9 +87,8 @@ namespace Lib.helper
             using (var hmac_md5 = new HMACMD5())
             {
                 hmac_md5.Key = Encoding.UTF8.GetBytes(password);
-                //把字节数组（byte[]）转换成16进制
-                string hmac_ret = BitConverter.ToString(hmac_md5.ComputeHash(Encoding.UTF8.GetBytes(str)));
-                return hmac_ret == null ? string.Empty : hmac_ret.Replace("-", "").ToLower();
+                var bs = hmac_md5.ComputeHash(Encoding.UTF8.GetBytes(str));
+                return BsToStr(bs);
             }
         }
 
@@ -112,9 +103,8 @@ namespace Lib.helper
             using (var hmac_sha1 = new HMACSHA1())
             {
                 hmac_sha1.Key = Encoding.UTF8.GetBytes(password);
-                //把字节数组（byte[]）转换成16进制
-                string hmac_ret = BitConverter.ToString(hmac_sha1.ComputeHash(Encoding.UTF8.GetBytes(str)));
-                return hmac_ret == null ? "" : hmac_ret.Replace("-", "").ToLower();
+                var bs = hmac_sha1.ComputeHash(Encoding.UTF8.GetBytes(str));
+                return BsToStr(bs);
             }
         }
 
@@ -130,6 +120,7 @@ namespace Lib.helper
         /// <param name="encryptStr">加密字符串</param>
         /// <param name="encryptKey">密钥</param>
         /// <returns></returns>
+        [Obsolete("未测试")]
         public static string AESEncrypt(string encryptStr, string encryptKey)
         {
             if (string.IsNullOrWhiteSpace(encryptStr))
@@ -167,6 +158,7 @@ namespace Lib.helper
         /// <param name="decryptStr">解密字符串</param>
         /// <param name="decryptKey">密钥</param>
         /// <returns></returns>
+        [Obsolete("未测试")]
         public static string AESDecrypt(string decryptStr, string decryptKey)
         {
             if (string.IsNullOrWhiteSpace(decryptStr))
