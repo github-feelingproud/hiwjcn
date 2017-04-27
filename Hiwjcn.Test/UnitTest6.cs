@@ -12,6 +12,16 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest6
     {
+        [TestMethod]
+        public void time()
+        {
+            var now = DateTime.Now;
+
+            now = now + TimeSpan.FromDays(5);
+
+            now = now + TimeSpan.FromDays(-5);
+        }
+
         public class a
         {
             public string name { get; set; }

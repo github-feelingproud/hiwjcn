@@ -49,6 +49,8 @@ namespace Hiwjcn.Test
 
         public class wj
         {
+            public string name { get; set; }
+
             public virtual void print()
             {
                 var i = 0;
@@ -59,6 +61,12 @@ namespace Hiwjcn.Test
 
         public class inter : Castle.Core.Interceptor.IInterceptor
         {
+            public wj next { get; set; }
+            public inter(wj n)
+            {
+                this.next = n;
+            }
+
             public void Intercept(IInvocation invocation)
             {
                 var name = invocation.Method.Name;
@@ -72,7 +80,7 @@ namespace Hiwjcn.Test
         public void proxy()
         {
             var p = new ProxyGenerator();
-            var px = p.CreateClassProxy<wj>(new inter());
+            var px = p.CreateClassProxy<wj>(new inter(new wj() { name = "wj" }));
 
             px.print();
         }

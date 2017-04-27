@@ -36,7 +36,7 @@ namespace Lib.data
                     //登录失败，添加错误时间
                     list.Add(DateTime.Now);
                 }
-                cache.Set(key, list, (int)Math.Abs((DateTime.Now - time).TotalSeconds));
+                cache.Set(key, list, TimeSpan.FromSeconds(Math.Abs((DateTime.Now - time).TotalSeconds)));
                 return "";
             }
         }

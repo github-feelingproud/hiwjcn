@@ -42,13 +42,10 @@ namespace Lib.cache
         /// <summary>
         /// Adds the specified key and object to the cache.
         /// </summary>
-        /// <param name="key">key</param>
-        /// <param name="data">Data</param>
-        /// <param name="cacheTime">Cache time</param>
-        public virtual void Set(string key, object data, int cacheSeconds)
+        public virtual void Set(string key, object data, TimeSpan expire)
         {
             var policy = new CacheItemPolicy();
-            policy.AbsoluteExpiration = DateTime.Now + TimeSpan.FromSeconds(cacheSeconds);
+            policy.AbsoluteExpiration = DateTime.Now + expire;
             Cache.Add(new CacheItem(key, Serialize(data)), policy);
         }
 

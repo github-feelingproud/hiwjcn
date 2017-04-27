@@ -10,6 +10,10 @@ namespace Lib.cache
     /// </summary>
     public static class CacheManager
     {
+        /// <summary>
+        /// 获取缓存组件
+        /// </summary>
+        /// <returns></returns>
         public static ICacheProvider CacheProvider()
         {
             if (!AppContext.IsRegistered<ICacheProvider>())
@@ -17,6 +21,45 @@ namespace Lib.cache
                 return new MemoryCacheProvider();
             }
             return AppContext.GetObject<ICacheProvider>();
+        }
+
+        /// <summary>
+        /// 缓存逻辑
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheManager"></param>
+        /// <param name="key"></param>
+        /// <param name="dataSource"></param>
+        /// <param name="expire"></param>
+        /// <returns></returns>
+        public static T _Cache<T>(ICacheProvider cacheManager, string key, Func<T> dataSource, TimeSpan expire)
+        {
+            try
+            {
+                var cache = cacheManager.Get<T>(key);
+                if (cache.Success)
+                {
+                    return cache.Result;
+                }
+                var data = dataSource.Invoke();
+                cacheManager.Set(key, data, expire);
+                return data;
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    //读取缓存失败就尝试移除缓存
+                    cacheManager.Remove(key);
+                }
+                catch (Exception ex)
+                {
+                    ex.AddLog(typeof(CacheManager));
+                }
+                e.AddLog(typeof(CacheManager));
+            }
+
+            return dataSource.Invoke();
         }
 
         /// <summary>
@@ -32,30 +75,7 @@ namespace Lib.cache
             if (UseCache)
             {
                 var cacheManager = CacheProvider();
-                try
-                {
-                    var cache = cacheManager.Get<T>(key);
-                    if (cache.Success)
-                    {
-                        return cache.Result;
-                    }
-                    var data = dataSource.Invoke();
-                    cacheManager.Set(key, data, (int)(expires_minutes * 60));
-                    return data;
-                }
-                catch (Exception e)
-                {
-                    try
-                    {
-                        //读取缓存失败就尝试移除缓存
-                        cacheManager.Remove(key);
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.AddLog(typeof(CacheManager));
-                    }
-                    e.AddLog(typeof(CacheManager));
-                }
+                return _Cache(cacheManager, key, dataSource, TimeSpan.FromMinutes(expires_minutes));
             }
             return dataSource.Invoke();
         }

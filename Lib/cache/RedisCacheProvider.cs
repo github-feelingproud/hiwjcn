@@ -46,12 +46,12 @@ namespace Lib.cache
         /// <summary>
         /// Adds the specified key and object to the cache.
         /// </summary>
-        public virtual void Set(string key, object data, int cacheSeconds)
+        public virtual void Set(string key, object data, TimeSpan expire)
         {
             RedisManager.PrepareDataBase(_db =>
             {
                 var entryBytes = Serialize(data);
-                var expiresIn = TimeSpan.FromSeconds(cacheSeconds);
+                var expiresIn = expire;
 
                 _db.StringSet(key, entryBytes, expiresIn);
                 return true;

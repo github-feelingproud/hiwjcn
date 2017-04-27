@@ -41,8 +41,8 @@ namespace Lib.cache
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="data">Data</param>
-        /// <param name="cacheSeconds">Cache time</param>
-        void Set(string key, object data, int cacheSeconds);
+        /// <param name="expire">Cache time</param>
+        void Set(string key, object data, TimeSpan expire);
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached

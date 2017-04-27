@@ -48,7 +48,7 @@ namespace Lib.mvc.attr
                     //10秒钟不能提交相同的数据
                     CacheSeconds = Math.Abs(CacheSeconds);
                     if (CacheSeconds == 0) { throw new Exception("缓存时间不能为0"); }
-                    cache.Set(key, submitData, CacheSeconds);
+                    cache.Set(key, submitData, TimeSpan.FromSeconds(CacheSeconds));
                 }
             }
             catch (Exception e)

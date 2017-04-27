@@ -124,7 +124,7 @@ namespace Lib.mvc.attr
                         view.Render(vc, sw);
                         //获取渲染后的html
                         var html = sw.ToString();
-                        cache.Set(URL, html, Minute * 60);
+                        cache.Set(URL, html, TimeSpan.FromMinutes(Minute));
                     }
                 }
             }
