@@ -2,6 +2,7 @@
 using Lib.ioc;
 using System;
 using Lib.extension;
+using System.Threading.Tasks;
 
 namespace Lib.cache
 {
@@ -24,74 +25,66 @@ namespace Lib.cache
         }
 
         /// <summary>
-        /// 缓存逻辑
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="cacheManager"></param>
-        /// <param name="key"></param>
-        /// <param name="dataSource"></param>
-        /// <param name="expire"></param>
-        /// <returns></returns>
-        public static T _Cache<T>(ICacheProvider cacheManager, string key, Func<T> dataSource, TimeSpan expire)
-        {
-            try
-            {
-                var cache = cacheManager.Get<T>(key);
-                if (cache.Success)
-                {
-                    return cache.Result;
-                }
-                var data = dataSource.Invoke();
-                cacheManager.Set(key, data, expire);
-                return data;
-            }
-            catch (Exception e)
-            {
-                try
-                {
-                    //读取缓存失败就尝试移除缓存
-                    cacheManager.Remove(key);
-                }
-                catch (Exception ex)
-                {
-                    ex.AddLog(typeof(CacheManager));
-                }
-                e.AddLog(typeof(CacheManager));
-            }
-
-            return dataSource.Invoke();
-        }
-
-        /// <summary>
         /// 如果使用缓存：如果缓存中有，就直接取。如果没有就先获取并加入缓存
         /// 如果不使用缓存：直接从数据源取。
         /// </summary>
         /// <returns></returns>
-        public static T Cache<T>(string key, Func<T> dataSource, bool UseCache = true, double expires_minutes = 3)
+        public static T Cache<T>(string key, Func<T> dataSource,
+            bool UseCache = true, double expires_minutes = 3)
         {
-            if (!ValidateHelper.IsPlumpString(key)) { throw new Exception("缓存key为空"); }
-            if (dataSource == null) { throw new Exception("缓存数据源为空"); }
             //如果读缓存，读到就返回
             if (UseCache)
             {
                 var cacheManager = CacheProvider();
-                return _Cache(cacheManager, key, dataSource, TimeSpan.FromMinutes(expires_minutes));
+                return cacheManager.GetOrSet(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
             }
             return dataSource.Invoke();
         }
 
+        /// <summary>
+        /// 异步缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="dataSource"></param>
+        /// <param name="UseCache"></param>
+        /// <param name="expires_minutes"></param>
+        /// <returns></returns>
+        public static async Task<T> CacheAsync<T>(string key, Func<Task<T>> dataSource,
+            bool UseCache = true, double expires_minutes = 3)
+        {
+            //如果读缓存，读到就返回
+            if (UseCache)
+            {
+                var cacheManager = CacheProvider();
+                return await cacheManager.GetOrSetAsync(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
+            }
+            return await dataSource.Invoke();
+        }
+
+        /// <summary>
+        /// 删除缓存
+        /// </summary>
+        /// <param name="key"></param>
         public static void RemoveCache(string key)
         {
             var cacheManager = CacheProvider();
             cacheManager.Remove(key);
         }
 
+        /// <summary>
+        /// 通过正则删除缓存
+        /// </summary>
+        /// <param name="pattern"></param>
         public static void RemoveByPattern(string pattern)
         {
             var cacheManager = CacheProvider();
             cacheManager.RemoveByPattern(pattern);
         }
 
+        /// <summary>
+        /// 清空缓存
+        /// </summary>
         public static void ClearCache()
         {
             var cacheManager = CacheProvider();

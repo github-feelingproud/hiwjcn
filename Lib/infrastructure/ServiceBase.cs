@@ -10,6 +10,7 @@ using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Lib.ioc;
+using System.Threading.Tasks;
 
 namespace Lib.infrastructure
 {
@@ -29,6 +30,7 @@ namespace Lib.infrastructure
         /// </summary>
         public int CacheExpiresMinutes { get; set; }
 
+        [Obsolete("不要直接使用，使用_DalBase")]
         private IRepository<T> _db { get; set; }
 
         /// <summary>
@@ -90,6 +92,18 @@ namespace Lib.infrastructure
         protected CacheType Cache<CacheType>(string key, Func<CacheType> dataSource)
         {
             return CacheManager.Cache(key, dataSource, UseCache, CacheExpiresMinutes);
+        }
+
+        /// <summary>
+        /// 缓存
+        /// </summary>
+        /// <typeparam name="CacheType"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="dataSource"></param>
+        /// <returns></returns>
+        protected async Task<CacheType> Cache<CacheType>(string key, Func<Task<CacheType>> dataSource)
+        {
+            return await CacheManager.CacheAsync(key, dataSource, UseCache, CacheExpiresMinutes);
         }
 
         /// <summary>

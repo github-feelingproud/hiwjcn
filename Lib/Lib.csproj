@@ -196,6 +196,7 @@
   <ItemGroup>
     <Compile Include="api\BaiduTranslateHelper.cs" />
     <Compile Include="api\UmengPushHelper.cs" />
+    <Compile Include="cache\CacheExtension.cs" />
     <Compile Include="cache\CacheManager.cs" />
     <Compile Include="cache\ICacheProvider.cs" />
     <Compile Include="cache\MemoryCacheProvider.cs" />
