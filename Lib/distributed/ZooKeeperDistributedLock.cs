@@ -28,7 +28,7 @@ namespace Lib.distributed
             {
                 _client.CreatePersistentPath(_path);
                 _no = _client.CreateSequential(_path + "/", false);
-            }).InvokeWithRetry(5);
+            }).InvokeWithRetry<Exception>(5);
         }
 
         public void Dispose()
@@ -39,7 +39,7 @@ namespace Lib.distributed
                 {
                     _client.DeleteNode(_path + "/" + _no);
                     _client.DeleteNode(_path);
-                }).InvokeWithRetry(5);
+                }).InvokeWithRetry<Exception>(5);
             }
             _client.Dispose();
         }

@@ -16,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Polly;
 
 namespace Lib.extension
 {
@@ -27,12 +28,11 @@ namespace Lib.extension
         /// <summary>
         /// 如果没有打开链接就打开链接
         /// </summary>
-        /// <param name="con"></param>
-        public static void OpenIfClosed(this IDbConnection con)
+        public static void OpenIfClosedWithRetry(this IDbConnection con, int retryCount = 1)
         {
             if (con.State == ConnectionState.Closed)
             {
-                con.Open();
+                new Action(() => con.Open()).InvokeWithRetryAndWait<Exception>(retryCount, i => TimeSpan.FromMilliseconds(i * 100));
             }
         }
 
@@ -93,7 +93,7 @@ namespace Lib.extension
             var table_name = t.GetCustomAttribute<TableAttribute>()?.Name ?? t.Name;
 
             var props = new Dictionary<string, string>();
-            foreach (var p in t.GetProperties())
+            foreach (var p in t.GetProperties().Where(x => x.CanRead))
             {
                 //跳过不映射字段
                 if (p.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }

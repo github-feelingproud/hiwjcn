@@ -39,7 +39,7 @@ namespace Lib.data
             var con = AppContext.GetObject<IDbConnection>();
             con.ConnectionString = ConStr;
             //打开链接，重试两次
-            new Action(() => { con.OpenIfClosed(); }).InvokeWithRetry(2);
+            con.OpenIfClosedWithRetry(2);
             return con;
         }
         /// <summary>

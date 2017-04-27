@@ -141,7 +141,7 @@ namespace Hiwjcn.Web.Controllers
                     {
                         throw new Exception("出错，再试");
                     }
-                }).InvokeWithRetry(5);
+                }).InvokeWithRetry<Exception>(5);
                 return Content($"retrycount:{retryCount}");
             });
         }

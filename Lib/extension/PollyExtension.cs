@@ -10,9 +10,91 @@ using System.Threading.Tasks;
 namespace Lib.extension
 {
     /// <summary>
-    /// 基于polly实现的一些执行策略
+    /// 重试
     /// </summary>
-    public static class PollyExtension
+    public static class RetryExtension
+    {
+        #region 同步
+
+        /// <summary>
+        /// 重试多次
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="retryCount"></param>
+        public static void InvokeWithRetry<T>(this Action action, int retryCount)
+            where T : Exception
+        {
+            Policy.Handle<T>().Retry(retryCount).Execute(() => action.Invoke());
+        }
+
+        /// <summary>
+        /// 重试+等待
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="retryCount"></param>
+        /// <param name="interval"></param>
+        public static void InvokeWithRetryAndWait<T>(this Action action, int retryCount, Func<int, TimeSpan> interval)
+            where T : Exception
+        {
+            Policy.Handle<T>().WaitAndRetry(retryCount, interval).Execute(() => action.Invoke());
+        }
+        #endregion
+
+        #region 异步
+
+        /// <summary>
+        /// 重试多次
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="retryCount"></param>
+        public static async Task InvokeWithRetryAsync<T>(this Func<Task> action, int retryCount)
+            where T : Exception
+        {
+            await Policy.Handle<T>().RetryAsync(retryCount).ExecuteAsync(async () => await action.Invoke());
+        }
+
+        /// <summary>
+        /// 重试+等待
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="retryCount"></param>
+        /// <param name="interval"></param>
+        public static async Task InvokeWithRetryAndWaitAsync<T>(this Func<Task> action, int retryCount, Func<int, TimeSpan> interval)
+            where T : Exception
+        {
+            await Policy.Handle<T>().WaitAndRetryAsync(retryCount, interval).ExecuteAsync(async () => await action.Invoke());
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// 超时
+    /// </summary>
+    public static class TimeoutExtension
+    {
+
+        /// <summary>
+        /// 超时将直接抛出异常
+        /// </summary>
+        public static void InvokeWithTimeOut(this Action action, int seconds, TimeoutStrategy? strategy = null)
+        {
+            strategy = strategy ?? TimeoutStrategy.Pessimistic;
+            Policy.Timeout(seconds, strategy.Value).Execute(() =>
+            {
+                action();
+            });
+        }
+
+    }
+
+    /// <summary>
+    /// 熔断
+    /// </summary>
+    public static class CircuitBreakerExtension
     {
         /// <summary>
         /// 是否是熔断状态
@@ -22,44 +104,6 @@ namespace Lib.extension
         public static bool IsBreak(this CircuitBreakerPolicy breaker)
         {
             return breaker.CircuitState != CircuitState.Closed;
-        }
-
-        /// <summary>
-        /// 重试多次
-        /// </summary>
-        /// <param name="action"></param>
-        /// <param name="retryCount"></param>
-        public static void InvokeWithRetry(this Action action, int retryCount)
-        {
-            InvokeWithRetry<Exception>(action, retryCount);
-        }
-
-        /// <summary>
-        /// 重试多次
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="action"></param>
-        /// <param name="retryCount"></param>
-        public static void InvokeWithRetry<T>(this Action action, int retryCount) where T : Exception
-        {
-            Policy.Handle<T>().Retry(retryCount).Execute(() =>
-            {
-                action();
-            });
-        }
-
-        /// <summary>
-        /// 超时将直接抛出异常
-        /// </summary>
-        /// <param name="action"></param>
-        /// <param name="seconds"></param>
-        public static void InvokeWithTimeOut(this Action action, int seconds, TimeoutStrategy? strategy = null)
-        {
-            strategy = strategy ?? TimeoutStrategy.Pessimistic;
-            Policy.Timeout(seconds, strategy.Value).Execute(() =>
-            {
-                action();
-            });
         }
 
         /// <summary>
@@ -106,6 +150,5 @@ namespace Lib.extension
                 await action();
             });
         }
-
     }
 }
