@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Polly;
+using Lib.data;
 
 namespace Lib.extension
 {
@@ -83,11 +84,60 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 获取表结构
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Obsolete("还没写完")]
+        public static (string table_name, Dictionary<string, string> keys, Dictionary<string, string> columns)
+            GetTableStructure<T>(this T model) where T : IDBTable
+        {
+            var t = model.GetType();
+            var pps = t.GetProperties().Where(x => x.CanRead).Where(x => !x.GetCustomAttributes<NotMappedAttribute>().Any());
+            //table
+            var table_name = t.GetCustomAttribute<TableAttribute>()?.Name ?? t.Name;
+
+            //读取字段名和sql的placeholder
+            (string column, string placeholder) GetColumn(PropertyInfo p)
+            {
+                var column = p.GetCustomAttribute<ColumnAttribute>()?.Name ?? p.Name;
+                var placeholder = p.Name;
+                return (column, placeholder);
+            }
+
+            //keys
+            var key_props = pps.Where(x => x.GetCustomAttributes<KeyAttribute>().Any()).ToList();
+            var keys = key_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
+
+            //columns
+            var column_props = pps.Where(x =>
+            !(x.GetCustomAttributes<KeyAttribute>().Any() || x.GetCustomAttributes<DatabaseGeneratedAttribute>().Any())).ToList();
+            if (!ValidateHelper.IsPlumpList(column_props)) { throw new Exception("无法提取到有效字段"); }
+            var columns = column_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
+            /*
+             var props = new Dictionary<string, string>();
+            foreach (var p in t.GetProperties().Where(x => x.CanRead))
+            {
+                //跳过不映射字段
+                if (p.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
+                //跳过自增
+                if (p.GetCustomAttributes<DatabaseGeneratedAttribute>().Any()) { continue; }
+                //获取字段
+                var column = p.GetCustomAttribute<ColumnAttribute>()?.Name ?? p.Name;
+
+                props[column] = p.Name;
+            }
+             */
+            return (table_name, keys, columns);
+        }
+
+        /// <summary>
         /// 获取插入SQL
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string GetInsertSql(this object model)
+        public static string GetInsertSql<T>(this T model) where T : IDBTable
         {
             var t = model.GetType();
             var table_name = t.GetCustomAttribute<TableAttribute>()?.Name ?? t.Name;
@@ -120,8 +170,8 @@ namespace Lib.extension
         /// <param name="transaction"></param>
         /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        public static int Insert(this IDbConnection con, object model,
-            IDbTransaction transaction = null, int? commandTimeout = default(int?))
+        public static int Insert<T>(this IDbConnection con, T model,
+            IDbTransaction transaction = null, int? commandTimeout = default(int?)) where T : IDBTable
         {
             var sql = model.GetInsertSql();
             try
@@ -142,8 +192,8 @@ namespace Lib.extension
         /// <param name="transaction"></param>
         /// <param name="commandTimeout"></param>
         /// <returns></returns>
-        public static async Task<int> InsertAsync(this IDbConnection con, object model,
-            IDbTransaction transaction = null, int? commandTimeout = default(int?))
+        public static async Task<int> InsertAsync<T>(this IDbConnection con, T model,
+            IDbTransaction transaction = null, int? commandTimeout = default(int?)) where T : IDBTable
         {
             var sql = model.GetInsertSql();
             try
@@ -161,7 +211,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string GetUpdateSql(this object model)
+        public static string GetUpdateSql<T>(this T model) where T : IDBTable
         {
             throw new NotImplementedException();
         }
