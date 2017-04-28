@@ -38,7 +38,7 @@ namespace ConsoleApp
             var client = new ElasticClient(setting);
             func.Invoke(client);
         }
-        
+
         public class SunData
         {
             [Key]
@@ -100,7 +100,7 @@ namespace ConsoleApp
                         model.Size = f.Length;
                         model.Content = File.ReadAllText(model.Path);
                         var data = new List<DiskFileIndex>() { model };
-                        client.AddToIndex(indexName, data);
+                        client.AddToIndex(indexName, data.ToArray());
                     }
                     catch (Exception e)
                     {
@@ -115,12 +115,12 @@ namespace ConsoleApp
                 return true;
             });
         }
-        
+
     }
 
 
     [ElasticsearchType(IdProperty = "Path", Name = "diskfileindex")]
-    public class DiskFileIndex
+    public class DiskFileIndex : IElasticSearchIndex
     {
         [String(Name = "Path", Index = FieldIndexOption.NotAnalyzed)]
         public virtual string Path { get; set; }
@@ -137,5 +137,5 @@ namespace ConsoleApp
         [String(Name = "Content", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
         public virtual string Content { get; set; }
     }
-    
+
 }

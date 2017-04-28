@@ -28,30 +28,10 @@ namespace Lib.data
     public static class RedisManager
     {
         /// <summary>
-        /// 10秒钟超过8次请求并且一半以上错误就熔断30秒
-        /// </summary>
-        private static readonly CircuitBreakerPolicy p = Policy.Handle<Exception>()
-            .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 8, TimeSpan.FromSeconds(30));
-
-        private static readonly bool UseCircuitBreaker = 
-            (ConfigurationManager.AppSettings["RedisManagerUseCircuitBreaker"] ?? "true").ToBool();
-
-        /// <summary>
         /// 获取redis连接
         /// </summary>
         /// <param name="handler"></param>
-        public static void PrepareConnection(Func<ConnectionMultiplexer, bool> handler)
-        {
-            if (UseCircuitBreaker)
-            {
-                //使用熔断器
-                p.Execute(() => handler.Invoke(RedisClientManager.Instance.DefaultClient));
-            }
-            else
-            {
-                handler.Invoke(RedisClientManager.Instance.DefaultClient);
-            }
-        }
+        public static void PrepareConnection(Func<ConnectionMultiplexer, bool> handler) => handler.Invoke(RedisClientManager.Instance.DefaultClient);
 
         /// <summary>
         /// 获取redis database
@@ -293,9 +273,9 @@ namespace Lib.data
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void ListLeftPush(string key, object value)
+        public long ListLeftPush(string key, object value)
         {
-            Do(db => db.ListLeftPush(key, Serialize(value)));
+            return Do(db => db.ListLeftPush(key, Serialize(value)));
         }
 
         /// <summary>
@@ -333,10 +313,35 @@ namespace Lib.data
         /// <returns></returns>
         public long ListLength(string key)
         {
-            return Do(redis => redis.ListLength(key));
+            return Do(db => db.ListLength(key));
         }
 
         #endregion List
+
+        #region Set
+        public bool SetAdd(string key, object value) => Do(db => db.SetAdd(key, Serialize(value)));
+        public List<T> SetMembers<T>(string key) => Do(db => db.SetMembers(key).Select(x => Deserialize<T>(x)).ToList());
+        public bool SetRemove<T>(string key, object value) => Do(db => db.SetRemove(key, Serialize(value)));
+        public List<T> SetCombine<T>(SetOperation operation, params string[] keys)
+        {
+            var redis_keys = keys.Select(x =>
+            {
+                RedisKey k = x;
+                return k;
+            }).ToArray();
+            return Do(db => db.SetCombine(operation, redis_keys).Select(x => Deserialize<T>(x)).ToList());
+        }
+        #endregion
+
+        #region SortedSet
+        public bool SortedSetAdd(string key, object value, double score) => Do(db => db.SortedSetAdd(key, Serialize(value), score));
+        public bool SortedSetRemove<T>(string key, object value) => Do(db => db.SortedSetRemove(key, Serialize(value)));
+        #endregion
+
+        #region Hash
+        public bool HashSet(string key, string k, object value) => Do(db => db.HashSet(key, k, Serialize(value)));
+        public bool HashDelete(string key, string k) => Do(db => db.HashDelete(key, k));
+        #endregion
 
         #region key
 
@@ -436,7 +441,7 @@ namespace Lib.data
 
         #region 辅助方法
 
-        private T Do<T>(Func<IDatabase, T> func)
+        public T Do<T>(Func<IDatabase, T> func)
         {
             var database = _conn.GetDatabase(DbNum);
             return func(database);
