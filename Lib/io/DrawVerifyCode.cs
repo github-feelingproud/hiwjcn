@@ -96,6 +96,7 @@ namespace Lib.io
         public (byte[] bs, int width, int height) GetImageBytesAndSize()
         {
             if (CharCount <= 0) { throw new Exception("字符数必须大于0"); }
+            this.Code = string.Empty;
 
             var items = new int[CharCount].Select(_ => new CharItem()
             {

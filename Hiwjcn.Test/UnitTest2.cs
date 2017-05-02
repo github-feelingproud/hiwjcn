@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Castle.DynamicProxy;
+using Lib.helper;
 using System.Dynamic;
 using System.Reflection.Emit;
 using System.Reflection;
@@ -14,6 +15,9 @@ using Polly.Timeout;
 using Polly.Retry;
 using Polly.CircuitBreaker;
 using Lib.mq;
+using Lib.io;
+using Lib.extension;
+using System.IO;
 using System.Linq;
 using Hiwjcn.Dal;
 using Autofac;
@@ -26,6 +30,28 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest2
     {
+        [TestMethod]
+        public void fasdfkjasldfajsdkfhasldfkj()
+        {
+            var codeHelper = new DrawVerifyCode();
+            var path = "d:\\data";
+            new DirectoryInfo(path).CreateIfNotExist();
+            for (var i = 0; i < 100; ++i)
+            {
+                var p = Path.Combine(path, $"data_{i}");
+                new DirectoryInfo(p).CreateIfNotExist();
+                for (var j = 0; j < 1000; ++j)
+                {
+                    var (bs, with, height) = codeHelper.GetImageBytesAndSize();
+                    var f = Path.Combine(p, $"{codeHelper.Code}_{Com.GetUUID()}.png");
+                    using (var fs = new FileStream(f, FileMode.Create))
+                    {
+                        fs.Write(bs, 0, bs.Length);
+                    }
+                }
+            }
+        }
+
         [TestMethod]
         public void fasdfasdfadsf()
         {
