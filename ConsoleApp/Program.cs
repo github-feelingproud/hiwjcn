@@ -3,6 +3,7 @@ using Fleck;
 using Lib.core;
 using Lib.extension;
 using Lib.helper;
+using Lib.io;
 using Nest;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,26 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
+            var codeHelper = new DrawVerifyCode();
+            var path = "d:\\data";
+            new DirectoryInfo(path).CreateIfNotExist();
+            for (var i = 500; i < 1000; ++i)
+            {
+                var p = Path.Combine(path, $"data_{i}");
+                new DirectoryInfo(p).CreateIfNotExist();
+                for (var j = 0; j < 1000; ++j)
+                {
+                    var (bs, with, height) = codeHelper.GetImageBytesAndSize();
+                    var f = Path.Combine(p, $"{codeHelper.Code}_{Com.GetUUID()}.png");
+                    using (var fs = new FileStream(f, FileMode.Create))
+                    {
+                        fs.Write(bs, 0, bs.Length);
+                    }
+                    Console.WriteLine(f);
+                }
+            }
+            return;
+
             var server = new WebSocketServer("ws://0.0.0.0:8181");
             server.Start(socket =>
             {
