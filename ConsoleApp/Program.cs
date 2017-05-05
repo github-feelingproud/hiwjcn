@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -19,10 +22,10 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            var codeHelper = new DrawVerifyCode();
-            var path = "d:\\data";
+            var codeHelper = new DrawVerifyCode_xx();
+            var path = "d:\\data_vin_bg";
             new DirectoryInfo(path).CreateIfNotExist();
-            for (var i = 500; i < 1000; ++i)
+            for (var i = 0; i < 500; ++i)
             {
                 var p = Path.Combine(path, $"data_{i}");
                 new DirectoryInfo(p).CreateIfNotExist();
@@ -138,6 +141,161 @@ namespace ConsoleApp
         }
 
     }
+
+
+    /// <summary>
+    ///用于生成多种样式的验证码
+    /// </summary>
+    public class DrawVerifyCode_xx
+    {
+        class CharItem
+        {
+            public string c { get; set; }
+            public Font font { get; set; }
+        }
+
+        #region 各种参数
+        private readonly Random random = new Random(DateTime.Now.Millisecond);
+
+        /// <summary>
+        /// 生成的code
+        /// </summary>
+        public string Code { get; private set; }
+
+        /// <summary>
+        /// 字体大小，【默认15px】为了使字符居中显示，请设置一个合适的值
+        /// </summary>
+        public int FontSize { get; set; } = 18;
+
+        /// <summary>
+        /// 验证码字符数
+        /// </summary>
+        public int CharCount { get; set; } = 17;
+
+        private readonly List<Color> colors = new List<Color>() {
+            Color.FromArgb(100,100,100),
+            Color.FromArgb(120,120,120),
+            Color.FromArgb(140,140,140),
+            Color.FromArgb(160,160,160),
+
+            Color.FromArgb(200, 200, 200),
+            Color.FromArgb(210, 210, 210),
+            Color.FromArgb(220, 220, 220),
+            Color.FromArgb(230, 230, 230),
+            Color.FromArgb(240, 240, 240),
+        };
+        private readonly List<Font> fonts = new List<Font>() { };
+        private readonly List<char> chars;
+
+        private readonly List<string> bgs = new List<string>();
+
+        PrivateFontCollection pfc = new PrivateFontCollection();
+
+        /// <summary>
+        /// 构造函数，设置response对象
+        /// </summary>
+        public DrawVerifyCode_xx()
+        {
+            pfc.AddFontFile("d:\\xx.ttf");
+            this.fonts = new List<Font>() { new Font(pfc.Families[0], FontSize) };
+
+            var bg_dir = "d:\\data_bgs\\";
+            this.bgs = Directory.GetFiles(bg_dir, "*.png").Select(x => Path.Combine(bg_dir, x)).ToList();
+
+            var chars = new List<char>();
+            Action<char, char> FindChar = (start, end) =>
+            {
+                for (var i = start; i <= end; ++i)
+                {
+                    chars.Add((char)i);
+                }
+            };
+            FindChar('A', 'Z');
+            FindChar('0', '9');
+            this.chars = chars;
+
+            this.Code = string.Empty;
+        }
+
+        #endregion
+
+        #region 主体程序
+        /// <summary>
+        /// 获取图片bytes
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetImageBytes()
+        {
+            return GetImageBytesAndSize().bs;
+        }
+        /// <summary>
+        /// 获取图片bytes和宽高
+        /// </summary>
+        /// <returns></returns>
+        public (byte[] bs, int width, int height) GetImageBytesAndSize()
+        {
+            if (CharCount <= 0) { throw new Exception("字符数必须大于0"); }
+            this.Code = string.Empty;
+
+            var items = new int[CharCount].Select(_ => new CharItem()
+            {
+                c = random.Choice(chars).ToString(),
+                font = new Font(pfc.Families[0], FontSize)
+            }).ToList();
+            int Height = (int)(items.Select(x => x.font).Max(x => x.Height) * 1.3);
+            int Width = (int)(Height * 0.8 * CharCount);
+            //获取随机字体，颜色
+            using (var bm = new Bitmap(Image.FromFile(random.Choice(this.bgs)), Width, Height))
+            {
+                using (var g = Graphics.FromImage(bm))
+                {
+                    //g.Clear(Color.White);
+                    using (var ms = new MemoryStream())
+                    {
+                        //画验证码
+                        var c = random.Choice(colors);
+                        var i = 0;
+                        foreach (var itm in items)
+                        {
+                            //计算位置
+                            var (x, y) = ComputePosition(i++, itm.font, bm);
+
+
+                            g.DrawString(itm.c, itm.font, new SolidBrush(c), x, y);
+
+
+                            this.Code += itm.c;//把验证码保存起来
+                        }
+
+                        bm.Save(ms, ImageFormat.Png);
+                        return (ms.ToArray(), Width, Height);
+                        /*
+                        byte[] bs = ms.ToArray();
+                        response.OutputStream.Write(bs, 0, bs.Length);
+                         * */
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region 方法
+        private (float x, float y) ComputePosition(int i, Font font, Bitmap bm)
+        {
+            var font_h = font.Height;
+            var font_w = font.Size;
+            var box_w = bm.Width / CharCount;
+
+            var x = box_w * i + (box_w - font_w) / 2;
+
+            var y = (bm.Height - font_h) / 2;
+
+            return (x, y);
+        }
+        #endregion
+    }
+
 
 
     [ElasticsearchType(IdProperty = "Path", Name = "diskfileindex")]
