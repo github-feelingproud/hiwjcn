@@ -103,6 +103,8 @@ namespace Lib.io
                 c = random.Choice(chars).ToString(),
                 font = new Font(random.Choice(fonts), FontSize)
             }).ToList();
+            //把验证码保存起来
+            this.Code = string.Join("", items.Select(x => x.c));
             int Height = (int)(items.Select(x => x.font).Max(x => x.Height) * 1.3);
             int Width = (int)(Height * 0.8 * CharCount);
             //获取随机字体，颜色
@@ -138,8 +140,6 @@ namespace Lib.io
                             g.DrawString(itm.c, itm.font, new SolidBrush(random.Choice(colors)), x, y);
 
                             g.RotateTransform(-angle);
-
-                            this.Code += itm.c;//把验证码保存起来
                         }
 
                         bm.Save(ms, ImageFormat.Png);
