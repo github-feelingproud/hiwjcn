@@ -23,7 +23,7 @@ namespace ConsoleApp
         static void Main(string[] args)
         {
             var codeHelper = new DrawVerifyCode_xx();
-            var path = "d:\\data_vin_bg";
+            var path = "d:\\data_vin_bg_1";
             new DirectoryInfo(path).CreateIfNotExist();
             for (var i = 0; i < 500; ++i)
             {
@@ -173,8 +173,6 @@ namespace ConsoleApp
         public int CharCount { get; set; } = 17;
 
         private readonly List<Color> colors = new List<Color>() {
-            Color.FromArgb(100,100,100),
-            Color.FromArgb(120,120,120),
             Color.FromArgb(140,140,140),
             Color.FromArgb(160,160,160),
 

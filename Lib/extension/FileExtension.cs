@@ -45,11 +45,10 @@ namespace Lib.extension
         /// <summary>
         /// 删除目录
         /// </summary>
-        /// <param name="dir"></param>
-        public static void DeleteIfExist(this DirectoryInfo dir)
+        public static void DeleteIfExist(this DirectoryInfo dir, bool recursive = true)
         {
             if (!dir.Exists) { return; }
-            dir.Delete();
+            dir.Delete(recursive: recursive);
         }
 
     }
