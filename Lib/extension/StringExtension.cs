@@ -93,5 +93,14 @@ namespace Lib.extension
             var arrs = list.Select(x => ConvertHelper.GetString(x)).ToArray();
             return string.Join(sep, arrs);
         }
+
+        /// <summary>
+        /// 模仿python中的格式化
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [Obsolete("$用新的拼接方法:{这里替换值}")]
+        public static string Format(this string s, params object[] args) => string.Format(s, args);
     }
 }
