@@ -81,5 +81,17 @@ namespace Lib.extension
         {
             return Com.ExtractUrlParams(s);
         }
+
+        /// <summary>
+        /// 模仿python的join
+        /// </summary>
+        /// <param name="sep"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static string Join<T>(this string sep, IEnumerable<T> list)
+        {
+            var arrs = list.Select(x => ConvertHelper.GetString(x)).ToArray();
+            return string.Join(sep, arrs);
+        }
     }
 }

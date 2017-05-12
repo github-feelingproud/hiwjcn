@@ -990,20 +990,19 @@ namespace Lib.helper
         /// <summary>
         /// 实现python中的range
         /// </summary>
-        /// <param name="stop"></param>
-        /// <returns></returns>
-        public static IEnumerable<int> Range(int stop)
+        public static IEnumerable<int> Range(int a, int? b = null)
         {
-            for (var i = 0; i < stop; ++i)
+            var start = b != null ? a : 0;
+            var stop = b ?? a;
+            for (var i = start; i < stop; ++i)
             {
-                Console.WriteLine($"内部{i}");
                 yield return i;
             }
         }
 
         public static void testYield()
         {
-            foreach (var i in Range(10))
+            foreach (var i in Range(10, 78))
             {
                 Console.WriteLine($"外部{i}");
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lib.helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,6 +72,19 @@ namespace Lib.extension
         public static List<T> Sample<T>(this Random ran, IList<T> list, int count)
         {
             return new int[count].Select(x => ran.Choice(list)).ToList();
+        }
+
+        /// <summary>
+        /// 随机选取索引
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ran"></param>
+        /// <param name="list"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static List<int> SampleIndexs<T>(this Random ran, IList<T> list, int count)
+        {
+            return ran.Sample(Com.Range(list.Count).ToList(), count);
         }
 
         /// <summary>
