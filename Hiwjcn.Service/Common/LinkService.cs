@@ -14,7 +14,7 @@ namespace Bll.Sys
     /// <summary>
     /// 链接
     /// </summary>
-    [Intercept(typeof(AopLogError))]
+    [Intercept(typeof(AopLogError_))]
     public class LinkService : ServiceBase<LinkModel>, ILinkService
     {
         private LinkDal _LinkDal { get; set; }

@@ -22,6 +22,21 @@ namespace Lib.data
      个人觉得对NoSql数据库的操作不要使用异步，因为本身响应就很快，不会阻塞
          */
 
+    public static class RedisExtension
+    {
+        public static IDatabase SelectDatabase(this IConnectionMultiplexer con, int? db)
+        {
+            if (db == null)
+            {
+                return con.GetDatabase();
+            }
+            else
+            {
+                return con.GetDatabase(db.Value);
+            }
+        }
+    }
+
     /// <summary>
     /// redis 老帮助类
     /// </summary>
@@ -42,16 +57,8 @@ namespace Lib.data
         {
             PrepareConnection(con =>
             {
-                IDatabase db = null;
+                var db = con.SelectDatabase(db_no);
 
-                if (db_no != null && db_no.HasValue)
-                {
-                    db = con.GetDatabase(db_no.Value);
-                }
-                else
-                {
-                    db = con.GetDatabase();
-                }
                 callback.Invoke(db);
 
                 return true;

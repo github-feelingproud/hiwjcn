@@ -33,7 +33,7 @@ namespace Hiwjcn.Web.App_Start
             pluginAssemblies.Add(tps.web.Assembly);
             RegController(ref builder, pluginAssemblies.ToArray());
             //Aop拦截
-            builder.RegisterType<AopLogError>();
+            builder.RegisterType<AopLogError_>();
             //缓存
             if (ValidateHelper.IsPlumpString(ConfigHelper.Instance.RedisConnectionString))
             {

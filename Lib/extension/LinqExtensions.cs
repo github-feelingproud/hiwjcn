@@ -41,6 +41,15 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// take别名
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static IQueryable<T> Limit<T>(this IQueryable<T> query, int count) => query.Take(count);
+
+        /// <summary>
         /// 动态生成or条件
         /// http://www.albahari.com/nutshell/predicatebuilder.aspx
         /// </summary>

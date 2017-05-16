@@ -22,7 +22,7 @@ namespace Hiwjcn.Bll
     /// <summary>
     /// 捕获异常
     /// </summary>
-    public class AopLogError : IInterceptor
+    public class AopLogError_ : IInterceptor
     {
         public void Intercept(IInvocation invocation)
         {

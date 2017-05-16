@@ -118,8 +118,6 @@ namespace Lib.extension
         /// <summary>
         /// 错误日志
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="prefix"></param>
         public static void AddErrorLog(this Exception e, string extra_data = null)
         {
             var json = new

@@ -13,7 +13,7 @@ namespace Lib.extension
         /// 转换为整型
         /// </summary>
         /// <param name="data">数据</param>
-        public static int ToInt(this object data)
+        public static int ToInt(this string data)
         {
             return ConvertHelper.GetInt(data);
         }
@@ -23,7 +23,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="data">数据</param>
         /// <param name="digits">小数位数</param>
-        public static double ToDouble(this object data, int? digits = null)
+        public static double ToDouble(this string data, int? digits = null)
         {
             var db = ConvertHelper.GetDouble(data);
             if (digits != null)
@@ -38,7 +38,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="data">数据</param>
         /// <param name="digits">小数位数</param>
-        public static decimal ToDecimal(this object data, int? digits = null)
+        public static decimal ToDecimal(this string data, int? digits = null)
         {
             var dec = ConvertHelper.GetDecimal(data);
             if (digits != null)
@@ -52,7 +52,7 @@ namespace Lib.extension
         /// 转换为日期
         /// </summary>
         /// <param name="data">数据</param>
-        public static DateTime ToDate(this object data)
+        public static DateTime ToDate(this string data)
         {
             return ConvertHelper.GetDateTime(data, DateTime.Now);
         }
@@ -61,9 +61,9 @@ namespace Lib.extension
         /// 转换为布尔值
         /// </summary>
         /// <param name="data">数据</param>
-        public static bool ToBool(this object data)
+        public static bool ToBool(this string data)
         {
-            var list = new string[] { "1", "true", "yes", "on", "success", "t" };
+            var list = new string[] { "1", "true", "yes", "on", "success", "t", true.ToString() };
             return list.Contains(data.ToString().ToLower().Trim());
         }
 
@@ -72,7 +72,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static int ToBoolInt(this object data)
+        public static int ToBoolInt(this string data)
         {
             return data.ToBool() ? 1 : 0;
         }
