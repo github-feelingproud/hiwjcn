@@ -17,6 +17,24 @@ namespace Lib.helper
     public static class Com
     {
         /// <summary>
+        /// 把对象可读属性读出来变成字典
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> ObjectPropertyToDict(object data)
+        {
+            var dict = new Dictionary<string, string>();
+
+            var props = data.GetType().GetProperties().Where(x => x.CanRead).ToList();
+            props.ForEach(x =>
+            {
+                dict[x.Name] = ConvertHelper.GetString(x.GetValue(data));
+            });
+
+            return dict;
+        }
+
+        /// <summary>
         /// 把URL后面的参数变成字典
         /// </summary>
         /// <param name="url"></param>

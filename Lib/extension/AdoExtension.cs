@@ -320,41 +320,37 @@ namespace Lib.extension
         public static void AddParamsSmartly(this IDbCommand cmd, params object[] parameters)
         {
             if (!ValidateHelper.IsPlumpList(parameters)) { return; }
-            object first_p = null;
-            if (parameters.Length == 1 && !((first_p = parameters[0]) is IDataParameter))
+
+            if (parameters.Length == 1 && !(parameters[0] is IDataParameter))
             {
-                string dbType = null;
+                var first_p = parameters[0];
+
+                var dbType = DBTypeEnum.None;
                 var connectionType = cmd.Connection.GetType();
                 if (connectionType == typeof(SqlConnection))
                 {
-                    dbType = "sqlserver";
+                    dbType = DBTypeEnum.SqlServer;
                 }
-                if (connectionType == typeof(MySqlConnection))
+                else if (connectionType == typeof(MySqlConnection))
                 {
-                    dbType = "mysql";
+                    dbType = DBTypeEnum.MySQL;
                 }
-                if (dbType == null)
+                else
                 {
                     throw new Exception("不支持的数据库类型");
                 }
-                var list = new List<object>();
-                var props = first_p.GetType().GetProperties();
-                foreach (var p in props)
-                {
-                    var name = p.Name;
-                    object val = p.GetValue(first_p);
-                    if (val == null) { val = DBNull.Value; }
 
-                    if (dbType == "sqlserver")
+                var dict = Com.ObjectPropertyToDict(first_p);
+                foreach (var key in dict.Keys)
+                {
+                    switch (dbType)
                     {
-                        list.Add(new SqlParameter("@" + name, val));
-                    }
-                    if (dbType == "mysql")
-                    {
-                        list.Add(new MySqlParameter("@" + name, val));
+                        case DBTypeEnum.SqlServer:
+                            cmd.Parameters.Add(new SqlParameter($"@{key}", dict[key])); break;
+                        case DBTypeEnum.MySQL:
+                            cmd.Parameters.Add(new MySqlParameter($"@{key}", dict[key])); break;
                     }
                 }
-                list.ForEach(x => cmd.Parameters.Add(x));
             }
             else
             {

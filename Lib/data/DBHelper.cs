@@ -13,6 +13,7 @@ namespace Lib.data
 {
     public enum DBTypeEnum : int
     {
+        None = -1,
         MySQL = 1,
         SqlServer = 2,
         Oracle = 3,
