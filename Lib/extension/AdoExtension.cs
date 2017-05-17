@@ -340,7 +340,7 @@ namespace Lib.extension
                     throw new Exception("不支持的数据库类型");
                 }
 
-                var dict = Com.ObjectPropertyToDict(first_p);
+                var dict = Com.ObjectToSqlParamsDict(first_p);
                 foreach (var key in dict.Keys)
                 {
                     switch (dbType)

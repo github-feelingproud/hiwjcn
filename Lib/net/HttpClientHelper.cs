@@ -205,7 +205,7 @@ namespace Lib.net
         /// <returns></returns>
         public static async Task<string> PostAsync_(string url, object param, int? timeout_second = null)
         {
-            return await PostAsync(url, Com.ObjectPropertyToDict(param), timeout_second);
+            return await PostAsync(url, Com.ObjectToDict(param), timeout_second);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace Lib.net
         /// <returns></returns>
         public static string Post_(string url, object param)
         {
-            return Post(url, Com.ObjectPropertyToDict(param));
+            return Post(url, Com.ObjectToDict(param));
         }
 
         /// <summary>

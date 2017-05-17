@@ -1,6 +1,7 @@
 ﻿using Lib.core;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
@@ -21,14 +22,49 @@ namespace Lib.helper
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> ObjectPropertyToDict(object data)
+        public static Dictionary<string, string> ObjectToDict(object data)
         {
-            var dict = new Dictionary<string, string>();
+            return ObjectToDict_(data).ToDictionary(x => x.Key, x => ConvertHelper.GetString(x.Value));
+        }
+
+        /// <summary>
+        /// 对象转为字典，value如果为null将自动转为dbnull
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static Dictionary<string, object> ObjectToSqlParamsDict(object data)
+        {
+            return ObjectToDict_(data).ToDictionary(x => x.Key, x => x.Value ?? DBNull.Value);
+        }
+
+        /// <summary>
+        /// 对象转为sql参数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static List<T> ObjectToSqlParameters<T>(object data) where T : IDataParameter, new()
+        {
+            return ObjectToSqlParamsDict(data).Select(x => new T()
+            {
+                ParameterName = $"@{x.Key}",
+                Value = x.Value
+            }).ToList();
+        }
+
+        /// <summary>
+        /// 读取对象的属性以及相应的值
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static Dictionary<string, object> ObjectToDict_(object data)
+        {
+            var dict = new Dictionary<string, object>();
 
             var props = data.GetType().GetProperties().Where(x => x.CanRead).ToList();
             props.ForEach(x =>
             {
-                dict[x.Name] = ConvertHelper.GetString(x.GetValue(data));
+                dict[x.Name] = x.GetValue(data);
             });
 
             return dict;
