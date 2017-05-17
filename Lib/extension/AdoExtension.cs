@@ -321,11 +321,25 @@ namespace Lib.extension
         {
             if (!ValidateHelper.IsPlumpList(parameters)) { return; }
 
-            if (parameters.Length == 1 && !(parameters[0] is IDataParameter))
+            if (parameters.All(x => x is IDataParameter))
             {
-                var first_p = parameters[0];
+                parameters.ToList().ForEach(x => cmd.Parameters.Add(x));
+            }
+            else if (parameters.Length == 1)
+            {
+                var p = parameters[0];
+                var dict = Com.ObjectToSqlParamsDict(p);
+                foreach (var key in dict.Keys)
+                {
+                    var param = cmd.CreateParameter();
+                    param.ParameterName = $"@{key}";
+                    param.Value = dict[key];
+                    cmd.Parameters.Add(param);
+                }
 
-                var dbType = DBTypeEnum.None;
+                #region 垃圾代码-可以跑
+                /*
+             var dbType = DBTypeEnum.None;
                 var connectionType = cmd.Connection.GetType();
                 if (connectionType == typeof(SqlConnection))
                 {
@@ -339,8 +353,8 @@ namespace Lib.extension
                 {
                     throw new Exception("不支持的数据库类型");
                 }
-
-                var dict = Com.ObjectToSqlParamsDict(first_p);
+                
+                var dict = Com.ObjectToSqlParamsDict(p);
                 foreach (var key in dict.Keys)
                 {
                     switch (dbType)
@@ -350,11 +364,13 @@ namespace Lib.extension
                         case DBTypeEnum.MySQL:
                             cmd.Parameters.Add(new MySqlParameter($"@{key}", dict[key])); break;
                     }
-                }
+                }    
+             */
+                #endregion
             }
             else
             {
-                parameters.ToList().ForEach(x => cmd.Parameters.Add(x));
+                throw new Exception("只能有一个object参数");
             }
         }
 

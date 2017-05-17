@@ -7,12 +7,37 @@ using Lib.extension;
 using StackExchange.Redis;
 using System.Linq;
 using Lib.helper;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest6
     {
+        [TestMethod]
+        public void fasdfajlkjkhfasdjhf()
+        {
+            using (var con = new SqlConnection("User Iout=20"))
+            {
+                con.OpenIfClosedWithRetry(2);
+
+                try
+                {
+                    var count = con.ExecuteScalar("select count(1) from t_inquiry where provinceid=@id and quoteuid = @uid",
+                       new
+                       {
+                           id = "31",
+                           uid = default(string)
+                       });
+                }
+                catch (Exception e)
+                {
+                    //
+                }
+            }
+        }
+
         [TestMethod]
         public void jiami()
         {
