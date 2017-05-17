@@ -22,7 +22,7 @@ namespace Lib.helper
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> ObjectToDict(object data)
+        public static Dictionary<string, string> ObjectToStringDict(object data)
         {
             return ObjectToDict_(data).ToDictionary(x => x.Key, x => ConvertHelper.GetString(x.Value));
         }
