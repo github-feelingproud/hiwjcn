@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Lib.extension;
 using System.Linq;
+using Lib.helper;
 
 namespace Lib.io
 {
@@ -98,13 +99,14 @@ namespace Lib.io
             if (CharCount <= 0) { throw new Exception("字符数必须大于0"); }
             this.Code = string.Empty;
 
-            var items = new int[CharCount].Select(_ => new CharItem()
+            var items = Com.Range(CharCount).Select(_ => new CharItem()
             {
                 c = random.Choice(chars).ToString(),
                 font = new Font(random.Choice(fonts), FontSize)
             }).ToList();
+
             //把验证码保存起来
-            this.Code = string.Join("", items.Select(x => x.c));
+            this.Code = "".Join(items.Select(x => x.c));
             int Height = (int)(items.Select(x => x.font).Max(x => x.Height) * 1.3);
             int Width = (int)(Height * 0.8 * CharCount);
             //获取随机字体，颜色

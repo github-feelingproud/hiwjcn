@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using Lib.extension;
 
 namespace Lib.io
 {
@@ -75,10 +76,7 @@ namespace Lib.io
                 var HOUR = now.Hour.ToString();
                 //根据年月日小时生成文件夹
                 save_path = Path.Combine(save_path, YEAR, MONTH, DAY, HOUR);
-                if (!Directory.Exists(save_path))
-                {
-                    Directory.CreateDirectory(save_path);
-                }
+                new DirectoryInfo(save_path).CreateIfNotExist();
                 //如果文件存在就用guid和随机字符胡乱命名
                 do
                 {
@@ -118,42 +116,29 @@ namespace Lib.io
         /// <returns></returns>
         public UpLoadFileResult UploadSingleFile(HttpPostedFile http_file, string save_path)
         {
-            FileStream fs = null;
-            try
+            //获取一个新的文件模型
+            var model = PrepareNewFile(http_file, save_path);
+            if (!model.SuccessPreparePath)
             {
-                //获取一个新的文件模型
-                var model = PrepareNewFile(http_file, save_path);
-                if (!model.SuccessPreparePath)
-                {
-                    return model;
-                }
-                fs = new FileStream(model.FilePath, FileMode.Create, FileAccess.Write);
-                //循环写数据，结束后关闭输入输出流
-                using (http_file.InputStream)
-                {
-                    using (fs)
-                    {
-                        var buffer = new byte[1024 * 1024];
-                        int len = 0;
-                        while ((len = http_file.InputStream.Read(buffer, 0, buffer.Length)) > 0)
-                        {
-                            fs.Write(buffer, 0, len);
-                        }
-                        fs.Flush();
-                    }
-                }
-
-                model.SuccessUpload = true;
                 return model;
             }
-            catch (Exception e)
+            //循环写数据，结束后关闭输入输出流
+            using (http_file.InputStream)
             {
-                throw e;
+                using (var fs = new FileStream(model.FilePath, FileMode.Create, FileAccess.Write))
+                {
+                    var buffer = new byte[1024 * 1024];
+                    int len = 0;
+                    while ((len = http_file.InputStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        fs.Write(buffer, 0, len);
+                    }
+                    fs.Flush();
+                }
             }
-            finally
-            {
-                fs?.Dispose();
-            }
+
+            model.SuccessUpload = true;
+            return model;
         }
         /// <summary>
         /// 上传所有文件

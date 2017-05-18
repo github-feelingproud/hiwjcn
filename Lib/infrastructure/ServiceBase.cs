@@ -101,7 +101,7 @@ namespace Lib.infrastructure
         /// <param name="key"></param>
         /// <param name="dataSource"></param>
         /// <returns></returns>
-        protected async Task<CacheType> Cache<CacheType>(string key, Func<Task<CacheType>> dataSource)
+        protected async Task<CacheType> CacheAsync<CacheType>(string key, Func<Task<CacheType>> dataSource)
         {
             return await CacheManager.CacheAsync(key, dataSource, UseCache, CacheExpiresMinutes);
         }

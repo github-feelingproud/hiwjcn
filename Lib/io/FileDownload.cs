@@ -24,33 +24,22 @@ namespace Lib.io
         /// </summary>
         public void Download()
         {
-            FileStream fs = null;
-            try
+            var fi = new FileInfo(filepath);
+            if (!fi.Exists)
             {
-                var fi = new FileInfo(filepath);
-                if (!fi.Exists)
-                {
-                    throw new Exception("文件不存在");
-                }
-                response.ContentType = "application/octet-stream";
-                response.AddHeader("Content-Disposition", "attachment; filename=" + fi.Name);
-                fs = fi.OpenRead();
+                throw new Exception("文件不存在");
+            }
+            response.ContentType = "application/octet-stream";
+            response.AddHeader("Content-Disposition", "attachment; filename=" + fi.Name);
+            using (var fs = fi.OpenRead())
+            {
                 var b = new byte[1024 * 200];
-                long totallenth = fs.Length;
                 int i = 0;
                 while ((i = fs.Read(b, 0, b.Length)) > 0)
                 {
-                    response.OutputStream.Write(b, 0, b.Length);
+                    response.OutputStream.Write(b, 0, i);
                     response.Flush();
                 }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                fs?.Dispose();
             }
         }
     }
