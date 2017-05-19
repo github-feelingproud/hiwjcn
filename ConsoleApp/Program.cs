@@ -22,34 +22,50 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            var codeHelper = new DrawVerifyCode();
-            var path = "d:\\data_vin_bg_1";
-            new DirectoryInfo(path).CreateIfNotExist();
-            for (var i = 500; i < 1000; ++i)
-            {
-                var p = Path.Combine(path, $"data_{i}");
-                new DirectoryInfo(p).CreateIfNotExist();
-                for (var j = 0; j < 1000; ++j)
-                {
-                    var (bs, with, height) = codeHelper.GetImageBytesAndSize();
-                    var f = Path.Combine(p, $"{codeHelper.Code}_{Com.GetUUID()}.png");
-                    using (var fs = new FileStream(f, FileMode.Create))
-                    {
-                        fs.Write(bs, 0, bs.Length);
-                    }
-                    Console.WriteLine(f);
-                }
-            }
-            return;
+            //var codeHelper = new DrawVerifyCode();
+            //var path = "d:\\data_vin_bg_1";
+            //new DirectoryInfo(path).CreateIfNotExist();
+            //for (var i = 500; i < 1000; ++i)
+            //{
+            //    var p = Path.Combine(path, $"data_{i}");
+            //    new DirectoryInfo(p).CreateIfNotExist();
+            //    for (var j = 0; j < 1000; ++j)
+            //    {
+            //        var (bs, with, height) = codeHelper.GetImageBytesAndSize();
+            //        var f = Path.Combine(p, $"{codeHelper.Code}_{Com.GetUUID()}.png");
+            //        using (var fs = new FileStream(f, FileMode.Create))
+            //        {
+            //            fs.Write(bs, 0, bs.Length);
+            //        }
+            //        Console.WriteLine(f);
+            //    }
+            //}
+            //return;
 
-            var server = new WebSocketServer("ws://0.0.0.0:8181");
-            server.Start(socket =>
             {
-                socket.OnOpen = () => { Console.WriteLine("Open"); };
-                socket.OnClose = () => { Console.WriteLine("Close"); };
-                socket.OnMessage = async msg => { await socket.Send(msg); };
-            });
-            Console.ReadLine();
+
+            }
+
+            {
+                var server = new WebSocketServer("ws://0.0.0.0:8181");
+                server.Start(socket =>
+                {
+                    socket.OnOpen = () =>
+                    {
+                        Console.WriteLine($"{socket.ConnectionInfo.Id}:Open");
+                        var valid = false;
+                        if (!valid)
+                        {
+                            socket.Send(new { close = true, reason = "验证未通过" }.ToJson());
+                            socket.Close();
+                        }
+                    };
+                    socket.OnClose = () => { Console.WriteLine("Close"); };
+                    socket.OnMessage = async msg => { await socket.Send(msg); };
+                });
+                Console.ReadLine();
+                server.Dispose();
+            }
         }
 
         private static readonly string indexName = "productlist";
@@ -141,7 +157,7 @@ namespace ConsoleApp
         }
 
     }
-    
+
     [ElasticsearchType(IdProperty = "Path", Name = "diskfileindex")]
     public class DiskFileIndex : IElasticSearchIndex
     {
