@@ -875,7 +875,18 @@ namespace Lib.helper
         public static int? CheckPage(int? page)
         {
             page = page ?? 1;
-            return (page < 1) ? 1 : page;
+            return page < 1 ? 1 : page;
+        }
+
+        /// <summary>
+        /// 检查页面大小范围，并修正后返回
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static int? CheckPageSize(int? size)
+        {
+            size = size ?? 10;
+            return size < 1 ? 10 : size;
         }
 
         /// <summary>

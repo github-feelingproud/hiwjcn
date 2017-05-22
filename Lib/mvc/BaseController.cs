@@ -27,10 +27,10 @@ namespace Lib.mvc
         }
 
         [NonAction]
-        protected int? CheckPage(int? page)
-        {
-            return Com.CheckPage(page);
-        }
+        protected int? CheckPage(int? page) => Com.CheckPage(page);
+
+        [NonAction]
+        protected int? CheckPageSize(int? size) => Com.CheckPageSize(size);
 
         #region 返回结果
         /// <summary>
@@ -69,13 +69,19 @@ namespace Lib.mvc
         /// <summary>
         /// 获取json
         /// </summary>
-        /// <param name="obj"></param>
+        [NonAction]
+        public ActionResult GetJson(object obj, JsonRequestBehavior behavior = JsonRequestBehavior.AllowGet)
+        {
+            return Json(obj, behavior);
+        }
+
+        /// <summary>
+        /// 判断是否成功
+        /// </summary>
+        /// <param name="msg"></param>
         /// <returns></returns>
         [NonAction]
-        public ActionResult GetJson(object obj)
-        {
-            return Json(obj, JsonRequestBehavior.AllowGet);
-        }
+        public bool IsSuccess(string msg) => !ValidateHelper.IsPlumpString(msg);
 
         /// <summary>
         /// 获取默认的json
@@ -85,7 +91,7 @@ namespace Lib.mvc
         [NonAction]
         public ActionResult GetJsonRes(string errmsg)
         {
-            return GetJson(new _() { success = !ValidateHelper.IsPlumpString(errmsg), msg = errmsg });
+            return GetJson(new _() { success = IsSuccess(errmsg), msg = errmsg });
         }
 
         /// <summary>
@@ -225,9 +231,7 @@ namespace Lib.mvc
         {
             return RunAction(() =>
             {
-                var data = TryGetLoginUser();
-                var loginuser = data.Item1;
-                var error = data.Item2;
+                var (loginuser, error) = TryGetLoginUser();
                 if (error != null)
                 {
                     return error;
@@ -247,9 +251,7 @@ namespace Lib.mvc
         {
             return await RunActionAsync(async () =>
             {
-                var data = TryGetLoginUser();
-                var loginuser = data.Item1;
-                var error = data.Item2;
+                var (loginuser, error) = TryGetLoginUser();
                 if (error != null)
                 {
                     return error;
@@ -260,7 +262,7 @@ namespace Lib.mvc
         }
 
         [NonAction]
-        private Tuple<LoginUserInfo, ActionResult> TryGetLoginUser()
+        private (LoginUserInfo loginuser, ActionResult res) TryGetLoginUser()
         {
             LoginUserInfo loginuser = null;
             //尝试通过token获取登陆用户
@@ -280,13 +282,13 @@ namespace Lib.mvc
             {
                 if (NoLoginResult != null)
                 {
-                    return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, NoLoginResult);
+                    return (loginuser, NoLoginResult);
                 }
                 else
                 {
                     //没有登陆就跳转登陆
                     var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(this.X.Url);
-                    return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, new RedirectResult(redirect_url));
+                    return (loginuser, new RedirectResult(redirect_url));
                 }
             }
             //所需要的全部权限值
@@ -297,15 +299,15 @@ namespace Lib.mvc
                 {
                     if (NoPermissionResult != null)
                     {
-                        return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, NoPermissionResult);
+                        return (loginuser, NoPermissionResult);
                     }
                     else
                     {
-                        return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, Http403());
+                        return (loginuser, Http403());
                     }
                 }
             }
-            return Tuple.Create<LoginUserInfo, ActionResult>(loginuser, null);
+            return (loginuser, null);
         }
 
         #endregion
