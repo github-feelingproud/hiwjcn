@@ -38,7 +38,7 @@ namespace Lib.core
             try
             {
                 //redis
-                RedisClientManager.Instance.Dispose();
+                RedisClientManager.Instance?.Dispose();
             }
             catch (Exception e)
             {
@@ -48,7 +48,7 @@ namespace Lib.core
             try
             {
                 //关闭rabbitmq
-                RabbitMQClientManager.Instance.Dispose();
+                RabbitMQClientManager.Instance?.Dispose();
             }
             catch (Exception e)
             {
@@ -58,7 +58,7 @@ namespace Lib.core
             try
             {
                 //关闭ES搜索
-                ElasticsearchClientManager.Instance.Dispose();
+                ElasticsearchClientManager.Instance?.Dispose();
             }
             catch (Exception e)
             {
@@ -68,7 +68,7 @@ namespace Lib.core
             try
             {
                 //zookeeper
-                ZooKeeperClientManager.Instance.Dispose();
+                ZooKeeperClientManager.Instance?.Dispose();
             }
             catch (Exception e)
             {

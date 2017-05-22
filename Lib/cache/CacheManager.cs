@@ -15,14 +15,7 @@ namespace Lib.cache
         /// 获取缓存组件
         /// </summary>
         /// <returns></returns>
-        public static ICacheProvider CacheProvider()
-        {
-            if (!AppContext.IsRegistered<ICacheProvider>())
-            {
-                return new MemoryCacheProvider();
-            }
-            return AppContext.GetObject<ICacheProvider>();
-        }
+        public static ICacheProvider CacheProvider() => AppContext.GetObject<ICacheProvider>();
 
         /// <summary>
         /// 如果使用缓存：如果缓存中有，就直接取。如果没有就先获取并加入缓存
