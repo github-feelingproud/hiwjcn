@@ -16,6 +16,16 @@ namespace Hiwjcn.Test
     public class UnitTest6
     {
         [TestMethod]
+        public void nishishabi()
+        {
+            if (int.TryParse("lala", out var res))
+            {
+                Console.WriteLine(res.GetType().ToString());
+            }
+            Console.WriteLine(res.GetType().ToString());
+        }
+
+        [TestMethod]
         public void fasdfajlkjkhfasdjhf()
         {
             using (var con = new SqlConnection("User Iout=20"))

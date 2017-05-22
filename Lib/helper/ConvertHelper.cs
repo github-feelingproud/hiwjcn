@@ -86,7 +86,7 @@ namespace Lib.helper
             {
                 return res;
             }
-            return deft ?? throw new ArgumentException();
+            return deft ?? throw new ArgumentException($"{obj}无法转为{res.GetType()}");
         }
         /// <summary>
         /// 转换为int64类型
@@ -100,7 +100,7 @@ namespace Lib.helper
             {
                 return res;
             }
-            return deft ?? throw new ArgumentException();
+            return deft ?? throw new ArgumentException($"{obj}无法转为{res.GetType()}");
         }
         /// <summary>
         /// 获取float类型
@@ -114,7 +114,7 @@ namespace Lib.helper
             {
                 return res;
             }
-            return deft ?? throw new ArgumentException();
+            return deft ?? throw new ArgumentException($"{obj}无法转为{res.GetType()}");
         }
         /// <summary>
         /// 获取long类型
@@ -128,7 +128,7 @@ namespace Lib.helper
             {
                 return res;
             }
-            return deft ?? throw new ArgumentException();
+            return deft ?? throw new ArgumentException($"{obj}无法转为{res.GetType()}");
         }
         /// <summary>
         /// 获取double类型
@@ -142,7 +142,7 @@ namespace Lib.helper
             {
                 return res;
             }
-            return deft ?? throw new ArgumentException();
+            return deft ?? throw new ArgumentException($"{obj}无法转为{res.GetType()}");
         }
         /// <summary>
         /// 获取decimal类型，常常用于货币
@@ -156,23 +156,37 @@ namespace Lib.helper
             {
                 return res;
             }
-            return deft ?? throw new ArgumentException();
+            return deft ?? throw new ArgumentException($"{obj}无法转为{res.GetType()}");
         }
         #endregion
 
         #region 日期转换
-        public static DateTime GetDateTime(object obj, DateTime deft)
+
+        /// <summary>
+        /// 转换为日期格式
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="deft"></param>
+        /// <returns></returns>
+        public static DateTime GetDateTime(object obj, DateTime? deft)
         {
-            if (DateTime.TryParse(GetString(obj), out var dt))
+            if (DateTime.TryParse(GetString(obj), out var res))
             {
-                return dt;
+                return res;
             }
-            return deft;
+            return deft ?? throw new ArgumentException($"{obj}无法转为{res.GetType()}");
         }
+
+        /// <summary>
+        /// 转换为日期格式
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static DateTime GetDateTime(object obj)
         {
             return GetDateTime(obj, DateTime.Now);
         }
+
         #endregion
 
         #region 图片转换

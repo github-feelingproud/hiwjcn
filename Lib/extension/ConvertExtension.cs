@@ -12,20 +12,25 @@ namespace Lib.extension
         /// <summary>
         /// 转换为整型
         /// </summary>
-        /// <param name="data">数据</param>
-        public static int ToInt(this string data)
+        public static int ToInt(this string data, int? deft = default(int))
         {
-            return ConvertHelper.GetInt(data);
+            return ConvertHelper.GetInt(data, deft);
+        }
+
+        /// <summary>
+        /// 转为float
+        /// </summary>
+        public static float ToFloat(this string data, float? deft = default(float))
+        {
+            return ConvertHelper.GetFloat(data, deft);
         }
 
         /// <summary>
         /// 转换为双精度浮点数,并按指定的小数位4舍5入
         /// </summary>
-        /// <param name="data">数据</param>
-        /// <param name="digits">小数位数</param>
-        public static double ToDouble(this string data, int? digits = null)
+        public static double ToDouble(this string data, int? digits = null, double? deft = default(double))
         {
-            var db = ConvertHelper.GetDouble(data);
+            var db = ConvertHelper.GetDouble(data, deft);
             if (digits != null)
             {
                 return Math.Round(db, digits.Value);
@@ -36,11 +41,9 @@ namespace Lib.extension
         /// <summary>
         /// 转换为高精度浮点数,并按指定的小数位4舍5入
         /// </summary>
-        /// <param name="data">数据</param>
-        /// <param name="digits">小数位数</param>
-        public static decimal ToDecimal(this string data, int? digits = null)
+        public static decimal ToDecimal(this string data, int? digits = null, decimal? deft = default(decimal))
         {
-            var dec = ConvertHelper.GetDecimal(data);
+            var dec = ConvertHelper.GetDecimal(data, deft);
             if (digits != null)
             {
                 return Math.Round(dec, digits.Value);
@@ -51,10 +54,17 @@ namespace Lib.extension
         /// <summary>
         /// 转换为日期
         /// </summary>
-        /// <param name="data">数据</param>
-        public static DateTime ToDate(this string data)
+        public static DateTime ToDateTime(this string data, DateTime? deft)
         {
-            return ConvertHelper.GetDateTime(data, DateTime.Now);
+            return ConvertHelper.GetDateTime(data, deft);
+        }
+
+        /// <summary>
+        /// 转为日期，默认值为当前时间
+        /// </summary>
+        public static DateTime ToDateTime(this string data)
+        {
+            return data.ToDateTime(DateTime.Now);
         }
 
         /// <summary>
