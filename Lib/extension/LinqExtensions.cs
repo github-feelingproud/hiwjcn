@@ -41,6 +41,16 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 获取记录总数和分页总数
+        /// </summary>
+        public static (int item_count, int page_count) QueryRowCountAndPageCount<T>(this IQueryable<T> query, int page_size)
+        {
+            var item_count = query.Count();
+            var page_count = PagerHelper.GetPageCount(item_count, page_size);
+            return (item_count, page_count);
+        }
+
+        /// <summary>
         /// take别名
         /// </summary>
         /// <typeparam name="T"></typeparam>
