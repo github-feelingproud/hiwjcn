@@ -355,10 +355,7 @@ namespace Lib.helper
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static bool IsPlumpList<T>(IList<T> list)
-        {
-            return list?.Count > 0;
-        }
+        public static bool IsPlumpList<T>(IList<T> list) => list?.Count > 0;
 
         /// <summary>
         /// 判断是否是有值的字典
@@ -367,30 +364,21 @@ namespace Lib.helper
         /// <typeparam name="V"></typeparam>
         /// <param name="dict"></param>
         /// <returns></returns>
-        public static bool IsPlumpDict<K, V>(IDictionary<K, V> dict)
-        {
-            return dict?.Count > 0;
-        }
+        public static bool IsPlumpDict<K, V>(IDictionary<K, V> dict) => dict?.Count > 0;
 
         /// <summary>
         /// 去除两端空格后判断是否是非空字符串
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool IsPlumpStringAfterTrim(string str)
-        {
-            return str?.Trim()?.Length > 0;
-        }
+        public static bool IsPlumpStringAfterTrim(string str) => str?.Trim()?.Length > 0;
 
         /// <summary>
         /// 判断是否是非空字符串
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool IsPlumpString(string str)
-        {
-            return str?.Length > 0;
-        }
+        public static bool IsPlumpString(string str) => str?.Length > 0;
 
         /// <summary>
         /// 判断是否都是非空字符串
@@ -399,8 +387,8 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsAllPlumpString(params string[] strs)
         {
-            if (!IsPlumpList(strs)) { return false; }
-            return strs.All(x => x?.Length > 0);
+            if (!IsPlumpList(strs)) { throw new Exception("至少需要一个参数"); }
+            return strs.All(x => IsPlumpString(x));
         }
 
         /// <summary>
@@ -410,8 +398,8 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsAnyPlumpString(params string[] strs)
         {
-            if (!IsPlumpList(strs)) { return false; }
-            return strs.Any(x => x?.Length > 0);
+            if (!IsPlumpList(strs)) { throw new Exception("至少需要一个参数"); }
+            return strs.Any(x => IsPlumpString(x));
         }
         #endregion
 
@@ -424,8 +412,8 @@ namespace Lib.helper
         /// <returns></returns>
         public static bool IsLenInRange(string str, int min, int max)
         {
-            str = ConvertHelper.GetString(str);
-            return str.Length >= min && str.Length <= max;
+            var len = str?.Length ?? 0;
+            return len >= min && len <= max;
         }
 
         /// <summary>
@@ -438,7 +426,7 @@ namespace Lib.helper
         public static bool HasInterSection<T>(IList<T> a, IList<T> b)
         {
             if (!IsPlumpList(a) || !IsPlumpList(b)) { return false; }
-            return a.Count(x => b.Contains(x)) > 0;
+            return a.Any(x => b.Contains(x));
         }
 
         /// <summary>
