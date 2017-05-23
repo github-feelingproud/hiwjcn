@@ -279,15 +279,34 @@ namespace Lib.extension
 
         /// <summary>
         /// 怎么通过距离筛选，请看源代码
+        /// ES空间搜索
         /// </summary>
         /// <param name="qc"></param>
         public static void HowToFilterByDistance(this QueryContainer qc)
         {
+            qc = qc && new GeoBoundingBoxQuery()
+            {
+                Field = "name",
+                BoundingBox = new BoundingBox()
+                {
+                    TopLeft = new GeoLocation(212, 32),
+                    BottomRight = new GeoLocation(43, 56)
+                }
+            };
             qc = qc && new GeoDistanceRangeQuery()
             {
                 Field = "Field Name",
                 Location = new GeoLocation(32, 43),
                 LessThanOrEqualTo = Distance.Kilometers(1)
+            };
+            qc = qc && new GeoShapeCircleQuery()
+            {
+                Field = "name",
+                Shape = new CircleGeoShape()
+                {
+                    Coordinates = new GeoCoordinate(324, 535)
+                },
+                Relation = GeoShapeRelation.Within
             };
         }
     }
@@ -632,6 +651,12 @@ namespace Lib.extension
 
             [String(Name = "ProductAttributes", Index = FieldIndexOption.NotAnalyzed)]
             public string[] ProductAttributes { get; set; }
+
+            [GeoPoint(Name = nameof(Location), LatLon = true, GeoHash = true, Validate = true)]
+            public GeoLocation Location { get; set; }
+
+            [GeoShape(Name = nameof(Area))]
+            public GeoLocation Area { get; set; }
         }
 
         public class SearchParamModel
