@@ -18,21 +18,21 @@ namespace Lib.mvc.user
         string COOKIE_DOMAIN { get; }
         //cookie过期的时间
         int CookieExpiresMinutes { get; }
-        
+
         string GetCookieUID(HttpContext context = null);
 
         string GetCookieToken(HttpContext context = null);
-        
+
         void SetUserLogin(HttpContext context = null, LoginUserInfo loginuser = null);
-        
+
         void SetUserLogout(HttpContext context = null);
-        
+
         void DeleteExtraCookie(HttpContext context = null);
-        
+
         void DeleteCookie(HttpContext context = null, bool cookies_with_domain = true);
-        
+
         LoginUserInfo GetLoginUser(HttpContext context = null);
-        
+
     }
 
     /// <summary>
@@ -206,13 +206,7 @@ namespace Lib.mvc.user
         /// 获取上下文
         /// </summary>
         /// <returns></returns>
-        private HttpContext GetContext(HttpContext _context)
-        {
-            if (_context != null) { return _context; }
-            var context = System.Web.HttpContext.Current;
-            if (context == null) { throw new Exception("无法获取上下文对象"); }
-            return context;
-        }
+        private HttpContext GetContext(HttpContext _context) => Com.TryGetContext(_context);
     }
 
     /// <summary>

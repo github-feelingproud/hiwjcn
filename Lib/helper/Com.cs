@@ -18,6 +18,19 @@ namespace Lib.helper
     public static class Com
     {
         /// <summary>
+        /// 尝试获取请求上下文
+        /// </summary>
+        /// <param name="_context"></param>
+        /// <returns></returns>
+        public static HttpContext TryGetContext(HttpContext _context)
+        {
+            if (_context != null) { return _context; }
+            var context = System.Web.HttpContext.Current;
+            if (context == null) { throw new Exception("无法获取上下文对象"); }
+            return context;
+        }
+
+        /// <summary>
         /// 把对象可读属性读出来变成字典
         /// </summary>
         /// <param name="data"></param>

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
+using Lib.extension;
+using System.Diagnostics;
 
 namespace Lib.helper
 {
@@ -30,7 +33,7 @@ namespace Lib.helper
         {
             get
             {
-                if (this.PageSize < 1) { return 0; }
+                if (this.PageSize < 1) { return -1; }
                 return PagerHelper.GetPageCount(this.ItemCount, this.PageSize);
             }
         }
@@ -63,12 +66,32 @@ namespace Lib.helper
         /// <summary>
         /// 分页控件的html代码
         /// </summary>
-        public string GetPagerHtml(string base_url, string pageKey, int currentPage, int pageSize)
+        public string GetPagerHtml(
+            string base_url, string pageKey,
+            int currentPage, int pageSize,
+            HttpContext _context = null)
         {
+            if (!ValidateHelper.IsPlumpDict(this.UrlParams))
+            {
+                try
+                {
+                    var context = Com.TryGetContext(_context);
+
+                    var kv = context.Request.QueryString.ToDict()
+                        .Where(x => ValidateHelper.IsPlumpString(x.Key) && x.Key.ToLower() != pageKey.ToLower())
+                        .ToDictionary(x => x.Key, x => ConvertHelper.GetString(x.Value));
+                    this.UrlParams.AddDict(kv);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
+            }
+
             return PagerHelper.GetPagerHtmlByData(
                 url: base_url,
                 pageKey: pageKey,
-                urlParams: UrlParams,
+                urlParams: this.UrlParams,
                 itemCount: ItemCount,
                 page: currentPage,
                 pageSize: pageSize);
