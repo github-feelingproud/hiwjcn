@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Lib.mvc.attr
@@ -21,6 +22,7 @@ namespace Lib.mvc.attr
         /// 配置文件里的key
         /// </summary>
         public string ConfigKey { get; set; } = "sign_key";
+        public string SignKey { get; set; } = "sign";
 
         /// <summary>
         /// 时间戳误差
@@ -29,18 +31,17 @@ namespace Lib.mvc.attr
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var sign_key = ConfigurationManager.AppSettings[ConfigKey];
-            if (!ValidateHelper.IsPlumpString(sign_key)) { throw new Exception($"没有配置签名的约定key({ConfigKey})"); }
+            var salt = ConfigurationManager.AppSettings[ConfigKey];
+            if (!ValidateHelper.IsPlumpString(salt)) { throw new Exception($"没有配置签名的约定key({ConfigKey})"); }
+            var context = HttpContext.Current;
 
-            var reqparams = new NameValueCollection();
-            NameValueCollectionHelper.AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.Form);
-            NameValueCollectionHelper.AddToNameValueCollection(ref reqparams, filterContext.HttpContext.Request.QueryString);
+            var allparams = context.PostAndGet();
 
             var disable_timestamp_check = ConvertHelper.GetString(ConfigurationManager.AppSettings["disable_timestamp_check"]).ToBool();
             if (!disable_timestamp_check)
             {
                 #region 验证时间戳
-                var timestamp = ConvertHelper.GetInt64(reqparams["timestamp"], -1);
+                var timestamp = ConvertHelper.GetInt64(allparams["timestamp"], -1);
                 if (timestamp < 0)
                 {
                     filterContext.Result = ResultHelper.BadRequest("缺少时间戳");
@@ -61,37 +62,23 @@ namespace Lib.mvc.attr
             }
 
             #region 验证签名
-            var signKey = "sign";
-            var sign = ConvertHelper.GetString(reqparams[signKey]).ToUpper();
+            var sign = ConvertHelper.GetString(allparams[SignKey]).ToUpper();
             if (!ValidateHelper.IsAllPlumpString(sign))
             {
                 filterContext.Result = ResultHelper.BadRequest("请求被拦截，获取不到签名");
                 return;
             }
 
-            //排序的字典
-            var dict = new SortedDictionary<string, string>(new MyStringComparer());
+            var reqparams = SignHelper.FilterAndSort(allparams, SignKey);
+            var (md5, sign_data) = SignHelper.CreateSign(reqparams, salt);
 
-            foreach (var p in reqparams.AllKeys)
-            {
-                if (!ValidateHelper.IsAllPlumpString(p) || p == signKey) { continue; }
-                if (p.Length > 32 || reqparams[p]?.Length > 32) { continue; }
-
-                dict[p] = ConvertHelper.GetString(reqparams[p]);
-            }
-
-            var strdata = dict.ToUrlParam();
-            strdata += sign_key;
-            strdata = strdata.ToLower();
-
-            var md5 = strdata.ToMD5().ToUpper();
             if (sign != md5)
             {
                 filterContext.Result = ResultHelper.BadRequest("签名错误", new
                 {
                     client_sign = md5,
                     server_sign = sign,
-                    server_order = strdata
+                    server_order = sign_data
                 });
                 return;
             }
