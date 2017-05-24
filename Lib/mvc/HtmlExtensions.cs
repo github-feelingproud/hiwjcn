@@ -40,5 +40,34 @@ namespace Lib.mvc
             return MvcHtmlString.Create(html);
         }
 
+        /// <summary>
+        /// 生成下拉框html
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="value"></param>
+        /// <param name="name"></param>
+        /// <param name="selected_value"></param>
+        /// <returns></returns>
+        public static MvcHtmlString RenderOptions<T>(this List<T> list,
+            Func<T, string> value, Func<T, string> name, string selected_value = null)
+        {
+            var html = new StringBuilder();
+            foreach (var m in list)
+            {
+                var v = EncodingHelper.HtmlEncode(ConvertHelper.GetString(value(m)));
+                var n = EncodingHelper.HtmlEncode(ConvertHelper.GetString(name(m)));
+                if (v == selected_value)
+                {
+                    html.Append($"<option value=\"{v}\" selected=\"selected\">{n}</option>");
+                }
+                else
+                {
+                    html.Append($"<option value=\"{v}\">{n}</option>");
+                }
+            }
+            return MvcHtmlString.Create(html.ToString());
+        }
+
     }
 }

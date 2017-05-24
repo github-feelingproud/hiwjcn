@@ -24,7 +24,7 @@ namespace Lib.extension
             {
                 if (response.ServerError?.Error != null)
                 {
-                    var msg = $"server errors:{response.ServerError.Error.ToJson()}";
+                    var msg = $@"server errors:{response.ServerError.Error.ToJson()},debug information:{response.DebugInformation}";
                     throw new Exception(msg);
                 }
                 if (response.OriginalException != null)
@@ -309,6 +309,21 @@ namespace Lib.extension
                 Relation = GeoShapeRelation.Within
             };
         }
+
+        public static void HowToUseAggregationsInES(this SearchDescriptor<EsExample.ProductListV2> sd)
+        {
+            var agg = new AggregationContainer();
+            agg = new SumAggregation("", Field.Create("")) && new AverageAggregation("", Field.Create(""));
+
+            sd = sd.Aggregations(a => a.Max("max", x => x.Field(m => m.IsGroup)));
+            sd = sd.Aggregations(a => a.Stats("stats", x => x.Field(m => m.BrandId).Field(m => m.PIsRemove)));
+
+            var response = ElasticsearchHelper.CreateClient().Search<EsExample.ProductListV2>(x => sd);
+
+            var stats = response.Aggs.Stats("stats");
+            //etc
+        }
+
     }
 
     /// <summary>
@@ -550,6 +565,8 @@ namespace Lib.extension
                 sd = sd.QueryPage_(model.page, model.pagesize);
 
                 response = client.Search<ProductListV2>(x => sd);
+
+                var mx = response.Aggs.Max("");
 
                 return true;
             });
