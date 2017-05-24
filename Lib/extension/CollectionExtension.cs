@@ -40,7 +40,7 @@ namespace Lib.extension
             var dict = new Dictionary<string, string>();
             foreach (var key in col.AllKeys)
             {
-                if (key == null) { continue; }
+                if (!ValidateHelper.IsPlumpString(key)) { continue; }
                 dict[key] = col[key];
             }
             return dict;

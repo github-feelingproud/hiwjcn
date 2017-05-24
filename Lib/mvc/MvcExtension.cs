@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Lib.extension;
 
 namespace Lib.mvc
 {
@@ -83,6 +84,18 @@ namespace Lib.mvc
         public static bool IsSSL(this HttpRequest req)
         {
             return RequestHelper.IsSSL(req);
+        }
+
+        /// <summary>
+        /// post和get数据的合并
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> PostAndGet(this HttpContext context)
+        {
+            var dict = context.Request.Form.ToDict();
+            dict = dict.AddDict(context.Request.QueryString.ToDict());
+            return dict;
         }
     }
 }
