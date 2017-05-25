@@ -34,6 +34,7 @@ namespace Lib.mvc.user
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            var context = HttpContext.Current;
             var loginuser = GetLoginStatus().GetLoginUser(context);
             //==============================================================================
 

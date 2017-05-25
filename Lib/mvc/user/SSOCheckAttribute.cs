@@ -34,6 +34,8 @@ namespace Lib.mvc.user
         {
             SSOClientHelper.CheckSSOConfig();
 
+            var context = HttpContext.Current;
+
             var _loginstatus = this.GetLoginStatus();
 
             var loginuser = _loginstatus.GetLoginUser(context);
@@ -54,10 +56,6 @@ namespace Lib.mvc.user
                 var login_url = SSOClientHelper.BuildSSOLoginUrl(continue_url);
                 if (this.NoLoginResultAsInterface)
                 {
-                    filterContext.Result = new RedirectResult(login_url);
-                }
-                else
-                {
                     filterContext.Result = GetJson(new _()
                     {
                         success = false,
@@ -65,6 +63,10 @@ namespace Lib.mvc.user
                         data = new { sso_login = login_url },
                         code = "-999"
                     });
+                }
+                else
+                {
+                    filterContext.Result = new RedirectResult(login_url);
                 }
                 return;
             }

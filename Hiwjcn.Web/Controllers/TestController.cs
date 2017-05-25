@@ -315,7 +315,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        //[PermissionVerify()]
+        [PermissionVerify()]
         public ActionResult WJ()
         {
             var str = Com.GetUUID();

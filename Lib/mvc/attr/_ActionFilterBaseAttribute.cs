@@ -10,13 +10,12 @@ using System.Web.Mvc;
 using System.Configuration;
 using Lib.ioc;
 using Lib.mvc.user;
+using System.Web.SessionState;
 
 namespace Lib.mvc.attr
 {
     public abstract class _ActionFilterBaseAttribute : ActionFilterAttribute
     {
-        public HttpContext context = HttpContext.Current;
-        
         public abstract LoginStatus GetLoginStatus();
 
         protected ActionResult GetJson(object data)
