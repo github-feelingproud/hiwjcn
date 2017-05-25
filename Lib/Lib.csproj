@@ -282,6 +282,7 @@
     <Compile Include="mvc\attr\SetEncodingAttribute.cs" />
     <Compile Include="mvc\attr\ValidateSignAttribute.cs" />
     <Compile Include="mvc\attr\ValidCSRFAttribute.cs" />
+    <Compile Include="mvc\attr\_ActionFilterBaseAttribute.cs" />
     <Compile Include="mvc\CookieHelper.cs" />
     <Compile Include="mvc\MvcExtension.cs" />
     <Compile Include="mvc\plugin\BasePaymentController.cs" />
@@ -326,6 +327,7 @@
     <Compile Include="mvc\MySQLSessionProvider.cs" />
     <Compile Include="mvc\user\PermissionVerifyAttribute.cs" />
     <Compile Include="mvc\ResultBundle.cs" />
+    <Compile Include="mvc\user\SSOCheckAttribute.cs" />
     <Compile Include="mvc\user\SSOClientHelper.cs" />
     <Compile Include="mvc\WebWorkContext.cs" />
     <Compile Include="net\HttpClientHelper.cs" />

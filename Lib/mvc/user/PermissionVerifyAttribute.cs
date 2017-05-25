@@ -7,27 +7,34 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Configuration;
 using Lib.ioc;
+using Lib.mvc.attr;
 
 namespace Lib.mvc.user
 {
     /// <summary>
     /// 验证用户权限
     /// </summary>
-    public class PermissionVerifyAttribute : ActionFilterAttribute
+    public class PermissionVerifyAttribute : _ActionFilterBaseAttribute
     {
-        public string ReDirectUrl { get; set; }
-
+        /// <summary>
+        /// 没有权限跳转的URL
+        /// </summary>
+        public string NoPermissionUrl { get; set; }
+        /// <summary>
+        /// 权限检查
+        /// </summary>
         public string Permission { get; set; }
+
+        public override LoginStatus GetLoginStatus()
+        {
+            return AppContext.GetObject<LoginStatus>();
+        }
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            SSOClientHelper.CheckSSOConfig();
-
-            var context = HttpContext.Current;
-
-            var loginuser = AppContext.GetObject<LoginStatus>().GetLoginUser(context);
-
+            var loginuser = GetLoginStatus().GetLoginUser(context);
             //==============================================================================
 
             if (loginuser == null)
@@ -38,32 +45,19 @@ namespace Lib.mvc.user
             //验证权限
             if (Permission?.Length > 0)
             {
-                foreach (var p in Permission.Split(',').Where(x => x?.Length > 0))
+                if (Permission.Split(',').Where(x => x?.Length > 0).Any(x => !loginuser.HasPermission(x)))
                 {
-                    if (!loginuser.HasPermission(p))
+                    if (NoPermissionUrl?.Length > 0)
                     {
-                        if (ReDirectUrl?.Length > 0)
-                        {
-                            filterContext.Result = new RedirectResult(ReDirectUrl);
-                        }
-                        else
-                        {
-                            filterContext.Result = GetJson(new _() { success = false, msg = "没有权限" });
-                        }
-                        return;
+                        filterContext.Result = new RedirectResult(NoPermissionUrl);
                     }
+                    else
+                    {
+                        filterContext.Result = GetJson(new _() { success = false, msg = "没有权限" });
+                    }
+                    return;
                 }
             }
-        }
-
-
-        private ActionResult GetJson(object data)
-        {
-            return new JsonResult()
-            {
-                Data = data,
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet
-            };
         }
     }
 }

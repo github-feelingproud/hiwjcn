@@ -37,10 +37,10 @@ namespace Lib.mvc.attr
 
             var allparams = context.PostAndGet();
 
+            #region 验证时间戳
             var disable_timestamp_check = ConvertHelper.GetString(ConfigurationManager.AppSettings["disable_timestamp_check"]).ToBool();
             if (!disable_timestamp_check)
             {
-                #region 验证时间戳
                 var timestamp = ConvertHelper.GetInt64(allparams["timestamp"], -1);
                 if (timestamp < 0)
                 {
@@ -58,29 +58,33 @@ namespace Lib.mvc.attr
                     });
                     return;
                 }
-                #endregion
             }
+            #endregion
 
             #region 验证签名
-            var sign = ConvertHelper.GetString(allparams[SignKey]).ToUpper();
-            if (!ValidateHelper.IsAllPlumpString(sign))
+            var disable_sign_check = ConvertHelper.GetString(ConfigurationManager.AppSettings["disable_sign_check"]).ToBool();
+            if (!disable_sign_check)
             {
-                filterContext.Result = ResultHelper.BadRequest("请求被拦截，获取不到签名");
-                return;
-            }
-
-            var reqparams = SignHelper.FilterAndSort(allparams, SignKey);
-            var (md5, sign_data) = SignHelper.CreateSign(reqparams, salt);
-
-            if (sign != md5)
-            {
-                filterContext.Result = ResultHelper.BadRequest("签名错误", new
+                var sign = ConvertHelper.GetString(allparams[SignKey]).ToUpper();
+                if (!ValidateHelper.IsAllPlumpString(sign))
                 {
-                    client_sign = md5,
-                    server_sign = sign,
-                    server_order = sign_data
-                });
-                return;
+                    filterContext.Result = ResultHelper.BadRequest("请求被拦截，获取不到签名");
+                    return;
+                }
+
+                var reqparams = SignHelper.FilterAndSort(allparams, SignKey, new MyStringComparer());
+                var (md5, sign_data) = SignHelper.CreateSign(reqparams, salt);
+
+                if (sign != md5)
+                {
+                    filterContext.Result = ResultHelper.BadRequest("签名错误", new
+                    {
+                        client_sign = md5,
+                        server_sign = sign,
+                        server_order = sign_data
+                    });
+                    return;
+                }
             }
             #endregion
 

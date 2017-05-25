@@ -4,6 +4,7 @@ using Lib.helper;
 using Lib.ioc;
 using Lib.mvc.user;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -292,19 +293,15 @@ namespace Lib.mvc
                 }
             }
             //所需要的全部权限值
-            foreach (var per in ConvertHelper.NotNullList(PermissionList))
+            if (ConvertHelper.NotNullList(PermissionList).Any(x => !loginuser.HasPermission(x)))
             {
-                //只要没有满足一个权限就返回错误值
-                if (!loginuser.HasPermission(per))
+                if (NoPermissionResult != null)
                 {
-                    if (NoPermissionResult != null)
-                    {
-                        return (loginuser, NoPermissionResult);
-                    }
-                    else
-                    {
-                        return (loginuser, Http403());
-                    }
+                    return (loginuser, NoPermissionResult);
+                }
+                else
+                {
+                    return (loginuser, Http403());
                 }
             }
             return (loginuser, null);

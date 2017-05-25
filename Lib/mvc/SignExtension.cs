@@ -17,10 +17,7 @@ namespace Lib.mvc
         /// <summary>
         /// 筛选+排序
         /// </summary>
-        /// <param name="dict"></param>
-        /// <param name="sign_key"></param>
-        /// <returns></returns>
-        public static SortedDictionary<string, string> FilterAndSort(Dictionary<string, string> dict, string sign_key)
+        public static SortedDictionary<string, string> FilterAndSort(Dictionary<string, string> dict, string sign_key, IComparer<string> comparer)
         {
             Func<KeyValuePair<string, string>, bool> filter = x =>
             {
@@ -35,7 +32,7 @@ namespace Lib.mvc
             };
             var filtered = dict.Where(x => filter(x)).ToDictionary(x => x.Key, x => ConvertHelper.GetString(x.Value));
 
-            return new SortedDictionary<string, string>(filtered, new MyStringComparer());
+            return new SortedDictionary<string, string>(filtered, comparer);
         }
 
         /// <summary>

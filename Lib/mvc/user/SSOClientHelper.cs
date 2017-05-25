@@ -1,7 +1,6 @@
 ﻿using Lib.core;
 using Lib.extension;
 using Lib.helper;
-using Lib.ioc;
 using Lib.net;
 using System;
 using System.Collections.Generic;
@@ -50,10 +49,6 @@ namespace Lib.mvc.user
         /// <summary>
         /// 这个是在client端执行
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="uid"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
         public static async Task<CheckLoginInfoData> GetCheckTokenResult(string uid, string token)
         {
             CheckSSOConfig();
@@ -67,7 +62,7 @@ namespace Lib.mvc.user
             dict["token"] = token;
 
             CheckLoginInfoData info = null;
-            
+
             var json = await HttpClientHelper.PostAsync(checkUrl, dict, 15);
             if (ValidateHelper.IsPlumpString(json))
             {
@@ -80,11 +75,7 @@ namespace Lib.mvc.user
         /// <summary>
         /// 登录回调
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="uid"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<ActionResult> GetCallBackResult(string url, string uid, string token)
+        public static async Task<ActionResult> GetCallBackResult(string url, string uid, string token, LoginStatus loginstatus)
         {
             var redirect_url = url;
             var data = await GetCheckTokenResult(uid, token);
@@ -96,7 +87,7 @@ namespace Lib.mvc.user
             {
                 if (data.data != null)
                 {
-                    AppContext.GetObject<LoginStatus>().SetUserLogin(loginuser: data.data);
+                    loginstatus.SetUserLogin(loginuser: data.data);
                     return new RedirectResult(redirect_url);
                 }
                 else
