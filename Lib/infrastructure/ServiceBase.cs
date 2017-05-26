@@ -85,25 +85,21 @@ namespace Lib.infrastructure
         /// <summary>
         /// 缓存
         /// </summary>
-        /// <typeparam name="CacheType"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="dataSource"></param>
-        /// <returns></returns>
-        protected CacheType Cache<CacheType>(string key, Func<CacheType> dataSource)
+        protected CacheType Cache<CacheType>(string key, Func<CacheType> dataSource,
+            Action OnHit = null)
         {
-            return CacheManager.Cache(key, dataSource, UseCache, CacheExpiresMinutes);
+            return CacheManager.Cache(key, dataSource,
+                UseCache: UseCache, expires_minutes: CacheExpiresMinutes, OnHit: OnHit);
         }
 
         /// <summary>
         /// 缓存
         /// </summary>
-        /// <typeparam name="CacheType"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="dataSource"></param>
-        /// <returns></returns>
-        protected async Task<CacheType> CacheAsync<CacheType>(string key, Func<Task<CacheType>> dataSource)
+        protected async Task<CacheType> CacheAsync<CacheType>(string key, Func<Task<CacheType>> dataSource,
+            Func<Task> OnHitAsync = null, Action OnHit = null)
         {
-            return await CacheManager.CacheAsync(key, dataSource, UseCache, CacheExpiresMinutes);
+            return await CacheManager.CacheAsync(key, dataSource,
+                UseCache: UseCache, expires_minutes: CacheExpiresMinutes, OnHitAsync: OnHitAsync, OnHit: OnHit);
         }
 
         /// <summary>

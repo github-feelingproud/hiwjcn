@@ -12,19 +12,16 @@ namespace Lib.cache
         /// <summary>
         /// 缓存逻辑
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="cacheManager"></param>
-        /// <param name="key"></param>
-        /// <param name="dataSource"></param>
-        /// <param name="expire"></param>
-        /// <returns></returns>
-        public static T GetOrSet<T>(this ICacheProvider cacheManager, string key, Func<T> dataSource, TimeSpan expire)
+        public static T GetOrSet<T>(this ICacheProvider cacheManager,
+            string key, Func<T> dataSource, TimeSpan expire, Action OnHit = null)
         {
             try
             {
                 var cache = cacheManager.Get<T>(key);
                 if (cache.Success)
                 {
+                    OnHit?.Invoke();
+
                     return cache.Result;
                 }
                 var data = dataSource.Invoke();
@@ -51,20 +48,22 @@ namespace Lib.cache
         /// <summary>
         /// 异步缓存逻辑
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="cacheManager"></param>
-        /// <param name="key"></param>
-        /// <param name="dataSource"></param>
-        /// <param name="expire"></param>
-        /// <returns></returns>
-        public static async Task<T> GetOrSetAsync<T>(this ICacheProvider cacheManager, string key,
-            Func<Task<T>> dataSource, TimeSpan expire)
+        public static async Task<T> GetOrSetAsync<T>(this ICacheProvider cacheManager,
+            string key, Func<Task<T>> dataSource, TimeSpan expire,
+            Func<Task> OnHitAsync = null, Action OnHit = null)
         {
             try
             {
                 var cache = cacheManager.Get<T>(key);
                 if (cache.Success)
                 {
+                    var onhit_task = OnHitAsync?.Invoke();
+                    if (onhit_task != null)
+                    {
+                        await onhit_task;
+                    }
+                    OnHit?.Invoke();
+
                     return cache.Result;
                 }
                 var data = await dataSource.Invoke();

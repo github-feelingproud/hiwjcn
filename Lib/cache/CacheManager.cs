@@ -21,15 +21,15 @@ namespace Lib.cache
         /// 如果使用缓存：如果缓存中有，就直接取。如果没有就先获取并加入缓存
         /// 如果不使用缓存：直接从数据源取。
         /// </summary>
-        /// <returns></returns>
         public static T Cache<T>(string key, Func<T> dataSource,
-            bool UseCache = true, double expires_minutes = 3)
+            bool UseCache = true, double expires_minutes = 3, Action OnHit = null)
         {
             //如果读缓存，读到就返回
             if (UseCache)
             {
                 var cacheManager = CacheProvider();
-                return cacheManager.GetOrSet(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
+                return cacheManager.GetOrSet(key, dataSource, TimeSpan.FromMinutes(expires_minutes),
+                    OnHit: OnHit);
             }
             return dataSource.Invoke();
         }
@@ -37,20 +37,16 @@ namespace Lib.cache
         /// <summary>
         /// 异步缓存
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="dataSource"></param>
-        /// <param name="UseCache"></param>
-        /// <param name="expires_minutes"></param>
-        /// <returns></returns>
         public static async Task<T> CacheAsync<T>(string key, Func<Task<T>> dataSource,
-            bool UseCache = true, double expires_minutes = 3)
+            bool UseCache = true, double expires_minutes = 3,
+            Func<Task> OnHitAsync = null, Action OnHit = null)
         {
             //如果读缓存，读到就返回
             if (UseCache)
             {
                 var cacheManager = CacheProvider();
-                return await cacheManager.GetOrSetAsync(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
+                return await cacheManager.GetOrSetAsync(key, dataSource, TimeSpan.FromMinutes(expires_minutes),
+                    OnHitAsync: OnHitAsync, OnHit: OnHit);
             }
             return await dataSource.Invoke();
         }
