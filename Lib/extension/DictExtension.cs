@@ -38,6 +38,24 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 获取值
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dict"></param>
+        /// <param name="key"></param>
+        /// <param name="deft"></param>
+        /// <returns></returns>
+        public static V GetValueOrDefault<K, V>(this Dictionary<K, V> dict, K key, V deft = default(V))
+        {
+            if (dict.ContainsKey(key))
+            {
+                return dict[key];
+            }
+            return deft;
+        }
+
+        /// <summary>
         /// 返回元祖
         /// </summary>
         /// <typeparam name="K"></typeparam>

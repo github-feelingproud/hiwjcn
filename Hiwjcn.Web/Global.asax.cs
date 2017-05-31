@@ -47,7 +47,7 @@ namespace Hiwjcn.Web
                 start_up_task = Task.Run(() =>
                 {
                     //启动后台服务
-                    TaskManager.InitTasks();
+                    TaskManager.StartAllTasks();
                     //do something else
                 });
 
