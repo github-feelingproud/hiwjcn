@@ -94,8 +94,8 @@ namespace Lib.extension
             GetTableStructure<T>(this T model) where T : IDBTable
         {
             var t = model.GetType();
-            var pps = t.GetProperties().Where(x => x.CanRead).Where(x => !x.GetCustomAttributes<NotMappedAttribute>().Any());
-            //table
+            var pps = t.GetProperties().Where(x => x.CanRead && x.CanWrite).Where(x => !x.GetCustomAttributes<NotMappedAttribute>().Any());
+            //表名
             var table_name = t.GetCustomAttribute<TableAttribute>()?.Name ?? t.Name;
 
             //读取字段名和sql的placeholder
@@ -106,18 +106,29 @@ namespace Lib.extension
                 return (column, placeholder);
             }
 
-            //keys
+            //主键
             var key_props = pps.Where(x => x.GetCustomAttributes<KeyAttribute>().Any()).ToList();
+            if (!ValidateHelper.IsPlumpList(key_props))
+            {
+                throw new Exception("Model没有设置主键");
+            }
             var keys = key_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
 
-            //auto generated columns
-            var auto_generated_props = pps.Where(x => x.GetCustomAttributes<DatabaseGeneratedAttribute>().Any()).ToList();
+            //自动生成的字段
+            bool IsGenerated(PropertyInfo x)
+            {
+                return x.GetCustomAttributes<DatabaseGeneratedAttribute>().Where(m => m.DatabaseGeneratedOption != DatabaseGeneratedOption.None).Any();
+            }
+            var auto_generated_props = pps.Where(x => IsGenerated(x)).ToList();
             var auto_generated_columns = auto_generated_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
 
-            //common columns
+            //普通字段
             var column_props = pps.Where(x => !keys.Values.Contains(x.Name)).ToList();
             column_props = pps.Where(x => !auto_generated_columns.Values.Contains(x.Name)).ToList();
-            if (!ValidateHelper.IsPlumpList(column_props)) { throw new Exception("无法提取到有效字段"); }
+            if (!ValidateHelper.IsPlumpList(column_props))
+            {
+                throw new Exception("无法提取到有效字段");
+            }
             var columns = column_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
 
 
@@ -131,26 +142,11 @@ namespace Lib.extension
         /// <returns></returns>
         public static string GetInsertSql<T>(this T model) where T : IDBTable
         {
-            var t = model.GetType();
-            var table_name = t.GetCustomAttribute<TableAttribute>()?.Name ?? t.Name;
+            var structure = model.GetTableStructure();
 
-            var props = new Dictionary<string, string>();
-            foreach (var p in t.GetProperties().Where(x => x.CanRead))
-            {
-                //跳过不映射字段
-                if (p.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
-                //跳过自增
-                if (p.GetCustomAttributes<DatabaseGeneratedAttribute>().Any()) { continue; }
-                //获取字段
-                var column = p.GetCustomAttribute<ColumnAttribute>()?.Name ?? p.Name;
-
-                props[column] = p.Name;
-            }
-            if (!ValidateHelper.IsPlumpDict(props)) { throw new Exception("无法提取到有效字段"); }
-
-            var k = string.Join(",", props.Keys);
-            var v = string.Join(",", props.Values.Select(x => $"@{x}"));
-            var sql = $"INSERT INTO {table_name} ({k}) VALUES ({v})";
+            var k = ",".Join(structure.columns.Keys);
+            var v = ",".Join(structure.columns.Values.Select(x => $"@{x}"));
+            var sql = $"INSERT INTO {structure.table_name} ({k}) VALUES ({v})";
             return sql;
         }
 
@@ -208,11 +204,8 @@ namespace Lib.extension
             var structure = model.GetTableStructure();
 
             var set = ",".Join(structure.columns.Select(x => $"{x.Key}=@{x.Value}"));
-
             var where = " AND ".Join(structure.keys.Select(x => $"{x.Key}=@{x.Value}"));
-
             var sql = $"UPDATE {structure.table_name} SET {set} WHERE {where}";
-
             return sql;
         }
 

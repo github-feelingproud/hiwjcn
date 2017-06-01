@@ -9,12 +9,45 @@ using System.Linq;
 using Lib.helper;
 using System.Data;
 using System.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest6
     {
+        class xxkkl : IDBTable
+        {
+            [Key]
+            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+            public virtual int id { get; set; }
+            [Key]
+            [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+            public virtual string guid { get; set; }
+
+            [DatabaseGenerated(DatabaseGeneratedOption.None)]
+            public virtual string school_name { get; set; }
+            public virtual int age { get; set; }
+            [Column("fake_name")]
+            public virtual string name { get; set; }
+
+            [NotMapped]
+            public virtual xxkkl father { get; set; }
+        }
+
+        [TestMethod]
+        public void jklajlkjhsfasdfasf()
+        {
+            var model = new UserModel() { };
+            var sql = model.GetInsertSql();
+            sql = model.GetUpdateSql();
+
+            var xx = new xxkkl();
+            sql = xx.GetInsertSql();
+            sql = xx.GetUpdateSql();
+        }
+
         [TestMethod]
         public void nishishabi()
         {
