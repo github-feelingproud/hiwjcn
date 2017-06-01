@@ -89,8 +89,8 @@ namespace Lib.extension
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        [Obsolete("还没写完")]
-        public static (string table_name, Dictionary<string, string> keys, Dictionary<string, string> columns)
+        public static (string table_name, Dictionary<string, string> keys,
+            Dictionary<string, string> auto_generated_columns, Dictionary<string, string> columns)
             GetTableStructure<T>(this T model) where T : IDBTable
         {
             var t = model.GetType();
@@ -110,26 +110,18 @@ namespace Lib.extension
             var key_props = pps.Where(x => x.GetCustomAttributes<KeyAttribute>().Any()).ToList();
             var keys = key_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
 
-            //columns
-            var column_props = pps.Where(x =>
-            !(x.GetCustomAttributes<KeyAttribute>().Any() || x.GetCustomAttributes<DatabaseGeneratedAttribute>().Any())).ToList();
+            //auto generated columns
+            var auto_generated_props = pps.Where(x => x.GetCustomAttributes<DatabaseGeneratedAttribute>().Any()).ToList();
+            var auto_generated_columns = auto_generated_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
+
+            //common columns
+            var column_props = pps.Where(x => !keys.Values.Contains(x.Name)).ToList();
+            column_props = pps.Where(x => !auto_generated_columns.Values.Contains(x.Name)).ToList();
             if (!ValidateHelper.IsPlumpList(column_props)) { throw new Exception("无法提取到有效字段"); }
             var columns = column_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
-            /*
-             var props = new Dictionary<string, string>();
-            foreach (var p in t.GetProperties().Where(x => x.CanRead))
-            {
-                //跳过不映射字段
-                if (p.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
-                //跳过自增
-                if (p.GetCustomAttributes<DatabaseGeneratedAttribute>().Any()) { continue; }
-                //获取字段
-                var column = p.GetCustomAttribute<ColumnAttribute>()?.Name ?? p.Name;
 
-                props[column] = p.Name;
-            }
-             */
-            return (table_name, keys, columns);
+
+            return (table_name, keys, auto_generated_columns, columns);
         }
 
         /// <summary>
@@ -157,7 +149,7 @@ namespace Lib.extension
             if (!ValidateHelper.IsPlumpDict(props)) { throw new Exception("无法提取到有效字段"); }
 
             var k = string.Join(",", props.Keys);
-            var v = string.Join(",", props.Values.Select(x => "@" + x));
+            var v = string.Join(",", props.Values.Select(x => $"@{x}"));
             var sql = $"INSERT INTO {table_name} ({k}) VALUES ({v})";
             return sql;
         }
@@ -213,7 +205,61 @@ namespace Lib.extension
         /// <returns></returns>
         public static string GetUpdateSql<T>(this T model) where T : IDBTable
         {
-            throw new NotImplementedException();
+            var structure = model.GetTableStructure();
+
+            var set = ",".Join(structure.columns.Select(x => $"{x.Key}=@{x.Value}"));
+
+            var where = " AND ".Join(structure.keys.Select(x => $"{x.Key}=@{x.Value}"));
+
+            var sql = $"UPDATE {structure.table_name} SET {set} WHERE {where}";
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 通过主键更新数据，自动生成字段和主键不更新
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="con"></param>
+        /// <param name="model"></param>
+        /// <param name="transaction"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        public static int Update<T>(this IDbConnection con, T model,
+            IDbTransaction transaction = null, int? commandTimeout = default(int?)) where T : IDBTable
+        {
+            var sql = model.GetUpdateSql();
+            try
+            {
+                return con.Execute(sql, model, transaction: transaction, commandTimeout: commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"无法执行SQL:{sql}", e);
+            }
+        }
+
+        /// <summary>
+        /// 通过主键更新数据，自动生成字段和主键不更新
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="con"></param>
+        /// <param name="model"></param>
+        /// <param name="transaction"></param>
+        /// <param name="commandTimeout"></param>
+        /// <returns></returns>
+        public static async Task<int> UpdateAsync<T>(this IDbConnection con, T model,
+            IDbTransaction transaction = null, int? commandTimeout = default(int?)) where T : IDBTable
+        {
+            var sql = model.GetUpdateSql();
+            try
+            {
+                return await con.ExecuteAsync(sql, model, transaction: transaction, commandTimeout: commandTimeout);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"无法执行SQL:{sql}", e);
+            }
         }
     }
 
