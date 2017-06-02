@@ -17,6 +17,18 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest6
     {
+        [TestMethod]
+        public void permission()
+        {
+            var per = (int)(PermissionExample.协助管理员 | PermissionExample.终极管理员 | PermissionExample.普通用户);
+            var valid = PermissionHelper.HasPermission(per, (int)PermissionExample.普通用户);
+            valid = PermissionHelper.HasPermission(per, (int)PermissionExample.开店);
+            PermissionHelper.AddPermission(ref per, (int)PermissionExample.开店);
+            valid = PermissionHelper.HasPermission(per, (int)PermissionExample.开店);
+            PermissionHelper.RemovePermission(ref per, (int)PermissionExample.终极管理员);
+            valid = PermissionHelper.HasPermission(per, (int)PermissionExample.终极管理员);
+        }
+
         class xxkkl : IDBTable
         {
             [Key]

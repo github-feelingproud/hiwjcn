@@ -26,8 +26,8 @@ namespace Lib.helper
         {
             if (_context != null) { return _context; }
             var context = System.Web.HttpContext.Current;
-            if (context == null) { throw new Exception("无法获取上下文对象"); }
-            return context;
+
+            return context ?? throw new Exception("无法获取上下文对象");
         }
 
         /// <summary>
@@ -121,10 +121,12 @@ namespace Lib.helper
         public static List<string> GetExceptionMsgList(Exception e)
         {
             var list = new List<string>();
+
             list.Add(e?.Message);
             list.Add(e?.InnerException?.Message);
             list.Add(e?.InnerException?.InnerException?.Message);
             list.Add(e?.InnerException?.InnerException?.InnerException?.Message);
+            list.Add(e?.InnerException?.InnerException?.InnerException?.InnerException?.Message);
 
             list = list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
 
@@ -279,16 +281,14 @@ namespace Lib.helper
         /// <summary>
         /// 通过密码生成一个key
         /// </summary>
-        /// <param name="pass"></param>
-        /// <returns></returns>
-        public static string GetPassKey(string pass)
+        public static string GetPassKey(string pass, string salt = "密码盐")
         {
             if (!ValidateHelper.IsPlumpString(pass))
             {
                 throw new Exception("密码为空");
             }
             var str = new StringBuilder();
-            var list = (pass + "密码盐").ToArray().Select(x => (int)x).ToList();
+            var list = (pass + salt).ToArray().Select(x => (int)x).ToList();
             str.Append(list.Count());
             str.Append(list.Min());
             str.Append(list.Sum());
@@ -496,8 +496,6 @@ namespace Lib.helper
         /// <summary>
         /// 取字符串拼音首字母
         /// </summary>
-        /// <param name="value">原字符串</param>
-        /// <param name="length">所要取拼音首字母的字符数</param>
         public static string GetSpell(string value)
         {
             if (!ValidateHelper.IsPlumpString(value))
@@ -670,10 +668,6 @@ namespace Lib.helper
         /// <summary>
         /// 排序
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="bigToSmall"></param>
-        /// <returns></returns>
         public static T[] Sort<T>(T[] data, Func<T, T, bool> changePos)
         {
             for (int i = 0; i < data.Length - 1; ++i)
@@ -692,10 +686,6 @@ namespace Lib.helper
         /// <summary>
         /// 排序方法2
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="changePos"></param>
-        /// <returns></returns>
         public static T[] Sort_123<T>(T[] data, Func<T, T, bool> changePos)
         {
             for (int i = 0; i < data.Length - 1; ++i)
@@ -714,10 +704,6 @@ namespace Lib.helper
         /// <summary>
         /// 排序
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="changePos"></param>
-        /// <returns></returns>
         public static List<T> SortList<T>(List<T> data, Func<T, T, bool> changePos)
         {
             return Sort(data.ToArray(), changePos).ToList();
@@ -726,8 +712,6 @@ namespace Lib.helper
         /// <summary>
         /// 字典变url格式(a=1&b=3)
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
         public static string DictToUrlParams(Dictionary<string, string> data)
         {
             if (!ValidateHelper.IsPlumpDict(data)) { return string.Empty; }
@@ -738,9 +722,6 @@ namespace Lib.helper
         /// <summary>
         /// 反转list
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
         public static List<T> ReversalList<T>(List<T> list)
         {
             if (list?.Count < 2) { return list; }
