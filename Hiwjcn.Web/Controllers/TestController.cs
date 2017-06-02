@@ -38,6 +38,16 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        public ActionResult err()
+        {
+            return RunAction(() =>
+            {
+                int? page = null;
+
+                return Content((page ?? throw new Exception("fasdfasd")).ToString());
+            });
+        }
+
         public ActionResult es_log()
         {
             new Exception($"es保存错误日志{Com.GetRandomNumString()}").AddErrorLog("es_error");

@@ -169,6 +169,7 @@ namespace Lib.mvc
         [NonAction]
         private ActionResult ExceptionResult(Exception e)
         {
+            var (area, controller, action) = this.RouteData.GetA_C_A();
             e.AddLog(this.GetType());
             //自定义错误
             if (this.ErrorResult != null)

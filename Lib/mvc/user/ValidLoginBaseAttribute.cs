@@ -45,7 +45,7 @@ namespace Lib.mvc.user
 
             if (ValidateHelper.IsPlumpString(this.Permission))
             {
-                if (this.Permission.Split(',').Any(x => !loginuser.HasPermission(x)))
+                if (this.Permission.Split(',').Where(x => x?.Length > 0).Any(x => !loginuser.HasPermission(x)))
                 {
                     this.WhenNoPermission(ref filterContext);
                     return;
