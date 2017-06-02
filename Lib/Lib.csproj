@@ -324,12 +324,14 @@
     <Compile Include="mvc\user\CheckLoginInfoData.cs" />
     <Compile Include="mvc\HtmlExtensions.cs" />
     <Compile Include="mvc\user\IGetLoginUrl.cs" />
+    <Compile Include="mvc\user\ILoadUserPermission.cs" />
     <Compile Include="mvc\user\LoginUserInfo.cs" />
     <Compile Include="mvc\MySQLSessionProvider.cs" />
     <Compile Include="mvc\user\PermissionVerifyAttribute.cs" />
     <Compile Include="mvc\ResultBundle.cs" />
     <Compile Include="mvc\user\SSOCheckAttribute.cs" />
     <Compile Include="mvc\user\SSOClientHelper.cs" />
+    <Compile Include="mvc\user\ValidLoginBaseAttribute.cs" />
     <Compile Include="mvc\WebWorkContext.cs" />
     <Compile Include="net\HttpClientHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

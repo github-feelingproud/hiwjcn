@@ -13,6 +13,7 @@ using Lib.mvc.attr;
 
 namespace Lib.mvc.user
 {
+    [Obsolete("已过时，使用ValidLoginBaseAttribute")]
     public abstract class SSOCheckAttribute : _ActionFilterBaseAttribute
     {
         /// <summary>
