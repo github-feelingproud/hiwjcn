@@ -102,5 +102,34 @@ namespace Lib.extension
             }
             list.AddRange(data);
         }
+
+        /// <summary>
+        /// 根据权重选择
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ran"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static T ChoiceWithWeight<T>(this Random ran, IReadOnlyDictionary<T, int> source)
+        {
+            if (source == null || source.Count <= 0) { throw new ArgumentException(nameof(source)); }
+
+            if (source.Count == 1) { return source.Keys.First(); }
+
+            var total_weight = source.Sum(x => x.Value);
+
+            var weight = ran.Next(total_weight);
+
+            foreach (var s in source)
+            {
+                if (weight < s.Value)
+                {
+                    return s.Key;
+                }
+                weight -= s.Value;
+            }
+
+            throw new Exception("权重取值异常");
+        }
     }
 }

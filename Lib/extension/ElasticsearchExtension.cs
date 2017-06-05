@@ -324,6 +324,48 @@ namespace Lib.extension
             //etc
         }
 
+        public static void SortWithScripts<T>(this SortDescriptor<T> sort) where T : class, IElasticSearchIndex
+        {
+            var sd = new SortScriptDescriptor<T>();
+
+            sd = sd.Mode(SortMode.Sum);
+            var script = "doc['price'].value * params.factor";
+            sd = sd.Script(x => x.Inline(script).Lang("painless").Params(new Dictionary<string, object>()
+            {
+                ["factor"] = 1.1
+            }));
+
+            sort.Script(x => sd);
+        }
+
+        public static void FunctionQuery(this SearchDescriptor<EsExample.ProductListV2> sd)
+        {
+            new FunctionScoreQuery()
+            {
+                Name = "named_query",
+                Boost = 1.1,
+                Query = new MatchAllQuery { },
+                BoostMode = FunctionBoostMode.Multiply,
+                ScoreMode = FunctionScoreMode.Sum,
+                MaxBoost = 20.0,
+                MinScore = 1.0,
+                Functions = new List<IScoreFunction>
+                {
+                    new ExponentialDecayFunction { Origin = 1.0, Decay =    0.5, Field = "", Scale = 0.1, Weight = 2.1 },
+                    new GaussDateDecayFunction { Origin = DateMath.Now, Field = "", Decay = 0.5, Scale = TimeSpan.FromDays(1) },
+                    new LinearGeoDecayFunction { Origin = new GeoLocation(70, -70), Field = "", Scale = Distance.Miles(1), MultiValueMode = MultiValueMode.Average },
+                    new FieldValueFactorFunction
+                    {
+                        Field = "x", Factor = 1.1,    Missing = 0.1, Modifier = FieldValueFactorModifier.Ln
+                    },
+                    new RandomScoreFunction { Seed = 1337 },
+                    new RandomScoreFunction { Seed = "randomstring" },
+                    new WeightFunction { Weight = 1.0},
+                    new ScriptScoreFunction { Script = new ScriptQuery { File = "x" } }
+                }
+            };
+        }
+
     }
 
     /// <summary>
