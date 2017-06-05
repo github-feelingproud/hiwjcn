@@ -16,7 +16,7 @@ namespace WindowsFormApp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new RegexTest());
+            Application.Run(new MakeSign());
         }
     }
 }

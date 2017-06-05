@@ -92,6 +92,12 @@ namespace Lib.helper
         {
             var dict = new Dictionary<string, string>();
             if (!ValidateHelper.IsPlumpString(url)) { return dict; }
+
+            if (url.IndexOf('#') >= 0)
+            {
+                url = url.Split('#')[0];
+            }
+
             var url_sp = url.Split('?');
             if (!new int[] { 1, 2 }.Contains(url_sp.Length)) { throw new Exception("多问号错误"); }
             var param_part = url_sp.Length == 1 ? url_sp[0] : url_sp[1];
