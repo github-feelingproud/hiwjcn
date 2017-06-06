@@ -43,8 +43,35 @@ namespace Lib.extension
         {
             //The maxValue for the upper-bound in the Next() method is exclusive—
             //the range includes minValue, maxValue-1, and all numbers in between.
-            var index = ran.Next(minValue: 0, maxValue: list.Count());
+            var index = ran.RealNext(minValue: 0, maxValue: list.Count - 1);
             return (index, list[index]);
+        }
+
+        /// <summary>
+        /// 带边界的随机范围
+        /// </summary>
+        /// <param name="ran"></param>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
+        public static int RealNext(this Random ran, int maxValue)
+        {
+            //The maxValue for the upper-bound in the Next() method is exclusive—
+            //the range includes minValue, maxValue-1, and all numbers in between.
+            return ran.RealNext(minValue: 0, maxValue: maxValue + 1);
+        }
+
+        /// <summary>
+        /// 带边界的随机范围
+        /// </summary>
+        /// <param name="ran"></param>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
+        public static int RealNext(this Random ran, int minValue, int maxValue)
+        {
+            //The maxValue for the upper-bound in the Next() method is exclusive—
+            //the range includes minValue, maxValue-1, and all numbers in between.
+            return ran.Next(minValue: minValue, maxValue: maxValue + 1);
         }
 
         /// <summary>
@@ -106,27 +133,29 @@ namespace Lib.extension
         /// <summary>
         /// 根据权重选择
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="ran"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public static T ChoiceWithWeight<T>(this Random ran, IReadOnlyDictionary<T, int> source)
+        public static T ChoiceByWeight<T>(this Random ran, Dictionary<T, int> source)
         {
             if (source == null || source.Count <= 0) { throw new ArgumentException(nameof(source)); }
-
             if (source.Count == 1) { return source.Keys.First(); }
+
+            if (source.Any(x => x.Value < 1)) { throw new ArgumentException("权重不能小于1"); }
 
             var total_weight = source.Sum(x => x.Value);
 
-            var weight = ran.Next(total_weight);
+            var weight = ran.RealNext(total_weight - 1);
+
+            var len = 0;
 
             foreach (var s in source)
             {
-                if (weight < s.Value)
+                var start = len;
+                var end = start + s.Value;
+                if (start <= weight && weight < end)
                 {
                     return s.Key;
                 }
-                weight -= s.Value;
+
+                len = end;
             }
 
             throw new Exception("权重取值异常");
