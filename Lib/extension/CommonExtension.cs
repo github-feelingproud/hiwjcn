@@ -57,7 +57,7 @@ namespace Lib.extension
         {
             //The maxValue for the upper-bound in the Next() method is exclusive—
             //the range includes minValue, maxValue-1, and all numbers in between.
-            return ran.RealNext(minValue: 0, maxValue: maxValue + 1);
+            return ran.RealNext(minValue: 0, maxValue: maxValue);
         }
 
         /// <summary>
