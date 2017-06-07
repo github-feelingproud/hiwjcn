@@ -88,5 +88,13 @@ namespace Lib.task
         /// <param name="func"></param>
         /// <returns></returns>
         protected ITrigger BuildTrigger(Func<TriggerBuilder, ITrigger> func) => func(TriggerBuilder.Create());
+
+        private void Test()
+        {
+            var start = DateTime.Now.AddHours(1);
+            start = new DateTime(start.Year, start.Month, start.Day, start.Hour, 0, 0);
+
+            BuildTrigger(t => t.StartAt(DateTimeOffset.Now.Add(start - DateTime.Now)).WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever()).Build());
+        }
     }
 }

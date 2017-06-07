@@ -14,6 +14,18 @@ namespace Lib
         public static readonly string CodingPage = "https://coding.net/u/wjcodestore";
     }
 
+    public class SyntaxTest
+    {
+        public SyntaxTest()
+        {
+            dynamic updateDoc = new System.Dynamic.ExpandoObject();
+            updateDoc.Title = "My new title";
+            updateDoc.Description = "default description";
+
+
+        }
+    }
+
     public class DectorTest
     {
         public int name { get; set; }

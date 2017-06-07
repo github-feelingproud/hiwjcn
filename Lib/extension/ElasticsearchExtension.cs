@@ -366,6 +366,36 @@ namespace Lib.extension
             };
         }
 
+        public static void UpdateDoc(IElasticClient client)
+        {
+            //https://stackoverflow.com/questions/42210930/nest-how-to-use-updatebyquery
+
+            var query = new QueryContainer();
+            query &= new TermQuery() { Field = "name", Value = "wj" };
+
+            client.UpdateByQuery<EsExample.ProductListV2>(q => q.Query(rq => query).Script(script => script
+        .Inline("ctx._source.name = newName;")
+        .Params(new Dictionary<string, object>() { ["newName"] = "wj" })));
+
+            //
+            client.Update(DocumentPath<EsExample.ProductListV2>.Id(""),
+                x => x.Index("").Type<EsExample.ProductListV2>().Doc(new EsExample.ProductListV2() { }));
+        }
+
+        public static void DeleteDoc(IElasticClient client)
+        {
+            //
+            var query = new DeleteByQueryRequest<EsExample.ProductListV2>("index_name");
+
+            query.Query = new QueryContainer();
+            query.Query &= new TermQuery() { Field = "", Value = "" };
+
+            client.DeleteByQuery(query);
+
+            //
+            client.Delete(DocumentPath<EsExample.ProductListV2>.Id(""));
+        }
+
     }
 
     /// <summary>
