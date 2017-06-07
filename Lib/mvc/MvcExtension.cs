@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Lib.extension;
+using Lib.io;
 
 namespace Lib.mvc
 {
@@ -74,6 +75,17 @@ namespace Lib.mvc
         public static string GetCurrentUrl(this HttpRequest req)
         {
             return RequestHelper.GetCurrentUrl(req);
+        }
+
+        /// <summary>
+        /// 获取上传文件的字节数组
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static byte[] GetBytes(this HttpPostedFile file)
+        {
+            var bs = IOHelper.GetPostFileBytesAndDispose(file);
+            return bs;
         }
 
         /// <summary>
