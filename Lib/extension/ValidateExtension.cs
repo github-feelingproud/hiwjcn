@@ -1,4 +1,7 @@
-﻿using Lib.helper;
+﻿using Lib.data;
+using Lib.helper;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Lib.extension
 {
@@ -7,6 +10,39 @@ namespace Lib.extension
     /// </summary>
     public static class ValidateExtension
     {
+        /// <summary>
+        /// 判断是否满足数据库约束
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static bool IsValid<T>(this T model) where T : IDBTable
+        {
+            return !ValidateHelper.IsPlumpList(model.GetValidErrors());
+        }
+
+        /// <summary>
+        /// 获取验证错误
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static string GetValidError<T>(this T model) where T : IDBTable
+        {
+            return model.GetValidErrors().FirstOrDefault();
+        }
+
+        /// <summary>
+        /// 获取验证错误
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static List<string> GetValidErrors<T>(this T model) where T : IDBTable
+        {
+            return ValidateHelper.CheckEntity_(model);
+        }
+
         /// <summary>
         /// 是手机号
         /// </summary>
