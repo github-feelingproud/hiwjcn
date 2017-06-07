@@ -11,7 +11,7 @@ namespace Lib
         public static readonly string Name = "wj";
         public static readonly string Email = "hiwjcn@live.com";
         public static readonly string Wechat = "hiwjcn";
-        public static readonly string CodingPage = "https://coding.net/u/wjcodestore";
+        public static readonly string CodingPage = "https://github.com/hiwjcn";
     }
 
     public class SyntaxTest

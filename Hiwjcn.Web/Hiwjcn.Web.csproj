@@ -174,8 +174,6 @@
   <ItemGroup>
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
-    <Folder Include="ui\bootstrap\" />
-    <Folder Include="ui\echarts\" />
     <Folder Include="ui\jq-plus\datepicker\" />
     <Folder Include="ui\jq-plus\layer\" />
     <Folder Include="ui\jq-plus\owl\" />
