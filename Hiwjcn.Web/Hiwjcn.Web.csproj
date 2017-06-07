@@ -174,10 +174,6 @@
   <ItemGroup>
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
-    <Folder Include="ui\jq-plus\datepicker\" />
-    <Folder Include="ui\jq-plus\layer\" />
-    <Folder Include="ui\jq-plus\owl\" />
-    <Folder Include="ui\jq-plus\ztree\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
