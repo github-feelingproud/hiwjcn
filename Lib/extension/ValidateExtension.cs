@@ -18,7 +18,20 @@ namespace Lib.extension
         /// <returns></returns>
         public static bool IsValid<T>(this T model) where T : IDBTable
         {
-            return !ValidateHelper.IsPlumpList(model.GetValidErrors());
+            return model.IsValid(out var err);
+        }
+
+        /// <summary>
+        /// 判断是否满足数据库约束
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <param name="err"></param>
+        /// <returns></returns>
+        public static bool IsValid<T>(this T model, out string err) where T : IDBTable
+        {
+            err = model.GetValidError();
+            return !ValidateHelper.IsPlumpString(err);
         }
 
         /// <summary>

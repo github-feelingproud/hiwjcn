@@ -537,7 +537,7 @@ namespace Lib.helper
                 {
                     if (!validator.IsValid(data))
                     {
-                        list.Add(validator.ErrorMessage);
+                        list.Add(ConvertHelper.GetString(validator.ErrorMessage).Trim());
                         return false;
                     }
                 }

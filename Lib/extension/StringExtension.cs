@@ -102,5 +102,19 @@ namespace Lib.extension
         /// <returns></returns>
         [Obsolete("$用新的拼接方法:{这里替换值}")]
         public static string Format(this string s, params object[] args) => string.Format(s, args);
+
+        /// <summary>
+        /// base64变string
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string Base64ToString(this string s) => ConvertHelper.Base64Decode(s);
+
+        /// <summary>
+        /// string变base64
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string StringToBase64(this string s) => ConvertHelper.Base64Encode(s);
     }
 }

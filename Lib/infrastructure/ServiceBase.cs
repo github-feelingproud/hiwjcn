@@ -10,6 +10,7 @@ using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Lib.ioc;
+using Lib.extension;
 using System.Threading.Tasks;
 
 namespace Lib.infrastructure
