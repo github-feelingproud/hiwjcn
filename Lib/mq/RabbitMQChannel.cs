@@ -150,18 +150,24 @@ namespace Lib.mq
         #endregion
     }
 
-    /// <summary>ExchangeType</summary>
+    /// <summary>
+    /// exchange类型
+    /// </summary>
+    [Serializable]
     public enum ExchangeType : byte
     {
         /// <summary>如果routingKey匹配，那么Message就会被传递到相应的queue中。http://blog.csdn.net/anzhsoft/article/details/19630147</summary>
-        Direct = 1,
+        direct = 1,
         /// <summary>会向所有响应的queue广播。http://blog.csdn.net/anzhsoft/article/details/19617305</summary>
-        Fanout = 2,
+        fanout = 2,
         /// <summary>对key进行模式匹配，比如ab.* 可以传递到所有ab.*的queue。* (星号) 代表任意 一个单词；# (hash) 0个或者多个单词。http://blog.csdn.net/anzhsoft/article/details/19633079</summary>
-        Topic = 3
+        topic = 3,
+        headers = 4
     }
 
-    /// <summary>优先级</summary>
+    /// <summary>
+    /// 优先级
+    /// </summary>
     [Serializable]
     public enum MessagePriority : byte
     {

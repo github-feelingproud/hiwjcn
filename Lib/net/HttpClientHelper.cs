@@ -3,6 +3,7 @@ using Lib.extension;
 using Lib.helper;
 using Lib.io;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -27,6 +28,11 @@ namespace Lib.net
     /// </summary>
     public static class HttpClientHelper
     {
+        public static Dictionary<string, string> NotNull(this Dictionary<string, string> param)
+        {
+            return param.ToDictionary(x => ConvertHelper.GetString(x), x => ConvertHelper.GetString(x));
+        }
+
         private static string GetMethod(RequestMethodEnum m)
         {
             return m.ToString();
@@ -107,7 +113,6 @@ namespace Lib.net
                     if (method == RequestMethodEnum.POST)
                     {
                         //使用MultipartFormDataContent请参考邮件里的记录
-                        if (param == null) { param = new Dictionary<string, string>(); }
                         //拼url传参
                         //using (var urlContent = new FormUrlEncodedContent(param)) { }
                         //form提交
@@ -115,6 +120,7 @@ namespace Lib.net
                         {
                             if (ValidateHelper.IsPlumpDict(param))
                             {
+                                param = param.NotNull();
                                 foreach (var key in param.Keys)
                                 {
                                     formContent.Add(new StringContent(param[key]), key);
@@ -185,6 +191,7 @@ namespace Lib.net
                 {
                     if (ValidateHelper.IsPlumpDict(param))
                     {
+                        param = param.NotNull();
                         foreach (var key in param.Keys)
                         {
                             formContent.Add(new StringContent(param[key]), key);
@@ -370,6 +377,7 @@ namespace Lib.net
                 //如果是post并且有参数
                 if (method == RequestMethodEnum.POST && ValidateHelper.IsPlumpDict(param))
                 {
+                    param = param.NotNull();
                     var post_data = param.ToUrlParam();
                     var data = Encoding.UTF8.GetBytes(post_data);
                     using (var stream = req.GetRequestStream())

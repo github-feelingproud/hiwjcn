@@ -22,6 +22,15 @@ namespace Lib.mq
         {
             this._connection = factory.CreateConnection();
             this._channel = this._connection.CreateModel();
+            
+            this._channel.BasicSetting(new SettingConfig()
+            {
+                //
+            });
+
+            this._connection.ConnectionShutdown += (sender, args) => { };
+            this._connection.ConnectionBlocked += (sender, args) => { };
+            this._connection.ConnectionUnblocked += (sender, args) => { };
         }
 
         public abstract bool? OnMessageReceived(BasicDeliverEventArgs args);
