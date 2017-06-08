@@ -270,6 +270,7 @@
     <Compile Include="log\ESLogLine.cs" />
     <Compile Include="log\ESLogHelper.cs" />
     <Compile Include="mq\MessageConsumer.cs" />
+    <Compile Include="mq\MessageConsumerBase.cs" />
     <Compile Include="mq\MessageProducer.cs" />
     <Compile Include="mq\RabbitMQChannel.cs" />
     <Compile Include="mq\RabbitMQClient.cs" />

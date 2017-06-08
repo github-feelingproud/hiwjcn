@@ -13,5 +13,12 @@ namespace Lib.mq
         {
             channel.QueueDeclare();
         }
+
+        /// <summary>
+        /// 基本设置
+        /// </summary>
+        public static void BasicSetting(this IModel channel)
+        { }
+
     }
 }
