@@ -14,9 +14,9 @@ namespace Lib.mq
         public IModel Channel { get; }
 
         #region ExchangeDeclare
-        public void ExchangeDeclare(string exchangeName) => ExchangeDeclare(exchangeName, ExchangeType.Direct);
+        public void ExchangeDeclare(string exchangeName) => ExchangeDeclare(exchangeName, ExchangeType.direct);
 
-        public void ExchangeDeclare(string exchangeName, bool isDelay) => ExchangeDeclare(exchangeName, ExchangeType.Direct, false);
+        public void ExchangeDeclare(string exchangeName, bool isDelay) => ExchangeDeclare(exchangeName, ExchangeType.direct, false);
 
         public void ExchangeDeclare(string exchangeName, ExchangeType type) => ExchangeDeclare(exchangeName, type, false);
 
@@ -32,11 +32,11 @@ namespace Lib.mq
         {
             switch (type)
             {
-                case ExchangeType.Direct:
+                case ExchangeType.direct:
                     return RabbitMQ.Client.ExchangeType.Direct;
-                case ExchangeType.Fanout:
+                case ExchangeType.fanout:
                     return RabbitMQ.Client.ExchangeType.Fanout;
-                case ExchangeType.Topic:
+                case ExchangeType.topic:
                     return RabbitMQ.Client.ExchangeType.Topic;
             }
             throw new NotSupportedException();
