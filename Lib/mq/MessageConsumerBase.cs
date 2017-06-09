@@ -18,22 +18,44 @@ namespace Lib.mq
         private IModel _channel { get; set; }
         private EventingBasicConsumer _consumer { get; set; }
 
-        public MessageConsumerBase(ConnectionFactory factory, string exchange, string queue)
+        public MessageConsumerBase(ConnectionFactory factory, SettingConfig config)
         {
             this._connection = factory.CreateConnection();
-            this._channel = this._connection.CreateModel();
-            
-            this._channel.BasicSetting(new SettingConfig()
-            {
-                //
-            });
-
             this._connection.ConnectionShutdown += (sender, args) => { };
             this._connection.ConnectionBlocked += (sender, args) => { };
             this._connection.ConnectionUnblocked += (sender, args) => { };
+
+            this._channel = this._connection.CreateModel();
+
+            this._channel.BasicSetting(config);
+
+            this._consumer = new EventingBasicConsumer(this._channel);
+            this._consumer.Received += (sender, args) =>
+            {
+                try
+                {
+                    //重试策略
+                    var retryPolicy = Policy.Handle<Exception>().Retry((int)config.ConsumeRetryCount);
+                    retryPolicy.Execute(() =>
+                    {
+                        var result = this.OnMessageReceived(sender, args);
+                        if (result == null || !result.Value)
+                        {
+                            throw new Exception("未能消费对象");
+                        }
+                    });
+                    this._channel.X_BasicAck(args);
+                }
+                catch (Exception e)
+                {
+                    this._channel.X_BasicAck(args);
+                    e.AddErrorLog();
+                }
+            };
+            this._channel.BasicConsume(queue: config.QueueName, noAck: !config.Ack, consumer: this._consumer);
         }
 
-        public abstract bool? OnMessageReceived(BasicDeliverEventArgs args);
+        public abstract bool? OnMessageReceived(object sender, BasicDeliverEventArgs args);
 
         public void Dispose()
         {

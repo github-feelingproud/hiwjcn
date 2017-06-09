@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
+using Lib.helper;
+using RabbitMQ.Client.Events;
+using Lib.extension;
 
 namespace Lib.mq
 {
@@ -17,13 +20,36 @@ namespace Lib.mq
 
         public string QueueName { get; set; }
 
+        public string RouteKey { get; set; }
+
+        public Dictionary<string, object> Args { get; set; }
+
+        public bool Ack { get; set; } = true;
+
+        public uint ConsumeRetryCount { get; set; } = 5;
+    }
+
+    public class MessageWrapper<T>
+    {
+        public int DeliverCount { get; set; } = 1;
+        public T Data { get; set; }
     }
 
     public static class RabbitMQExtension
     {
-        public static void QueueDeclareXX(this IModel channel)
+        public static MessageWrapper<T> GetWrapperMessage<T>(this BasicDeliverEventArgs args)
         {
-            channel.QueueDeclare();
+            return Encoding.UTF8.GetString(args.Body).JsonToEntity<MessageWrapper<T>>();
+        }
+
+        public static byte[] DataToWrapperMessageBytes<T>(this T data)
+        {
+            return Encoding.UTF8.GetBytes(new MessageWrapper<T>() { Data = data }.ToJson());
+        }
+
+        public static void X_BasicAck(this IModel channel, BasicDeliverEventArgs args)
+        {
+            channel.BasicAck(deliveryTag: args.DeliveryTag, multiple: false);
         }
 
         /// <summary>
@@ -50,41 +76,22 @@ namespace Lib.mq
             }
         }
 
-        /// <summary>声明一个队列并将队列绑定到exchange</summary>
-        /// <param name="queueName">队列名称</param>
-        /// <param name="exchangeName">交换机名称</param>
-        public static QueueDeclareOk QueueBind(this IModel channel, string queueName, string exchangeName) => QueueBind(channel, queueName, exchangeName, queueName, null);
-
-        /// <summary>声明一个队列并将队列绑定到exchange</summary>
-        /// <param name="queueName">队列名称</param>
-        /// <param name="exchangeName">交换机名称</param>
-        /// <param name="priority">优先级数量，priority + 1</param>
-        public static QueueDeclareOk QueueBind(this IModel channel, string queueName, string exchangeName, MessagePriority priority) => QueueBind(channel, queueName, exchangeName, queueName, priority);
-
-        /// <summary>声明一个队列并将队列绑定到exchange。一个routingKey绑定多个Queue，一个Queue绑定多个routingKey</summary>
-        /// <param name="queueName">队列名称</param>
-        /// <param name="exchangeName">交换机名称</param>
-        /// <param name="routingKey">routingKey</param>
-        public static QueueDeclareOk QueueBind(this IModel channel, string queueName, string exchangeName, string routingKey) => QueueBind(channel, queueName, exchangeName, routingKey, null);
-
-        /// <summary>声明一个队列并将队列绑定到exchange。一个routingKey绑定多个Queue，一个Queue绑定多个routingKey</summary>
-        /// <param name="queueName">队列名称</param>
-        /// <param name="exchangeName">交换机名称</param>
-        /// <param name="routingKey">routingKey</param>
-        /// <param name="priority">优先级数量，priority + 1</param>
-        public static QueueDeclareOk QueueBind(this IModel channel, string queueName, string exchangeName, string routingKey, MessagePriority priority) => QueueBind(channel, queueName, exchangeName, routingKey, priority < MessagePriority.Lowest ? null : new Dictionary<string, object>() { { "x-max-priority", priority > MessagePriority.Highest ? 10 : (byte)priority + 1 } });
-
-        /// <summary>声明一个队列并将队列绑定到exchange。一个routingKey绑定多个Queue，一个Queue绑定多个routingKey</summary>
-        /// <param name="queueName">队列名称</param>
-        /// <param name="exchangeName">交换机名称</param>
-        /// <param name="routingKey">routingKey</param>
-        /// <param name="arguments">arguments</param>
-        public static QueueDeclareOk QueueBind(this IModel channel, string queueName, string exchangeName, string routingKey, IDictionary<string, object> arguments)
+        /// <summary>
+        /// 添加默认设置项
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="queueName"></param>
+        /// <param name="exchangeName"></param>
+        /// <param name="routingKey"></param>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
+        public static QueueDeclareOk X_QueueBind(this IModel channel,
+            string queueName, string exchangeName, string routingKey, IDictionary<string, object> arguments)
         {
-            var result = channel.QueueDeclare(queueName, true, false, false, arguments);
+            var queue = channel.QueueDeclare(queueName, true, false, false, arguments);
             channel.QueueBind(queueName, exchangeName, routingKey);
 
-            return result;
+            return queue;
         }
 
         /// <summary>
@@ -93,7 +100,9 @@ namespace Lib.mq
         public static void BasicSetting(this IModel channel, SettingConfig config)
         {
             channel.X_ExchangeDeclare(config.ExchangeName, config.ExchangeType, config.Delay);
-            //channel.QueueDeclare(config.QueueName,true,)
+
+            if (!ValidateHelper.IsPlumpString(config.QueueName)) { throw new ArgumentException(nameof(config.QueueName)); }
+            channel.X_QueueBind(config.QueueName, config.ExchangeName, config.RouteKey, config.Args);
         }
 
     }
