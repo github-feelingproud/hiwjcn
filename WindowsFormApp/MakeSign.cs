@@ -25,6 +25,8 @@ namespace WindowsFormApp
         {
             try
             {
+                this.button1.Enabled = false;
+
                 var sign_req_key = "sign";
                 var url = ConvertHelper.GetString(this.textBox1.Text);
                 if (!url.IsURL())
@@ -51,6 +53,10 @@ namespace WindowsFormApp
                 this.textBox3.Text = string.Empty;
                 this.textBox2.Text = string.Empty;
                 MessageBox.Show(err.Message);
+            }
+            finally
+            {
+                this.button1.Enabled = true;
             }
         }
     }
