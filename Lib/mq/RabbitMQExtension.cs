@@ -7,6 +7,7 @@ using RabbitMQ.Client;
 using Lib.helper;
 using RabbitMQ.Client.Events;
 using Lib.extension;
+using Polly;
 
 namespace Lib.mq
 {
@@ -27,6 +28,10 @@ namespace Lib.mq
         public bool Ack { get; set; } = true;
 
         public uint ConsumeRetryCount { get; set; } = 5;
+
+        public uint ConsumeRetryWaitMilliseconds { get; set; } = 10;
+
+        public string ConsumerName { get; set; }
     }
 
     public class MessageWrapper<T>
@@ -103,6 +108,26 @@ namespace Lib.mq
 
             if (!ValidateHelper.IsPlumpString(config.QueueName)) { throw new ArgumentException(nameof(config.QueueName)); }
             channel.X_QueueBind(config.QueueName, config.ExchangeName, config.RouteKey, config.Args);
+
+            //每个消费一次收到多少消息，其余的放在队列里
+            channel.BasicQos(0, 1, false);
+        }
+
+        /// <summary>
+        /// 发送队列
+        /// </summary>
+        public static void Send<T>(this IModel channel, string exchangeName, string routeKey, T data, uint retryCount = 5)
+        {
+            var wrapperdata = data.DataToWrapperMessageBytes();
+            var retryPolicy = Policy.Handle<Exception>().WaitAndRetry((int)retryCount, i => TimeSpan.FromMilliseconds(i * 100));
+            retryPolicy.Execute(() =>
+            {
+                var properties = channel.CreateBasicProperties();
+                properties.Priority = (byte)MessagePriority.Hight;
+                //etc
+                //string exchange, string routingKey, IBasicProperties basicProperties, byte[] body
+                channel.BasicPublish(exchangeName, routeKey, properties, wrapperdata);
+            });
         }
 
     }

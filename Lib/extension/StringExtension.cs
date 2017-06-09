@@ -13,6 +13,13 @@ namespace Lib.extension
     public static class StringExtension
     {
         /// <summary>
+        /// 如果不是有效字符串就转换为null
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string EmptyAsNull(this string str) => ConvertHelper.EmptyAsNull(str);
+
+        /// <summary>
         /// 找到#标签#
         /// </summary>
         /// <param name="s"></param>

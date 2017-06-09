@@ -28,6 +28,20 @@ namespace Lib.helper
         {
             return (obj == null) ? str : obj.ToString();
         }
+
+        /// <summary>
+        /// 如果不是有效字符串就变成null
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string EmptyAsNull(string str)
+        {
+            if (!ValidateHelper.IsPlumpStringAfterTrim(str))
+            {
+                return null;
+            }
+            return str;
+        }
         #endregion
 
         #region base64

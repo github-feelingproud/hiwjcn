@@ -12,14 +12,17 @@ using Polly;
 
 namespace Lib.mq
 {
-    public abstract class MessageConsumerBase : IDisposable
+    public abstract class MessageConsumerBase<DeliveryDataType> : IDisposable
     {
         private IConnection _connection { get; set; }
         private IModel _channel { get; set; }
         private EventingBasicConsumer _consumer { get; set; }
+        private SettingConfig _config { get; set; }
 
         public MessageConsumerBase(ConnectionFactory factory, SettingConfig config)
         {
+            this._config = config ?? throw new ArgumentException(nameof(config));
+
             this._connection = factory.CreateConnection();
             this._connection.ConnectionShutdown += (sender, args) => { };
             this._connection.ConnectionBlocked += (sender, args) => { };
@@ -27,7 +30,7 @@ namespace Lib.mq
 
             this._channel = this._connection.CreateModel();
 
-            this._channel.BasicSetting(config);
+            this._channel.BasicSetting(this._config);
 
             this._consumer = new EventingBasicConsumer(this._channel);
             this._consumer.Received += (sender, args) =>
@@ -35,7 +38,10 @@ namespace Lib.mq
                 try
                 {
                     //重试策略
-                    var retryPolicy = Policy.Handle<Exception>().Retry((int)config.ConsumeRetryCount);
+                    var retryPolicy = Policy.Handle<Exception>().WaitAndRetry(
+                        retryCount: (int)this._config.ConsumeRetryCount,
+                        sleepDurationProvider: i => TimeSpan.FromMilliseconds(this._config.ConsumeRetryWaitMilliseconds));
+
                     retryPolicy.Execute(() =>
                     {
                         var result = this.OnMessageReceived(sender, args);
@@ -44,15 +50,27 @@ namespace Lib.mq
                             throw new Exception("未能消费对象");
                         }
                     });
-                    this._channel.X_BasicAck(args);
                 }
                 catch (Exception e)
                 {
-                    this._channel.X_BasicAck(args);
+                    //log errors
                     e.AddErrorLog();
                 }
+                finally
+                {
+                    if (this._config.Ack)
+                    {
+                        //从队列中移除消息
+                        this._channel.X_BasicAck(args);
+                    }
+                }
             };
-            this._channel.BasicConsume(queue: config.QueueName, noAck: !config.Ack, consumer: this._consumer);
+            var consumerTag = $"{Environment.MachineName}|{this._config.QueueName}|{this._config.ConsumerName}";
+            this._channel.BasicConsume(
+                queue: this._config.QueueName,
+                noAck: !this._config.Ack,
+                consumerTag: consumerTag,
+                consumer: this._consumer);
         }
 
         public abstract bool? OnMessageReceived(object sender, BasicDeliverEventArgs args);
