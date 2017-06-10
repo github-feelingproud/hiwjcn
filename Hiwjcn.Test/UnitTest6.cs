@@ -11,12 +11,56 @@ using System.Data;
 using System.Data.SqlClient;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest6
     {
+        [TestMethod]
+        public void Jsontest()
+        {
+            try
+            {
+                var same = JsonHelper.HasSameStructure(new
+                {
+                    a = "",
+                    b = "",
+                    c = new
+                    {
+                        x = "",
+                        c = "",
+                        d = new
+                        {
+                            cc = 1,
+                            dk = ""
+                        }
+                    }
+                }.ToJson(), new
+                {
+                    a = "",
+                    b = "",
+                    c = new
+                    {
+                        x = "",
+                        c = "",
+                        d = new
+                        {
+                            cc = 1,
+                            dk = ""
+                        }
+                    }
+                }.ToJson());
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        }
+
         [TestMethod]
         public void permission()
         {

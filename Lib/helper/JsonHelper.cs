@@ -35,6 +35,49 @@ namespace Lib.helper
             return JsonConvert.SerializeObject(obj, TimeFormat());
         }
 
+        /// <summary>
+        /// 比较两个json结构是否相同
+        /// </summary>
+        /// <param name="json_1"></param>
+        /// <param name="json_2"></param>
+        /// <returns></returns>
+        [Obsolete("未完成")]
+        public static bool HasSameStructure(string json_1, string json_2)
+        {
+            var path_list = new List<string>();
+            void FindJsonNode(JToken token)
+            {
+                if (token == null) { return; }
+                if (token.Type == JTokenType.Property)
+                {
+                    path_list.Add(token.Path);
+                }
+                //find next node
+                if (token.Type == JTokenType.Array)
+                {
+                    foreach (var arr in token)
+                    {
+                        FindJsonNode(arr);
+                    }
+                }
+                else if (token.Type == JTokenType.Object)
+                {
+                    var children = token.Children();
+                    foreach (var child in children)
+                    {
+                        FindJsonNode(child);
+                    }
+                }
+            }
+
+            FindJsonNode(JToken.Parse(json_1));
+            FindJsonNode(JToken.Parse(json_2));
+
+            path_list = path_list.Select(x => ConvertHelper.GetString(x).ToLower()).ToList();
+
+            return path_list.Count == path_list.Distinct().Count() * 2;
+        }
+
         private static void JsonParseTest(string json)
         {
             var dom = JObject.Parse(json);
