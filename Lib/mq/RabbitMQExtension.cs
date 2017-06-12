@@ -15,7 +15,7 @@ namespace Lib.mq
     {
         public string ExchangeName { get; set; }
 
-        public ExchangeType ExchangeType { get; set; } = ExchangeType.direct;
+        public ExchangeTypeEnum ExchangeType { get; set; } = ExchangeTypeEnum.direct;
 
         public bool Delay { get; set; } = false;
 
@@ -65,7 +65,7 @@ namespace Lib.mq
         /// <param name="exchange_type"></param>
         /// <param name="is_delay"></param>
         public static void X_ExchangeDeclare(this IModel channel,
-            string exchange_name, ExchangeType exchange_type, bool is_delay = false)
+            string exchange_name, ExchangeTypeEnum exchange_type, bool is_delay = false)
         {
             if (is_delay)
             {

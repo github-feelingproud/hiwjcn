@@ -21,6 +21,12 @@ namespace Hiwjcn.Test
     public class UnitTest6
     {
         [TestMethod]
+        public void md()
+        {
+            var sign = "brandname=a - 奥迪&ip=172.16.25.136&mac=5c:a8:6a:3d:6b:6a&modeltype=0&option=getvehicleengineandyear&safecode=&userid=&ver=1.0www_qipeilong_cn".ToMD5().ToUpper();
+        }
+
+        [TestMethod]
         public void Jsontest()
         {
             try

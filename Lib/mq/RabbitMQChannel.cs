@@ -14,13 +14,13 @@ namespace Lib.mq
         public IModel Channel { get; }
 
         #region ExchangeDeclare
-        public void ExchangeDeclare(string exchangeName) => ExchangeDeclare(exchangeName, ExchangeType.direct);
+        public void ExchangeDeclare(string exchangeName) => ExchangeDeclare(exchangeName, ExchangeTypeEnum.direct);
 
-        public void ExchangeDeclare(string exchangeName, bool isDelay) => ExchangeDeclare(exchangeName, ExchangeType.direct, false);
+        public void ExchangeDeclare(string exchangeName, bool isDelay) => ExchangeDeclare(exchangeName, ExchangeTypeEnum.direct, false);
 
-        public void ExchangeDeclare(string exchangeName, ExchangeType type) => ExchangeDeclare(exchangeName, type, false);
+        public void ExchangeDeclare(string exchangeName, ExchangeTypeEnum type) => ExchangeDeclare(exchangeName, type, false);
 
-        public void ExchangeDeclare(string exchangeName, ExchangeType type, bool isDelay)
+        public void ExchangeDeclare(string exchangeName, ExchangeTypeEnum type, bool isDelay)
         {
             if (isDelay)
                 Channel.ExchangeDeclare(exchangeName, "x-delayed-message", true, false, new Dictionary<string, object>() { { "x-delayed-type", GetExchangeTypeName(type) } });
@@ -28,15 +28,15 @@ namespace Lib.mq
                 Channel.ExchangeDeclare(exchangeName, GetExchangeTypeName(type), true, false, null);
         }
 
-        private static string GetExchangeTypeName(ExchangeType type)
+        private static string GetExchangeTypeName(ExchangeTypeEnum type)
         {
             switch (type)
             {
-                case ExchangeType.direct:
+                case ExchangeTypeEnum.direct:
                     return RabbitMQ.Client.ExchangeType.Direct;
-                case ExchangeType.fanout:
+                case ExchangeTypeEnum.fanout:
                     return RabbitMQ.Client.ExchangeType.Fanout;
-                case ExchangeType.topic:
+                case ExchangeTypeEnum.topic:
                     return RabbitMQ.Client.ExchangeType.Topic;
             }
             throw new NotSupportedException();
@@ -154,7 +154,7 @@ namespace Lib.mq
     /// exchange类型
     /// </summary>
     [Serializable]
-    public enum ExchangeType : byte
+    public enum ExchangeTypeEnum : byte
     {
         /// <summary>如果routingKey匹配，那么Message就会被传递到相应的queue中。http://blog.csdn.net/anzhsoft/article/details/19630147</summary>
         direct = 1,
