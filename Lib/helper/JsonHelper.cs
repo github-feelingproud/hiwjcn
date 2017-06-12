@@ -64,6 +64,10 @@ namespace Lib.helper
 
             path_list = path_list.Select(x => ConvertHelper.GetString(x).Trim()).ToList();
 
+            //这里其实有bug
+            //如果一个json是空，另一个是两个a.b.c(虽然不可能出现)
+            //就会导致两个不一样的json被判断为一样
+            //介于不太可能发生，就不想改了,什么时候c#内置函数支持ref再改（强迫症=.=）
             return path_list.Count == path_list.Distinct().Count() * 2;
         }
 
