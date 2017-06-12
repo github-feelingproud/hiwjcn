@@ -34,14 +34,13 @@ namespace Lib.helper
             if (obj == null) { throw new Exception("null不能被转为json"); }
             return JsonConvert.SerializeObject(obj, TimeFormat());
         }
-
+        
         /// <summary>
         /// 比较两个json结构是否相同
         /// </summary>
         /// <param name="json_1"></param>
         /// <param name="json_2"></param>
         /// <returns></returns>
-        [Obsolete("未完成")]
         public static bool HasSameStructure(string json_1, string json_2)
         {
             var path_list = new List<string>();
@@ -53,27 +52,17 @@ namespace Lib.helper
                     path_list.Add(token.Path);
                 }
                 //find next node
-                if (token.Type == JTokenType.Array)
+                var children = token.Children();
+                foreach (var child in children)
                 {
-                    foreach (var arr in token)
-                    {
-                        FindJsonNode(arr);
-                    }
-                }
-                else if (token.Type == JTokenType.Object)
-                {
-                    var children = token.Children();
-                    foreach (var child in children)
-                    {
-                        FindJsonNode(child);
-                    }
+                    FindJsonNode(child);
                 }
             }
 
             FindJsonNode(JToken.Parse(json_1));
             FindJsonNode(JToken.Parse(json_2));
 
-            path_list = path_list.Select(x => ConvertHelper.GetString(x).ToLower()).ToList();
+            path_list = path_list.Select(x => ConvertHelper.GetString(x).Trim()).ToList();
 
             return path_list.Count == path_list.Distinct().Count() * 2;
         }

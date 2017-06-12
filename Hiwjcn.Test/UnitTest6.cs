@@ -28,7 +28,12 @@ namespace Hiwjcn.Test
                 var same = JsonHelper.HasSameStructure(new
                 {
                     a = "",
-                    b = "",
+                    b = new object[]
+                    {
+                        new { arr_1=1 },
+                        new { arr_2="2"},
+                        new { arr_3=new { this_is_final_level="最终" } }
+                    },
                     c = new
                     {
                         x = "",

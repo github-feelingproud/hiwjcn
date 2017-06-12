@@ -556,5 +556,14 @@ namespace Lib.helper
             return list.Where(x => IsPlumpString(x)).Distinct().ToList();
         }
 
+        /// <summary>
+        /// 两个json有相同的结构
+        /// </summary>
+        /// <param name="tuple"></param>
+        /// <returns></returns>
+        public static bool SameJsonStructure(this (string, string) tuple)
+        {
+            return JsonHelper.HasSameStructure(tuple.Item1, tuple.Item2);
+        }
     }
 }
