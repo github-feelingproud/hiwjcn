@@ -14,16 +14,37 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest6
     {
+        public AutoResetEvent autoevent = new AutoResetEvent(true);
+        public ManualResetEvent manualevent = new ManualResetEvent(true);
+        [TestMethod]
+        public void jlkjifsldiflkj()
+        {
+            autoevent.Reset();
+            autoevent.Set();
+            autoevent.WaitOne();
+
+            manualevent.Reset();
+            //etc
+        }
+
         [TestMethod]
         public void md()
         {
             var sign = "brandname=a - 奥迪&ip=172.16.25.136&mac=5c:a8:6a:3d:6b:6a&modeltype=0&option=getvehicleengineandyear&safecode=&userid=&ver=1.0www_qipeilong_cn".ToMD5().ToUpper();
+        }
+
+        [TestMethod]
+        public void jsonpath()
+        {
+            var token = JToken.Parse(new { a = 8, b = 8 }.ToJson());
+            var value = token.SelectToken("");
         }
 
         [TestMethod]

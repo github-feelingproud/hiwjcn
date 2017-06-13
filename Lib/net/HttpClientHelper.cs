@@ -30,7 +30,7 @@ namespace Lib.net
     {
         public static Dictionary<string, string> NotNull(this Dictionary<string, string> param)
         {
-            return param.ToDictionary(x => ConvertHelper.GetString(x), x => ConvertHelper.GetString(x));
+            return param.ToDictionary(x => ConvertHelper.GetString(x.Key), x => ConvertHelper.GetString(x.Value));
         }
 
         private static string GetMethod(RequestMethodEnum m)
