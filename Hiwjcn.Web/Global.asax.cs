@@ -28,6 +28,12 @@ namespace Hiwjcn.Web
             {
                 var start = DateTime.Now;
 
+                /*
+                if (!("config_1.json", "config_2.json").SameJsonStructure())
+                {
+                    throw new Exception("正式机和测试机配置文件结构不相同");
+                }*/
+
                 //添加依赖注入
                 AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
 
