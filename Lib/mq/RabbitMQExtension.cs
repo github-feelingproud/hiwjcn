@@ -27,7 +27,7 @@ namespace Lib.mq
 
         public bool Ack { get; set; } = true;
 
-        public uint ConsumeRetryCount { get; set; } = 5;
+        public uint ConsumeRetryCount { get; set; } = 3;
 
         public uint ConsumeRetryWaitMilliseconds { get; set; } = 10;
 
@@ -116,14 +116,21 @@ namespace Lib.mq
         /// <summary>
         /// 发送队列
         /// </summary>
-        public static void Send<T>(this IModel channel, string exchangeName, string routeKey, T data, uint retryCount = 5)
+        public static void Send<T>(this IModel channel,
+            string routeKey, T data,
+            string exchangeName = "", uint retryCount = 5, Func<int, TimeSpan> sleepDurationProvider = null,
+            bool save_to_disk = true)
         {
-            var wrapperdata = data.DataToWrapperMessageBytes();
-            var retryPolicy = Policy.Handle<Exception>().WaitAndRetry((int)retryCount, i => TimeSpan.FromMilliseconds(i * 100));
+            sleepDurationProvider = sleepDurationProvider ?? (i => TimeSpan.FromMilliseconds(i * 100));
+            var retryPolicy = Policy.Handle<Exception>().WaitAndRetry((int)retryCount, sleepDurationProvider);
             retryPolicy.Execute(() =>
             {
+                //数据
+                var wrapperdata = data.DataToWrapperMessageBytes();
+
                 var properties = channel.CreateBasicProperties();
                 properties.Priority = (byte)MessagePriority.Hight;
+                properties.Persistent = save_to_disk;
                 //etc
                 //string exchange, string routingKey, IBasicProperties basicProperties, byte[] body
                 channel.BasicPublish(exchangeName, routeKey, properties, wrapperdata);
