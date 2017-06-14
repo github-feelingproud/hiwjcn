@@ -1,6 +1,7 @@
 ﻿using Lib.helper;
 using System;
 using System.Web.SessionState;
+using Lib.extension;
 
 namespace Lib.mvc
 {
@@ -43,7 +44,14 @@ namespace Lib.mvc
             {
                 return (T)obj;
             }
-            return default(T);
+            try
+            {
+                return obj.ToJson().JsonToEntity<T>();
+            }
+            catch
+            {
+                return default(T);
+            }
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Lib.extension;
 using Lib.io;
+using System.Web.SessionState;
 
 namespace Lib.mvc
 {
@@ -108,6 +109,31 @@ namespace Lib.mvc
             var dict = context.Request.Form.ToDict();
             dict = dict.AddDict(context.Request.QueryString.ToDict());
             return dict;
+        }
+
+        /// <summary>
+        /// 设置实体
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static void SetObject(this HttpSessionState session, string key, object value)
+        {
+            session[key] = value.ToJson();
+        }
+
+        /// <summary>
+        /// 获取实体
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="session"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static T GetObject<T>(this HttpSessionState session, string key)
+        {
+            var value = session[key]?.ToString();
+
+            return value == null ? default(T) : value.JsonToEntity<T>();
         }
     }
 }
