@@ -32,6 +32,9 @@ namespace Lib.mq
         public uint ConsumeRetryWaitMilliseconds { get; set; } = 10;
 
         public string ConsumerName { get; set; }
+
+        public int ExchangeSetting { get; set; }
+        public int QueueSetting { get; set; }
     }
 
     public class MessageWrapper<T>

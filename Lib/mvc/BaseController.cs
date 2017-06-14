@@ -263,47 +263,79 @@ namespace Lib.mvc
             });
         }
 
+        /// <summary>
+        /// 没有登录的时候使用这个返回，可以重写
+        /// </summary>
+        /// <returns></returns>
+        protected virtual ActionResult WhenNoLogin()
+        {
+            if (NoLoginResult != null)
+            {
+                return NoLoginResult;
+            }
+            else
+            {
+                //没有登陆就跳转登陆
+                var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(this.X.Url);
+                return new RedirectResult(redirect_url);
+            }
+        }
+
+        /// <summary>
+        /// 没有权限的时候调用，可以重写
+        /// </summary>
+        /// <returns></returns>
+        protected virtual ActionResult WhenNoPermission()
+        {
+            if (NoPermissionResult != null)
+            {
+                return NoPermissionResult;
+            }
+            else
+            {
+                return Http403();
+            }
+        }
+
+        protected virtual LoginUserInfo TryGetUser()
+        {
+            var loginuser = this.X.User;
+            if (loginuser == null)
+            {
+                //尝试通过token获取登陆用户
+                var token = this.Request.Headers["token"];
+                if (ValidateHelper.IsPlumpString(token))
+                {
+                    //loginuser = null;
+                }
+            }
+            return loginuser;
+        }
+
+        /// <summary>
+        /// 验证是否有权限
+        /// </summary>
+        /// <param name="loginuser"></param>
+        /// <returns></returns>
+        protected virtual bool HasPermission(LoginUserInfo loginuser)
+        {
+            return ConvertHelper.NotNullList(PermissionList).Any(x => !loginuser.HasPermission(x));
+        }
+
         [NonAction]
         private (LoginUserInfo loginuser, ActionResult res) TryGetLoginUser()
         {
-            LoginUserInfo loginuser = null;
-            //尝试通过token获取登陆用户
-            var token = this.Request.Headers["token"];
-            if (ValidateHelper.IsPlumpString(token))
-            {
-                loginuser = null;
-            }
-            //尝试使用session和cookie获取登陆用户
-            if (loginuser == null)
-            {
-                loginuser = this.X.User;
-            }
+            var loginuser = TryGetUser();
             //==================================================================================================
             //如果没登陆就跳转
             if (loginuser == null)
             {
-                if (NoLoginResult != null)
-                {
-                    return (loginuser, NoLoginResult);
-                }
-                else
-                {
-                    //没有登陆就跳转登陆
-                    var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(this.X.Url);
-                    return (loginuser, new RedirectResult(redirect_url));
-                }
+                return (loginuser, WhenNoLogin());
             }
             //所需要的全部权限值
-            if (ConvertHelper.NotNullList(PermissionList).Any(x => !loginuser.HasPermission(x)))
+            if (HasPermission(loginuser))
             {
-                if (NoPermissionResult != null)
-                {
-                    return (loginuser, NoPermissionResult);
-                }
-                else
-                {
-                    return (loginuser, Http403());
-                }
+                return (loginuser, WhenNoPermission());
             }
             return (loginuser, null);
         }

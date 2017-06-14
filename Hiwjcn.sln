@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormApp", "WindowsFormApp\WindowsFormApp.csproj", "{F03A180A-7442-42F1-859D-FC4A8E419139}"
 EndProject
@@ -35,6 +35,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hiwjcn.Service", "Hiwjcn.Service\Hiwjcn.Service.csproj", "{100B0F4D-99AC-498E-88D9-39FDD796CE19}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "Lib\Lib.csproj", "{5F8BD505-423D-400C-84C4-F9638F84CC41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hiwjcn.Api", "Hiwjcn.Api\Hiwjcn.Api.csproj", "{F952D419-445A-4EDE-B5BD-F99DFBFEA82A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,6 +80,10 @@ Global
 		{5F8BD505-423D-400C-84C4-F9638F84CC41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F8BD505-423D-400C-84C4-F9638F84CC41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F8BD505-423D-400C-84C4-F9638F84CC41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F952D419-445A-4EDE-B5BD-F99DFBFEA82A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F952D419-445A-4EDE-B5BD-F99DFBFEA82A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F952D419-445A-4EDE-B5BD-F99DFBFEA82A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F952D419-445A-4EDE-B5BD-F99DFBFEA82A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,5 +97,6 @@ Global
 		{8071B0F8-1EE8-4E77-81C3-D08405985FC8} = {448873C4-D44F-4954-A6C4-4E45EDE8B80F}
 		{100B0F4D-99AC-498E-88D9-39FDD796CE19} = {705BA746-2F3E-4CA7-99E4-41AD6CD403B3}
 		{5F8BD505-423D-400C-84C4-F9638F84CC41} = {705BA746-2F3E-4CA7-99E4-41AD6CD403B3}
+		{F952D419-445A-4EDE-B5BD-F99DFBFEA82A} = {ED26FFC6-7AFC-47B4-B9B4-541AC0B802B7}
 	EndGlobalSection
 EndGlobal

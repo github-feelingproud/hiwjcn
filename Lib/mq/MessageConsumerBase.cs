@@ -33,22 +33,25 @@ namespace Lib.mq
             this._channel.BasicSetting(this._config);
 
             this._consumer = new EventingBasicConsumer(this._channel);
-            this._consumer.Received += (sender, args) =>
+            this._consumer.Received += async (sender, args) =>
             {
                 try
                 {
                     //重试策略
-                    var retryPolicy = Policy.Handle<Exception>().WaitAndRetry(
+                    var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(
                         retryCount: (int)this._config.ConsumeRetryCount,
                         sleepDurationProvider: i => TimeSpan.FromMilliseconds(this._config.ConsumeRetryWaitMilliseconds));
 
-                    retryPolicy.Execute(() =>
+                    await retryPolicy.ExecuteAsync(async () =>
                     {
-                        var result = this.OnMessageReceived(sender, args);
+                        var result = await this.OnMessageReceived(sender, args);
                         if (result == null || !result.Value)
                         {
                             throw new Exception("未能消费对象");
                         }
+
+                        //do nothing
+                        await FakeAsync();
                     });
                 }
                 catch (Exception e)
@@ -73,7 +76,13 @@ namespace Lib.mq
                 consumer: this._consumer);
         }
 
-        public abstract bool? OnMessageReceived(object sender, BasicDeliverEventArgs args);
+        public abstract Task<bool?> OnMessageReceived(object sender, BasicDeliverEventArgs args);
+
+        /// <summary>
+        /// 假异步
+        /// </summary>
+        /// <returns></returns>
+        protected async Task<string> FakeAsync() => await Task.FromResult(nameof(FakeAsync));
 
         public void Dispose()
         {
