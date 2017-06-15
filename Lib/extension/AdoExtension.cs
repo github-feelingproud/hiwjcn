@@ -43,7 +43,7 @@ namespace Lib.extension
         /// <param name="con"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static IDbTransaction StartTransaction(this IDbConnection con, IsolationLevel? level)
+        public static IDbTransaction StartTransaction(this IDbConnection con, IsolationLevel? level = null)
         {
             if (level == null)
             {

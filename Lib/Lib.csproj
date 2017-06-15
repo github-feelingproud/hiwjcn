@@ -321,7 +321,7 @@
     <Compile Include="mvc\plugin\IRouteProvider.cs" />
     <Compile Include="mvc\plugin\PluginManager.cs" />
     <Compile Include="mvc\plugin\PluginRouteConfig.cs" />
-    <Compile Include="mvc\SignExtension.cs" />
+    <Compile Include="mvc\SignHelper.cs" />
     <Compile Include="mvc\user\AccountHelper.cs" />
     <Compile Include="mvc\NameValueCollectionHelper.cs" />
     <Compile Include="mvc\user\CheckLoginInfoData.cs" />
