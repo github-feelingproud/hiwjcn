@@ -44,8 +44,7 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual bool RequireConsent { get; set; }
         public virtual bool AllowRememberConsent { get; set; }
         public virtual bool AllowAccessTokensViaBrowser { get; set; }
-
-        public virtual Flows Flow { get; set; }
+        
         public virtual bool AllowClientCredentialsOnly { get; set; }
 
         public virtual ICollection<ClientRedirectUri> RedirectUris { get; set; }
@@ -70,14 +69,9 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual int AbsoluteRefreshTokenLifetime { get; set; }
         [Range(0, Int32.MaxValue)]
         public virtual int SlidingRefreshTokenLifetime { get; set; }
-
-        public virtual TokenUsage RefreshTokenUsage { get; set; }
-        public virtual bool UpdateAccessTokenOnRefresh { get; set; }
-
-        public virtual TokenExpiration RefreshTokenExpiration { get; set; }
         
-        public virtual AccessTokenType AccessTokenType { get; set; }
-
+        public virtual bool UpdateAccessTokenOnRefresh { get; set; }
+        
         public virtual bool EnableLocalLogin { get; set; }
         public virtual ICollection<ClientIdPRestriction> IdentityProviderRestrictions { get; set; }
         

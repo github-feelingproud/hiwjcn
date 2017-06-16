@@ -281,6 +281,7 @@
     <Compile Include="mvc\attr\ApiExpireAtAttribute.cs" />
     <Compile Include="mvc\attr\CheckReferrerUrlAttribute.cs" />
     <Compile Include="mvc\attr\CrossDomainAjaxAttribute.cs" />
+    <Compile Include="mvc\attr\HideActionAttribute.cs" />
     <Compile Include="mvc\attr\HtmlCacheAttribute.cs" />
     <Compile Include="mvc\attr\LogErrorAttribute.cs" />
     <Compile Include="mvc\attr\SetEncodingAttribute.cs" />

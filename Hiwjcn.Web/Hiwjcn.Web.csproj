@@ -174,6 +174,7 @@
   <ItemGroup>
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
+    <Folder Include="Views\UserApi\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\PageController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\UserApiController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
     <Compile Include="Global.asax.cs">
