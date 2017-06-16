@@ -77,6 +77,19 @@ namespace Lib.mvc
         }
 
         /// <summary>
+        /// 获取jsonp
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        [NonAction]
+        public ActionResult GetJsonp(object obj, string callback = "callback")
+        {
+            var func = this.Request.QueryString[callback];
+            return Content($"{func}({obj.ToJson()})", "text/javascript");
+        }
+
+        /// <summary>
         /// 判断是否成功
         /// </summary>
         /// <param name="msg"></param>

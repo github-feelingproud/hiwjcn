@@ -54,6 +54,7 @@ namespace Lib.net
         /// <summary>
         /// 用的.NET4.5中httpclient的简易封装
         /// </summary>
+        [Obsolete(nameof(HttpClient) + "有bug")]
         public static void SendHttpRequest(
             string url,
             Dictionary<string, string> param,
@@ -78,6 +79,7 @@ namespace Lib.net
         /// <param name="timeout_second"></param>
         /// <param name="handler"></param>
         /// <returns></returns>
+        [Obsolete(nameof(HttpClient) + "有bug")]
         public static async Task SendHttpRequestAsync(
             string url,
             Dictionary<string, string> param,
@@ -162,6 +164,7 @@ namespace Lib.net
         /// <summary>
         /// 提交json，并返回字符串
         /// </summary>
+        [Obsolete(nameof(HttpClient) + "有bug")]
         public static async Task<string> PostJsonAsync(string url, object jsonObj, int? timeout_second = null)
         {
             using (var client = new HttpClient())
@@ -178,6 +181,7 @@ namespace Lib.net
         /// <summary>
         /// 提交post请求
         /// </summary>
+        [Obsolete(nameof(HttpClient) + "有bug")]
         public static async Task<string> PostAsync(string url, Dictionary<string, string> param, int? timeout_second = null)
         {
             var u = new Uri(url);
@@ -210,6 +214,7 @@ namespace Lib.net
         /// <param name="param"></param>
         /// <param name="timeout_second"></param>
         /// <returns></returns>
+        [Obsolete(nameof(HttpClient) + "有bug")]
         public static async Task<string> PostAsync_(string url, object param, int? timeout_second = null)
         {
             return await PostAsync(url, Com.ObjectToStringDict(param), timeout_second);
@@ -218,6 +223,7 @@ namespace Lib.net
         /// <summary>
         /// 提交get请求
         /// </summary>
+        [Obsolete(nameof(HttpClient) + "有bug")]
         public static async Task<string> GetAsync(string url, int? timeout_second = null)
         {
             var u = new Uri(url);
