@@ -243,12 +243,12 @@ namespace Lib.helper
         public static string SimpleNumber(Int64 num)
         {
             if (num < 0) { throw new Exception("数字不能小于0"); }
-            if (num < 1000) { return num.ToString(); }
-            if (num < 10000)
+            if (num < 1_000) { return num.ToString(); }
+            if (num < 10_000)
             {
-                return $"{(num / 1000.0).ToString("0.0")}k";
+                return $"{(num / 1_000.0).ToString("0.0")}k";
             }
-            return $"{(num / 10000.0).ToString("0.0")}w";
+            return $"{(num / 1_0000.0).ToString("0.0")}w";
         }
 
         /// <summary>
