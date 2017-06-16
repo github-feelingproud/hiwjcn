@@ -223,6 +223,7 @@
     <Compile Include="data\EFManager.cs" />
     <Compile Include="data\RedisManager.cs" />
     <Compile Include="data\SerializeBase.cs" />
+    <Compile Include="distributed\CrossProcessLock.cs" />
     <Compile Include="distributed\ZooKeeperDistributedLock.cs" />
     <Compile Include="distributed\IDistributedLock.cs" />
     <Compile Include="distributed\RedisDistributedLock.cs" />
