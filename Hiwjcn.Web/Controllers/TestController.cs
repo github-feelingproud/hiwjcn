@@ -38,6 +38,26 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        public ActionResult P()
+        {
+            return Content(this.X.context.PostAndGet().ToUrlParam());
+        }
+
+        public class ppp
+        {
+            public string name { get; set; }
+            public int age { get; set; }
+        }
+
+        public ActionResult pj(ppp pp)
+        {
+            if (pp != null)
+            {
+                return GetJson(pp);
+            }
+            return Content("no data");
+        }
+
         public ActionResult err()
         {
             return RunAction(() =>

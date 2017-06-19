@@ -239,15 +239,26 @@ namespace Lib.net
         }
 
         /// <summary>
-        /// postjson
+        /// post json，测试成功
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static string PostJson(string url, string json)
+        {
+            var data = Encoding.UTF8.GetBytes(json);
+            return Send(url, data, "application/json");
+        }
+
+        /// <summary>
+        /// post json，测试成功
         /// </summary>
         /// <param name="url"></param>
         /// <param name="jsonObj"></param>
         /// <returns></returns>
         public static string PostJson(string url, object jsonObj)
         {
-            var data = Encoding.UTF8.GetBytes(jsonObj.ToJson());
-            return Send(url, data, "text/json");
+            return PostJson(url, (jsonObj ?? throw new ArgumentException("json对象为空")).ToJson());
         }
 
         /// <summary>
@@ -258,7 +269,11 @@ namespace Lib.net
         /// <returns></returns>
         public static string Post(string url, Dictionary<string, string> param)
         {
-            var data = Encoding.UTF8.GetBytes(param.ToUrlParam());
+            var data = default(byte[]);
+            if (ValidateHelper.IsPlumpDict(param))
+            {
+                data = Encoding.UTF8.GetBytes(param.NotNull().ToUrlParam());
+            }
             return Send(url, data, "application/x-www-form-urlencoded");
         }
 
@@ -270,7 +285,12 @@ namespace Lib.net
         /// <returns></returns>
         public static string Post_(string url, object param)
         {
-            return Post(url, Com.ObjectToStringDict(param));
+            var data = default(Dictionary<string, string>);
+            if (param != null)
+            {
+                data = Com.ObjectToStringDict(param);
+            }
+            return Post(url, data);
         }
 
         /// <summary>
@@ -306,13 +326,13 @@ namespace Lib.net
                     req.Timeout = timeout_second.Value * 1000;
                 }
                 req.Method = GetMethod(method);
+                if (ValidateHelper.IsPlumpString(contentType))
+                {
+                    req.ContentType = contentType;
+                }
 
                 if (ValidateHelper.IsPlumpList(data))
                 {
-                    if (ValidateHelper.IsPlumpString(contentType))
-                    {
-                        req.ContentType = contentType;
-                    }
                     req.ContentLength = data.Length;
                     using (var stream = req.GetRequestStream())
                     {

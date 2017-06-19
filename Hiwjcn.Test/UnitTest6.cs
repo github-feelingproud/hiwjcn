@@ -15,6 +15,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System.Threading;
+using Lib.net;
+using System.Collections.Generic;
 
 namespace Hiwjcn.Test
 {
@@ -32,6 +34,26 @@ namespace Hiwjcn.Test
 
             manualevent.Reset();
             //etc
+        }
+
+        [TestMethod]
+        public void lkjhuhfasdf()
+        {
+            try
+            {
+                var url = "http://localhost:59840/test/p";
+                var data = HttpClientHelper.Get(url + "?a=53&b=53");
+                data = HttpClientHelper.Post(url, new Dictionary<string, string>()
+                {
+                    ["a"] = "423",
+                    ["b"] = "34"
+                });
+                data = HttpClientHelper.Post_(url, new { a = "324", b = "rwe" });
+                url = "http://localhost:59840/test/pj";
+                data = HttpClientHelper.PostJson(url, new { name = "wj", age = 26 });
+            }
+            catch (Exception e)
+            { }
         }
 
         [TestMethod]

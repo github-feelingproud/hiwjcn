@@ -80,14 +80,9 @@ namespace WindowsFormApp
         {
         }
 
-        public override bool? OnMessageReceived(object sender, BasicDeliverEventArgs args)
+        public override Task<bool?> OnMessageReceived(object sender, BasicDeliverEventArgs args)
         {
-            var data = args.GetWrapperMessage<string>();
-            if (data != null)
-            {
-                MessageBox.Show(ConvertHelper.GetString(data.Data));
-            }
-            return true;
+            throw new NotImplementedException();
         }
     }
 }
