@@ -2,11 +2,13 @@
 using Lib.helper;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Lib.extension
 {
@@ -24,6 +26,36 @@ namespace Lib.extension
         public static List<T> NotNullList<T>(this IQueryable<T> query)
         {
             return ConvertHelper.NotNullList(query.ToList());
+        }
+
+        /// <summary>
+        /// 自动分页
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <returns></returns>
+        public static (List<T> list, int rowcount, int pagecount) ToPagedList<T>(this IOrderedQueryable<T> query, int page, int pagesize)
+        {
+            var count = query.QueryRowCountAndPageCount(pagesize);
+            var list = query.QueryPage(page, pagesize).ToList();
+            return (list, count.item_count, count.page_count);
+        }
+
+        /// <summary>
+        /// 自动分页
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <returns></returns>
+        public static async Task<(List<T> list, int rowcount, int pagecount)> ToPagedListAsync<T>(this IOrderedQueryable<T> query, int page, int pagesize)
+        {
+            var count = await query.QueryRowCountAndPageCountAsync(pagesize);
+            var list = await query.QueryPage(page, pagesize).ToListAsync();
+            return (list, count.item_count, count.page_count);
         }
 
         /// <summary>
@@ -46,6 +78,20 @@ namespace Lib.extension
         public static (int item_count, int page_count) QueryRowCountAndPageCount<T>(this IQueryable<T> query, int page_size)
         {
             var item_count = query.Count();
+            var page_count = PagerHelper.GetPageCount(item_count, page_size);
+            return (item_count, page_count);
+        }
+
+        /// <summary>
+        /// 获取记录总数和分页总数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="page_size"></param>
+        /// <returns></returns>
+        public static async Task<(int item_count, int page_count)> QueryRowCountAndPageCountAsync<T>(this IQueryable<T> query, int page_size)
+        {
+            var item_count = await query.CountAsync();
             var page_count = PagerHelper.GetPageCount(item_count, page_size);
             return (item_count, page_count);
         }

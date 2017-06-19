@@ -50,7 +50,10 @@ namespace Hiwjcn.Test
                 });
                 data = HttpClientHelper.Post_(url, new { a = "324", b = "rwe" });
                 url = "http://localhost:59840/test/pj";
-                data = HttpClientHelper.PostJson(url, new { name = "wj", age = 26 });
+                data = HttpClientHelper.PostJson(url, new
+                {
+                    pp = new { name = "wj", age = 26 }
+                });
             }
             catch (Exception e)
             { }
