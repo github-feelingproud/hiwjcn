@@ -206,6 +206,7 @@
     <Compile Include="cache\RedisCacheProvider.cs" />
     <Compile Include="core\CircuitBreaker.cs" />
     <Compile Include="core\DelegateCollection.cs" />
+    <Compile Include="core\EnumBundle.cs" />
     <Compile Include="core\ExceptionsCollection.cs" />
     <Compile Include="core\LibStartUpHelper.cs" />
     <Compile Include="core\MimeTypes.cs" />
