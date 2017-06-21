@@ -26,40 +26,41 @@ namespace Hiwjcn.Web
         {
             try
             {
-                var start = DateTime.Now;
-
-                /*
-                if (!("config_1.json", "config_2.json").SameJsonStructure())
+                Action<long, string> logger = (ms, name) =>
                 {
-                    throw new Exception("正式机和测试机配置文件结构不相同");
-                }*/
-
-                //添加依赖注入
-                AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
-
-                //disable "X-AspNetMvc-Version" header name
-                MvcHandler.DisableMvcResponseHeader = true;
-                AreaRegistration.RegisterAllAreas();
-                FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-                RouteConfig.RegisterRoutes(RouteTable.Routes);
-                //用AutoFac接管控制器生成，从而实现依赖注入
-                //ControllerBuilder.Current.SetControllerFactory(typeof(AutoFacControllerFactory));
-                //使用autofac生成控制器
-                DependencyResolver.SetResolver(new AutofacDependencyResolver(AppContext.Container));
-                //加速首次启动EF
-                //EFManager.SelectDB(null).FastStart();
-                EFManager.FastStart<EntityDB>();
-
-                start_up_task = Task.Run(() =>
+                    $"Application_Start|耗时：{ms}毫秒".AddInfoLog(this.GetType());
+                };
+                using (var timer = new CpuTimeLogger(logger))
                 {
-                    //启动后台服务
-                    TaskManager.StartAllTasks();
-                    //do something else
-                });
+                    /*
+                    if (!("config_1.json", "config_2.json").SameJsonStructure())
+                    {
+                        throw new Exception("正式机和测试机配置文件结构不相同");
+                    }*/
 
-                //记录程序开始
-                $"Application_Start|耗时：{(DateTime.Now - start).TotalSeconds}秒".AddInfoLog(this.GetType());
-                //"记录数据库的日志".AddBusinessInfoLog();
+                    //添加依赖注入
+                    AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
+
+                    //disable "X-AspNetMvc-Version" header name
+                    MvcHandler.DisableMvcResponseHeader = true;
+                    AreaRegistration.RegisterAllAreas();
+                    FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+                    RouteConfig.RegisterRoutes(RouteTable.Routes);
+                    //用AutoFac接管控制器生成，从而实现依赖注入
+                    //ControllerBuilder.Current.SetControllerFactory(typeof(AutoFacControllerFactory));
+                    //使用autofac生成控制器
+                    DependencyResolver.SetResolver(new AutofacDependencyResolver(AppContext.Container));
+                    //加速首次启动EF
+                    //EFManager.SelectDB(null).FastStart();
+                    EFManager.FastStart<EntityDB>();
+
+                    start_up_task = Task.Run(() =>
+                    {
+                        //启动后台服务
+                        TaskManager.StartAllTasks();
+                        //do something else
+                    });
+                }
             }
             catch (Exception e)
             {

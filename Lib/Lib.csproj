@@ -205,6 +205,7 @@
     <Compile Include="cache\MultiLayerCache.cs" />
     <Compile Include="cache\RedisCacheProvider.cs" />
     <Compile Include="core\CircuitBreaker.cs" />
+    <Compile Include="core\CpuTimeLogger.cs" />
     <Compile Include="core\DelegateCollection.cs" />
     <Compile Include="core\EnumBundle.cs" />
     <Compile Include="core\ExceptionsCollection.cs" />
