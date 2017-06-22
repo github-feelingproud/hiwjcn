@@ -97,37 +97,33 @@ namespace Hiwjcn.Web
             var ex = Server.GetLastError();
             if (ex == null) { return; }
             //记录错误
-            if (ex is HttpException)
+            if (ex is HttpException err)
             {
-                var err = ex as HttpException;
-                if (err != null)
+                int httpcode = err.GetHttpCode();
+                if (new int[] { 404, 403, 500 }.Contains(httpcode))
                 {
-                    int httpcode = err.GetHttpCode();
-                    if (new int[] { 404, 403, 500 }.Contains(httpcode))
+                    //进入处理范围
+                    Server.ClearError();
+                    Response.Clear();
+                    Response.TrySkipIisCustomErrors = true;
+                    string ActionName = string.Empty;
+
+                    switch (httpcode)
                     {
-                        //进入处理范围
-                        Server.ClearError();
-                        Response.Clear();
-                        Response.TrySkipIisCustomErrors = true;
-                        string ActionName = string.Empty;
-
-                        switch (httpcode)
-                        {
-                            case 404: ActionName = "Http404"; break;
-                            case 403: ActionName = "Http403"; break;
-                            case 500: ActionName = "Http500"; break;
-                            default: ActionName = "Http404"; break;
-                        }
-
-                        var routingData = new RouteData();
-                        // In case controller is in another area
-                        //routingData.DataTokens["area"] = "AreaName"; 
-                        routingData.Values["controller"] = "Error";
-                        routingData.Values["action"] = ActionName;
-
-                        IController c = new Hiwjcn.Web.Controllers.ErrorController();
-                        c.Execute(new RequestContext(new HttpContextWrapper(Context), routingData));
+                        case 404: ActionName = "Http404"; break;
+                        case 403: ActionName = "Http403"; break;
+                        case 500: ActionName = "Http500"; break;
+                        default: ActionName = "Http404"; break;
                     }
+
+                    var routingData = new RouteData();
+                    // In case controller is in another area
+                    //routingData.DataTokens["area"] = "AreaName"; 
+                    routingData.Values["controller"] = "Error";
+                    routingData.Values["action"] = ActionName;
+
+                    IController c = new Hiwjcn.Web.Controllers.ErrorController();
+                    c.Execute(new RequestContext(new HttpContextWrapper(Context), routingData));
                 }
             }
             else
