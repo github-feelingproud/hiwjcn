@@ -9,6 +9,7 @@ using Lib.ioc;
 using Lib.mvc;
 using Lib.task;
 using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -53,6 +54,7 @@ namespace Hiwjcn.Web
                     //加速首次启动EF
                     //EFManager.SelectDB(null).FastStart();
                     EFManager.FastStart<EntityDB>();
+                    EFManager.TryInstallDatabase();
 
                     start_up_task = Task.Run(() =>
                     {

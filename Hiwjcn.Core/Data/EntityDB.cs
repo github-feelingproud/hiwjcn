@@ -13,6 +13,7 @@ using WebLogic.Model.Page;
 using WebLogic.Model.Sys;
 using WebLogic.Model.Tag;
 using WebLogic.Model.User;
+using Hiwjcn.Core.Domain.Auth;
 
 namespace Hiwjcn.Dal
 {
@@ -50,6 +51,12 @@ namespace Hiwjcn.Dal
         }
 
         #region model对应的实体
+
+        public virtual DbSet<AuthClient> AuthClient { get; set; }
+        public virtual DbSet<AuthScope> AuthScope { get; set; }
+        public virtual DbSet<AuthToken> AuthToken { get; set; }
+        public virtual DbSet<AuthTokenScope> AuthTokenScope { get; set; }
+
         public virtual DbSet<CategoryModel> CategoryModel { get; set; }
         public virtual DbSet<SectionModel> SectionModel { get; set; }
         public virtual DbSet<AreaModel> AreaModel { get; set; }
@@ -110,16 +117,6 @@ namespace Hiwjcn.Dal
         //    //entity is already loaded
         //    return alreadyAttached;
         //}
-
-        /// <summary>
-        /// 获取生成数据表的sql
-        /// </summary>
-        /// <returns></returns>
-        public string CreateTables()
-        {
-            var sql = ((IObjectContextAdapter)this).ObjectContext.CreateDatabaseScript();
-            return sql;
-        }
 
         /// <summary>
         /// 实体集合

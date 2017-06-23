@@ -6,11 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using Lib.extension;
+using System.Data.Entity.Infrastructure;
 
 namespace Lib.data
 {
     public static class EFExtension
     {
+        /// <summary>
+        /// 获取生成数据表的sql
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCreateTableScript<T>(this T context) where T : DbContext
+        {
+            var c = ((IObjectContextAdapter)context).ObjectContext;
+            var sql = c.CreateDatabaseScript();
+            //var exist = c.DatabaseExists();
+            return sql;
+        }
+
         /// <summary>
         /// 注册fluent mapping
         /// </summary>

@@ -9,6 +9,7 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace Lib.data
 {
@@ -53,6 +54,29 @@ namespace Lib.data
                 mappingCollection.GenerateViews(new List<EdmSchemaError>());
             }
         }
+
+        /// <summary>
+        /// 尝试创建数据表
+        /// </summary>
+        public static void TryInstallDatabase()
+        {
+            using (var db = EFManager.SelectDB("db").GetDbContext())
+            {
+                var sql = db.GetCreateTableScript();
+                try
+                {
+                    using (db.Database.Connection)
+                    {
+                        db.Database.Connection.OpenIfClosedWithRetry();
+                        db.Database.Connection.Execute(sql);
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.AddErrorLog("创建数据表失败，可能已经存在");
+                }
+            }
+        }
         #endregion
 
         /// <summary>
@@ -89,14 +113,14 @@ namespace Lib.data
         /// 获取实体对象
         /// </summary>
         /// <returns></returns>
-        public DbContext GetDbContext()
+        public DbContext GetDbContext(string db = null)
         {
             /* 提升性能，不要检查
             if (!AppContext.IsRegistered<DbContext>(db_name))
             {
                 throw new Exception("请在容器中注册dbcontext实例");
             }*/
-            return AppContext.GetObject<DbContext>(name: db_name);
+            return AppContext.GetObject<DbContext>(name: db ?? db_name);
         }
 
         /// <summary>
