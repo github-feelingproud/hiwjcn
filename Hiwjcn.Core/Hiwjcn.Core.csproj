@@ -79,6 +79,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Auth\AuthClientRepository.cs" />
+    <Compile Include="Data\Auth\AuthScopeRepository.cs" />
+    <Compile Include="Data\Auth\AuthTokenRepository.cs" />
+    <Compile Include="Data\Auth\AuthTokenScopeRepository.cs" />
     <Compile Include="Data\Category\CategoryDal.cs" />
     <Compile Include="Data\Common\AreaDal.cs" />
     <Compile Include="Data\Common\CommentDal.cs" />
@@ -131,6 +135,10 @@
     <Compile Include="Domain\User\RolePermissionModel.cs" />
     <Compile Include="Domain\User\UserModel.cs" />
     <Compile Include="Domain\User\UserRoleModel.cs" />
+    <Compile Include="Infrastructure\Auth\IAuthClientService.cs" />
+    <Compile Include="Infrastructure\Auth\IAuthScopeService.cs" />
+    <Compile Include="Infrastructure\Auth\IAuthTokenScopeService.cs" />
+    <Compile Include="Infrastructure\Auth\IAuthTokenService.cs" />
     <Compile Include="Infrastructure\Common\IAreaService.cs" />
     <Compile Include="Infrastructure\Common\ILinkService.cs" />
     <Compile Include="Infrastructure\Common\ISettingService.cs" />

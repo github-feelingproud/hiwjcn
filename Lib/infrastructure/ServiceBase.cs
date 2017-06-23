@@ -154,6 +154,18 @@ namespace Lib.infrastructure
         }
 
         /// <summary>
+        /// 调用可以override的那个checkmodel检查
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public bool CheckModel(T model, out string msg)
+        {
+            msg = CheckModel(model);
+            return !ValidateHelper.IsPlumpString(msg);
+        }
+
+        /// <summary>
         /// 找到实体
         /// </summary>
         /// <param name="where"></param>

@@ -20,6 +20,8 @@ namespace Lib.infrastructure
 
         string CheckModel(T model);
 
+        bool CheckModel(T model, out string msg);
+
         List<string> CheckEntity(T model);
 
         T FindFirstEntity(Expression<Func<T, bool>> where);

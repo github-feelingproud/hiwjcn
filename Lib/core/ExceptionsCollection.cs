@@ -12,4 +12,8 @@ namespace Lib.core
         public MsgException(string msg) : base(msg)
         { }
     }
+
+    [Serializable]
+    public class SourceNotExistException : Exception
+    { }
 }

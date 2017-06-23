@@ -137,6 +137,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AopBoundle.cs" />
+    <Compile Include="Auth\AuthClientService.cs" />
+    <Compile Include="Auth\AuthScopeService.cs" />
+    <Compile Include="Auth\AuthTokenScopeService.cs" />
+    <Compile Include="Auth\AuthTokenService.cs" />
     <Compile Include="MyService.cs" />
     <Compile Include="QiniuHelper.cs" />
     <Compile Include="Category\CategoryBll.cs" />
