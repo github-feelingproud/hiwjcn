@@ -56,8 +56,8 @@ namespace Hiwjcn.Bll.Auth
                 return msg;
             }
 
-            var res = await this._AuthClientRepository.DeleteAsync(client);
-            return res > 0 ? SUCCESS : "删除失败";
+            var res = await this._AuthClientRepository.UpdateAsync(client);
+            return res > 0 ? SUCCESS : "保存失败";
         }
 
         public async Task<PagerData<AuthClient>> QueryListAsync(string user_uid, string q, int page, int pagesize)
