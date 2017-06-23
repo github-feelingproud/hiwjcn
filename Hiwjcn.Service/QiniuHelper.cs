@@ -50,7 +50,7 @@ namespace Hiwjcn.Bll
             putPolicy.Scope = bucket;
             var mac = new Mac(AK, SK);
             // 生成上传凭证
-            var uploadToken = Auth.createUploadToken(putPolicy, mac);
+            var uploadToken = Qiniu.Util.Auth.createUploadToken(putPolicy, mac);
             // 开始上传文件
             var um = new UploadManager();
             um.uploadFile(localFile, saveKey, uploadToken, null, null);

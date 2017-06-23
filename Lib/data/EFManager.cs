@@ -63,17 +63,23 @@ namespace Lib.data
             using (var db = EFManager.SelectDB("db").GetDbContext())
             {
                 var sql = db.GetCreateTableScript();
-                try
+
+                using (db.Database.Connection)
                 {
-                    using (db.Database.Connection)
+                    db.Database.Connection.OpenIfClosedWithRetry();
+                    using (var t = db.Database.Connection.StartTransaction())
                     {
-                        db.Database.Connection.OpenIfClosedWithRetry();
-                        db.Database.Connection.Execute(sql);
+                        try
+                        {
+                            db.Database.Connection.Execute(sql, transaction: t);
+                            t.Commit();
+                        }
+                        catch (Exception e)
+                        {
+                            t.Rollback();
+                            e.AddErrorLog("创建数据表失败，可能已经存在");
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    e.AddErrorLog("创建数据表失败，可能已经存在");
                 }
             }
         }
