@@ -2,6 +2,7 @@
 using Lib.helper;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Lib.extension
 {
@@ -54,6 +55,18 @@ namespace Lib.extension
         public static List<string> GetValidErrors<T>(this T model) where T : IDBTable
         {
             return ValidateHelper.CheckEntity_(model);
+        }
+
+        /// <summary>
+        /// 用正则匹配
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="pattern"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static bool IsMatchedByPattern(this string s, string pattern, RegexOptions options = RegexOptions.IgnoreCase)
+        {
+            return RegexHelper.IsMatch(s, pattern, options);
         }
 
         /// <summary>
