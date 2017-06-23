@@ -174,6 +174,7 @@
   <ItemGroup>
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
+    <Folder Include="Views\Auth\" />
     <Folder Include="Views\UserApi\" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +193,7 @@
     <Compile Include="Areas\Admin\Controllers\TagController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
