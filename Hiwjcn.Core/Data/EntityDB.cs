@@ -57,6 +57,15 @@ namespace Hiwjcn.Dal
         public virtual DbSet<AuthToken> AuthToken { get; set; }
         public virtual DbSet<AuthTokenScope> AuthTokenScope { get; set; }
 
+        public virtual DbSet<UserAvatar> UserAvatar { get; set; }
+        public virtual DbSet<UserModel> UserModel { get; set; }
+
+
+        public virtual DbSet<LoginErrorLogModel> LoginErrorLogModel { get; set; }
+        public virtual DbSet<RoleModel> RoleModel { get; set; }
+        public virtual DbSet<RolePermissionModel> RolePermissionModel { get; set; }
+        public virtual DbSet<UserRoleModel> UserRoleModel { get; set; }
+
         public virtual DbSet<CategoryModel> CategoryModel { get; set; }
         public virtual DbSet<SectionModel> SectionModel { get; set; }
         public virtual DbSet<AreaModel> AreaModel { get; set; }
@@ -68,11 +77,6 @@ namespace Hiwjcn.Dal
         public virtual DbSet<UpFileModel> UpFileModel { get; set; }
         public virtual DbSet<TagMapModel> TagMapModel { get; set; }
         public virtual DbSet<TagModel> TagModel { get; set; }
-        public virtual DbSet<LoginErrorLogModel> LoginErrorLogModel { get; set; }
-        public virtual DbSet<RoleModel> RoleModel { get; set; }
-        public virtual DbSet<RolePermissionModel> RolePermissionModel { get; set; }
-        public virtual DbSet<UserModel> UserModel { get; set; }
-        public virtual DbSet<UserRoleModel> UserRoleModel { get; set; }
         #endregion
 
         /// <summary>

@@ -8,6 +8,29 @@ using WebLogic.Model.User;
 
 namespace Model.User
 {
+    [Table("user_avatar")]
+    public class UserAvatar : IDBTable
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public virtual int IID { get; set; }
+
+        [Index]
+        [Required(ErrorMessage = "UID必填")]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "UID长度错误")]
+        public virtual string UID { get; set; }
+
+        [Required(ErrorMessage = "头像数据为空")]
+        public virtual byte[] AvatarBytes { get; set; }
+
+        [Index]
+        [Required(ErrorMessage = "UserUID必填")]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "UserUID长度错误")]
+        public virtual string UserUID { get; set; }
+
+        public virtual DateTime CreateTime { get; set; }
+
+    }
 
     /// <summary>
     ///用户的账户模型
