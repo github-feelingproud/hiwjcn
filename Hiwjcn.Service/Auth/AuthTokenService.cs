@@ -69,5 +69,15 @@ namespace Hiwjcn.Bll.Auth
             }
             return SUCCESS;
         }
+
+        public Task<AuthToken> FindToken(string token_uid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> RefreshToken(string refresh_token_uid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
