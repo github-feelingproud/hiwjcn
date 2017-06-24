@@ -79,6 +79,8 @@ namespace Hiwjcn.Core.Domain.Auth
 
         public virtual int Sort { get; set; }
 
+        public virtual int IsDefault { get; set; }
+
         [StringLength(1000, ErrorMessage = "图片地址长度过长")]
         public virtual string ImageUrl { get; set; }
 
@@ -125,6 +127,9 @@ namespace Hiwjcn.Core.Domain.Auth
 
         [NotMapped]
         public virtual List<AuthScope> Scopes { get; set; }
+
+        [NotMapped]
+        public virtual List<string> ScopeNames { get; set; }
     }
 
     [Serializable]
