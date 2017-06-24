@@ -32,7 +32,7 @@ namespace Hiwjcn.Bll.Auth
             return base.CheckModel(model);
         }
 
-        public async Task<string> CreateToken(AuthToken token)
+        public virtual async Task<string> CreateToken(AuthToken token)
         {
             if (!this.CheckModel(token, out var msg))
             {
@@ -75,9 +75,19 @@ namespace Hiwjcn.Bll.Auth
             throw new NotImplementedException();
         }
 
-        public Task<string> RefreshToken(string refresh_token_uid)
+        public virtual async Task<AuthToken> RefreshToken(string refresh_token_uid)
         {
-            throw new NotImplementedException();
+            var token = await this._AuthTokenRepository.GetFirstAsync(x => x.RefreshToken == refresh_token_uid && x.ExpiryTime < DateTime.Now) ?? throw new SourceNotExistException();
+            token.ExpiryTime = DateTime.Now.AddDays(30);
+            if (!this.CheckModel(token, out var msg))
+            {
+                throw new MsgException(msg);
+            }
+            if ((await this._AuthTokenRepository.UpdateAsync(token)) <= 0)
+            {
+                throw new MsgException("更新token失败");
+            }
+            return token;
         }
     }
 }

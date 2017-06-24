@@ -14,6 +14,6 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 
         Task<AuthToken> FindToken(string token_uid);
 
-        Task<string> RefreshToken(string refresh_token_uid);
+        Task<AuthToken> RefreshToken(string refresh_token_uid);
     }
 }
