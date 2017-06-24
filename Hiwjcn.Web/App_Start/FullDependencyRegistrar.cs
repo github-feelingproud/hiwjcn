@@ -11,11 +11,14 @@ using System.Data;
 using System.Data.Entity;
 using WebCore.MvcLib.Controller;
 using Lib.helper;
+using System;
 
 namespace Hiwjcn.Web.App_Start
 {
     public class FullDependencyRegistrar : DependencyRegistrarBase
     {
+        public override bool Intercept => true;
+
         public override void Register(ref ContainerBuilder builder)
         {
             var tps = new
@@ -66,7 +69,7 @@ namespace Hiwjcn.Web.App_Start
 
             #region 注册service
             //逻辑代码注册
-            RegService(ref builder, true, tps.service.Assembly);
+            RegService(ref builder, tps.service.Assembly);
             #endregion
 
             #region 注册事件

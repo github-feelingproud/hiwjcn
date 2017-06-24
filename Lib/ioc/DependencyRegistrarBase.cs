@@ -21,6 +21,8 @@ namespace Lib.ioc
     /// </summary>
     public abstract class DependencyRegistrarBase : IDependencyRegistrar
     {
+        public abstract bool Intercept { get; }
+
         public abstract void Register(ref ContainerBuilder builder);
 
         /// <summary>
@@ -35,12 +37,17 @@ namespace Lib.ioc
                 var types = a.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<IAutoRegistered>()).ToArray();
                 foreach (var t in types)
                 {
-                    builder.RegisterType(t);
+                    var reg = builder.RegisterType(t).AsSelf();
 
                     var interfaces = t.GetInterfaces();
                     if (ValidateHelper.IsPlumpList(interfaces))
                     {
-                        builder.RegisterType(t).As(interfaces);
+                        reg = reg.As(interfaces);
+                    }
+
+                    if (this.Intercept)
+                    {
+                        reg = reg.EnableClassInterceptors();
                     }
                 }
             }
@@ -71,6 +78,7 @@ namespace Lib.ioc
         /// <param name="ass"></param>
         protected virtual void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
         {
+            //注册泛型
             builder.RegisterGeneric(typeof(EFRepository<>)).As(typeof(IRepository<>));
             foreach (var a in ass)
             {
@@ -78,8 +86,7 @@ namespace Lib.ioc
                 {
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(EFRepository<>)))
                     {
-                        builder.RegisterType(t).As(t);
-                        builder.RegisterType(t).As(t.BaseType);
+                        builder.RegisterType(t).As(t).As(t.BaseType);
                         var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IRepository<>)))).ToArray();
                         if (interfaces?.Count() > 0)
                         {
@@ -96,8 +103,9 @@ namespace Lib.ioc
         /// <param name="builder"></param>
         /// <param name="intercept"></param>
         /// <param name="ass"></param>
-        protected virtual void RegService(ref ContainerBuilder builder, bool intercept, params Assembly[] ass)
+        protected virtual void RegService(ref ContainerBuilder builder, params Assembly[] ass)
         {
+            //注册泛型
             builder.RegisterGeneric(typeof(ServiceBase<>)).As(typeof(IServiceBase<>));
             foreach (var a in ass)
             {
@@ -106,9 +114,23 @@ namespace Lib.ioc
                     //注册service
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(ServiceBase<>)))
                     {
+                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType);
+
                         //实现iservicebase的接口
                         var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IServiceBase<>)))).ToArray();
-                        if (intercept)
+
+                        if (ValidateHelper.IsPlumpList(interfaces))
+                        {
+                            reg = reg.As(interfaces);
+                        }
+
+                        if (this.Intercept)
+                        {
+                            reg = reg.EnableClassInterceptors();
+                        }
+                        #region old code
+                        /*
+                     if (intercept)
                         {
                             builder.RegisterType(t).As(t).EnableClassInterceptors();
                             builder.RegisterType(t).As(t.BaseType).EnableClassInterceptors();
@@ -125,7 +147,9 @@ namespace Lib.ioc
                             {
                                 builder.RegisterType(t).As(interfaces);
                             }
-                        }
+                        }    
+                        */
+                        #endregion
                     }
                 }
             }
