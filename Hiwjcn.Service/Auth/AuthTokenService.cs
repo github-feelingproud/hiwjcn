@@ -17,14 +17,17 @@ namespace Hiwjcn.Bll.Auth
         private readonly IRepository<AuthToken> _AuthTokenRepository;
         private readonly IRepository<AuthTokenScope> _AuthTokenScopeRepository;
         private readonly IRepository<AuthScope> _AuthScopeRepository;
+        private readonly IRepository<AuthCode> _AuthCodeRepository;
         public AuthTokenService(
             IRepository<AuthToken> _AuthTokenRepository,
             IRepository<AuthTokenScope> _AuthTokenScopeRepository,
-            IRepository<AuthScope> _AuthScopeRepository)
+            IRepository<AuthScope> _AuthScopeRepository,
+            IRepository<AuthCode> _AuthCodeRepository)
         {
             this._AuthTokenRepository = _AuthTokenRepository;
             this._AuthTokenScopeRepository = _AuthTokenScopeRepository;
             this._AuthScopeRepository = _AuthScopeRepository;
+            this._AuthCodeRepository = _AuthCodeRepository;
         }
 
         public override string CheckModel(AuthToken model)

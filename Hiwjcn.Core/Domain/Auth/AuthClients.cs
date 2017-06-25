@@ -44,6 +44,10 @@ namespace Hiwjcn.Core.Domain.Auth
         [StringLength(100, MinimumLength = 20, ErrorMessage = "客户端用户UID必填")]
         public virtual string UserUID { get; set; }
 
+        [Required]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "客户端ClientSecretUID必填")]
+        public virtual string ClientSecretUID { get; set; }
+
         public virtual int IsRemove { get; set; }
 
         public virtual DateTime CreateTime { get; set; }
@@ -152,6 +156,30 @@ namespace Hiwjcn.Core.Domain.Auth
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "scope UID 必填")]
         public virtual string ScopeUID { get; set; }
+
+        public virtual DateTime CreateTime { get; set; }
+    }
+
+    [Serializable]
+    [Table("auth_code")]
+    public class AuthCode : IDBTable
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public virtual int IID { get; set; }
+
+        [Index]
+        [Required]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "token UID必填")]
+        public virtual string UID { get; set; }
+
+        [Required]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "token 必填")]
+        public virtual string Code { get; set; }
+
+        [Required]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "用户UID 必填")]
+        public virtual string UserUID { get; set; }
 
         public virtual DateTime CreateTime { get; set; }
     }

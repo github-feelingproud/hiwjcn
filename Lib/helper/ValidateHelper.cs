@@ -530,14 +530,18 @@ namespace Lib.helper
             }
 
             //checker
-            Func<IEnumerable<ValidationAttribute>, object, bool> CheckProp = (validators, data) =>
+            bool CheckProp(IEnumerable<ValidationAttribute> validators, object data, PropertyInfo p)
             {
-                if (validators == null) { return true; }
-                foreach (var validator in validators)
+                foreach (var validator in ConvertHelper.NotNullEnumerable(validators))
                 {
                     if (!validator.IsValid(data))
                     {
-                        list.Add(ConvertHelper.GetString(validator.ErrorMessage).Trim());
+                        var msg = ConvertHelper.GetString(validator.ErrorMessage).Trim();
+                        if (!ValidateHelper.IsPlumpString(msg))
+                        {
+                            msg = $"字段{p.Name}未通过{validator.GetType().Name}标签的验证";
+                        }
+                        list.Add(msg);
                         return false;
                     }
                 }
@@ -550,7 +554,7 @@ namespace Lib.helper
 
                 var value = prop.GetValue(model);
 
-                if (!CheckProp(prop.GetCustomAttributes_<ValidationAttribute>(), value)) { continue; }
+                if (!CheckProp(prop.GetCustomAttributes_<ValidationAttribute>(), value, prop)) { continue; }
             }
 
             return list.Where(x => IsPlumpString(x)).Distinct().ToList();

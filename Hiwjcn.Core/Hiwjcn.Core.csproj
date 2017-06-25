@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Auth\AuthClientRepository.cs" />
+    <Compile Include="Data\Auth\AuthCodeRepository.cs" />
     <Compile Include="Data\Auth\AuthScopeRepository.cs" />
     <Compile Include="Data\Auth\AuthTokenRepository.cs" />
     <Compile Include="Data\Auth\AuthTokenScopeRepository.cs" />

@@ -56,6 +56,7 @@ namespace Hiwjcn.Dal
         public virtual DbSet<AuthScope> AuthScope { get; set; }
         public virtual DbSet<AuthToken> AuthToken { get; set; }
         public virtual DbSet<AuthTokenScope> AuthTokenScope { get; set; }
+        public virtual DbSet<AuthCode> AuthCode { get; set; }
 
         public virtual DbSet<UserAvatar> UserAvatar { get; set; }
         public virtual DbSet<UserModel> UserModel { get; set; }

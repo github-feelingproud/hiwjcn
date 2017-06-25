@@ -16,4 +16,8 @@ namespace Lib.core
     [Serializable]
     public class SourceNotExistException : Exception
     { }
+
+    [Serializable]
+    public class AccessDenyException : Exception
+    { }
 }

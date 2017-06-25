@@ -25,6 +25,20 @@ namespace Lib.data
         }
 
         /// <summary>
+        /// 如果数据库不存在就创建
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context"></param>
+        public static void CreateDatabaseIfNotExist<T>(this T context) where T : DbContext
+        {
+            var c = ((IObjectContextAdapter)context).ObjectContext;
+            if (!c.DatabaseExists())
+            {
+                c.CreateDatabase();
+            }
+        }
+
+        /// <summary>
         /// 注册fluent mapping
         /// </summary>
         /// <param name="builder"></param>
