@@ -62,7 +62,7 @@ namespace Lib.data
         {
             using (var db = EFManager.SelectDB("db").GetDbContext())
             {
-                var switcher = true;
+                var switcher = false;
                 if (switcher)
                 {
                     db.CreateDatabaseIfNotExist();
