@@ -112,6 +112,37 @@ namespace Lib.extension
                 func(list[i], list[i + 1], i, i + 1);
             }
         }
+
+        /// <summary>
+        /// 判断两个list是否有相同的item
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool SameItems<T>(this IList<T> list, IList<T> data)
+        {
+            if (list.Count != data.Count) { return false; }
+            foreach (var m in list)
+            {
+                if (!data.Where(x => x.Equals(m)).Any())
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 判断两个list是否有相同的item
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool SameCanOrderedItems(this IList<int> list, IList<int> data)
+        {
+            return ".".Join_(list.OrderBy(x => x)) == ".".Join_(data.OrderBy(x => x));
+        }
     }
 
     /// <summary>

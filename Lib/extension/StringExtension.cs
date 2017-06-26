@@ -95,7 +95,7 @@ namespace Lib.extension
         /// <param name="sep"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static string Join<T>(this string sep, IEnumerable<T> list) => sep._Join(list);
+        public static string Join<T>(this string sep, IEnumerable<T> list) => sep.Join_(list);
 
         /// <summary>
         /// 模仿python的join
@@ -103,7 +103,7 @@ namespace Lib.extension
         /// <param name="sep"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static string _Join<T>(this string sep, IEnumerable<T> list)
+        public static string Join_<T>(this string sep, IEnumerable<T> list)
         {
             var arrs = list.Select(x => ConvertHelper.GetString(x)).ToArray();
             return string.Join(sep, arrs);
@@ -115,7 +115,7 @@ namespace Lib.extension
         /// <param name="s"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static string Format(this string s, params object[] args) => s._Format(args);
+        public static string Format(this string s, params object[] args) => s.Format_(args);
 
         /// <summary>
         /// 模仿python中的格式化
@@ -123,7 +123,7 @@ namespace Lib.extension
         /// <param name="s"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static string _Format(this string s, params object[] args) => string.Format(s, args);
+        public static string Format_(this string s, params object[] args) => string.Format(s, args);
 
         /// <summary>
         /// base64变string
