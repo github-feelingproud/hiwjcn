@@ -111,6 +111,18 @@ on user.UserID equals section.SectionID
         }
 
         [TestMethod]
+        public void genlkjlkjljkfa()
+        {
+            try
+            {
+                this.GetType().IsGenericType_(typeof(Task<>));
+                this.GetType().IsGenericType_<string>();
+            }
+            catch (Exception e)
+            { }
+        }
+
+        [TestMethod]
         public void fasdfasdfasdfads()
         {
             try

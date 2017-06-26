@@ -71,6 +71,7 @@ namespace Lib.extension
         /// <returns></returns>
         public static bool IsGenericType_(this Type t, Type tt)
         {
+            if (!tt.IsGenericType) { throw new Exception("传入参数必须是泛型"); }
             return t.IsGenericType && t.GetGenericTypeDefinition() == tt;
         }
 
