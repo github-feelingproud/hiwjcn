@@ -790,6 +790,8 @@
     <Content Include="ui\font-icon\scss\_screen-reader.scss" />
     <Content Include="ui\font-icon\scss\_stacked.scss" />
     <Content Include="ui\font-icon\scss\_variables.scss" />
+    <Content Include="Views\Shared\UserLayout.cshtml" />
+    <Content Include="Views\Test\UView.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

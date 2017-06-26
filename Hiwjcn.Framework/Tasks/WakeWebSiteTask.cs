@@ -38,7 +38,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             try
             {
-                var url = "http://colin.hiwj.cn/";
+                var url = "http://www.qq.com/";
                 var html = HttpClientHelper.Get(url);
                 $"唤醒网站，读取内容长度为{html?.Length}".AddBusinessInfoLog();
             }

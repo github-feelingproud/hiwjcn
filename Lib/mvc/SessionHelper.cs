@@ -44,6 +44,9 @@ namespace Lib.mvc
             {
                 return (T)obj;
             }
+
+            if (obj == null) { return default(T); }
+
             try
             {
                 return obj.ToJson().JsonToEntity<T>();
