@@ -8,6 +8,7 @@ using Lib.extension;
 using Lib.helper;
 using System.Web.Mvc;
 using System.Web;
+using Lib.ioc;
 
 namespace Lib.mvc.user
 {
@@ -53,6 +54,38 @@ namespace Lib.mvc.user
             }
 
             base.OnActionExecuting(filterContext);
+        }
+    }
+
+    public class 页面权限拦截Attribute : ValidLoginBaseAttribute
+    {
+        public override LoginStatus GetLoginStatus() => AppContext.GetObject<LoginStatus>();
+
+        public override void WhenNoPermission(ref ActionExecutingContext filterContext)
+        {
+            filterContext.Result = new ViewResult() { ViewName = "~/Views/Shared/Limited.cshtml" };
+        }
+
+        public override void WhenNotLogin(ref ActionExecutingContext filterContext)
+        {
+            var current_url = filterContext.HttpContext.Request.Url.ToString();
+            current_url = EncodingHelper.UrlEncode(current_url);
+            filterContext.Result = new RedirectResult($"/account/login?continue={current_url}");
+        }
+    }
+
+    public class 接口权限拦截Attribute : ValidLoginBaseAttribute
+    {
+        public override LoginStatus GetLoginStatus() => AppContext.GetObject<LoginStatus>();
+
+        public override void WhenNoPermission(ref ActionExecutingContext filterContext)
+        {
+            filterContext.Result = GetJson(new _() { success = false, msg = "没有权限" });
+        }
+
+        public override void WhenNotLogin(ref ActionExecutingContext filterContext)
+        {
+            filterContext.Result = GetJson(new _() { success = false, msg = "登录过期，请刷新页面" });
         }
     }
 }

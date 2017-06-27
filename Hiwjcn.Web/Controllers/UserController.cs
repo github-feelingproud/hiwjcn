@@ -5,6 +5,7 @@ using Lib.helper;
 
 using Lib.io;
 using Lib.mvc;
+using Lib.mvc.user;
 using Model.Sys;
 using Model.User;
 using System;
@@ -15,9 +16,38 @@ namespace Hiwjcn.Web.Controllers
     public class UserController : WebCore.MvcLib.Controller.UserBaseController
     {
         private IUserService _IUserService { get; set; }
-        public UserController(IUserService user)
+        private readonly LoginStatus _LoginStatus;
+        public UserController(IUserService user, LoginStatus _LoginStatus)
         {
             this._IUserService = user;
+            this._LoginStatus = _LoginStatus;
+        }
+
+
+        public ActionResult NoTest()
+        {
+            this._LoginStatus.SetUserLogin(loginuser: new LoginUserInfo()
+            {
+                IID = 99,
+                UserID = Com.GetUUID(),
+                UserUID = Com.GetUUID(),
+                LoginToken = Com.GetUUID(),
+                Email = "hiwjcn@live.com",
+                IsActive = 1
+            });
+            return Content("");
+        }
+
+        [页面权限拦截(Permission = "不存在的权限")]
+        public ActionResult No()
+        {
+            return Content("");
+        }
+
+        [接口权限拦截(Permission = "测试用的权限")]
+        public ActionResult NoApi()
+        {
+            return GetJson(new _() { });
         }
 
         /// <summary>
