@@ -138,5 +138,19 @@ namespace Lib.extension
         /// <param name="s"></param>
         /// <returns></returns>
         public static string StringToBase64(this string s) => ConvertHelper.Base64Encode(s);
+
+        /// <summary>
+        /// 字节数组到base64
+        /// </summary>
+        /// <param name="bs"></param>
+        /// <returns></returns>
+        public static string BytesToBase64(this byte[] bs) => ConvertHelper.BytesToBase64(bs);
+
+        /// <summary>
+        /// base64到字节数组
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static byte[] Base64ToBytes(this string s) => ConvertHelper.Base64ToBytes(s);
     }
 }
