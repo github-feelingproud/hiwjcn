@@ -50,6 +50,12 @@ namespace Hiwjcn.Web.Controllers
             return GetJson(new _() { });
         }
 
+        public ActionResult AllPers()
+        {
+            var pers = this.ScanAllAssignedPermissionOnThisAssembly();
+            return GetJson(pers);
+        }
+
         /// <summary>
         /// 用户信息
         /// </summary>

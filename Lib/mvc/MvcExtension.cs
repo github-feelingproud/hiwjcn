@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Lib.extension;
 using Lib.io;
+using Lib.mvc.user;
+using System.Reflection;
 using System.Web.SessionState;
 
 namespace Lib.mvc
@@ -134,6 +136,33 @@ namespace Lib.mvc
             var value = session[key]?.ToString();
 
             return value == null ? default(T) : value.JsonToEntity<T>();
+        }
+
+        /// <summary>
+        /// 获取这个程序集中所用到的所有权限
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <returns></returns>
+        public static List<string> ScanAllAssignedPermissionOnThisAssembly(this Controller controller)
+        {
+            var list = new List<string>();
+            var tps = controller.GetType().Assembly.GetTypes();
+            tps = tps.Where(x => x.IsNormalClass() && x.IsAssignableTo_<Controller>()).ToArray();
+            foreach (var t in tps)
+            {
+                var methods = t.GetMethods().Where(x => x.IsPublic);
+                foreach (var m in methods)
+                {
+                    var attr = m.GetCustomAttribute<ValidLoginBaseAttribute>();
+                    if (attr == null) { continue; }
+                    var pers = attr.Permission?.Split(',').ToList();
+                    if (ValidateHelper.IsPlumpList(pers))
+                    {
+                        list.AddRange(pers);
+                    }
+                }
+            }
+            return list.Distinct().Where(x => ValidateHelper.IsPlumpString(x)).ToList();
         }
     }
 }
