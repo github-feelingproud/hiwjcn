@@ -10,6 +10,20 @@ namespace Lib.extension
 {
     public static class CollectionExtension
     {
+        /// <summary>
+        /// 解决ilist没有foreach的问题
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="action"></param>
+        public static void ForEach_<T>(this IEnumerable<T> list, Action<T> action)
+        {
+            foreach (var m in list)
+            {
+                action.Invoke(m);
+            }
+        }
+
         public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> source, int batchSize)
         {
             using (var enumerator = source.GetEnumerator())
