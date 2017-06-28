@@ -180,7 +180,7 @@ namespace Lib.mvc
         protected readonly bool ShowExceptionResult = (ConfigurationManager.AppSettings["ShowExceptionResult"] ?? "true").ToBool();
 
         [NonAction]
-        private ActionResult ExceptionResult(Exception e)
+        protected virtual ActionResult ExceptionResult(Exception e)
         {
             var (area, controller, action) = this.RouteData.GetA_C_A();
             e.AddLog(this.GetType());
