@@ -12,6 +12,7 @@ using System.Data.Entity;
 using WebCore.MvcLib.Controller;
 using Lib.helper;
 using System;
+using Bll.User;
 
 namespace Hiwjcn.Web.App_Start
 {
@@ -35,6 +36,10 @@ namespace Hiwjcn.Web.App_Start
             var pluginAssemblies = FindPluginAssemblies();
             pluginAssemblies.Add(tps.web.Assembly);
             RegController(ref builder, pluginAssemblies.ToArray());
+
+            //获取用户权限
+            builder.RegisterType<UserBll>().As<IFetchUserPermissions>();
+
             //Aop拦截
             builder.RegisterType<AopLogError_>();
             //缓存

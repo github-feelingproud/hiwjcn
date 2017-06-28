@@ -17,13 +17,14 @@ using WebLogic.Dal.User;
 using WebLogic.Model.User;
 using Lib.ioc;
 using Lib.infrastructure;
+using Lib.mvc.user;
 
 namespace Bll.User
 {
     /// <summary>
     /// 用户
     /// </summary>
-    public class UserBll : ServiceBase<UserModel>, IUserService
+    public class UserBll : ServiceBase<UserModel>, IUserService, IFetchUserPermissions
     {
         private UserDal _UserDal { get; set; }
         private UserRoleDal _UserRoleDal { get; set; }
@@ -589,5 +590,36 @@ namespace Bll.User
             return model;
         }
 
+        /// <summary>
+        /// 获取用户权限
+        /// </summary>
+        /// <param name="loginuser"></param>
+        /// <returns></returns>
+        public List<string> FetchPermission(LoginUserInfo loginuser)
+        {
+            var list = Cache($"user_permissions_in_cache:{loginuser.UserID}", () =>
+            {
+                var RoleList = new List<int>();
+                var PermissionList = new List<string>();
+                _UserDal.PrepareSession(db =>
+                {
+                    var maprole = db.Set<UserRoleModel>().Where(x => x.UserID == loginuser.IID).Select(x => x.RoleID);
+                    var deftrole = db.Set<RoleModel>().Where(x => x.AutoAssignRole == "true").Select(x => x.RoleID);
+
+                    var rolepermissionlist = db.Set<RolePermissionModel>()
+                    .Where(x => maprole.Contains(x.RoleID) || deftrole.Contains(x.RoleID))
+                    .Select(x => new { role = x.RoleID, permission = x.PermissionID }).ToList();
+
+                    if (ValidateHelper.IsPlumpList(rolepermissionlist))
+                    {
+                        RoleList.AddRange(rolepermissionlist.Select(x => x.role).Distinct());
+                        PermissionList.AddRange(rolepermissionlist.Select(x => x.permission).Distinct());
+                    }
+                    return true;
+                });
+                return PermissionList;
+            });
+            return ConvertHelper.NotNullList(list);
+        }
     }
 }
