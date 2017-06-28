@@ -9,9 +9,13 @@ using Lib.helper;
 using System.Web.Mvc;
 using System.Web;
 using Lib.ioc;
+using Lib.mvc;
 
 namespace Lib.mvc.user
 {
+    /// <summary>
+    /// 验证登录权限
+    /// </summary>
     public abstract class ValidLoginBaseAttribute : _ActionFilterBaseAttribute
     {
         /// <summary>

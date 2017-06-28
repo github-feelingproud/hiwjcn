@@ -42,6 +42,12 @@ namespace Lib.mvc
         }
 
         /// <summary>
+        /// 是否是服务器环境
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsHosted() => HostingEnvironment.IsHosted;
+
+        /// <summary>
         /// 获取绝对路径
         /// </summary>
         /// <param name="context"></param>

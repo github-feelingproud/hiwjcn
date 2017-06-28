@@ -139,8 +139,28 @@ namespace Lib.extension
         /// <param name="list"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static bool SameCanOrderedItems(this IList<int> list, IList<int> data)
+        public static bool SameCanOrderedItems<T>(this IList<T> list, IList<T> data)
         {
+            var tps = new Type[]
+            {
+                typeof(int),
+                typeof(long),
+                typeof(double),
+                typeof(string),
+                typeof(byte),
+                typeof(float),
+                typeof(decimal),
+                typeof(DateTime),
+
+                typeof(int?),
+                typeof(long?),
+                typeof(double?),
+                typeof(byte?),
+                typeof(float?),
+                typeof(decimal?),
+                typeof(DateTime?)
+            };
+            if (!tps.Contains(typeof(T))) { throw new Exception("不支持的数据类型对比"); }
             return ".".Join_(list.OrderBy(x => x)) == ".".Join_(data.OrderBy(x => x));
         }
     }

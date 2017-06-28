@@ -4,9 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Lib.extension;
+using Lib.ioc;
 
 namespace Lib.mvc.user
 {
+    /// <summary>
+    /// 获取最新的用户权限
+    /// </summary>
+    public interface IFetchUserPermissions
+    {
+        /// <summary>
+        /// 获取最新的用户权限
+        /// </summary>
+        /// <param name="loginuser"></param>
+        /// <returns></returns>
+        List<string> FetchPermission(LoginUserInfo loginuser);
+    }
+
     /// <summary>
     /// 记录登陆信息，可以序列化
     /// </summary>
@@ -64,9 +78,60 @@ namespace Lib.mvc.user
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
+        [Obsolete("【请在ioc中配置IFetchUserPermissions】不然这里很可能使用的缓存的权限，而不是及时获取权限！！！")]
         public bool HasPermission(string permission)
         {
+            this.LoadNewPermission();
             return this.Permissions != null && this.Permissions.Contains(permission);
+        }
+
+        private bool IsNewPermission = false;
+
+        /// <summary>
+        /// 加载新权限
+        /// </summary>
+        private void LoadNewPermission()
+        {
+            //加载用户权限并缓存到httpcontext中
+            try
+            {
+                //防止多次加载
+                if (this.IsNewPermission) { return; }
+
+                Func<List<string>> fetch_func = () => AppContext.GetObject<IFetchUserPermissions>().FetchPermission(this);
+
+                var fresh_permissions = default(List<string>);
+
+                if (ServerHelper.IsHosted())
+                {
+                    var list = ServerHelper.CacheInHttpContext($"user_permission_during_httprequest:{this.UserID}", fetch_func);
+                    fresh_permissions = ConvertHelper.NotNullList(list);
+                }
+                else
+                {
+                    fresh_permissions = fetch_func();
+                }
+
+                //加入新权限
+                this.Permissions = fresh_permissions;
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog("获取用户权限错误，将使用session中存储的权限");
+            }
+            finally
+            {
+                this.IsNewPermission = true;
+            }
+        }
+
+        /// <summary>
+        /// 重新加载新权限
+        /// </summary>
+        public void RefreshPermissions()
+        {
+            this.IsNewPermission = false;
+            this.LoadNewPermission();
         }
 
         /// <summary>
