@@ -13,15 +13,24 @@ namespace Lib.extension
         /// <summary>
         /// 解决ilist没有foreach的问题
         /// </summary>
+        public static void ForEach_<T>(this IEnumerable<T> list, Action<int, T> action)
+        {
+            var index = 0;
+            foreach (var m in list)
+            {
+                action.Invoke(index++, m);
+            }
+        }
+
+        /// <summary>
+        /// 解决ilist没有foreach的问题
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <param name="action"></param>
         public static void ForEach_<T>(this IEnumerable<T> list, Action<T> action)
         {
-            foreach (var m in list)
-            {
-                action.Invoke(m);
-            }
+            list.ForEach_((index, x) => action.Invoke(x));
         }
 
         public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> source, int batchSize)
