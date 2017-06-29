@@ -217,13 +217,22 @@ namespace Lib.extension
         /// <summary>
         /// 开启链接调试
         /// </summary>
-        /// <param name="setting"></param>
-        /// <param name="handler"></param>
-        public static void EnableDebug(this ConnectionSettings setting, Action<IApiCallDetails> handler)
+        public static ConnectionSettings EnableDebug(this ConnectionSettings setting)
         {
-            if (handler == null)
+            return setting.DisableDirectStreaming(true);
+        }
+
+        /// <summary>
+        /// 记录请求信息
+        /// </summary>
+        /// <param name="pool"></param>
+        /// <param name="handlerOrDefault"></param>
+        /// <returns></returns>
+        public static ConnectionSettings LogRequestInfo(this ConnectionSettings pool, Action<IApiCallDetails> handlerOrDefault = null)
+        {
+            if (handlerOrDefault == null)
             {
-                handler = x =>
+                handlerOrDefault = x =>
                 {
                     if (x.OriginalException != null)
                     {
@@ -238,9 +247,15 @@ namespace Lib.extension
                     }.ToJson().AddBusinessInfoLog();
                 };
             }
-            setting.DisableDirectStreaming();
-            setting.OnRequestCompleted(handler);
+            return pool.OnRequestCompleted(handlerOrDefault);
         }
+
+        /// <summary>
+        /// 创建client
+        /// </summary>
+        /// <param name="pool"></param>
+        /// <returns></returns>
+        public static IElasticClient CreateClient(this ConnectionSettings pool) => new ElasticClient(pool);
 
         /// <summary>
         /// 根据距离排序
@@ -318,7 +333,7 @@ namespace Lib.extension
             sd = sd.Aggregations(a => a.Max("max", x => x.Field(m => m.IsGroup)));
             sd = sd.Aggregations(a => a.Stats("stats", x => x.Field(m => m.BrandId).Field(m => m.PIsRemove)));
 
-            var response = ElasticsearchHelper.CreateClient().Search<EsExample.ProductListV2>(x => sd);
+            var response = ElasticsearchClientManager.Instance.DefaultClient.CreateClient().Search<EsExample.ProductListV2>(x => sd);
 
             var stats = response.Aggs.Stats("stats");
             //etc
@@ -421,8 +436,7 @@ namespace Lib.extension
         public override ConnectionSettings CreateNewClient(string key)
         {
             var urls = key.Split('|', ';', ',').Select(s => new Uri(s));
-            var pool = new ConnectionSettings(new StaticConnectionPool(urls)).DisableDirectStreaming(true).MaximumRetries(2);
-
+            var pool = new ConnectionSettings(new StaticConnectionPool(urls)).MaximumRetries(2).EnableDebug();
             return pool;
         }
 
@@ -431,25 +445,6 @@ namespace Lib.extension
             IDisposable dis = ins;
             dis?.Dispose();
         }
-    }
-
-    /// <summary>
-    /// es
-    /// https://www.elastic.co/products/elasticsearch
-    /// </summary>
-    public static class ElasticsearchHelper
-    {
-        /// <summary>
-        /// 获取连接池
-        /// </summary>
-        /// <returns></returns>
-        public static ConnectionSettings GetConnectionSettings() => ElasticsearchClientManager.Instance.DefaultClient;
-
-        /// <summary>
-        /// 获取链接对象
-        /// </summary>
-        /// <returns></returns>
-        public static IElasticClient CreateClient() => new ElasticClient(ElasticsearchClientManager.Instance.DefaultClient);
     }
 
     /// <summary>

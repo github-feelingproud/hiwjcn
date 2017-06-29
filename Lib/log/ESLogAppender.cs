@@ -33,8 +33,7 @@ namespace Lib.log
             {
                 Policy.Handle<Exception>().WaitAndRetry(3, i => TimeSpan.FromSeconds(i)).Execute(() =>
                 {
-                    var pool = ElasticsearchClientManager.Instance.DefaultClient;
-                    var client = new ElasticClient(pool);
+                    var client = ElasticsearchClientManager.Instance.DefaultClient.CreateClient();
 
                     client.CreateIndexIfNotExists(ESLogHelper.IndexName);
                 });
@@ -53,8 +52,7 @@ namespace Lib.log
                 {
                     Policy.Handle<Exception>().WaitAndRetry(3, i => TimeSpan.FromMilliseconds(i * 100)).Execute(() =>
                     {
-                        var pool = ElasticsearchClientManager.Instance.DefaultClient;
-                        var client = new ElasticClient(pool);
+                        var client = ElasticsearchClientManager.Instance.DefaultClient.CreateClient();
 
                         client.AddToIndex(ESLogHelper.IndexName, events.Select(x => new ESLogLine(x)).ToArray());
                     });
