@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
 using Lib.core;
+using System.Threading.Tasks;
 
 namespace Lib.extension
 {
@@ -73,17 +74,37 @@ namespace Lib.extension
         /// <param name="indexName"></param>
         /// <param name="selector"></param>
         /// <returns></returns>
-        public static bool CreateIndexIfNotExists(this IElasticClient client, string indexName,
-            Func<CreateIndexDescriptor, ICreateIndexRequest> selector = null)
+        public static void CreateIndexIfNotExists(this IElasticClient client, string indexName, Func<CreateIndexDescriptor, ICreateIndexRequest> selector = null)
         {
             indexName = indexName.ToLower();
 
             if (client.IndexExists(indexName).Exists)
-                return true;
+            {
+                return;
+            }
 
             var response = client.CreateIndex(indexName, selector);
+            response.ThrowIfException();
+        }
 
-            return response.IsValid;
+        /// <summary>
+        /// 如果索引不存在就创建
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="indexName"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public static async Task CreateIndexIfNotExistsAsync(this IElasticClient client, string indexName, Func<CreateIndexDescriptor, ICreateIndexRequest> selector = null)
+        {
+            indexName = indexName.ToLower();
+
+            if ((await client.IndexExistsAsync(indexName)).Exists)
+            {
+                return;
+            }
+
+            var response = await client.CreateIndexAsync(indexName, selector);
+            response.ThrowIfException();
         }
 
         /// <summary>
@@ -92,16 +113,36 @@ namespace Lib.extension
         /// <param name="client"></param>
         /// <param name="indexName"></param>
         /// <returns></returns>
-        public static bool DeleteIndexIfExists(this IElasticClient client, string indexName)
+        public static void DeleteIndexIfExists(this IElasticClient client, string indexName)
         {
             indexName = indexName.ToLower();
 
             if (!client.IndexExists(indexName).Exists)
-                return true;
+            {
+                return;
+            }
 
             var response = client.DeleteIndex(indexName);
+            response.ThrowIfException();
+        }
 
-            return response.IsValid;
+        /// <summary>
+        /// 删除索引
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public static async Task DeleteIndexIfExistsAsync(this IElasticClient client, string indexName)
+        {
+            indexName = indexName.ToLower();
+
+            if (!(await client.IndexExistsAsync(indexName)).Exists)
+            {
+                return;
+            }
+
+            var response = await client.DeleteIndexAsync(indexName);
+            response.ThrowIfException();
         }
 
         /// <summary>
@@ -119,6 +160,25 @@ namespace Lib.extension
                 Operations = ConvertHelper.NotNullList(data).Select(x => new BulkIndexOperation<T>(x)).ToArray()
             };
             var response = client.Bulk(bulk);
+
+            response.ThrowIfException();
+        }
+
+        /// <summary>
+        /// 添加到索引
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="indexName"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static async Task AddToIndexAsync<T>(this IElasticClient client, string indexName, params T[] data) where T : class, IElasticSearchIndex
+        {
+            var bulk = new BulkRequest(indexName)
+            {
+                Operations = ConvertHelper.NotNullList(data).Select(x => new BulkIndexOperation<T>(x)).ToArray()
+            };
+            var response = await client.BulkAsync(bulk);
 
             response.ThrowIfException();
         }
@@ -771,6 +831,160 @@ namespace Lib.extension
             public virtual string UID { get; set; }
 
             public virtual string value { get; set; }
+        }
+
+
+
+
+
+        
+
+        public const string INDEX_NAME = "comment_index";
+
+        public PagerData<CommentEs> QueryCommentFromEs(
+            string user_product_id = null, string user_uid = null, string q = null, int page = 1, int pagesize = 10)
+        {
+            var data = new PagerData<CommentEs>();
+            var client = ElasticsearchClientManager.Instance.DefaultClient.CreateClient();
+            var temp = new CommentEs();
+            var tag_temp = new TagEs();
+
+            var sd = new SearchDescriptor<CommentEs>();
+            sd = sd.Index(INDEX_NAME);
+
+            #region where
+            var query = new QueryContainer();
+            if (ValidateHelper.IsPlumpString(user_product_id))
+            {
+                query &= new TermQuery() { Field = nameof(temp.UserProductUID), Value = user_product_id };
+            }
+            if (ValidateHelper.IsPlumpString(user_uid))
+            {
+                query &= new TermQuery() { Field = nameof(temp.UserUID), Value = user_uid };
+            }
+            if (ValidateHelper.IsPlumpString(q))
+            {
+                query &= new MatchQuery() { Field = nameof(temp.Comment), Query = q, Operator = Operator.Or, MinimumShouldMatch = "100%" };
+            }
+            sd = sd.Query(_ => query);
+            #endregion
+
+            #region order
+            var sort = new SortDescriptor<CommentEs>();
+            sort = sort.Descending(x => x.CreateTime);
+            sd = sd.Sort(_ => sort);
+            #endregion
+
+            #region aggs
+            sd = sd.Aggregations(x => x
+            .Terms("tags", av => av.Field($"{nameof(temp.Tags)}.{nameof(tag_temp.TagName)}").Size(10))
+            .Terms("shops", av => av.Field(f => f.TraderUID).Size(10))
+            .Average("score", av => av.Field(f => f.Score)));
+            #endregion
+
+            #region pager
+            sd = sd.QueryPage_(page, pagesize);
+            #endregion
+
+            var response = client.Search<CommentEs>(_ => sd);
+            response.ThrowIfException();
+
+            data.ItemCount = (int)response.Total;
+            data.DataList = response.Documents.ToList();
+
+            var tags_agg = response.Aggs.Terms("tags");
+            var shops_agg = response.Aggs.Terms("shops");
+            var score_agg = response.Aggs.Average("score");
+
+            return data;
+        }
+
+        public void UpdateIndex()
+        {
+            var client = ElasticsearchClientManager.Instance.DefaultClient.CreateClient();
+            client.CreateIndexIfNotExists(INDEX_NAME, x => x.GetCreateIndexDescriptor<CommentEs>());
+
+            var ran = new Random((int)DateTime.Now.Ticks);
+            var list = new List<CommentEs>() { };
+            var comment_list = new List<string>()
+            {
+                "测试发表后页面刷新情况","获取AuthorizationCode报error=1是什么问题","GHOST博客怎么安装啊？急等！","我就测试一下有没有限制敏感词汇，我草你大爷","我看看了，我认为！这个IDE是Hbuilder","中国足协的最新处罚，足以体现“只许州官放火，不许百姓点灯”，桩桩事件的药引子自然都是裁判，他们最后又是事件最终的判官，能让所有球员都不畏惧权力吗？能让所有球员不将心中的愤懑发泄到对方球员身上吗？这就是具有中国特色的中超联赛，但愿足协的高官们，别再被舆论强奸了，真正给赛场以公平的环境，包括你们属下的裁判"
+            };
+            for (var i = 0; i < 10; ++i)
+            {
+                list.Add(new CommentEs()
+                {
+                    UID = Com.GetUUID(),
+                    Comment = ran.Choice(comment_list),
+                    CreateTime = DateTime.Now,
+                    UpdateTime = DateTime.Now,
+                    Images = ran.Sample(comment_list, 3).ToArray(),
+                    Tags = new TagEs[]
+                    {
+                        new TagEs(){TagUID=Com.GetUUID(),TagName="技术交流" },
+                        new TagEs(){TagUID=Com.GetUUID(),TagName="评论组件" }
+                    },
+                    TraderUID = Com.GetUUID(),
+                    TraderName = Com.GetUUID(),
+                    UserUID = Com.GetUUID(),
+                    UserProductUID = Com.GetUUID(),
+                    Score = ran.RealNext(10),
+                    DimensionUID = Com.GetUUID()
+                });
+            }
+
+            client.AddToIndex(INDEX_NAME, list.ToArray());
+        }
+
+
+        [ElasticsearchType(IdProperty = nameof(UID), Name = nameof(CommentEs))]
+        public class CommentEs : IElasticSearchIndex
+        {
+            [String(Name = nameof(UID), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string UID { get; set; }
+
+            [String(Name = nameof(Comment), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+            public virtual string Comment { get; set; }
+
+            [Date(Name = nameof(CreateTime))]
+            public virtual DateTime CreateTime { get; set; }
+
+            [Date(Name = nameof(UpdateTime))]
+            public virtual DateTime UpdateTime { get; set; }
+
+            [String(Name = nameof(Images), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string[] Images { get; set; }
+
+            [Object(Name = nameof(Tags))]
+            public virtual TagEs[] Tags { get; set; }
+
+            [String(Name = nameof(TraderUID), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string TraderUID { get; set; }
+
+            [String(Name = nameof(TraderName), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string TraderName { get; set; }
+
+            [String(Name = nameof(UserUID), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string UserUID { get; set; }
+
+            [String(Name = nameof(UserProductUID), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string UserProductUID { get; set; }
+
+            [Number(Name = nameof(Score))]
+            public virtual double Score { get; set; }
+
+            [String(Name = nameof(DimensionUID), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string DimensionUID { get; set; }
+
+        }
+
+        public class TagEs
+        {
+            [String(Name = nameof(TagUID), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string TagUID { get; set; }
+
+            [String(Name = nameof(TagName), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string TagName { get; set; }
         }
     }
 }
