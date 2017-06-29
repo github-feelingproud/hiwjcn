@@ -318,6 +318,34 @@ namespace Lib.extension
         public static IElasticClient CreateClient(this ConnectionSettings pool) => new ElasticClient(pool);
 
         /// <summary>
+        /// 判断文件是否存在
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public static bool DocExist_<T>(this IElasticClient client, string uid) where T : class, IElasticSearchIndex
+        {
+            var response = client.DocumentExists(DocumentPath<T>.Id(uid));
+            response.ThrowIfException();
+            return response.Exists;
+        }
+
+        /// <summary>
+        /// 判断文件是否存在
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public static async Task<bool> DocExistAsync_<T>(this IElasticClient client, string uid) where T : class, IElasticSearchIndex
+        {
+            var response = await client.DocumentExistsAsync(DocumentPath<T>.Id(uid));
+            response.ThrowIfException();
+            return response.Exists;
+        }
+
+        /// <summary>
         /// 根据距离排序
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -837,7 +865,7 @@ namespace Lib.extension
 
 
 
-        
+
 
         public const string INDEX_NAME = "comment_index";
 
