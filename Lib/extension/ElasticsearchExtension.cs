@@ -346,6 +346,58 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 更新文档
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="uid"></param>
+        /// <param name="doc"></param>
+        public static void UpdateDoc_<T>(this IElasticClient client, string uid, T doc) where T : class, IElasticSearchIndex
+        {
+            var update_response = client.Update(DocumentPath<T>.Id(uid), x => x.Doc(doc));
+            update_response.ThrowIfException();
+        }
+
+        /// <summary>
+        /// 更新文档
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="uid"></param>
+        /// <param name="doc"></param>
+        /// <returns></returns>
+        public static async Task UpdateDocAsync_<T>(this IElasticClient client, string uid, T doc) where T : class, IElasticSearchIndex
+        {
+            var update_response = await client.UpdateAsync(DocumentPath<T>.Id(uid), x => x.Doc(doc));
+            update_response.ThrowIfException();
+        }
+
+        /// <summary>
+        /// 删除文档
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="uid"></param>
+        public static void DeleteDoc_<T>(this IElasticClient client, string uid) where T : class, IElasticSearchIndex
+        {
+            var delete_response = client.Delete(DocumentPath<T>.Id(uid));
+            delete_response.ThrowIfException();
+        }
+
+        /// <summary>
+        /// 删除文档
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public static async Task DeleteDocAsync_<T>(this IElasticClient client, string uid) where T : class, IElasticSearchIndex
+        {
+            var delete_response = await client.DeleteAsync(DocumentPath<T>.Id(uid));
+            delete_response.ThrowIfException();
+        }
+
+        /// <summary>
         /// 根据距离排序
         /// </summary>
         /// <typeparam name="T"></typeparam>
