@@ -318,15 +318,19 @@ namespace Lib.extension
         public static IElasticClient CreateClient(this ConnectionSettings pool) => new ElasticClient(pool);
 
         /// <summary>
+        /// 唯一ID
+        /// </summary>
+        public static DocumentPath<T> ID<T>(this IElasticClient client, string indexName, string uid) where T : class, IElasticSearchIndex
+        {
+            return DocumentPath<T>.Id(uid).Index(indexName);
+        }
+
+        /// <summary>
         /// 判断文件是否存在
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="uid"></param>
-        /// <returns></returns>
-        public static bool DocExist_<T>(this IElasticClient client, string uid) where T : class, IElasticSearchIndex
+        public static bool DocExist_<T>(this IElasticClient client, string indexName, string uid) where T : class, IElasticSearchIndex
         {
-            var response = client.DocumentExists(DocumentPath<T>.Id(uid));
+            var response = client.DocumentExists(client.ID<T>(indexName, uid));
             response.ThrowIfException();
             return response.Exists;
         }
@@ -334,13 +338,9 @@ namespace Lib.extension
         /// <summary>
         /// 判断文件是否存在
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="uid"></param>
-        /// <returns></returns>
-        public static async Task<bool> DocExistAsync_<T>(this IElasticClient client, string uid) where T : class, IElasticSearchIndex
+        public static async Task<bool> DocExistAsync_<T>(this IElasticClient client, string indexName, string uid) where T : class, IElasticSearchIndex
         {
-            var response = await client.DocumentExistsAsync(DocumentPath<T>.Id(uid));
+            var response = await client.DocumentExistsAsync(client.ID<T>(indexName, uid));
             response.ThrowIfException();
             return response.Exists;
         }
@@ -348,70 +348,46 @@ namespace Lib.extension
         /// <summary>
         /// 更新文档
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="uid"></param>
-        /// <param name="doc"></param>
-        public static void UpdateDoc_<T>(this IElasticClient client, string uid, T doc) where T : class, IElasticSearchIndex
+        public static void UpdateDoc_<T>(this IElasticClient client, string indexName, string uid, T doc) where T : class, IElasticSearchIndex
         {
-            var update_response = client.Update(DocumentPath<T>.Id(uid), x => x.Doc(doc));
+            var update_response = client.Update(client.ID<T>(indexName, uid), x => x.Doc(doc));
             update_response.ThrowIfException();
         }
 
         /// <summary>
         /// 更新文档
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="uid"></param>
-        /// <param name="doc"></param>
-        /// <returns></returns>
-        public static async Task UpdateDocAsync_<T>(this IElasticClient client, string uid, T doc) where T : class, IElasticSearchIndex
+        public static async Task UpdateDocAsync_<T>(this IElasticClient client, string indexName, string uid, T doc) where T : class, IElasticSearchIndex
         {
-            var update_response = await client.UpdateAsync(DocumentPath<T>.Id(uid), x => x.Doc(doc));
+            var update_response = await client.UpdateAsync(client.ID<T>(indexName, uid), x => x.Doc(doc));
             update_response.ThrowIfException();
         }
 
         /// <summary>
         /// 删除文档
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="uid"></param>
-        public static void DeleteDoc_<T>(this IElasticClient client, string uid) where T : class, IElasticSearchIndex
+        public static void DeleteDoc_<T>(this IElasticClient client, string indexName, string uid) where T : class, IElasticSearchIndex
         {
-            var delete_response = client.Delete(DocumentPath<T>.Id(uid));
+            var delete_response = client.Delete(client.ID<T>(indexName, uid));
             delete_response.ThrowIfException();
         }
 
         /// <summary>
         /// 删除文档
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="uid"></param>
-        /// <returns></returns>
-        public static async Task DeleteDocAsync_<T>(this IElasticClient client, string uid) where T : class, IElasticSearchIndex
+        public static async Task DeleteDocAsync_<T>(this IElasticClient client, string indexName, string uid) where T : class, IElasticSearchIndex
         {
-            var delete_response = await client.DeleteAsync(DocumentPath<T>.Id(uid));
+            var delete_response = await client.DeleteAsync(client.ID<T>(indexName, uid));
             delete_response.ThrowIfException();
         }
 
         /// <summary>
         /// 根据距离排序
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="sort"></param>
-        /// <param name="field"></param>
-        /// <param name="lat"></param>
-        /// <param name="lng"></param>
-        /// <param name="desc"></param>
-        /// <returns></returns>
         public static SortDescriptor<T> SortByDistance<T>(this SortDescriptor<T> sort,
-            Expression<Func<T, object>> field, double lat, double lng, bool desc = false)
-            where T : class, IElasticSearchIndex
+            Expression<Func<T, object>> field, GeoLocation point, bool desc = false) where T : class, IElasticSearchIndex
         {
-            var geo_sort = new SortGeoDistanceDescriptor<T>().PinTo(new GeoLocation(lat, lng));
+            var geo_sort = new SortGeoDistanceDescriptor<T>().PinTo(point);
             if (desc)
             {
                 geo_sort = geo_sort.Descending();
@@ -483,14 +459,14 @@ namespace Lib.extension
         {
             var sd = new SortScriptDescriptor<T>();
 
-            sd = sd.Mode(SortMode.Sum);
+            sd = sd.Mode(SortMode.Sum).Type("number");
             var script = "doc['price'].value * params.factor";
             sd = sd.Script(x => x.Inline(script).Lang("painless").Params(new Dictionary<string, object>()
             {
                 ["factor"] = 1.1
             }));
 
-            sort.Script(x => sd);
+            sort.Script(x => sd.Descending());
         }
 
         public static void FunctionQuery(this SearchDescriptor<EsExample.ProductListV2> sd)
