@@ -78,7 +78,10 @@ namespace Lib.extension
         {
             indexName = indexName.ToLower();
 
-            if (client.IndexExists(indexName).Exists)
+            var exist_response = client.IndexExists(indexName);
+            exist_response.ThrowIfException();
+
+            if (exist_response.Exists)
             {
                 return;
             }
@@ -97,8 +100,10 @@ namespace Lib.extension
         public static async Task CreateIndexIfNotExistsAsync(this IElasticClient client, string indexName, Func<CreateIndexDescriptor, ICreateIndexRequest> selector = null)
         {
             indexName = indexName.ToLower();
+            var exist_response = await client.IndexExistsAsync(indexName);
+            exist_response.ThrowIfException();
 
-            if ((await client.IndexExistsAsync(indexName)).Exists)
+            if (exist_response.Exists)
             {
                 return;
             }
@@ -117,7 +122,10 @@ namespace Lib.extension
         {
             indexName = indexName.ToLower();
 
-            if (!client.IndexExists(indexName).Exists)
+            var exist_response = client.IndexExists(indexName);
+            exist_response.ThrowIfException();
+
+            if (!exist_response.Exists)
             {
                 return;
             }
@@ -135,8 +143,10 @@ namespace Lib.extension
         public static async Task DeleteIndexIfExistsAsync(this IElasticClient client, string indexName)
         {
             indexName = indexName.ToLower();
+            var exist_response = await client.IndexExistsAsync(indexName);
+            exist_response.ThrowIfException();
 
-            if (!(await client.IndexExistsAsync(indexName)).Exists)
+            if (!exist_response.Exists)
             {
                 return;
             }
@@ -382,6 +392,39 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 通过条件删除
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="indexName"></param>
+        /// <param name="where"></param>
+        public static void DeleteByQuery_<T>(this IElasticClient client, string indexName, QueryContainer where) where T : class, IElasticSearchIndex
+        {
+            var query = new DeleteByQueryRequest<T>(indexName) { Query = where };
+
+            var response = client.DeleteByQuery(query);
+
+            response.ThrowIfException();
+        }
+
+        /// <summary>
+        /// 通过条件删除
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="indexName"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public static async Task DeleteByQueryAsync_<T>(this IElasticClient client, string indexName, QueryContainer where) where T : class, IElasticSearchIndex
+        {
+            var query = new DeleteByQueryRequest<T>(indexName) { Query = where };
+
+            var response = await client.DeleteByQueryAsync(query);
+
+            response.ThrowIfException();
+        }
+
+        /// <summary>
         /// 根据距离排序
         /// </summary>
         public static SortDescriptor<T> SortByDistance<T>(this SortDescriptor<T> sort,
@@ -511,20 +554,6 @@ namespace Lib.extension
             //
             client.Update(DocumentPath<EsExample.ProductListV2>.Id(""),
                 x => x.Index("").Type<EsExample.ProductListV2>().Doc(new EsExample.ProductListV2() { }));
-        }
-
-        public static void DeleteDoc(IElasticClient client)
-        {
-            //
-            var query = new DeleteByQueryRequest<EsExample.ProductListV2>("index_name");
-
-            query.Query = new QueryContainer();
-            query.Query &= new TermQuery() { Field = "", Value = "" };
-
-            client.DeleteByQuery(query);
-
-            //
-            client.Delete(DocumentPath<EsExample.ProductListV2>.Id(""));
         }
 
     }

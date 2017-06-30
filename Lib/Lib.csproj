@@ -349,6 +349,7 @@
     <Compile Include="helper\JsonHelper.cs" />
     <Compile Include="io\QrCode.cs" />
     <Compile Include="helper\XmlHelper.cs" />
+    <Compile Include="rpc\WebApiHelper.cs" />
     <Compile Include="task\QuartzJobBase.cs" />
     <Compile Include="task\ScheduleJobModel.cs" />
     <Compile Include="task\TaskLogger.cs" />

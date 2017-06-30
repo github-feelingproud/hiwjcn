@@ -33,6 +33,17 @@ namespace Lib.extension
             list.ForEach_((index, x) => action.Invoke(x));
         }
 
+        /// <summary>
+        /// 反转
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static List<T> Reverse<T>(this IEnumerable<T> list)
+        {
+            return Com.ReversalList(list.ToList());
+        }
+
         public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> source, int batchSize)
         {
             using (var enumerator = source.GetEnumerator())

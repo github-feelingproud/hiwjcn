@@ -29,6 +29,17 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 返回非null list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static async Task<List<T>> NotNullListAsync<T>(this IQueryable<T> query)
+        {
+            return ConvertHelper.NotNullList(await query.ToListAsync());
+        }
+
+        /// <summary>
         /// 自动分页
         /// </summary>
         /// <typeparam name="T"></typeparam>
