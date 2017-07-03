@@ -41,7 +41,9 @@ namespace Lib.extension
             int age = today.Year - birthday.Year;
 
             if (birthday > today.AddYears(-age))
-            { --age; }
+            {
+                --age;
+            }
 
             return age;
         }
@@ -135,6 +137,26 @@ namespace Lib.extension
         {
             var border = dateTime.GetDateBorder();
             return border.Item1 <= time && time < border.Item2;
+        }
+
+        /// <summary>
+        /// 是今天
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static bool IsToday(this DateTime time)
+        {
+            return time.IsSameDay(DateTime.Now);
+        }
+
+        /// <summary>
+        /// 是昨天
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static bool IsYesterday(this DateTime time)
+        {
+            return time.IsSameDay(DateTime.Now.AddDays(-1));
         }
 
     }

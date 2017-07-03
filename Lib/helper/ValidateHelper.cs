@@ -358,6 +358,18 @@ namespace Lib.helper
         public static bool IsPlumpList<T>(IList<T> list) => list?.Count > 0;
 
         /// <summary>
+        /// 包含长度大于0的item，并把他们找出来
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="filtered"></param>
+        /// <returns></returns>
+        public static bool IsPlumpListAfterFilterMeaninglessData(IList<string> list, out List<string> filtered)
+        {
+            filtered = ConvertHelper.NotNullList(list).Where(x => IsPlumpString(x)).ToList();
+            return filtered.Count > 0;
+        }
+
+        /// <summary>
         /// 判断是否是有值的字典
         /// </summary>
         /// <typeparam name="K"></typeparam>
