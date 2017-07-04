@@ -14,6 +14,7 @@ using Hiwjcn.Core.Infrastructure.Common;
 using HtmlAgilityPack;
 using Lib.helper;
 using Lib.infrastructure;
+using Lib.storage;
 
 namespace Hiwjcn.Bll.Sys
 {
@@ -122,7 +123,7 @@ namespace Hiwjcn.Bll.Sys
                 }
                 //判断文件是否存在于七牛
                 var qiniu_file = QiniuHelper.FindEntry(dbmodel.FileMD5);
-                bool FindInQiniu = qiniu_file != null;
+                bool FindInQiniu = qiniu_file.HasFile();
                 bool uploadToQiniuByMe = false;
                 if (FindInQiniu)
                 {

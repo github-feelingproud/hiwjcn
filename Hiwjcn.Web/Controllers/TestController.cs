@@ -18,6 +18,7 @@ using System.Linq;
 using Lib.mvc;
 using Lib.mvc.attr;
 using Lib.log;
+using Lib.storage;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -36,6 +37,12 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher = pub;
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
+        }
+
+        public ActionResult qiniu()
+        {
+            var data = QiniuHelper.FindEntry("fas");
+            return Content("");
         }
 
         public ActionResult UView()

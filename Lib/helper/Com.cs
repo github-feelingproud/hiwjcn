@@ -18,6 +18,12 @@ namespace Lib.helper
     public static class Com
     {
         /// <summary>
+        /// 获取动态类型
+        /// </summary>
+        /// <returns></returns>
+        public static dynamic DynamicObj() => new System.Dynamic.ExpandoObject();
+
+        /// <summary>
         /// 尝试获取请求上下文
         /// </summary>
         /// <param name="_context"></param>
