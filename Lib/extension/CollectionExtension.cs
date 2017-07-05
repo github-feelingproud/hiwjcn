@@ -62,7 +62,7 @@ namespace Lib.extension
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static List<T> Reverse<T>(this IEnumerable<T> list)
+        public static List<T> Reverse_<T>(this IEnumerable<T> list)
         {
             return Com.ReversalList(list.ToList());
         }

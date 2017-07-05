@@ -5,12 +5,20 @@ using Lib.extension;
 using Lib.infrastructure;
 using Hiwjcn.Core.Infrastructure.User;
 using Model.User;
+using System.Linq;
+using Lib.helper;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest3
     {
+        [TestMethod]
+        public void strhide()
+        {
+            var list = new int[10].Select(x => Com.GetUUID().HideForSecurity()).ToList();
+        }
+
         [TestMethod]
         public void TestMethod1()
         {

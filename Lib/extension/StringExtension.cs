@@ -13,6 +13,21 @@ namespace Lib.extension
     public static class StringExtension
     {
         /// <summary>
+        /// 中间用*替代
+        /// </summary>
+        public static string HideForSecurity(this string str,
+            int start_count = 1, int end_count = 1, int mark_count = 5)
+        {
+            var list = str.ToCharArray().ToList();
+            if (list.Count < start_count + end_count) { return str; }
+
+            var start = list.Take(1).FirstOrDefault();
+            var mid = "".Join_(new int[mark_count].Select(x => "*"));
+            var end = list.Reverse_().Take(1).FirstOrDefault();
+            return $"{start}{mid}{end}";
+        }
+
+        /// <summary>
         /// trim string
         /// </summary>
         public static string Trim_(this string str, string tm, bool ignore_case = true)
