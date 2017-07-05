@@ -15,12 +15,9 @@ namespace Lib.extension
         /// <summary>
         /// trim string
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="tm"></param>
-        /// <returns></returns>
-        public static string Trim_(this string str, string tm)
+        public static string Trim_(this string str, string tm, bool ignore_case = true)
         {
-            return StringHelper.Trim(str, tm);
+            return StringHelper.Trim(str, tm, ignore_case);
         }
 
         /// <summary>

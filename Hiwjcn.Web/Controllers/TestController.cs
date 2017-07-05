@@ -39,6 +39,12 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        [ValidateSign]
+        public ActionResult sign()
+        {
+            return Content("");
+        }
+
         public ActionResult qiniu()
         {
             var data = QiniuHelper.FindEntry("fas");

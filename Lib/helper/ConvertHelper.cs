@@ -27,7 +27,25 @@ namespace Lib.helper
         /// <returns></returns>
         public static string TrimMeaninglessChars(string str)
         {
-            return GetString(str).Trim_("\n").Trim_("\t").Trim_(" ");
+            str = GetString(str);
+            if (str.Length <= 0) { return str; }
+            var trim = new string[] { "\n", "\t", ' '.ToString() };
+            while (true)
+            {
+                var len = str.Length;
+                foreach (var t in trim)
+                {
+                    str = StringHelper.Trim(str, t, ignoreCase: true);
+                }
+
+                //break if trim end
+                var not_trimed = str.Length == len;
+                if (not_trimed)
+                {
+                    break;
+                }
+            }
+            return str;
         }
 
         /// <summary>

@@ -34,6 +34,29 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 解决ilist没有foreach的问题
+        /// </summary>
+        public static async Task ForEachAsync_<T>(this IEnumerable<T> list, Func<int, T, Task> action)
+        {
+            var index = 0;
+            foreach (var m in list)
+            {
+                await action.Invoke(index++, m);
+            }
+        }
+
+        /// <summary>
+        /// 解决ilist没有foreach的问题
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="action"></param>
+        public static async Task ForEachAsync_<T>(this IEnumerable<T> list, Func<T, Task> action)
+        {
+            await list.ForEachAsync_(async (index, x) => await action.Invoke(x));
+        }
+
+        /// <summary>
         /// 反转
         /// </summary>
         /// <typeparam name="T"></typeparam>
