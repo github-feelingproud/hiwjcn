@@ -21,10 +21,25 @@ namespace Lib.extension
             var list = str.ToCharArray().ToList();
             if (list.Count < start_count + end_count) { return str; }
 
-            var start = list.Take(1).FirstOrDefault();
+            var start = list.Take(start_count).FirstOrDefault();
             var mid = "".Join_(new int[mark_count].Select(x => "*"));
-            var end = list.Reverse_().Take(1).FirstOrDefault();
+            var end = list.Reverse_().Take(end_count).FirstOrDefault();
             return $"{start}{mid}{end}";
+        }
+
+        /// <summary>
+        /// 用@分割邮件地址
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public static (string user_name, string host) SplitEmail(this string email)
+        {
+            var sp = email.Split('@');
+            if (sp.Length != 2 || !ValidateHelper.IsAllPlumpString(sp[0], sp[1]))
+            {
+                throw new Exception("邮件格式错误");
+            }
+            return (sp[0], sp[1]);
         }
 
         /// <summary>
