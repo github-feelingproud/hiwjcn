@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using Lib.io;
+using Lib.extension;
 
 namespace Lib.helper
 {
@@ -18,6 +19,17 @@ namespace Lib.helper
     public static class ConvertHelper
     {
         #region 字符串转换
+
+        /// <summary>
+        /// 删除首尾无意义的字符，比如空格和制表符等
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string TrimMeaninglessChars(string str)
+        {
+            return GetString(str).Trim_("\n").Trim_("\t").Trim_(" ");
+        }
+
         /// <summary>
         /// 获取非空字符串
         /// </summary>

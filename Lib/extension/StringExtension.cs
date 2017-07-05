@@ -13,6 +13,17 @@ namespace Lib.extension
     public static class StringExtension
     {
         /// <summary>
+        /// trim string
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="tm"></param>
+        /// <returns></returns>
+        public static string Trim_(this string str, string tm)
+        {
+            return StringHelper.Trim(str, tm);
+        }
+
+        /// <summary>
         /// 如果不是有效字符串就转换为null
         /// </summary>
         /// <param name="str"></param>

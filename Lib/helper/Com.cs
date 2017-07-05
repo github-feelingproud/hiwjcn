@@ -18,6 +18,14 @@ namespace Lib.helper
     public static class Com
     {
         /// <summary>
+        /// 第一个非空字符串
+        /// </summary>
+        /// <param name="strs"></param>
+        /// <returns></returns>
+        public static string FirstPlumpStr(params string[] strs) =>
+            ConvertHelper.NotNullEnumerable(strs).Where(x => ValidateHelper.IsPlumpString(x)).FirstOrDefault();
+
+        /// <summary>
         /// 获取动态类型
         /// </summary>
         /// <returns></returns>

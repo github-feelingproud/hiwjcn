@@ -19,10 +19,6 @@ namespace Lib.helper
         /// <summary>
         /// join 不会返回空
         /// </summary>
-        /// <param name="spliter"></param>
-        /// <param name="list"></param>
-        /// <param name="filter"></param>
-        /// <returns></returns>
         public static string Join(string spliter, IList<string> list)
         {
             string str = string.Empty;
@@ -51,10 +47,6 @@ namespace Lib.helper
         /// <summary>
         /// 截取字符串
         /// </summary>
-        /// <param name="str">源字符串</param>
-        /// <param name="startIndex">开始位置的索引</param>
-        /// <param name="length">子字符串的长度</param>
-        /// <returns></returns>
         public static string SubString(string str, int startIndex, int length)
         {
             str = ConvertHelper.GetString(str);
@@ -68,9 +60,6 @@ namespace Lib.helper
         /// <summary>
         /// 截取字符串
         /// </summary>
-        /// <param name="str">源字符串</param>
-        /// <param name="length">子字符串的长度</param>
-        /// <returns></returns>
         public static string SubString(string str, int length)
         {
             return SubString(str, 0, length);
@@ -83,22 +72,7 @@ namespace Lib.helper
         /// <summary>
         /// 移除前导字符串
         /// </summary>
-        /// <param name="str">源字符串</param>
-        /// <param name="trimStr">移除字符串</param>
-        /// <returns></returns>
-        public static string TrimStart(string str, string trimStr)
-        {
-            return TrimStart(str, trimStr, true);
-        }
-
-        /// <summary>
-        /// 移除前导字符串
-        /// </summary>
-        /// <param name="str">源字符串</param>
-        /// <param name="trimStr">移除字符串</param>
-        /// <param name="ignoreCase">是否忽略大小写</param>
-        /// <returns></returns>
-        public static string TrimStart(string str, string trimStr, bool ignoreCase)
+        public static string TrimStart(string str, string trimStr, bool ignoreCase = true)
         {
             str = ConvertHelper.GetString(str);
             trimStr = ConvertHelper.GetString(trimStr);
@@ -114,22 +88,7 @@ namespace Lib.helper
         /// <summary>
         /// 移除后导字符串
         /// </summary>
-        /// <param name="sourceStr">源字符串</param>
-        /// <param name="trimStr">移除字符串</param>
-        /// <returns></returns>
-        public static string TrimEnd(string sourceStr, string trimStr)
-        {
-            return TrimEnd(sourceStr, trimStr, true);
-        }
-
-        /// <summary>
-        /// 移除后导字符串
-        /// </summary>
-        /// <param name="str">源字符串</param>
-        /// <param name="trimStr">移除字符串</param>
-        /// <param name="ignoreCase">是否忽略大小写</param>
-        /// <returns></returns>
-        public static string TrimEnd(string str, string trimStr, bool ignoreCase)
+        public static string TrimEnd(string str, string trimStr, bool ignoreCase = true)
         {
             str = ConvertHelper.GetString(str);
             trimStr = ConvertHelper.GetString(trimStr);
@@ -142,30 +101,10 @@ namespace Lib.helper
             return str;
         }
 
-        public static string Trim(string str)
-        {
-            return Trim(str, " ");
-        }
-
         /// <summary>
         /// 移除前导和后导字符串
         /// </summary>
-        /// <param name="sourceStr">源字符串</param>
-        /// <param name="trimStr">移除字符串</param>
-        /// <returns></returns>
-        public static string Trim(string sourceStr, string trimStr)
-        {
-            return Trim(sourceStr, trimStr, true);
-        }
-
-        /// <summary>
-        /// 移除前导和后导字符串
-        /// </summary>
-        /// <param name="sourceStr">源字符串</param>
-        /// <param name="trimStr">移除字符串</param>
-        /// <param name="ignoreCase">是否忽略大小写</param>
-        /// <returns></returns>
-        public static string Trim(string str, string trimStr, bool ignoreCase)
+        public static string Trim(string str, string trimStr = " ", bool ignoreCase = true)
         {
             return TrimStart(TrimEnd(str, trimStr, ignoreCase), trimStr, ignoreCase);
         }
