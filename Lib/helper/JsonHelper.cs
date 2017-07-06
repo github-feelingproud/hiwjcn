@@ -31,10 +31,10 @@ namespace Lib.helper
         /// <returns></returns>
         public static string ObjectToJson(object obj)
         {
-            if (obj == null) { throw new Exception("null不能被转为json"); }
+            //if (obj == null) { throw new Exception("null不能被转为json"); }
             return JsonConvert.SerializeObject(obj, TimeFormat());
         }
-        
+
         /// <summary>
         /// 比较两个json结构是否相同
         /// </summary>

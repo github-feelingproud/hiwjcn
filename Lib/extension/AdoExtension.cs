@@ -407,6 +407,22 @@ namespace Lib.extension
     public static class AdoExtension
     {
         /// <summary>
+        /// 转为json
+        /// </summary>
+        public static string DataTableToJson(this DataTable tb)
+        {
+            return JsonHelper.DataTableToJson(tb);
+        }
+
+        /// <summary>
+        /// 转为实体对象
+        /// </summary>
+        public static List<T> ToEntityList_<T>(this DataTable tb)
+        {
+            return tb.DataTableToJson().JsonToEntity<List<T>>();
+        }
+
+        /// <summary>
         /// 这个方法来自途虎养车网，自己做了一些小修改
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -450,9 +466,6 @@ namespace Lib.extension
         /// <summary>
         /// 获取Json（测试可用）
         /// </summary>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        [Obsolete("强烈推荐使用Dapper")]
         public static string GetJson(this IDataReader reader)
         {
             var fields = new List<string>();
@@ -474,6 +487,14 @@ namespace Lib.extension
                 arr.Add(jo);
             }
             return arr.ToString();
+        }
+
+        /// <summary>
+        /// 转为实体
+        /// </summary>
+        public static List<T> ToEntityList_<T>(this IDataReader reader)
+        {
+            return reader.GetJson().JsonToEntity<List<T>>();
         }
 
         /// <summary>
