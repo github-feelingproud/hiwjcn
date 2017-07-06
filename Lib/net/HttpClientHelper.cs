@@ -23,6 +23,14 @@ namespace Lib.net
         GET = 1, POST = 2, PUT = 3, DELETE = 4
     }
 
+    public static class NetworkRequestExtension
+    {
+        public static string Get(this Uri url) => HttpClientHelper.Get(url.AbsoluteUri);
+
+        public static async Task<string> GetAsync(this Uri url, int? second = null) =>
+            await HttpClientHelper.GetAsync(url.AbsoluteUri, second);
+    }
+
     /// <summary>
     /// http请求
     /// </summary>

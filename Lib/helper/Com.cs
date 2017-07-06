@@ -748,8 +748,10 @@ namespace Lib.helper
             for (int i = 0; i < list.Count / 2; ++i)
             {
                 var temp = list[i];
-                list[i] = list[list.Count - 1 - i];
-                list[list.Count - 1 - i] = temp;
+                var second_index = list.Count - 1 - i;
+
+                list[i] = list[second_index];
+                list[second_index] = temp;
             }
             return list;
         }

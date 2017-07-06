@@ -21,9 +21,12 @@ namespace Lib.extension
             var list = str.ToCharArray().ToList();
             if (list.Count < start_count + end_count) { return str; }
 
-            var start = list.Take(start_count).FirstOrDefault();
+            var start = "".Join_(list.Take(start_count));
+
             var mid = "".Join_(new int[mark_count].Select(x => "*"));
-            var end = list.Reverse_().Take(end_count).FirstOrDefault();
+
+            var end = "".Join_(list.Reverse_().Take(end_count).Reverse_());
+
             return $"{start}{mid}{end}";
         }
 
