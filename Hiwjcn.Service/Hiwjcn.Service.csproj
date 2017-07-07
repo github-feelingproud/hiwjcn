@@ -80,9 +80,8 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Qiniu, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\Qiniu.7.0.0.1\lib\net45\Qiniu.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Qiniu, Version=7.2.15.0, Culture=neutral, PublicKeyToken=2894d75bb9f220bf, processorArchitecture=MSIL">
+      <HintPath>..\packages\Qiniu.Shared.7.2.15\lib\net45\Qiniu.dll</HintPath>
     </Reference>
     <Reference Include="Quartz, Version=2.4.1.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
       <HintPath>..\packages\Quartz.2.4.1\lib\net40\Quartz.dll</HintPath>

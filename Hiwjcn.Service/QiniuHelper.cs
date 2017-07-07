@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 using Lib.core;
 using Lib.helper;
 using Qiniu.Util;
-using Qiniu.Storage;
-using Qiniu.Storage.Model;
+using Lib.extension;
 using Qiniu.Http;
+using Qiniu.RS.Model;
+using Qiniu.RS;
+using Qiniu.IO.Model;
+using Qiniu.IO;
 
 namespace Lib.storage
 {
@@ -21,25 +24,27 @@ namespace Lib.storage
         /// <returns></returns>
         public static bool HasFile(this StatResult status)
         {
-            return status.Fsize > 0 && ValidateHelper.IsPlumpString(status.Hash) &&
-                (!ValidateHelper.IsPlumpString(status?.ResponseInfo?.Error));
+            return status.IsOk() &&
+                status.Result != null &&
+                status.Result.Fsize > 0 &&
+                ValidateHelper.IsPlumpString(status.Result.Hash);
         }
+
+        /// <summary>
+        /// 是否是200
+        /// </summary>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        public static bool IsOk(this HttpResult res) => res.Code == 200;
 
         /// <summary>
         /// 有异常就抛出
         /// </summary>
         /// <param name="res"></param>
-        public static void ThrowIfException(this ResponseInfo res)
+        public static void ThrowIfException(this HttpResult res)
         {
-            if (res.isOk()) { return; }
-            if (ValidateHelper.IsPlumpString(res.Error))
-            {
-                throw new Exception(res.Error);
-            }
-            if (res.isServerError())
-            {
-                throw new Exception("七牛服务器错误");
-            }
+            if (res.IsOk()) { return; }
+            throw new Exception($"七牛服务器错误，返回数据：{res.ToJson()}");
         }
     }
 
@@ -53,21 +58,32 @@ namespace Lib.storage
         private static readonly string bucket = ConfigHelper.Instance.QiniuBucketName;
         private static readonly string BaseUrl = ConfigHelper.Instance.QiniuBaseUrl;
 
+        /// <summary>
+        /// 获取七牛的文件
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static StatResult FindEntry(string key)
         {
             var mac = new Mac(AK, SK);
             var bm = new BucketManager(mac);
             // 返回结果存储在result中
-            var res = bm.stat(bucket, key);
+            var res = bm.Stat(bucket, key);
+            res.ThrowIfException();
             return res;
         }
 
+        /// <summary>
+        /// 删除七牛的文件
+        /// </summary>
+        /// <param name="key"></param>
         public static void Delete(string key)
         {
             var mac = new Mac(AK, SK);
             var bm = new BucketManager(mac);
             // 返回结果存储在result中
-            var res = bm.delete(bucket, key);
+            var res = bm.Delete(bucket, key);
+            res.ThrowIfException();
         }
 
         /// <summary>
@@ -81,15 +97,14 @@ namespace Lib.storage
             var putPolicy = new PutPolicy();
             // 设置要上传的目标空间
             putPolicy.Scope = bucket;
+            putPolicy.SetExpires(3600);
             var mac = new Mac(AK, SK);
             // 生成上传凭证
-            var uploadToken = Qiniu.Util.Auth.createUploadToken(putPolicy, mac);
+            var uploadToken = new Qiniu.Util.Auth(mac).CreateUploadToken(putPolicy.ToJsonString());
             // 开始上传文件
             var um = new UploadManager();
-            um.uploadFile(localFile, saveKey, uploadToken, null, (key, resinfo, res) =>
-            {
-                resinfo.ThrowIfException();
-            });
+            var res = um.UploadFile(localFile, saveKey, uploadToken);
+            res.ThrowIfException();
             return GetUrl(saveKey);
         }
 
@@ -99,18 +114,22 @@ namespace Lib.storage
             var putPolicy = new PutPolicy();
             // 设置要上传的目标空间
             putPolicy.Scope = bucket;
+            putPolicy.SetExpires(3600);
             var mac = new Mac(AK, SK);
             // 生成上传凭证
-            var uploadToken = Qiniu.Util.Auth.createUploadToken(putPolicy, mac);
+            var uploadToken = new Qiniu.Util.Auth(mac).CreateUploadToken(putPolicy.ToJsonString());
             // 开始上传文件
             var um = new UploadManager();
-            um.uploadData(bs, saveKey, uploadToken, null, (key, resinfo, res) =>
-            {
-                resinfo.ThrowIfException();
-            });
+            var res = um.UploadData(bs, saveKey, uploadToken);
+            res.ThrowIfException();
             return GetUrl(saveKey);
         }
 
+        /// <summary>
+        /// 获取文件地址http://www.domain.com/file-qiniu-key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static string GetUrl(string key)
         {
             return BaseUrl + key;
