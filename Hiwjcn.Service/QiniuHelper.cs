@@ -39,8 +39,10 @@ namespace Lib.storage
         /// <param name="res"></param>
         public static void ThrowIfException(this HttpResult res)
         {
-            if (res.IsOk()) { return; }
-            throw new Exception($"七牛服务器错误，返回数据：{res.ToJson()}");
+            if (!res.IsOk())
+            {
+                throw new Exception($"七牛服务器错误，返回数据：{res.ToJson()}");
+            }
         }
     }
 
