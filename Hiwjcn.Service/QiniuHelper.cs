@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.core;
-using Lib.helper;
-using Qiniu.Util;
+﻿using Lib.core;
 using Lib.extension;
+using Lib.helper;
 using Qiniu.Http;
-using Qiniu.RS.Model;
-using Qiniu.RS;
-using Qiniu.IO.Model;
 using Qiniu.IO;
+using Qiniu.IO.Model;
+using Qiniu.RS;
+using Qiniu.RS.Model;
+using Qiniu.Util;
+using System;
 
 namespace Lib.storage
 {
@@ -86,6 +82,24 @@ namespace Lib.storage
             res.ThrowIfException();
         }
 
+
+        /// <summary>
+        /// 创建上传token
+        /// </summary>
+        /// <returns></returns>
+        private static string CreateUploadToken()
+        {
+            // 上传策略
+            var putPolicy = new PutPolicy();
+            // 设置要上传的目标空间
+            putPolicy.Scope = bucket;
+            putPolicy.SetExpires(3600);
+            var mac = new Mac(AK, SK);
+            // 生成上传凭证
+            var uploadToken = new Qiniu.Util.Auth(mac).CreateUploadToken(putPolicy.ToJsonString());
+            return uploadToken;
+        }
+
         /// <summary>
         /// 上传文件到qiniu，返回访问链接
         /// </summary>
@@ -93,34 +107,24 @@ namespace Lib.storage
         /// <returns></returns>
         public static string Upload(string localFile, string saveKey)
         {
-            // 上传策略
-            var putPolicy = new PutPolicy();
-            // 设置要上传的目标空间
-            putPolicy.Scope = bucket;
-            putPolicy.SetExpires(3600);
-            var mac = new Mac(AK, SK);
-            // 生成上传凭证
-            var uploadToken = new Qiniu.Util.Auth(mac).CreateUploadToken(putPolicy.ToJsonString());
             // 开始上传文件
             var um = new UploadManager();
-            var res = um.UploadFile(localFile, saveKey, uploadToken);
+            var res = um.UploadFile(localFile, saveKey, CreateUploadToken());
             res.ThrowIfException();
             return GetUrl(saveKey);
         }
 
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="bs"></param>
+        /// <param name="saveKey"></param>
+        /// <returns></returns>
         public static string Upload(byte[] bs, string saveKey)
         {
-            // 上传策略
-            var putPolicy = new PutPolicy();
-            // 设置要上传的目标空间
-            putPolicy.Scope = bucket;
-            putPolicy.SetExpires(3600);
-            var mac = new Mac(AK, SK);
-            // 生成上传凭证
-            var uploadToken = new Qiniu.Util.Auth(mac).CreateUploadToken(putPolicy.ToJsonString());
             // 开始上传文件
             var um = new UploadManager();
-            var res = um.UploadData(bs, saveKey, uploadToken);
+            var res = um.UploadData(bs, saveKey, CreateUploadToken());
             res.ThrowIfException();
             return GetUrl(saveKey);
         }
