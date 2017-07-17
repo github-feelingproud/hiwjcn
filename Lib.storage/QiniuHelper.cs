@@ -64,10 +64,10 @@ namespace Lib.storage
     /// </summary>
     public static class QiniuHelper
     {
-        private static readonly string AK = ConfigurationManager.AppSettings["QiniuAccessKey"];
-        private static readonly string SK = ConfigurationManager.AppSettings["QiniuSecretKey"];
-        private static readonly string bucket = ConfigurationManager.AppSettings["QiniuBucketName"];
-        private static readonly string BaseUrl = ConfigurationManager.AppSettings["QiniuBaseUrl"];
+        public static readonly string AK = ConfigurationManager.AppSettings["QiniuAccessKey"];
+        public static readonly string SK = ConfigurationManager.AppSettings["QiniuSecretKey"];
+        public static readonly string bucket = ConfigurationManager.AppSettings["QiniuBucketName"];
+        public static readonly string BaseUrl = ConfigurationManager.AppSettings["QiniuBaseUrl"];
 
         /// <summary>
         /// 获取七牛的文件
@@ -225,6 +225,42 @@ namespace Lib.storage
             return con;
         }
 
+        public static string Wrapper(string data)
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                return data;
+            }
+            bool has_prefix(string url)
+            {
+                var lower = url.ToLower();
+                return lower.StartsWith("http://") || lower.StartsWith("https://");
+            }
+            if (!has_prefix(data))
+            {
+                data = QiniuHelper.BaseUrl + data;
+            }
+            return data;
+        }
+
+        public static (List<UpFile> filelist, int total) FindFileList(string user_id, int start, int size)
+        {
+            using (var con = GetCon())
+            {
+                var p = new { uid = user_id, skip = start, take = size };
+                var sql = "select {0} from parties.dbo.UpFile where UserID=@uid";
+                var total = con.ExecuteScalar<int?>(string.Format(sql, "count(1)"), p) ?? 0;
+                var list_sql = string.Format(sql, "*") + " order by UpTime desc OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+                var list = con.Query<UpFile>(list_sql, p).Where(x => !string.IsNullOrEmpty(x.FileUrl)).ToList();
+
+                foreach (var m in list)
+                {
+                    m.FileUrl = Wrapper(m.FileUrl);
+                }
+                return (list, total);
+            }
+        }
+
         private static UpFile FindFileInDB(string md5)
         {
             using (var con = GetCon())
@@ -253,8 +289,10 @@ namespace Lib.storage
             }
         }
 
-        public static (string url, string msg) UploadToQiniuAndSaveInDB(this HttpPostedFile file, string user_id, string[] allowed_extension = null)
+        public static (string url, string msg) UploadToQiniuAndSaveInDB(this HttpPostedFile file, string user_id,
+            int? max_size = null, string[] allowed_extension = null)
         {
+            if (string.IsNullOrEmpty(user_id)) { throw new Exception("上传用户不能为空"); }
             var file_name = file.FileName;
             var extension = Path.GetExtension(file_name);
             if (!extension.StartsWith("."))
@@ -273,9 +311,9 @@ namespace Lib.storage
             if (IsImage(extension))
             {
                 var size = GetShape(bs);
-                guid_name = $"{guid_name}_w{size.width}_h{size.height}{extension}";
+                guid_name = $"{guid_name}_w{size.width}_h{size.height}";
             }
-            guid_name = $"{DateTime.Now.ToString("yyyy-MM-dd")}/{guid_name}";
+            guid_name = $"{DateTime.Now.ToString("yyyy-MM-dd")}/{guid_name}{extension}";
 
             var db_file = FindFileInDB(md5);
 
@@ -283,7 +321,7 @@ namespace Lib.storage
             {
                 if (QiniuHelper.FindEntry(db_file.FileUrl).IsOk())
                 {
-                    return (db_file.FileUrl, null);
+                    return (Wrapper(db_file.FileUrl), null);
                 }
                 else
                 {
