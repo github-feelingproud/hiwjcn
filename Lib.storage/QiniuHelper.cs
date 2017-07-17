@@ -169,8 +169,30 @@ namespace Lib.storage
         public System.DateTime UpTime { get; set; }
     }
 
+    public enum UploadType : int
+    {
+        Product,
+        QRCode,
+        Promotion,
+        ProductDetail,
+        User
+    }
+
     public static class HttpPostedFileExtension
     {
+        public static string UploadTypeStr(UploadType tp)
+        {
+            switch (tp)
+            {
+                case UploadType.Product: return nameof(UploadType.Product);
+                case UploadType.ProductDetail: return nameof(UploadType.ProductDetail);
+                case UploadType.Promotion: return nameof(UploadType.Promotion);
+                case UploadType.QRCode: return nameof(UploadType.QRCode);
+                case UploadType.User: return nameof(UploadType.User);
+                default: return "default";
+            }
+        }
+
         public static byte[] GetPostFileBytesAndDispose(HttpPostedFile postFile)
         {
             if (postFile.ContentLength <= 0) { throw new Exception("上传文件为空"); }
@@ -289,7 +311,8 @@ namespace Lib.storage
             }
         }
 
-        public static (string url, string msg) UploadToQiniuAndSaveInDB(this HttpPostedFile file, string user_id,
+        public static (string url, string msg) UploadToQiniuAndSaveInDB(this HttpPostedFile file,
+            string user_id, UploadType upload_type,
             int? max_size = null, string[] allowed_extension = null)
         {
             if (string.IsNullOrEmpty(user_id)) { throw new Exception("上传用户不能为空"); }
@@ -313,7 +336,8 @@ namespace Lib.storage
                 var size = GetShape(bs);
                 guid_name = $"{guid_name}_w{size.width}_h{size.height}";
             }
-            guid_name = $"{DateTime.Now.ToString("yyyy-MM-dd")}/{guid_name}{extension}";
+            guid_name = $"{UploadTypeStr(upload_type)}/{DateTime.Now.ToString("yyyyMMdd")}/{guid_name}{extension}";
+            guid_name = guid_name.ToLower();
 
             var db_file = FindFileInDB(md5);
 

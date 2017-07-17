@@ -36,3 +36,5 @@
 /Lib.storage/bin/Debug
 obj
 bin
+*.nupkg
+*.nupkg
