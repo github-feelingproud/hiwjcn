@@ -30,6 +30,20 @@ namespace Lib.helper
         }
 
         /// <summary>
+        /// 获取md5
+        /// </summary>
+        /// <param name="_bs"></param>
+        /// <returns></returns>
+        public static string GetMD5(byte[] _bs)
+        {
+            using (var md5 = new MD5CryptoServiceProvider())
+            {
+                var bs = md5.ComputeHash(_bs);
+                return BsToStr(bs);
+            }
+        }
+
+        /// <summary>
         /// 读取文件MD5
         /// </summary>
         /// <param name="fileName"></param>
