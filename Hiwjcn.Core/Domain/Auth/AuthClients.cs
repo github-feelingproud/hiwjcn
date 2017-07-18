@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Lib.data;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Model.User;
 
 namespace Hiwjcn.Core.Domain.Auth
 {
@@ -53,6 +54,9 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual DateTime CreateTime { get; set; }
 
         public virtual DateTime? UpdateTime { get; set; }
+
+        [NotMapped]
+        public virtual UserModel Owner { get; set; }
     }
 
     [Serializable]
@@ -129,11 +133,19 @@ namespace Hiwjcn.Core.Domain.Auth
 
         public virtual DateTime CreateTime { get; set; }
 
+        public virtual DateTime? RefreshTime { get; set; }
+
         [NotMapped]
         public virtual List<AuthScope> Scopes { get; set; }
 
         [NotMapped]
         public virtual List<string> ScopeNames { get; set; }
+
+        [NotMapped]
+        public virtual List<string> ScopeUIDS { get; set; }
+
+        [NotMapped]
+        public virtual AuthClient Client { get; set; }
     }
 
     [Serializable]
