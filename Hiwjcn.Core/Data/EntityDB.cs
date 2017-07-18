@@ -1,4 +1,6 @@
-﻿using Hiwjcn.Core.Model.Sys;
+﻿#define use_mysql
+
+using Hiwjcn.Core.Model.Sys;
 using Lib.core;
 using Lib.data;
 using Model;
@@ -14,18 +16,31 @@ using WebLogic.Model.Sys;
 using WebLogic.Model.Tag;
 using WebLogic.Model.User;
 using Hiwjcn.Core.Domain.Auth;
+using System.Data.Entity.SqlServer;
 
 namespace Hiwjcn.Dal
 {
     /// <summary>
-    /// 数据库配置
+    /// mysql数据库
     /// </summary>
     public class MySqlConfiguration : DbConfiguration
     {
         public MySqlConfiguration()
         {
-            SetExecutionStrategy(MySqlProviderInvariantName.ProviderName, () => new MySqlExecutionStrategy());
-            SetDefaultConnectionFactory(new MySqlConnectionFactory());
+            this.SetExecutionStrategy(MySqlProviderInvariantName.ProviderName, () => new MySqlExecutionStrategy());
+            this.SetDefaultConnectionFactory(new MySqlConnectionFactory());
+        }
+    }
+
+    /// <summary>
+    /// sqlserver数据库
+    /// </summary>
+    public class SqlServerConfiguration : DbConfiguration
+    {
+        public SqlServerConfiguration()
+        {
+            this.SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
+            this.SetDefaultConnectionFactory(new LocalDbConnectionFactory("mssqllocaldb"));
         }
     }
 
@@ -34,7 +49,11 @@ namespace Hiwjcn.Dal
     /// EF做映射的时候也可以数据库是int，代码里是string，
     /// 用attribute mapping测试成功，用fluent测试失败
     /// </summary>
+#if use_mysql
     [DbConfigurationType(typeof(MySqlConfiguration))]
+#else
+    [DbConfigurationType(typeof(SqlServerConfiguration))]
+#endif
     public class EntityDB : DbContext
     {
         public EntityDB() : base(ConfigHelper.Instance.MySqlConnectionString)

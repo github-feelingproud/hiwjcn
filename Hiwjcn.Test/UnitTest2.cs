@@ -21,6 +21,9 @@ using System.IO;
 using System.Linq;
 using Hiwjcn.Dal;
 using Autofac;
+using Lib.ioc;
+using Hiwjcn.Framework;
+using System.Data.Entity;
 
 namespace Hiwjcn.Test
 {
@@ -30,6 +33,11 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest2
     {
+        public UnitTest2()
+        {
+            AppContext.AddExtraRegistrar(new CommonDependencyRegister());
+        }
+
         [TestMethod]
         public void fasdfkjasldfajsdkfhasldfkj()
         {
@@ -73,7 +81,7 @@ namespace Hiwjcn.Test
         {
             var ar = new[] { new { a = 1 }, new { a = 3 } };
 
-            using (var db = new EntityDB())
+            using (var db = AppContext.GetObject<DbContext>())
             {
                 //
             }

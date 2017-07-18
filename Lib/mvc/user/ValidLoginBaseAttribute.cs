@@ -92,4 +92,25 @@ namespace Lib.mvc.user
             filterContext.Result = GetJson(new _() { success = false, msg = "登录过期，请刷新页面" });
         }
     }
+
+    public class ValidLoginModule : IHttpModule
+    {
+        public void Dispose()
+        {
+            //dispose
+        }
+
+        public void Init(HttpApplication context)
+        {
+            var loginstatus = AppContext.GetObject<LoginStatus>();
+
+            context.BeginRequest += (sender, e) =>
+            {
+                var loginuser = loginstatus.GetLoginUser();
+
+                //
+            };
+            context.EndRequest += (sender, e) => { };
+        }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Autofac.Integration.Mvc;
 using Hiwjcn.Dal;
+using Hiwjcn.Framework;
 using Hiwjcn.Web.App_Start;
 using Lib.core;
 using Lib.data;
@@ -40,6 +41,7 @@ namespace Hiwjcn.Web
                     }*/
 
                     //添加依赖注入
+                    AppContext.AddExtraRegistrar(new CommonDependencyRegister());
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
 
                     //disable "X-AspNetMvc-Version" header name

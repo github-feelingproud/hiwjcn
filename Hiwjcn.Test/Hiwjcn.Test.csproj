@@ -146,6 +146,10 @@
       <Project>{35BCB473-B95C-4B87-A9E6-7A538719C3D9}</Project>
       <Name>Hiwjcn.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Hiwjcn.Framework\Hiwjcn.Framework.csproj">
+      <Project>{F6EA1C4A-821E-417B-B02E-05B492874E40}</Project>
+      <Name>Hiwjcn.Framework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Hiwjcn.Service\Hiwjcn.Service.csproj">
       <Project>{100b0f4d-99ac-498e-88d9-39fdd796ce19}</Project>
       <Name>Hiwjcn.Service</Name>

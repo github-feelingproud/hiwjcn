@@ -147,5 +147,7 @@ namespace Lib.mvc.user
         public virtual int IsHaveInquiry { get; set; }
         [Obsolete("请使用ExtraData存放")]
         public virtual int IsSelf { get; set; }
+
+        public static implicit operator LoginUserInfo(string json) => json.JsonToEntity<LoginUserInfo>();
     }
 }
