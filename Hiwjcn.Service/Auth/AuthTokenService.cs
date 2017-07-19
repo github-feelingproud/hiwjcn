@@ -101,12 +101,28 @@ namespace Hiwjcn.Bll.Auth
             {
                 return (null, msg);
             }
+            var scopes = await this._AuthScopeRepository.GetListAsync(x => token.ScopeNames.Contains(x.Name));
+            if (scopes.Count != token.ScopeNames.Count)
+            {
+                return (null, "scope数据存在错误");
+            }
+            var scope_list = scopes.Select(x => new AuthTokenScope()
+            {
+                UID = Com.GetUUID(),
+                ScopeUID = x.UID,
+                TokenUID = token.UID,
+                CreateTime = now
+            }).ToArray();
+            if (await this._AuthTokenScopeRepository.AddAsync(scope_list) <= 0)
+            {
+                return (null, "保存scope失败");
+            }
             if (await this._AuthTokenRepository.AddAsync(token) <= 0)
             {
                 return (null, "保存token失败");
             }
 
-            throw new NotImplementedException();
+            return (token, SUCCESS);
         }
 
         public virtual async Task<string> CreateToken(string client_uid, string user_uid, List<string> scope_name)

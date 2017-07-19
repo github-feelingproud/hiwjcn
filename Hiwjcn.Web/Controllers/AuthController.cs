@@ -19,13 +19,16 @@ namespace Hiwjcn.Web.Controllers
     {
         private readonly LoginStatus _LoginStatus;
         private readonly IAuthTokenService _IAuthTokenService;
+        private readonly IAuthScopeService _IAuthScopeService;
 
         public AuthController(
             LoginStatus _LoginStatus,
-            IAuthTokenService _IAuthTokenService)
+            IAuthTokenService _IAuthTokenService,
+            IAuthScopeService _IAuthScopeService)
         {
             this._LoginStatus = _LoginStatus;
             this._IAuthTokenService = _IAuthTokenService;
+            this._IAuthScopeService = _IAuthScopeService;
         }
 
         /// <summary>
@@ -44,10 +47,28 @@ namespace Hiwjcn.Web.Controllers
             {
                 var scope_list = ConvertHelper.NotNullList(scope?.Split(',').ToList()).Where(x => ValidateHelper.IsPlumpString(x)).ToList();
 
-                //await this._IAuthTokenService.CreateToken();
+                var list = await this._IAuthScopeService.GetScopesOrDefault(scope_list.ToArray());
+                list = list.OrderByDescending(x => x.Important).OrderBy(x => x.Name).ToList();
 
-                await Task.FromResult(1);
+                ViewData["scopes"] = list;
                 return View();
+            });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AuthorizeCode(string client_id, List<string> scope)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var loginuser = this._LoginStatus.GetLoginUser();
+                if (loginuser == null)
+                {
+                    return GetJsonRes("未登录");
+                }
+
+                var data = await this._IAuthTokenService.CreateCode(client_id, scope, loginuser.UserID);
+
+                return GetJson(new _() { success = !ValidateHelper.IsPlumpString(data.msg), data = data.code?.UID, msg = data.msg });
             });
         }
 

@@ -10,6 +10,7 @@ using Lib.data;
 using Lib.helper;
 using Lib.events;
 using Lib.core;
+using Lib.extension;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -25,6 +26,25 @@ namespace Hiwjcn.Bll.Auth
             this._publisher = _publisher;
 
             this._AuthScopeRepository = _AuthScopeRepository;
+        }
+
+        public async Task<List<AuthScope>> GetScopesOrDefault(params string[] names)
+        {
+            if (!ValidateHelper.IsPlumpList(names))
+            {
+                var deft = await this._AuthScopeRepository.GetListAsync(x => x.IsDefault > 0);
+                if (!ValidateHelper.IsPlumpList(deft))
+                {
+                    "没有设置默认scope".AddBusinessInfoLog();
+                }
+                return deft;
+            }
+            return await this._AuthScopeRepository.GetListAsync(x => names.Contains(x.Name));
+        }
+
+        public async Task<List<AuthScope>> AllScopes()
+        {
+            return (await this._AuthScopeRepository.GetListAsync(null)).OrderByDescending(x => x.Important).OrderBy(x => x.Name).ToList();
         }
 
         public async Task<string> AddScopeAsync(AuthScope scope)

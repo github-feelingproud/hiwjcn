@@ -10,6 +10,10 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 {
     public interface IAuthScopeService : IServiceBase<AuthScope>
     {
+        Task<List<AuthScope>> AllScopes();
+
+        Task<List<AuthScope>> GetScopesOrDefault(params string[] names);
+
         Task<string> AddScopeAsync(AuthScope scope);
 
         Task<string> DeleteScope(string scope_uid);
