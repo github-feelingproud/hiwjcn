@@ -81,107 +81,90 @@ namespace Hiwjcn.Bll.Auth
             var expire = now.AddMinutes(-5);
             var code = await this._AuthCodeRepository.GetFirstAsync(x => x.UID == code_uid && x.ClientUID == client_id && x.CreateTime > expire);
             if (code == null) { return (null, "code已失效"); }
+            var scope_names = code.ScopesJson.JsonToEntity<List<string>>(false);
+            if (!ValidateHelper.IsPlumpList(scope_names))
+            {
+                return (null, "scope为空");
+            }
 
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_id && x.ClientSecretUID == client_secret);
             if (client == null) { return (null, "应用不存在"); }
 
-            var token = new AuthToken()
+            AuthToken the_choosen_token = null;
+
+            var old_token_list = await this._AuthTokenRepository.GetListAsync(x => x.ClientUID == client_id && x.UserUID == code.UserUID);
+            if (old_token_list.Count > 0)
             {
-                UID = Com.GetUUID(),
-                CreateTime = now,
-                ExpiryTime = now.AddDays(ExpireDays),
-                RefreshToken = Com.GetUUID(),
-                ScopeNames = code.ScopesJson.JsonToEntity<List<string>>(false)
-            };
-            if (!ValidateHelper.IsPlumpList(token.ScopeNames))
-            {
-                return (null, "scope为空");
+                var reuse_token = old_token_list.OrderByDescending(x => x.CreateTime).FirstOrDefault();
+                reuse_token.ExpiryTime = now.AddDays(ExpireDays);
+                reuse_token.RefreshTime = now;
+                if (await this._AuthTokenRepository.UpdateAsync(reuse_token) <= 0)
+                {
+                    return (null, "刷新token失败");
+                }
+
+                the_choosen_token = reuse_token;
+
+                {
+                    //clear old token
+                    var to_clear = old_token_list.Where(x => x.UID != reuse_token.UID).ToList();
+                    if (ValidateHelper.IsPlumpList(to_clear))
+                    {
+                        if (await this._AuthTokenRepository.DeleteAsync(to_clear.ToArray()) <= 0)
+                        {
+                            $"清除旧token失败，数据：{to_clear.ToJson()}".AddBusinessInfoLog();
+                        }
+                    }
+                }
             }
-            if (!token.IsValid(out var msg))
+            else
             {
-                return (null, msg);
+                //create new token
+                var token = new AuthToken()
+                {
+                    UID = Com.GetUUID(),
+                    CreateTime = now,
+                    ExpiryTime = now.AddDays(ExpireDays),
+                    RefreshToken = Com.GetUUID()
+                };
+                if (!token.IsValid(out var msg))
+                {
+                    return (null, msg);
+                }
+                if (await this._AuthTokenRepository.AddAsync(token) <= 0)
+                {
+                    return (null, "保存token失败");
+                }
+                the_choosen_token = token;
             }
-            var scopes = await this._AuthScopeRepository.GetListAsync(x => token.ScopeNames.Contains(x.Name));
-            if (scopes.Count != token.ScopeNames.Count)
+
+            //删除旧的scope，添加新的scope
+            var scopes = await this._AuthScopeRepository.GetListAsync(x => scope_names.Contains(x.Name));
+            if (scopes.Count != scope_names.Count)
             {
                 return (null, "scope数据存在错误");
+            }
+            var old_scope = await this._AuthTokenScopeRepository.GetListAsync(x => x.TokenUID == the_choosen_token.UID);
+            if (ValidateHelper.IsPlumpList(old_scope) && await this._AuthTokenScopeRepository.DeleteAsync(old_scope.ToArray()) <= 0)
+            {
+                return (null, "删除旧scope失败");
             }
             var scope_list = scopes.Select(x => new AuthTokenScope()
             {
                 UID = Com.GetUUID(),
                 ScopeUID = x.UID,
-                TokenUID = token.UID,
+                TokenUID = the_choosen_token.UID,
                 CreateTime = now
             }).ToArray();
-            if (await this._AuthTokenScopeRepository.AddAsync(scope_list) <= 0)
+            if (ValidateHelper.IsPlumpList(scope_list) && await this._AuthTokenScopeRepository.AddAsync(scope_list) <= 0)
             {
-                return (null, "保存scope失败");
-            }
-            if (await this._AuthTokenRepository.AddAsync(token) <= 0)
-            {
-                return (null, "保存token失败");
+                throw new MsgException("保存scope失败");
             }
 
-            return (token, SUCCESS);
+            return (the_choosen_token, SUCCESS);
         }
 
-        public virtual async Task<string> CreateToken(string client_uid, string user_uid, List<string> scope_name)
-        {
-            var now = DateTime.Now;
-            var token = new AuthToken()
-            {
-                UID = Com.GetUUID(),
-                CreateTime = now,
-                ExpiryTime = now.AddDays(ExpireDays),
-                RefreshToken = Com.GetUUID(),
-                ScopeNames = ConvertHelper.NotNullList(scope_name)
-            };
-
-            if (!this.CheckModel(token, out var msg))
-            {
-                return msg;
-            }
-            if (!ValidateHelper.IsPlumpList(token.ScopeNames))
-            {
-                token.ScopeNames = (await this._AuthScopeRepository.GetListAsync(x => x.IsDefault > 0)).Select(x => x.Name).ToList();
-                if (!ValidateHelper.IsPlumpList(token.ScopeNames))
-                {
-                    return "没有设置默认的scope";
-                }
-            }
-
-            token.Scopes = await this._AuthScopeRepository.GetListAsync(x => token.ScopeNames.Contains(x.Name));
-            if (token.Scopes.Count != token.ScopeNames.Count)
-            {
-                return "提交数据错误";
-            }
-
-            if ((await this._AuthTokenRepository.AddAsync(token)) <= 0)
-            {
-                return "保存token失败";
-            }
-            var scopes = token.Scopes.Select(x => new AuthTokenScope()
-            {
-                UID = Com.GetUUID(),
-
-                TokenUID = token.UID,
-                ScopeUID = x.UID,
-
-                CreateTime = now
-            }).ToArray();
-            if ((await this._AuthTokenScopeRepository.AddAsync(scopes)) <= 0)
-            {
-                return "保存token scope map失败";
-            }
-
-            await this.RefreshToken(token);
-
-            this._publisher.EntityInserted(token);
-
-            return SUCCESS;
-        }
-
-        private async Task<string> DeleteToken(string client_uid, string user_uid)
+        public async Task<string> DeleteToken(string client_uid, string user_uid)
         {
             var msg = SUCCESS;
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
@@ -262,11 +245,47 @@ namespace Hiwjcn.Bll.Auth
             return token;
         }
 
-        public virtual Task<AuthToken> RefreshToken(string refresh_token_uid)
+        /// <summary>
+        /// 直接获取client
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <returns></returns>
+        public async Task<PagerData<AuthClient>> GetMyAuthorizedClients_(string user_id, int page, int pagesize)
         {
+            var data = new PagerData<AuthClient>();
+
+            await this._AuthClientRepository.PrepareSessionAsync(async db =>
+            {
+                var client_query = db.Set<AuthClient>().AsNoTrackingQueryable();
+                var token_query = db.Set<AuthToken>().AsNoTrackingQueryable();
+
+                var client_uids = token_query.Where(x => x.UserUID == user_id).Select(x => x.ClientUID);
+
+                client_query = client_query.Where(x => client_uids.Contains(x.UID));
+
+                data.ItemCount = await client_query.CountAsync();
+                client_query = client_query.OrderBy(x => x.ClientName).QueryPage(page, pagesize);
+                data.DataList = await client_query.ToListAsync();
+
+                if (ValidateHelper.IsPlumpList(data.DataList))
+                {
+                    //
+                }
+
+                return await Task.FromResult(true);
+            });
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 根据token获取client
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <returns></returns>
         public async Task<PagerData<AuthToken>> GetMyAuthorizedClients(string user_id, int page, int pagesize)
         {
             var data = new PagerData<AuthToken>();

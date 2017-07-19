@@ -15,11 +15,9 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 
         Task<(AuthToken token, string msg)> CreateToken(string client_id, string client_secret, string code_uid);
 
-        Task<string> CreateToken(string client_uid, string user_uid, List<string> scopes);
-
         Task<AuthToken> FindToken(string token_uid);
 
-        Task<AuthToken> RefreshToken(string refresh_token_uid);
+        Task<string> DeleteToken(string client_uid, string user_uid);
 
         Task<PagerData<AuthToken>> GetMyAuthorizedClients(string user_id, int page, int pagesize);
     }

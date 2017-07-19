@@ -57,6 +57,32 @@ namespace Hiwjcn.Core.Domain.Auth
     }
 
     [Serializable]
+    [Table("auth_client_useage")]
+    public class AuthClientUseage : IDBTable
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public virtual int IID { get; set; }
+
+        [Index]
+        [Required]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "client useage UID必填")]
+        public virtual string UID { get; set; }
+
+
+        [Required]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "client uid 名称必填")]
+        public virtual string ClientUID { get; set; }
+
+
+        [Required]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "user uid 名称必填")]
+        public virtual string UserUID { get; set; }
+
+        public virtual DateTime CreateTime { get; set; }
+    }
+
+    [Serializable]
     [Table("auth_scope")]
     public class AuthScope : IDBTable
     {
