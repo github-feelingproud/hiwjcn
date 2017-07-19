@@ -121,10 +121,10 @@ namespace Lib.extension
         /// </summary>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        public static Tuple<DateTime, DateTime> GetDateBorder(this DateTime dateTime)
+        public static (DateTime start, DateTime end) GetDateBorder(this DateTime dateTime)
         {
             var date = dateTime.Date;
-            return Tuple.Create(date, date.AddDays(1));
+            return (date, date.AddDays(1));
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Lib.extension
         public static bool IsSameDay(this DateTime dateTime, DateTime time)
         {
             var border = dateTime.GetDateBorder();
-            return border.Item1 <= time && time < border.Item2;
+            return border.start <= time && time < border.end;
         }
 
         /// <summary>

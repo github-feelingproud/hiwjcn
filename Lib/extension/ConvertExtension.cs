@@ -100,12 +100,16 @@ namespace Lib.extension
         /// <summary>
         /// json转为实体
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        public static T JsonToEntity<T>(this string json)
+        public static T JsonToEntity<T>(this string json, bool throwIfException = true)
         {
-            return JsonHelper.JsonToEntity<T>(json);
+            try
+            {
+                return JsonHelper.JsonToEntity<T>(json);
+            }
+            catch when (!throwIfException)
+            {
+                return default(T);
+            }
         }
 
         /// <summary>

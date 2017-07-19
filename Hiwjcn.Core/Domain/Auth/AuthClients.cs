@@ -109,7 +109,7 @@ namespace Hiwjcn.Core.Domain.Auth
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "token UID必填")]
         public virtual string UID { get; set; }
-        
+
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "refresh token 必填")]
         public virtual string RefreshToken { get; set; }
@@ -179,12 +179,14 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual string UID { get; set; }
 
         [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "token 必填")]
-        public virtual string Code { get; set; }
-
-        [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "用户UID 必填")]
         public virtual string UserUID { get; set; }
+
+        [Required(ErrorMessage = "客户端为空")]
+        public virtual string ClientUID { get; set; }
+
+        [Required(ErrorMessage = "scopes为空")]
+        public virtual string ScopesJson { get; set; }
 
         public virtual DateTime CreateTime { get; set; }
     }

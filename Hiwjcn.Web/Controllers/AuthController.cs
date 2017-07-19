@@ -10,6 +10,7 @@ using Lib.core;
 using Lib.extension;
 using Lib.net;
 using System.Threading.Tasks;
+using Hiwjcn.Core.Infrastructure.Auth;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -17,9 +18,14 @@ namespace Hiwjcn.Web.Controllers
     public class AuthController : BaseController
     {
         private readonly LoginStatus _LoginStatus;
-        public AuthController(LoginStatus _LoginStatus)
+        private readonly IAuthTokenService _IAuthTokenService;
+
+        public AuthController(
+            LoginStatus _LoginStatus,
+            IAuthTokenService _IAuthTokenService)
         {
             this._LoginStatus = _LoginStatus;
+            this._IAuthTokenService = _IAuthTokenService;
         }
 
         /// <summary>
@@ -37,6 +43,9 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var scope_list = ConvertHelper.NotNullList(scope?.Split(',').ToList()).Where(x => ValidateHelper.IsPlumpString(x)).ToList();
+
+                //await this._IAuthTokenService.CreateToken();
+
                 await Task.FromResult(1);
                 return View();
             });
@@ -54,17 +63,6 @@ namespace Hiwjcn.Web.Controllers
         [Route("access_token")]
         public async Task<ActionResult> AccessToken(
             string client_id, string client_secret, string code, string grant_type)
-        {
-            return await RunActionAsync(async () =>
-            {
-                await Task.FromResult(1);
-                return View();
-            });
-        }
-
-        [HttpPost]
-        [Route("refresh_token/{refresh_token}")]
-        public async Task<ActionResult> RefreshToken(string refresh_token)
         {
             return await RunActionAsync(async () =>
             {

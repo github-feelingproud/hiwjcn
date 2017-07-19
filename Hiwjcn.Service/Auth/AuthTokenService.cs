@@ -50,7 +50,66 @@ namespace Hiwjcn.Bll.Auth
             return base.CheckModel(model);
         }
 
-        public virtual async Task<string> CreateToken(string client_uid, string user_uid)
+        public virtual async Task<(AuthCode code, string msg)> CreateCode(string client_uid, List<string> scopes, string user_uid)
+        {
+            if (!ValidateHelper.IsPlumpList(scopes)) { return (null, "scopes为空"); }
+            var code = new AuthCode()
+            {
+                UID = Com.GetUUID(),
+                UserUID = user_uid,
+                ClientUID = client_uid,
+                ScopesJson = scopes.ToJson(),
+                CreateTime = DateTime.Now
+            };
+
+            var border = DateTime.Now.GetDateBorder();
+            if (await this._AuthCodeRepository.GetCountAsync(x => x.ClientUID == client_uid && x.UserUID == user_uid && x.CreateTime >= border.start && x.CreateTime < border.end) >= 2000)
+            {
+                return (null, "授权过多");
+            }
+
+            if (await this._AuthCodeRepository.AddAsync(code) > 0)
+            {
+                return (code, SUCCESS);
+            }
+            return (null, "保存票据失败");
+        }
+
+        public virtual async Task<(AuthToken token, string msg)> CreateToken(string client_id, string client_secret, string code_uid)
+        {
+            var now = DateTime.Now;
+            var expire = now.AddMinutes(-5);
+            var code = await this._AuthCodeRepository.GetFirstAsync(x => x.UID == code_uid && x.ClientUID == client_id && x.CreateTime > expire);
+            if (code == null) { return (null, "code已失效"); }
+
+            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_id && x.ClientSecretUID == client_secret);
+            if (client == null) { return (null, "应用不存在"); }
+
+            var token = new AuthToken()
+            {
+                UID = Com.GetUUID(),
+                CreateTime = now,
+                ExpiryTime = now.AddDays(ExpireDays),
+                RefreshToken = Com.GetUUID(),
+                ScopeNames = code.ScopesJson.JsonToEntity<List<string>>(false)
+            };
+            if (!ValidateHelper.IsPlumpList(token.ScopeNames))
+            {
+                return (null, "scope为空");
+            }
+            if (!token.IsValid(out var msg))
+            {
+                return (null, msg);
+            }
+            if (await this._AuthTokenRepository.AddAsync(token) <= 0)
+            {
+                return (null, "保存token失败");
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<string> CreateToken(string client_uid, string user_uid, List<string> scope_name)
         {
             var now = DateTime.Now;
             var token = new AuthToken()
@@ -58,7 +117,8 @@ namespace Hiwjcn.Bll.Auth
                 UID = Com.GetUUID(),
                 CreateTime = now,
                 ExpiryTime = now.AddDays(ExpireDays),
-                RefreshToken = Com.GetUUID()
+                RefreshToken = Com.GetUUID(),
+                ScopeNames = ConvertHelper.NotNullList(scope_name)
             };
 
             if (!this.CheckModel(token, out var msg))
