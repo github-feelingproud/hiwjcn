@@ -11,7 +11,6 @@ using Lib.core;
 using Lib.extension;
 using Lib.helper;
 using System.Data.Entity;
-using Model.User;
 using Lib.events;
 using System.Configuration;
 
@@ -51,12 +50,16 @@ namespace Hiwjcn.Bll.Auth
             return base.CheckModel(model);
         }
 
-        public virtual async Task<string> CreateToken(AuthToken token)
+        public virtual async Task<string> CreateToken(string client_uid, string user_uid)
         {
-            token.UID = Com.GetUUID();
-            token.CreateTime = DateTime.Now;
-            token.ExpiryTime = token.CreateTime.AddDays(ExpireDays);
-            token.RefreshToken = Com.GetUUID();
+            var now = DateTime.Now;
+            var token = new AuthToken()
+            {
+                UID = Com.GetUUID(),
+                CreateTime = now,
+                ExpiryTime = now.AddDays(ExpireDays),
+                RefreshToken = Com.GetUUID()
+            };
 
             if (!this.CheckModel(token, out var msg))
             {
@@ -88,7 +91,7 @@ namespace Hiwjcn.Bll.Auth
                 TokenUID = token.UID,
                 ScopeUID = x.UID,
 
-                CreateTime = DateTime.Now
+                CreateTime = now
             }).ToArray();
             if ((await this._AuthTokenScopeRepository.AddAsync(scopes)) <= 0)
             {
@@ -208,14 +211,6 @@ namespace Hiwjcn.Bll.Auth
                     //client
                     var client = db.Set<AuthClient>().AsNoTrackingQueryable();
                     var all_clients = await client.Where(x => client_uids.Contains(x.UID)).ToListAsync();
-                    var owner_uids = all_clients.Select(x => x.UserUID);
-                    //client owner
-                    var user = db.Set<UserModel>().AsNoTrackingQueryable();
-                    var all_client_owners = await user.Where(x => owner_uids.Contains(x.UID)).ToListAsync();
-                    foreach (var c in all_clients)
-                    {
-                        c.Owner = all_client_owners.Where(x => x.UID == c.UserUID).FirstOrDefault();
-                    }
                     foreach (var m in data.DataList)
                     {
                         m.Client = all_clients.Where(x => x.UID == m.ClientUID).FirstOrDefault();

@@ -54,9 +54,6 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual DateTime CreateTime { get; set; }
 
         public virtual DateTime? UpdateTime { get; set; }
-
-        [NotMapped]
-        public virtual UserModel Owner { get; set; }
     }
 
     [Serializable]

@@ -11,7 +11,7 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 {
     public interface IAuthTokenService : IServiceBase<AuthToken>
     {
-        Task<string> CreateToken(AuthToken token);
+        Task<string> CreateToken(string client_uid, string user_uid)
 
         Task<AuthToken> FindToken(string token_uid);
 
