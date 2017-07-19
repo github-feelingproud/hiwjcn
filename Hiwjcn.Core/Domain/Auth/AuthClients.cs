@@ -112,11 +112,7 @@ namespace Hiwjcn.Core.Domain.Auth
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "token UID必填")]
         public virtual string UID { get; set; }
-
-        [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "token 必填")]
-        public virtual string Token { get; set; }
-
+        
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "refresh token 必填")]
         public virtual string RefreshToken { get; set; }

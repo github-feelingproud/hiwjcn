@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.infrastructure;
 using Hiwjcn.Core.Domain.Auth;
+using Lib.helper;
 
 namespace Hiwjcn.Core.Infrastructure.Auth
 {
@@ -15,5 +16,7 @@ namespace Hiwjcn.Core.Infrastructure.Auth
         Task<AuthToken> FindToken(string token_uid);
 
         Task<AuthToken> RefreshToken(string refresh_token_uid);
+
+        Task<PagerData<AuthToken>> GetMyAuthorizedClients(string user_id, int page, int pagesize);
     }
 }
