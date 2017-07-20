@@ -97,59 +97,72 @@ namespace Hiwjcn.Bll.Auth
         public virtual async Task<(AuthToken token, string msg)> CreateToken(
             string client_id, string client_secret, string code_uid)
         {
-            var now = DateTime.Now;
-            var expire = now.AddMinutes(-5);
-            var code = await this._AuthCodeRepository.GetFirstAsync(x => x.UID == code_uid && x.ClientUID == client_id && x.CreateTime > expire);
-            if (code == null) { return (null, "code已失效"); }
-            var scope_names = code.ScopesJson.JsonToEntity<List<string>>(false);
-            if (!ValidateHelper.IsPlumpList(scope_names))
+            try
             {
-                return (null, "scope为空");
-            }
+                var now = DateTime.Now;
+                var expire = now.AddMinutes(-5);
+                var code = await this._AuthCodeRepository.GetFirstAsync(x => x.UID == code_uid && x.ClientUID == client_id && x.CreateTime > expire);
+                if (code == null)
+                {
+                    throw new MsgException("code已失效");
+                }
+                var scope_names = code.ScopesJson.JsonToEntity<List<string>>(throwIfException: false);
+                if (!ValidateHelper.IsPlumpList(scope_names))
+                {
+                    throw new MsgException("scope为空");
+                }
 
-            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_id && x.ClientSecretUID == client_secret && x.IsRemove <= 0);
-            if (client == null) { return (null, "应用不存在"); }
+                var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_id && x.ClientSecretUID == client_secret && x.IsRemove <= 0);
+                if (client == null)
+                {
+                    throw new MsgException("应用不存在");
+                }
 
-            {
-                //clear old token
-                await ClearOldToken(code.UserUID);
-            }
+                {
+                    //clear old token
+                    await ClearOldToken(code.UserUID);
+                }
 
-            //create new token
-            var token = new AuthToken()
-            {
-                UID = Com.GetUUID(),
-                CreateTime = now,
-                ExpiryTime = now.AddDays(ExpireDays),
-                RefreshToken = Com.GetUUID()
-            };
-            if (!token.IsValid(out var msg))
-            {
-                return (null, msg);
-            }
-            if (await this._AuthTokenRepository.AddAsync(token) <= 0)
-            {
-                return (null, "保存token失败");
-            }
-            //save scopes
-            var scopes = await this._AuthScopeRepository.GetListAsync(x => scope_names.Contains(x.Name));
-            if (scopes.Count != scope_names.Count)
-            {
-                return (null, "scope数据存在错误");
-            }
-            var scope_list = scopes.Select(x => new AuthTokenScope()
-            {
-                UID = Com.GetUUID(),
-                ScopeUID = x.UID,
-                TokenUID = token.UID,
-                CreateTime = now
-            }).ToArray();
-            if (ValidateHelper.IsPlumpList(scope_list) && await this._AuthTokenScopeRepository.AddAsync(scope_list) <= 0)
-            {
-                throw new MsgException("保存scope失败");
-            }
+                //create new token
+                var token = new AuthToken()
+                {
+                    UID = Com.GetUUID(),
+                    CreateTime = now,
+                    ExpiryTime = now.AddDays(ExpireDays),
+                    RefreshToken = Com.GetUUID()
+                };
+                if (!token.IsValid(out var msg))
+                {
+                    throw new MsgException(msg);
+                }
+                if (await this._AuthTokenRepository.AddAsync(token) <= 0)
+                {
+                    throw new MsgException("保存token失败");
+                }
+                //save scopes
+                var scopes = await this._AuthScopeRepository.GetListAsync(x => scope_names.Contains(x.Name));
+                if (scopes.Count != scope_names.Count)
+                {
+                    throw new MsgException("scope数据存在错误");
+                }
+                var scope_list = scopes.Select(x => new AuthTokenScope()
+                {
+                    UID = Com.GetUUID(),
+                    ScopeUID = x.UID,
+                    TokenUID = token.UID,
+                    CreateTime = now
+                }).ToArray();
+                if (await this._AuthTokenScopeRepository.AddAsync(scope_list) <= 0)
+                {
+                    throw new MsgException("保存scope失败");
+                }
 
-            return (token, SUCCESS);
+                return (token, SUCCESS);
+            }
+            catch (MsgException e)
+            {
+                return (null, e.Message);
+            }
         }
 
         public async Task<string> DeleteToken(string client_uid, string user_uid)
@@ -174,35 +187,25 @@ namespace Hiwjcn.Bll.Auth
             return msg;
         }
 
-        private async Task RefreshToken(AuthToken tk)
+        private async Task<bool> RefreshToken(AuthToken tk)
         {
+            var success = false;
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
             {
                 var now = DateTime.Now;
                 var token_query = db.Set<AuthToken>();
                 var token = await token_query.Where(x => x.UID == tk.UID && x.ExpiryTime > now).FirstOrDefaultAsync();
-                if (token == null) { return false; }
 
-                //refresh expire time
-                token.ExpiryTime = now.AddDays(ExpireDays);
+                if (token != null)
+                {                //refresh expire time
+                    token.ExpiryTime = now.AddDays(ExpireDays);
 
-                var token_to_delete = token_query.Where(x => x.ClientUID == token.ClientUID && x.UID != token.UID);
-
-                //delete other token
-                token_query.RemoveRange(token_to_delete);
-
-                //delete other token scope map
-                var scope_query = db.Set<AuthTokenScope>();
-                scope_query.RemoveRange(scope_query.Where(x => token_to_delete.Select(m => m.UID).Contains(x.TokenUID)));
-
-                //save changes
-                if (await db.SaveChangesAsync() <= 0)
-                {
-                    $"自动刷新token失败:{token.ToJson()}".AddBusinessInfoLog();
+                    success = await db.SaveChangesAsync() > 0;
                 }
 
                 return true;
             });
+            return success;
         }
 
         public async Task<AuthToken> FindToken(string token_uid)
@@ -223,7 +226,10 @@ namespace Hiwjcn.Bll.Auth
                     //自动刷新过期时间
                     if ((token.ExpiryTime - now).TotalDays < (ExpireDays / 2.0))
                     {
-                        await this.RefreshToken(token);
+                        if (!await this.RefreshToken(token))
+                        {
+                            $"自动刷新token失败:{token.ToJson()}".AddBusinessInfoLog();
+                        }
                     }
                 }
                 return true;
