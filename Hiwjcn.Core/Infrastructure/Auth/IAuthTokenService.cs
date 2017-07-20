@@ -19,6 +19,6 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 
         Task<string> DeleteToken(string client_uid, string user_uid);
 
-        Task<PagerData<AuthToken>> GetMyAuthorizedClients(string user_id, int page, int pagesize);
+        Task<PagerData<AuthClient>> GetMyAuthorizedClients(string user_id, int page, int pagesize);
     }
 }
