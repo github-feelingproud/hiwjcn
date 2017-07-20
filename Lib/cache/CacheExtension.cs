@@ -13,15 +13,13 @@ namespace Lib.cache
         /// 缓存逻辑
         /// </summary>
         public static T GetOrSet<T>(this ICacheProvider cacheManager,
-            string key, Func<T> dataSource, TimeSpan expire, Action OnHit = null)
+            string key, Func<T> dataSource, TimeSpan expire)
         {
             try
             {
                 var cache = cacheManager.Get<T>(key);
                 if (cache.Success)
                 {
-                    OnHit?.Invoke();
-
                     return cache.Result;
                 }
                 var data = dataSource.Invoke();
@@ -49,21 +47,13 @@ namespace Lib.cache
         /// 异步缓存逻辑
         /// </summary>
         public static async Task<T> GetOrSetAsync<T>(this ICacheProvider cacheManager,
-            string key, Func<Task<T>> dataSource, TimeSpan expire,
-            Func<Task> OnHitAsync = null, Action OnHit = null)
+            string key, Func<Task<T>> dataSource, TimeSpan expire)
         {
             try
             {
                 var cache = cacheManager.Get<T>(key);
                 if (cache.Success)
                 {
-                    var onhit_task = OnHitAsync?.Invoke();
-                    if (onhit_task != null)
-                    {
-                        await onhit_task;
-                    }
-                    OnHit?.Invoke();
-
                     return cache.Result;
                 }
                 var data = await dataSource.Invoke();

@@ -24,6 +24,15 @@ namespace Lib.cache
     }
 
     /// <summary>
+    /// »º´æÃüÖÐÇé¿ö
+    /// </summary>
+    public enum CacheHitStatusEnum : int
+    {
+        NotHit = 0,
+        Hit = 1
+    }
+
+    /// <summary>
     /// Cache manager interface
     /// </summary>
     public interface ICacheProvider : IDisposable

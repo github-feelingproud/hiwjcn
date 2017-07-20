@@ -22,14 +22,13 @@ namespace Lib.cache
         /// 如果不使用缓存：直接从数据源取。
         /// </summary>
         public static T Cache<T>(string key, Func<T> dataSource,
-            bool UseCache = true, double expires_minutes = 3, Action OnHit = null)
+            bool UseCache = true, double expires_minutes = 3)
         {
             //如果读缓存，读到就返回
             if (UseCache)
             {
                 var cacheManager = CacheProvider();
-                return cacheManager.GetOrSet(key, dataSource, TimeSpan.FromMinutes(expires_minutes),
-                    OnHit: OnHit);
+                return cacheManager.GetOrSet(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
             }
             return dataSource.Invoke();
         }
@@ -38,15 +37,13 @@ namespace Lib.cache
         /// 异步缓存
         /// </summary>
         public static async Task<T> CacheAsync<T>(string key, Func<Task<T>> dataSource,
-            bool UseCache = true, double expires_minutes = 3,
-            Func<Task> OnHitAsync = null, Action OnHit = null)
+            bool UseCache = true, double expires_minutes = 3)
         {
             //如果读缓存，读到就返回
             if (UseCache)
             {
                 var cacheManager = CacheProvider();
-                return await cacheManager.GetOrSetAsync(key, dataSource, TimeSpan.FromMinutes(expires_minutes),
-                    OnHitAsync: OnHitAsync, OnHit: OnHit);
+                return await cacheManager.GetOrSetAsync(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
             }
             return await dataSource.Invoke();
         }

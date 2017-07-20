@@ -7,6 +7,12 @@ using Lib.ioc;
 
 namespace Lib.mvc.auth
 {
+    public enum AuthMode : int
+    {
+        Server = 1,
+        Client = 2
+    }
+
     public static class AuthHelper
     {
         public static void CheckDependency()

@@ -9,8 +9,10 @@ using Lib.helper;
 using Lib.core;
 using Lib.extension;
 using Lib.net;
+using Lib.cache;
 using System.Threading.Tasks;
 using Hiwjcn.Core.Infrastructure.Auth;
+using Hiwjcn.Bll.Auth;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -20,13 +22,17 @@ namespace Hiwjcn.Web.Controllers
         private readonly LoginStatus _LoginStatus;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
+        private readonly ICacheProvider _cache;
 
         public AuthController(
             LoginStatus _LoginStatus,
+            ICacheProvider _cache,
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService)
         {
             this._LoginStatus = _LoginStatus;
+            this._cache = _cache;
+
             this._IAuthTokenService = _IAuthTokenService;
             this._IAuthScopeService = _IAuthScopeService;
         }
@@ -109,6 +115,20 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return Http404();
                 }
+
+                var hit_status = CacheHitStatusEnum.Hit;
+
+                var res = await this._cache.GetOrSetAsync(
+                    AuthCacheKeyManager.TokenKey(access_token),
+                    async () =>
+                    {
+
+                        hit_status = CacheHitStatusEnum.NotHit;
+                        return await Task.FromResult("");
+                    },
+                    TimeSpan.FromMinutes(5));
+
+                $"token：{access_token}缓存命中情况：{hit_status}".AddBusinessInfoLog();
 
                 return GetJson(new _() { success = true });
             });
