@@ -135,6 +135,14 @@ namespace Lib.mvc
         }
 
         /// <summary>
+        /// get数据
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> QueryStringToDict(this HttpContext context) =>
+            context.Request.QueryString.ToDict();
+
+        /// <summary>
         /// 设置实体
         /// </summary>
         /// <param name="session"></param>
