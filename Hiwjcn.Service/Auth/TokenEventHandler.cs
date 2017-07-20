@@ -24,7 +24,13 @@ namespace Hiwjcn.Bll.Auth
     public class TokenEventHandler :
         IConsumer<EntityInserted<AuthToken>>,
         IConsumer<EntityDeleted<AuthToken>>,
-        IConsumer<EntityUpdated<AuthToken>>
+        IConsumer<EntityUpdated<AuthToken>>,
+        IConsumer<EntityInserted<AuthScope>>,
+        IConsumer<EntityDeleted<AuthScope>>,
+        IConsumer<EntityUpdated<AuthScope>>,
+        IConsumer<EntityInserted<AuthClient>>,
+        IConsumer<EntityDeleted<AuthClient>>,
+        IConsumer<EntityUpdated<AuthClient>>
     {
         private readonly ICacheProvider _cache;
         public TokenEventHandler(ICacheProvider _cache)
@@ -32,21 +38,52 @@ namespace Hiwjcn.Bll.Auth
             this._cache = _cache;
         }
 
-        private string CacheKey(AuthToken token) => $"auth.token:{token?.UID}";
-
         public void HandleEvent(EntityUpdated<AuthToken> eventMessage)
         {
-            this._cache.Remove(CacheKey(eventMessage.Entity));
+            this._cache.Remove(AuthCacheKeyManager.TokenKey(eventMessage.Entity?.UID));
         }
 
         public void HandleEvent(EntityInserted<AuthToken> eventMessage)
         {
-            this._cache.Remove(CacheKey(eventMessage.Entity));
+            this._cache.Remove(AuthCacheKeyManager.TokenKey(eventMessage.Entity?.UID));
         }
 
         public void HandleEvent(EntityDeleted<AuthToken> eventMessage)
         {
-            this._cache.Remove(CacheKey(eventMessage.Entity));
+            this._cache.Remove(AuthCacheKeyManager.TokenKey(eventMessage.Entity?.UID));
+        }
+
+        public void HandleEvent(EntityInserted<AuthScope> eventMessage)
+        {
+            this._cache.Remove(AuthCacheKeyManager.ScopeAllKey());
+            this._cache.Remove(AuthCacheKeyManager.ScopeKey(eventMessage.Entity?.UID));
+        }
+
+        public void HandleEvent(EntityDeleted<AuthScope> eventMessage)
+        {
+            this._cache.Remove(AuthCacheKeyManager.ScopeAllKey());
+            this._cache.Remove(AuthCacheKeyManager.ScopeKey(eventMessage.Entity?.UID));
+        }
+
+        public void HandleEvent(EntityUpdated<AuthScope> eventMessage)
+        {
+            this._cache.Remove(AuthCacheKeyManager.ScopeAllKey());
+            this._cache.Remove(AuthCacheKeyManager.ScopeKey(eventMessage.Entity?.UID));
+        }
+
+        public void HandleEvent(EntityInserted<AuthClient> eventMessage)
+        {
+            this._cache.Remove(AuthCacheKeyManager.ClientKey(eventMessage.Entity?.UID));
+        }
+
+        public void HandleEvent(EntityDeleted<AuthClient> eventMessage)
+        {
+            this._cache.Remove(AuthCacheKeyManager.ClientKey(eventMessage.Entity?.UID));
+        }
+
+        public void HandleEvent(EntityUpdated<AuthClient> eventMessage)
+        {
+            this._cache.Remove(AuthCacheKeyManager.ClientKey(eventMessage.Entity?.UID));
         }
     }
 }

@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AopBoundle.cs" />
+    <Compile Include="Auth\AuthCacheKeyManager.cs" />
     <Compile Include="Auth\AuthClientService.cs" />
     <Compile Include="Auth\AuthScopeService.cs" />
     <Compile Include="Auth\AuthTokenScopeService.cs" />
