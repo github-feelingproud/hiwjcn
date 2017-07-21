@@ -17,22 +17,6 @@ namespace Lib.mvc
 {
     public static class MvcExtension
     {
-        public const string AuthedUserUIDKey = "auth.user.id";
-
-        public static string AuthedUserUID(this HttpContext context)
-        {
-            return ConvertHelper.GetString(context.Items[AuthedUserUIDKey]);
-        }
-
-        public static void SetAuthedUserUID(this HttpContext context, string user_uid)
-        {
-            if (!ValidateHelper.IsPlumpString(user_uid))
-            {
-                throw new Exception("用户ID为空");
-            }
-            context.Items[AuthedUserUIDKey] = user_uid;
-        }
-
         public static void AllowCrossDomainAjax(this HttpContext context)
         {
             ResponseHelper.AllowCrossDomainAjax(context);

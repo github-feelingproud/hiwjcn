@@ -291,6 +291,8 @@
     <Compile Include="mvc\attr\ValidateSignAttribute.cs" />
     <Compile Include="mvc\attr\ValidCSRFAttribute.cs" />
     <Compile Include="mvc\attr\_ActionFilterBaseAttribute.cs" />
+    <Compile Include="mvc\auth\AuthContext.cs" />
+    <Compile Include="mvc\auth\AuthExtension.cs" />
     <Compile Include="mvc\auth\AuthHelper.cs" />
     <Compile Include="mvc\auth\AuthServerConfig.cs" />
     <Compile Include="mvc\auth\AuthTokenCheckFromDatabaseProvider.cs" />
@@ -298,6 +300,7 @@
     <Compile Include="mvc\auth\AuthValidBaseAttribute.cs" />
     <Compile Include="mvc\auth\IAuthStoreProvider.cs" />
     <Compile Include="mvc\auth\IAuthTokenCheckProvider.cs" />
+    <Compile Include="mvc\auth\ITokenProvider.cs" />
     <Compile Include="mvc\CookieHelper.cs" />
     <Compile Include="mvc\MvcExtension.cs" />
     <Compile Include="mvc\plugin\BasePaymentController.cs" />
