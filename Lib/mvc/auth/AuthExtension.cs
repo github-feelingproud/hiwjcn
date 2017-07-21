@@ -45,7 +45,17 @@ namespace Lib.mvc.auth
             return new AuthContext(context, tokenProvider);
         }
 
-        public static void UseAuthentication(this ContainerBuilder builder)
+        public static void UseTokenProvider(this ContainerBuilder builder, Func<ITokenProvider> provider)
+        {
+            builder.Register(x => provider.Invoke()).AsSelf();
+        }
+
+
+        public static void UseWebApiAuthentication(this ContainerBuilder builder)
+        { }
+
+
+        public static void UseDatabaseAuthentication(this ContainerBuilder builder)
         { }
     }
 }

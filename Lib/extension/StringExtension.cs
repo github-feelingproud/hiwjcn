@@ -13,6 +13,21 @@ namespace Lib.extension
     public static class StringExtension
     {
         /// <summary>
+        /// 后面加url的斜杠
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string EnsureTrailingSlash(this string input)
+        {
+            if (!input.EndsWith("/"))
+            {
+                return input + "/";
+            }
+
+            return input;
+        }
+
+        /// <summary>
         /// 中间用*替代
         /// </summary>
         public static string HideForSecurity(this string str,
