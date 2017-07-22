@@ -148,6 +148,9 @@ namespace Hiwjcn.Core.Domain.Auth
         [StringLength(100, MinimumLength = 20, ErrorMessage = "用户UID 必填")]
         public virtual string UserUID { get; set; }
 
+        [DataType(DataType.Text)]
+        public virtual string ScopeUIDJson { get; set; }
+
         public virtual DateTime ExpiryTime { get; set; }
 
         public virtual DateTime CreateTime { get; set; }

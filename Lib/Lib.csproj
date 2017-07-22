@@ -348,6 +348,7 @@
     <Compile Include="mvc\ResultBundle.cs" />
     <Compile Include="mvc\user\SSOCheckAttribute.cs" />
     <Compile Include="mvc\user\SSOClientHelper.cs" />
+    <Compile Include="mvc\user\UserModelBase.cs" />
     <Compile Include="mvc\user\ValidLoginBaseAttribute.cs" />
     <Compile Include="mvc\WebWorkContext.cs" />
     <Compile Include="net\HttpClientHelper.cs" />

@@ -88,7 +88,12 @@ namespace Hiwjcn.Bll.Auth
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
             {
                 var set = db.Set<AuthToken>();
-                set.RemoveRange(set.Where(x => x.UserUID == user_uid && x.ExpiryTime < now));
+                var old_tokens = set.Where(x => x.UserUID == user_uid && x.ExpiryTime < now);
+                set.RemoveRange(old_tokens);
+
+                var map = db.Set<AuthTokenScope>();
+                map.RemoveRange(map.Where(x => old_tokens.Select(m => m.UID).Contains(x.TokenUID)));
+
                 await db.SaveChangesAsync();
                 return true;
             });
@@ -100,27 +105,30 @@ namespace Hiwjcn.Bll.Auth
             try
             {
                 var now = DateTime.Now;
+
+                //code
                 var expire = now.AddMinutes(-5);
                 var code = await this._AuthCodeRepository.GetFirstAsync(x => x.UID == code_uid && x.ClientUID == client_id && x.CreateTime > expire);
                 if (code == null)
                 {
                     throw new MsgException("code已失效");
                 }
-                var scope_names = code.ScopesJson.JsonToEntity<List<string>>(throwIfException: false);
-                if (!ValidateHelper.IsPlumpList(scope_names))
-                {
-                    throw new MsgException("scope为空");
-                }
-
+                //client
                 var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_id && x.ClientSecretUID == client_secret && x.IsRemove <= 0);
                 if (client == null)
                 {
                     throw new MsgException("应用不存在");
                 }
-
+                //scope
+                var scope_names = code.ScopesJson.JsonToEntity<List<string>>(throwIfException: false);
+                if (!ValidateHelper.IsPlumpList(scope_names))
                 {
-                    //clear old token
-                    await ClearOldToken(code.UserUID);
+                    throw new MsgException("scope为空");
+                }
+                var scopes = await this._AuthScopeRepository.GetListAsync(x => scope_names.Contains(x.Name));
+                if (scopes.Count != scope_names.Count)
+                {
+                    throw new MsgException("scope数据存在错误");
                 }
 
                 //create new token
@@ -129,7 +137,8 @@ namespace Hiwjcn.Bll.Auth
                     UID = Com.GetUUID(),
                     CreateTime = now,
                     ExpiryTime = now.AddDays(ExpireDays),
-                    RefreshToken = Com.GetUUID()
+                    RefreshToken = Com.GetUUID(),
+                    ScopeUIDJson = scopes.Select(x => x.UID).ToJson()
                 };
                 if (!token.IsValid(out var msg))
                 {
@@ -139,12 +148,7 @@ namespace Hiwjcn.Bll.Auth
                 {
                     throw new MsgException("保存token失败");
                 }
-                //save scopes
-                var scopes = await this._AuthScopeRepository.GetListAsync(x => scope_names.Contains(x.Name));
-                if (scopes.Count != scope_names.Count)
-                {
-                    throw new MsgException("scope数据存在错误");
-                }
+                //scope map
                 var scope_list = scopes.Select(x => new AuthTokenScope()
                 {
                     UID = Com.GetUUID(),
@@ -157,6 +161,10 @@ namespace Hiwjcn.Bll.Auth
                     throw new MsgException("保存scope失败");
                 }
 
+                {
+                    //clear old token
+                    await ClearOldToken(code.UserUID);
+                }
                 return (token, SUCCESS);
             }
             catch (MsgException e)
@@ -165,7 +173,7 @@ namespace Hiwjcn.Bll.Auth
             }
         }
 
-        public async Task<string> DeleteToken(string client_uid, string user_uid)
+        public async Task<string> DeleteClient(string client_uid, string user_uid)
         {
             var msg = SUCCESS;
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>

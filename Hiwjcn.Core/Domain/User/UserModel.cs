@@ -1,5 +1,6 @@
 ﻿using Lib.data;
 using Lib.helper;
+using Lib.mvc.user;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -36,7 +37,7 @@ namespace Model.User
     ///用户的账户模型
     /// </summary>
     [Table("wp_users")]
-    public class UserModel : BaseEntity
+    public class UserModel : BaseEntity//, UserModelBase
     {
 
         /// <summary>
