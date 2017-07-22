@@ -57,5 +57,11 @@ namespace Lib.mvc.auth
 
         public static void UseDatabaseAuthentication(this ContainerBuilder builder)
         { }
+
+        public static void AuthUseAuthServerValidation(this ContainerBuilder builder)
+        { }
+
+        public static void AuthUseCustomValidation(this ContainerBuilder builder)
+        { }
     }
 }

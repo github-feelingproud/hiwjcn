@@ -1,4 +1,5 @@
-﻿using Autofac.Integration.Mvc;
+﻿using Autofac;
+using Autofac.Integration.Mvc;
 using Hiwjcn.Dal;
 using Hiwjcn.Framework;
 using Hiwjcn.Web.App_Start;
@@ -10,6 +11,7 @@ using Lib.ioc;
 using Lib.mvc;
 using Lib.task;
 using System;
+using Lib.mvc.auth;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,6 +45,10 @@ namespace Hiwjcn.Web
                     //添加依赖注入
                     AppContext.AddExtraRegistrar(new CommonDependencyRegister());
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
+                    AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
+                    {
+                        builder.UseDatabaseAuthentication();
+                    };
 
                     //disable "X-AspNetMvc-Version" header name
                     MvcHandler.DisableMvcResponseHeader = true;
@@ -52,7 +58,7 @@ namespace Hiwjcn.Web
                     //用AutoFac接管控制器生成，从而实现依赖注入
                     //ControllerBuilder.Current.SetControllerFactory(typeof(AutoFacControllerFactory));
                     //使用autofac生成控制器
-                    DependencyResolver.SetResolver(new AutofacDependencyResolver(AppContext.Container));
+                    DependencyResolver.SetResolver(AppContext.Container.AutofacDependencyResolver());
                     //加速首次启动EF
                     //EFManager.SelectDB(null).FastStart();
                     EFManager.FastStart<EntityDB>();

@@ -294,6 +294,7 @@
     <Compile Include="mvc\auth\AuthContext.cs" />
     <Compile Include="mvc\auth\AuthExtension.cs" />
     <Compile Include="mvc\auth\AuthHelper.cs" />
+    <Compile Include="mvc\auth\AuthServerApiCaller.cs" />
     <Compile Include="mvc\auth\AuthServerConfig.cs" />
     <Compile Include="mvc\auth\AuthTokenCheckFromDatabaseProvider.cs" />
     <Compile Include="mvc\auth\AuthTokenCheckFromWebApiProvider.cs" />

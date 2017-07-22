@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Integration.Mvc;
 using Lib.cache;
 using Lib.core;
 using Lib.helper;
@@ -52,6 +53,8 @@ namespace Lib.ioc
             context?.Dispose();
         }
 
+        public static RefAction<ContainerBuilder> OnContainerBuilding { get; set; }
+
         /// <summary>
         /// 获取ioc容器，第一次访问将创建容器
         /// </summary>
@@ -78,6 +81,10 @@ namespace Lib.ioc
                                     reg.Register(ref builder);
                                 }
                             }
+
+                            //额外的切入点
+                            OnContainerBuilding?.Invoke(ref builder);
+
                             //创建容器
                             context = builder.Build();
                         }
@@ -146,6 +153,17 @@ namespace Lib.ioc
         {
             return GetObject<IEnumerable<T>>(name).ToArray();
         }
+    }
+
+    public static class AppContextExtension
+    {
+        /// <summary>
+        /// 给mvc提供依赖注入功能
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static AutofacDependencyResolver AutofacDependencyResolver(this IContainer context) =>
+            new AutofacDependencyResolver(context);
     }
 
     /*
