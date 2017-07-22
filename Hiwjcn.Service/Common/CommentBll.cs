@@ -117,7 +117,7 @@ namespace Hiwjcn.Bll.Sys
                         {
                             data.DataList.ForEach(x =>
                             {
-                                x.UserModel = userlist.Where(m => m.UserID == x.UserID).FirstOrDefault();
+                                x.UserModel = userlist.Where(m => m.IID == x.UserID).FirstOrDefault();
                             });
                         }
                     }

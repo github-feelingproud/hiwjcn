@@ -18,7 +18,9 @@ namespace Hiwjcn.Bll.Auth
 {
     public class AuthTokenService : ServiceBase<AuthToken>, IAuthTokenService
     {
-        public static readonly int ExpireDays = (ConfigurationManager.AppSettings["AuthExpireDays"] ?? "30").ToInt(30);
+        public static readonly int TokenExpireDays = (ConfigurationManager.AppSettings["AuthExpireDays"] ?? "30").ToInt(30);
+        public static readonly int CodeExpireMinutes = (ConfigurationManager.AppSettings["CodeExpireMinutes"] ?? "5").ToInt(5);
+        public static readonly int MaxCodeCreatedDaily = (ConfigurationManager.AppSettings["MaxCodeCreatedDaily"] ?? "2000").ToInt(2000);
 
         private readonly IRepository<AuthToken> _AuthTokenRepository;
         private readonly IRepository<AuthTokenScope> _AuthTokenScopeRepository;
@@ -54,6 +56,22 @@ namespace Hiwjcn.Bll.Auth
             return base.CheckModel(model);
         }
 
+        private async Task ClearOldCode(string user_uid)
+        {
+            await this._AuthCodeRepository.PrepareSessionAsync(async db =>
+            {
+                var set = db.Set<AuthCode>();
+
+                var expire = DateTime.Now.AddMinutes(-CodeExpireMinutes);
+                var old_codes = set.Where(x => x.UserUID == user_uid && x.CreateTime < expire);
+
+                set.RemoveRange(old_codes);
+
+                await db.SaveChangesAsync();
+                return true;
+            });
+        }
+
         public virtual async Task<(AuthCode code, string msg)> CreateCode(
             string client_uid, List<string> scopes, string user_uid)
         {
@@ -70,12 +88,19 @@ namespace Hiwjcn.Bll.Auth
             };
 
             var border = now.GetDateBorder();
-            if (await this._AuthCodeRepository.GetCountAsync(x => x.ClientUID == client_uid && x.UserUID == user_uid && x.CreateTime >= border.start && x.CreateTime < border.end) >= 2000)
+            if (await this._AuthCodeRepository.GetCountAsync(x => x.ClientUID == client_uid && x.UserUID == user_uid && x.CreateTime >= border.start && x.CreateTime < border.end) >= MaxCodeCreatedDaily)
             {
                 return (null, "授权过多");
             }
 
-            if (await this._AuthCodeRepository.AddAsync(code) > 0)
+            var ok = await this._AuthCodeRepository.AddAsync(code) > 0;
+
+            {
+                //clear old data
+                await this.ClearOldCode(user_uid);
+            }
+
+            if (ok)
             {
                 return (code, SUCCESS);
             }
@@ -107,7 +132,7 @@ namespace Hiwjcn.Bll.Auth
                 var now = DateTime.Now;
 
                 //code
-                var expire = now.AddMinutes(-5);
+                var expire = now.AddMinutes(-CodeExpireMinutes);
                 var code = await this._AuthCodeRepository.GetFirstAsync(x => x.UID == code_uid && x.ClientUID == client_id && x.CreateTime > expire);
                 if (code == null)
                 {
@@ -136,7 +161,7 @@ namespace Hiwjcn.Bll.Auth
                 {
                     UID = Com.GetUUID(),
                     CreateTime = now,
-                    ExpiryTime = now.AddDays(ExpireDays),
+                    ExpiryTime = now.AddDays(TokenExpireDays),
                     RefreshToken = Com.GetUUID(),
                     ScopeUIDJson = scopes.Select(x => x.UID).ToJson()
                 };
@@ -206,7 +231,7 @@ namespace Hiwjcn.Bll.Auth
 
                 if (token != null)
                 {                //refresh expire time
-                    token.ExpiryTime = now.AddDays(ExpireDays);
+                    token.ExpiryTime = now.AddDays(TokenExpireDays);
 
                     success = await db.SaveChangesAsync() > 0;
                 }
@@ -222,7 +247,7 @@ namespace Hiwjcn.Bll.Auth
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
             {
                 var now = DateTime.Now;
-                var token_query = db.Set<AuthToken>();
+                var token_query = db.Set<AuthToken>().AsNoTrackingQueryable();
                 token = await token_query.Where(x => x.UID == token_uid && x.ExpiryTime > now).FirstOrDefaultAsync();
 
                 if (token != null)
@@ -232,7 +257,7 @@ namespace Hiwjcn.Bll.Auth
                     token.Scopes = await scope_query.Where(x => scope_uids.Contains(x.UID)).ToListAsync();
 
                     //自动刷新过期时间
-                    if ((token.ExpiryTime - now).TotalDays < (ExpireDays / 2.0))
+                    if ((token.ExpiryTime - now).TotalDays < (TokenExpireDays / 2.0))
                     {
                         if (!await this.RefreshToken(token))
                         {

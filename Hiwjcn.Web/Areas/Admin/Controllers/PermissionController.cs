@@ -180,7 +180,7 @@ namespace WebApp.Areas.Admin.Controllers
 
                 UserRoleBll bll = new UserRoleBll() { UseCache = false };
 
-                var userrolesid = bll.GetRolesByUserID(user.UserID);
+                var userrolesid = bll.GetRolesByUserID(user.IID);
                 if (userrolesid == null) { userrolesid = new List<int>(); }
 
                 var allrolelist = _IRoleService.GetAllRoles();

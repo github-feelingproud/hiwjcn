@@ -46,7 +46,7 @@ namespace Model.User
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("user_id")]
-        public virtual int UserID { get; set; }
+        public virtual int IID { get; set; }
 
         [Column(nameof(UID))]
         [Editable(false)]
@@ -170,13 +170,13 @@ namespace Model.User
             {
                 return string.Format("http://wpa.qq.com/msgrd?v=3&uin={0}&site=qq&menu=yes", this.QQ);
             }
-            return "/user/sendmessage/?to=" + this.UserID;
+            return "/user/sendmessage/?to=" + this.IID;
         }
 
         public virtual string GetUserImgUrl()
         {
             if (ValidateHelper.IsPlumpString(this.UserImg)) { return this.UserImg; }
-            return "/user/usermask/" + this.UserID + "/";
+            return "/user/usermask/" + this.IID + "/";
         }
     }
 
@@ -184,8 +184,8 @@ namespace Model.User
     {
         public UserModelMapping()
         {
-            this.ToTable("wp_users").HasKey(x => x.UserID);
-            this.Property(x => x.UserID).HasColumnName("user_id").HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            this.ToTable("wp_users").HasKey(x => x.IID);
+            this.Property(x => x.IID).HasColumnName("user_id").HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             this.Property(x => x.NickName).HasColumnName("nick_name");
             this.Ignore(x => x.RoleModelList);
         }

@@ -82,7 +82,7 @@ namespace Hiwjcn.Web.Controllers
             return RunActionWhenLogin((loginuser) =>
             {
                 var model = new UserModel();
-                model.UserID = loginuser.IID;
+                model.IID = loginuser.IID;
                 model.NickName = user_name;
                 model.Sex = user_sex;
                 model.Phone = user_phone;
@@ -118,7 +118,7 @@ namespace Hiwjcn.Web.Controllers
 
                 var model = new MeViewModel();
                 model.User = user;
-                model.IsMe = model.User.UserID == (this.X.LoginUser?.IID ?? 0);
+                model.IsMe = model.User.IID == (this.X.LoginUser?.IID ?? 0);
 
                 ViewData["model"] = model;
 
