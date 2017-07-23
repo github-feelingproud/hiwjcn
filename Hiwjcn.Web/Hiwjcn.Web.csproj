@@ -23,6 +23,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <UseGlobalApplicationHostFile />
+    <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -116,6 +117,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -239,6 +242,10 @@
     <Compile Include="ui\ueditor\net\App_Code\UploadHandler.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="wcf\AuthApi.svc.cs">
+      <DependentUpon>AuthApi.svc</DependentUpon>
+    </Compile>
+    <Compile Include="wcf\IAuthApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\hiwjcn.sql" />
@@ -572,6 +579,7 @@
     <Content Include="ui\ui\img\cursor.ico" />
     <Content Include="ui\ui\ui.css" />
     <Content Include="ui\ui\ui.js" />
+    <Content Include="wcf\AuthApi.svc" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

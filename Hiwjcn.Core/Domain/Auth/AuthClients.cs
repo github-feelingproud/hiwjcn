@@ -7,9 +7,24 @@ using Lib.data;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Model.User;
+using System.Runtime.Serialization;
 
 namespace Hiwjcn.Core.Domain.Auth
 {
+    [Serializable]
+    [DataContract]
+    public class AuthTokenWcf
+    {
+        [DataMember]
+        public string Token { get; set; }
+
+        [DataMember]
+        public string RefreshToken { get; set; }
+
+        [DataMember]
+        public int Expire { get; set; }
+    }
+
     /// <summary>
     /// auth客户端
     /// </summary>
