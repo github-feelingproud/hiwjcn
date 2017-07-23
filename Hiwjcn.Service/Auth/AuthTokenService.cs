@@ -275,7 +275,7 @@ namespace Hiwjcn.Bll.Auth
         /// <param name="page"></param>
         /// <param name="pagesize"></param>
         /// <returns></returns>
-        public async Task<PagerData<AuthClient>> GetMyAuthorizedClients(string user_id, int page, int pagesize)
+        public async Task<PagerData<AuthClient>> GetMyAuthorizedClients(string user_id, string q, int page, int pagesize)
         {
             var data = new PagerData<AuthClient>();
 
@@ -289,6 +289,10 @@ namespace Hiwjcn.Bll.Auth
                 var client_uids = token_query.Where(x => x.UserUID == user_id && x.ExpiryTime < now).Select(x => x.ClientUID);
 
                 client_query = client_query.Where(x => client_uids.Contains(x.UID) && x.IsRemove <= 0);
+                if (ValidateHelper.IsPlumpString(q))
+                {
+                    client_query = client_query.Where(x => x.ClientName.Contains(q) || x.Description.Contains(q));
+                }
 
                 data.ItemCount = await client_query.CountAsync();
                 client_query = client_query.OrderBy(x => x.ClientName).QueryPage(page, pagesize);

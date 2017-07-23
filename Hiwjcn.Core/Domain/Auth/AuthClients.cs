@@ -28,8 +28,12 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual string UID { get; set; }
 
         [Required]
+        [Index(IsUnique = true)]
         [StringLength(20, MinimumLength = 1, ErrorMessage = "客户端名称必填")]
         public virtual string ClientName { get; set; }
+
+        [MaxLength(100, ErrorMessage = "描述过长")]
+        public virtual string Description { get; set; }
 
         [Required]
         [Url(ErrorMessage = "客户端地址必须是URL")]
@@ -96,6 +100,7 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual string UID { get; set; }
 
         [Required]
+        [Index(IsUnique = true)]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "scope 名称必填")]
         public virtual string Name { get; set; }
 

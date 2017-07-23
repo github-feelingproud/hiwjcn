@@ -56,6 +56,12 @@ namespace Hiwjcn.Bll.Auth
             {
                 return msg;
             }
+
+            if (await this._AuthScopeRepository.ExistAsync(x => x.Name == scope.Name))
+            {
+                return "scope name已存在";
+            }
+
             if (await this._AuthScopeRepository.AddAsync(scope) > 0)
             {
                 this._publisher.EntityInserted(scope);
@@ -81,7 +87,8 @@ namespace Hiwjcn.Bll.Auth
             var scope = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == updatemodel.UID);
             scope = scope ?? throw new MsgException($"招不到scope[scope_uid={updatemodel.UID}]");
 
-            scope.Name = updatemodel.Name;
+            //scope.Name = updatemodel.Name;
+            scope.DisplayName = updatemodel.DisplayName;
             scope.Description = updatemodel.Description;
             scope.Important = updatemodel.Important;
             scope.Sort = updatemodel.Sort;
