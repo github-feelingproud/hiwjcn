@@ -45,6 +45,11 @@ namespace Lib.mvc.auth
             return new AuthContext(context, tokenProvider);
         }
 
+        public static Task<UserModelBase> GetAuthUserAsync(this Controller controller)
+        {
+            throw new NotImplementedException();
+        }
+
         public static void UseTokenProvider(this ContainerBuilder builder, Func<ITokenProvider> provider)
         {
             builder.Register(x => provider.Invoke()).AsSelf();

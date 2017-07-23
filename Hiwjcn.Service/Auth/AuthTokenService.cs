@@ -95,16 +95,14 @@ namespace Hiwjcn.Bll.Auth
 
             var ok = await this._AuthCodeRepository.AddAsync(code) > 0;
 
+            if (ok)
             {
                 //clear old data
                 await this.ClearOldCode(user_uid);
-            }
 
-            if (ok)
-            {
                 return (code, SUCCESS);
             }
-            return (null, "保存票据失败");
+            throw new MsgException("保存票据失败");
         }
 
         private async Task ClearOldToken(string user_uid)

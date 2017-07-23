@@ -61,31 +61,25 @@ namespace Hiwjcn.Bll.Auth
                 this._publisher.EntityInserted(scope);
                 return SUCCESS;
             }
-            return "保存失败";
+            throw new MsgException("保存scope异常");
         }
 
         public async Task<string> DeleteScope(string scope_uid)
         {
             var scope = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == scope_uid);
-            if (scope == null)
-            {
-                return "scope不存在";
-            }
+            scope = scope ?? throw new MsgException($"招不到scope[scope_uid={scope_uid}]");
             if (await this._AuthScopeRepository.DeleteAsync(scope) > 0)
             {
                 this._publisher.EntityDeleted(scope);
                 return SUCCESS;
             }
-            return "删除scope失败";
+            throw new MsgException("删除scope失败");
         }
 
         public async Task<string> UpdateScope(AuthScope updatemodel)
         {
             var scope = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == updatemodel.UID);
-            if (scope == null)
-            {
-                return "scope不存在";
-            }
+            scope = scope ?? throw new MsgException($"招不到scope[scope_uid={updatemodel.UID}]");
 
             scope.Name = updatemodel.Name;
             scope.Description = updatemodel.Description;
@@ -101,7 +95,7 @@ namespace Hiwjcn.Bll.Auth
                 this._publisher.EntityUpdated(scope);
                 return SUCCESS;
             }
-            return "更新scope失败";
+            throw new MsgException("更新scope失败");
         }
 
         public override string CheckModel(AuthScope model)

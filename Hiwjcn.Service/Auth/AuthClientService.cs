@@ -32,8 +32,12 @@ namespace Hiwjcn.Bll.Auth
             {
                 return msg;
             }
-            var res = await this._AuthClientRepository.AddAsync(client);
-            return res > 0 ? SUCCESS : "保存失败";
+            var ok = await this._AuthClientRepository.AddAsync(client) > 0;
+            if (ok)
+            {
+                return SUCCESS;
+            }
+            throw new Exception("保存client异常");
         }
 
         public override string CheckModel(AuthClient model)
@@ -43,24 +47,53 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<string> DeleteClientAsync(string client_uid, string user_uid)
         {
-            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid) ?? throw new SourceNotExistException();
-            var res = await this._AuthClientRepository.DeleteAsync(client);
-            return res > 0 ? SUCCESS : "删除失败";
+            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);
+            client = client ?? throw new Exception($"找不到client[client_uid={client_uid},user_uid={user_uid}]");
+            var ok = await this._AuthClientRepository.DeleteAsync(client) > 0;
+
+            if (ok)
+            {
+                await this._AuthClientRepository.PrepareSessionAsync(async db =>
+                {
+                    var token_set = db.Set<AuthToken>();
+                    var code_set = db.Set<AuthCode>();
+                    var scope_set = db.Set<AuthTokenScope>();
+
+                    var token_to_delete = token_set.Where(x => x.ClientUID == client_uid);
+                    token_set.RemoveRange(token_to_delete);
+
+                    var code_to_delete = code_set.Where(x => x.ClientUID == client_uid);
+                    code_set.RemoveRange(code_to_delete);
+
+                    var scope_to_delete = scope_set.Where(x => token_to_delete.Select(m => m.UID).Contains(x.TokenUID));
+                    scope_set.RemoveRange(scope_to_delete);
+
+                    await db.SaveChangesAsync();
+                    return true;
+                });
+                return SUCCESS;
+            }
+            throw new Exception("删除client异常");
         }
 
         public async Task<string> EnableOrDisableClientAsync(string client_uid, string user_uid)
         {
-            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid) ?? throw new SourceNotExistException();
-
+            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);
+            client = client ?? throw new Exception($"找不到client[client_uid={client_uid},user_uid={user_uid}]");
             client.IsRemove = (!client.IsRemove.ToString().ToBool()).ToString().ToBoolInt();
+            client.UpdateTime = DateTime.Now;
 
             if (!this.CheckModel(client, out var msg))
             {
                 return msg;
             }
 
-            var res = await this._AuthClientRepository.UpdateAsync(client);
-            return res > 0 ? SUCCESS : "保存失败";
+            var ok = await this._AuthClientRepository.UpdateAsync(client) > 0;
+            if (ok)
+            {
+                return SUCCESS;
+            }
+            throw new MsgException("更新client激活状态异常");
         }
 
         public async Task<PagerData<AuthClient>> QueryListAsync(string user_uid, string q, int page, int pagesize)
@@ -98,8 +131,12 @@ namespace Hiwjcn.Bll.Auth
                 return msg;
             }
 
-            var res = await this._AuthClientRepository.UpdateAsync(client);
-            return res > 0 ? SUCCESS : "更新失败";
+            var ok = await this._AuthClientRepository.UpdateAsync(client) > 0;
+            if (ok)
+            {
+                return SUCCESS;
+            }
+            throw new MsgException("更新client异常");
         }
     }
 }
