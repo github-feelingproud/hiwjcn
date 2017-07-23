@@ -5,6 +5,7 @@ using System.Security;
 using System.Web;
 using System.Web.Hosting;
 using Lib.extension;
+using System.Threading.Tasks;
 
 namespace Lib.mvc
 {
@@ -35,6 +36,30 @@ namespace Lib.mvc
                 }
             }
             var d = func.Invoke();
+            if (d != null)
+            {
+                context.Items[key] = d;
+            }
+            return d;
+        }
+
+        public static async Task<T> CacheInHttpContextAsync<T>(string key, Func<Task<T>> func, HttpContext context = null)
+        {
+            context = context ?? HttpContext.Current ?? throw new Exception("当前非web环境");
+
+            if (context.Items.Contains(key))
+            {
+                var obj = context.Items[key];
+                if (obj != null && obj is T data)
+                {
+                    return data;
+                }
+                else
+                {
+                    return default(T);
+                }
+            }
+            var d = await func.Invoke();
             if (d != null)
             {
                 context.Items[key] = d;

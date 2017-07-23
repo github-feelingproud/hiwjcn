@@ -46,11 +46,11 @@ namespace Lib.mvc.auth
             return new AuthContext(context, tokenProvider);
         }
 
-        public static async Task<UserModelBase> GetAuthUserAsync(this Controller controller)
+        public static async Task<LoginUserInfo> GetAuthUserAsync(this Controller controller)
         {
-            var data = ServerHelper.CacheInHttpContext<UserModelBase>(AuthedUserKey, () =>
+            var data = ServerHelper.CacheInHttpContext(AuthedUserKey, () =>
              {
-                 return null;
+                 return new LoginUserInfo();
              }, HttpContext.Current);
 
             await Task.FromResult(1);
