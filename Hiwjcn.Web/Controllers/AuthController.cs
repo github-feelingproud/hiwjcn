@@ -156,14 +156,14 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        public async Task<ActionResult> MyClients(int? page)
+        public async Task<ActionResult> MyClients(string q, int? page)
         {
             return await RunActionAsync(async () =>
             {
                 page = CheckPage(page);
                 var pagesize = 100;
 
-                var data = await this._IAuthTokenService.GetMyAuthorizedClients(this.X.User?.UserID, page.Value, pagesize);
+                var data = await this._IAuthTokenService.GetMyAuthorizedClients(this.X.User?.UserID, q, page.Value, pagesize);
                 ViewData["pager"] = data.GetPagerHtml($"oauth/{nameof(MyClients)}", "page", page.Value, pagesize);
                 ViewData["list"] = data.DataList;
                 return View();

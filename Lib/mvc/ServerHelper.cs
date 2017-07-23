@@ -19,26 +19,27 @@ namespace Lib.mvc
         /// <param name="context"></param>
         /// <returns></returns>
         public static T CacheInHttpContext<T>(string key, Func<T> func, HttpContext context = null)
-            where T : class
         {
-            context = context ?? HttpContext.Current;
-            var db = context?.Items;
-            if (db == null) { return func.Invoke(); }
+            context = context ?? HttpContext.Current ?? throw new Exception("当前非web环境");
 
-            T ret = null;
-
-            if (db.Contains(key))
+            if (context.Items.Contains(key))
             {
-                ret = db[key] as T;
-                if (ret != null)
+                var obj = context.Items[key];
+                if (obj != null && obj is T data)
                 {
-                    return ret;
+                    return data;
+                }
+                else
+                {
+                    return default(T);
                 }
             }
-            ret = func.Invoke();
-            if (ret == null) { throw new Exception("不能缓存null对象"); }
-            db[key] = ret;
-            return ret;
+            var d = func.Invoke();
+            if (d != null)
+            {
+                context.Items[key] = d;
+            }
+            return d;
         }
 
         /// <summary>

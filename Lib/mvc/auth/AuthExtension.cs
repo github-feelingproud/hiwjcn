@@ -19,6 +19,7 @@ namespace Lib.mvc.auth
 {
     public static class AuthExtension
     {
+        public const string AuthedUserKey = "auth.user.data";
         public const string AuthedUserUIDKey = "auth.user.id";
 
         public static string AuthedUserUID(this HttpContext context)
@@ -45,8 +46,14 @@ namespace Lib.mvc.auth
             return new AuthContext(context, tokenProvider);
         }
 
-        public static Task<UserModelBase> GetAuthUserAsync(this Controller controller)
+        public static async Task<UserModelBase> GetAuthUserAsync(this Controller controller)
         {
+            var data = ServerHelper.CacheInHttpContext<UserModelBase>(AuthedUserKey, () =>
+             {
+                 return null;
+             }, HttpContext.Current);
+
+            await Task.FromResult(1);
             throw new NotImplementedException();
         }
 
