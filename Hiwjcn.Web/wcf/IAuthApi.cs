@@ -28,10 +28,19 @@ namespace Hiwjcn.Web.wcf
         public string RefreshToken { get; set; }
 
         [DataMember]
-        public int Expire { get; set; }
+        public DateTime Expire { get; set; }
 
         [DataMember]
         public List<string> Scopes { get; set; }
+
+        public static implicit operator AuthTokenWcf(AuthToken token) =>
+            new AuthTokenWcf()
+            {
+                Token = token.UID,
+                RefreshToken = token.RefreshToken,
+                Expire = token.ExpiryTime,
+                Scopes = token.Scopes?.Select(x => x.Name).ToList()
+            };
     }
 
     [Serializable]

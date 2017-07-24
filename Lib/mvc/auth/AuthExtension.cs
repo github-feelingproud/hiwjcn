@@ -46,11 +46,11 @@ namespace Lib.mvc.auth
         {
             var data = await context.CacheInHttpContextAsync(AuthedUserKey, async () =>
             {
-                if (!AppContext.IsRegistered<ITokenValidationProvider>())
+                if (!AppContext.IsRegistered<TokenValidationProviderBase>())
                 {
-                    throw new Exception($"没有注册{nameof(ITokenValidationProvider)}");
+                    throw new Exception($"没有注册{nameof(TokenValidationProviderBase)}");
                 }
-                var validator = AppContext.GetObject<ITokenValidationProvider>();
+                var validator = AppContext.GetObject<TokenValidationProviderBase>();
                 return await validator.FindUserAsync(context);
             });
             return data;
@@ -65,11 +65,11 @@ namespace Lib.mvc.auth
         {
             var data = context.CacheInHttpContext(AuthedUserKey, () =>
             {
-                if (!AppContext.IsRegistered<ITokenValidationProvider>())
+                if (!AppContext.IsRegistered<TokenValidationProviderBase>())
                 {
-                    throw new Exception($"没有注册{nameof(ITokenValidationProvider)}");
+                    throw new Exception($"没有注册{nameof(TokenValidationProviderBase)}");
                 }
-                var validator = AppContext.GetObject<ITokenValidationProvider>();
+                var validator = AppContext.GetObject<TokenValidationProviderBase>();
                 return validator.FindUser(context);
             });
             return data;
@@ -83,7 +83,7 @@ namespace Lib.mvc.auth
         public static void AuthUseAuthServerValidation(this ContainerBuilder builder, Func<AuthServerConfig> config)
         {
             builder.Register(_ => config.Invoke()).AsSelf().SingleInstance();
-            builder.RegisterType<AuthServerValidationProvider>().AsSelf().As<ITokenValidationProvider>().SingleInstance();
+            builder.RegisterType<AuthServerValidationProvider>().AsSelf().As<TokenValidationProviderBase>().SingleInstance();
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Lib.mvc.auth
         public static void AuthUseCookieValidation(this ContainerBuilder builder, Func<LoginStatus> config)
         {
             builder.Register(_ => config.Invoke()).AsSelf().SingleInstance();
-            builder.RegisterType<CookieTokenValidationProvider>().AsSelf().As<ITokenValidationProvider>().SingleInstance();
+            builder.RegisterType<CookieTokenValidationProvider>().AsSelf().As<TokenValidationProviderBase>().SingleInstance();
         }
 
         /// <summary>
@@ -102,9 +102,9 @@ namespace Lib.mvc.auth
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="config"></param>
-        public static void AuthUseCustomValidation(this ContainerBuilder builder, Func<ITokenValidationProvider> config)
+        public static void AuthUseCustomValidation(this ContainerBuilder builder, Func<TokenValidationProviderBase> config)
         {
-            builder.Register(_ => config.Invoke()).AsSelf().As<ITokenValidationProvider>().SingleInstance();
+            builder.Register(_ => config.Invoke()).AsSelf().As<TokenValidationProviderBase>().SingleInstance();
         }
     }
 }

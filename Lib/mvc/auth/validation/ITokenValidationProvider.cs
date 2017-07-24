@@ -12,35 +12,44 @@ using Lib.mvc.user;
 
 namespace Lib.mvc.auth.validation
 {
-    public interface ITokenValidationProvider
+    public abstract class TokenValidationProviderBase
     {
-        LoginUserInfo FindUser(HttpContext context);
+        public abstract LoginUserInfo FindUser(HttpContext context);
 
-        Task<LoginUserInfo> FindUserAsync(HttpContext context);
+        public virtual async Task<LoginUserInfo> FindUserAsync(HttpContext context) => await Task.FromResult(this.FindUser(context));
     }
 
-    public class CookieTokenValidationProvider : ITokenValidationProvider
+    /// <summary>
+    /// 直接使用login status
+    /// </summary>
+    public class CookieTokenValidationProvider : TokenValidationProviderBase
     {
-        public LoginUserInfo FindUser(HttpContext context)
+        private readonly LoginStatus _LoginStatus;
+
+        public CookieTokenValidationProvider(LoginStatus _LoginStatus)
         {
-            throw new NotImplementedException();
+            this._LoginStatus = _LoginStatus;
         }
 
-        public Task<LoginUserInfo> FindUserAsync(HttpContext context)
+        public override LoginUserInfo FindUser(HttpContext context)
         {
-            throw new NotImplementedException();
+            return this._LoginStatus.GetLoginUser(context);
         }
     }
 
-    public class AuthServerValidationProvider : ITokenValidationProvider
+    /// <summary>
+    /// 请求auth server验证
+    /// </summary>
+    public class AuthServerValidationProvider : TokenValidationProviderBase
     {
-        public LoginUserInfo FindUser(HttpContext context)
+        public override LoginUserInfo FindUser(HttpContext context)
         {
             throw new NotImplementedException();
         }
 
-        public Task<LoginUserInfo> FindUserAsync(HttpContext context)
+        public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
         {
+            await Task.FromResult(1);
             throw new NotImplementedException();
         }
     }
