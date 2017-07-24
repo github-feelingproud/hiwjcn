@@ -36,4 +36,30 @@ namespace Lib.core
         查 = 1 << 3
     }
 
+    /// <summary>
+    /// 平台
+    /// </summary>
+    public enum PlatformEnum : int
+    {
+        Unknow = 0,
+        IOS = 1,
+        Android = 2,
+        H5 = 3,
+        Web = 4,
+        MiniProgram = 5
+    }
+
+    /// <summary>
+    /// 支付渠道
+    /// </summary>
+    public enum PaymentWayEnum : int
+    {
+        Alipay = 1,
+        Wechat = 2,
+        Union = 3,
+        Paypal = 4,
+        ApplePay = 5,
+        GoogleWallet = 6
+    }
+
 }

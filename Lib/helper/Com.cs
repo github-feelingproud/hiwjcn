@@ -18,6 +18,35 @@ namespace Lib.helper
     public static class Com
     {
         /// <summary>
+        /// 断言
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="target"></param>
+        /// <param name="condition"></param>
+        /// <param name="err_msg"></param>
+        public static void Assert<T>(T target, Func<T, bool> condition, string err_msg)
+        {
+            Assert(target, condition, () => new Exception(err_msg ?? "默认的断言异常信息"));
+        }
+
+        /// <summary>
+        /// 断言
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="E"></typeparam>
+        /// <param name="target"></param>
+        /// <param name="condition"></param>
+        /// <param name="err"></param>
+        public static void Assert<T, E>(T target, Func<T, bool> condition, Func<E> err)
+            where E : Exception
+        {
+            if (!condition.Invoke(target))
+            {
+                throw err.Invoke() ?? new Exception("你给老子一个空异常，是不是傻屌？");
+            }
+        }
+
+        /// <summary>
         /// 第一个非空字符串
         /// </summary>
         /// <param name="strs"></param>

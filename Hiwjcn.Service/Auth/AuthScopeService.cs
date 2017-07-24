@@ -73,7 +73,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<string> DeleteScope(string scope_uid)
         {
             var scope = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == scope_uid);
-            scope = scope ?? throw new MsgException($"招不到scope[scope_uid={scope_uid}]");
+            Com.Assert(scope, x => x != null, $"找不到scope[scope_uid={scope_uid}]");
             if (await this._AuthScopeRepository.DeleteAsync(scope) > 0)
             {
                 this._publisher.EntityDeleted(scope);
@@ -85,7 +85,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<string> UpdateScope(AuthScope updatemodel)
         {
             var scope = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == updatemodel.UID);
-            scope = scope ?? throw new MsgException($"招不到scope[scope_uid={updatemodel.UID}]");
+            Com.Assert(scope, x => x != null, $"找不到scope[scope_uid={updatemodel.UID}]");
 
             //scope.Name = updatemodel.Name;
             scope.DisplayName = updatemodel.DisplayName;

@@ -48,7 +48,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<string> DeleteClientAsync(string client_uid, string user_uid)
         {
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);
-            client = client ?? throw new Exception($"找不到client[client_uid={client_uid},user_uid={user_uid}]");
+            Com.Assert(client, x => x != null, $"找不到client[client_uid={client_uid},user_uid={user_uid}]");
             var ok = await this._AuthClientRepository.DeleteAsync(client) > 0;
 
             if (ok)

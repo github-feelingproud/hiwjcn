@@ -46,7 +46,16 @@ namespace Hiwjcn.Web.wcf
     [Serializable]
     [DataContract]
     public class AuthCodeWcf
-    { }
+    {
+        [DataMember]
+        public string Code { get; set; }
+
+        public static implicit operator AuthCodeWcf(AuthCode code) =>
+            new AuthCodeWcf()
+            {
+                Code = code.UID
+            };
+    }
 
 
 }
