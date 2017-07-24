@@ -18,6 +18,21 @@ namespace Lib.helper
     public static class Com
     {
         /// <summary>
+        /// 如果是null就new一个
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T NewIfNull<T>(object obj) where T : new()
+        {
+            if (obj is T data)
+            {
+                return data;
+            }
+            return new T();
+        }
+
+        /// <summary>
         /// 断言
         /// </summary>
         /// <typeparam name="T"></typeparam>
