@@ -151,6 +151,16 @@ namespace Lib.mvc
             return value == null ? default(T) : value.JsonToEntity<T>();
         }
 
+        public static T CacheInHttpContext<T>(this HttpContext context, string key, Func<T> func)
+        {
+            return ServerHelper.CacheInHttpContext(key, func, context);
+        }
+
+        public static async Task<T> CacheInHttpContextAsync<T>(this HttpContext context, string key, Func<Task<T>> func)
+        {
+            return await ServerHelper.CacheInHttpContextAsync(key, func, context);
+        }
+
         /// <summary>
         /// 获取这个程序集中所用到的所有权限
         /// </summary>

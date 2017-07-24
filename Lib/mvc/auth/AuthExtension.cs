@@ -14,28 +14,19 @@ using Lib.mvc.user;
 using System.Reflection;
 using System.Web.SessionState;
 using Autofac;
+using Lib.mvc.auth.validation;
 
 namespace Lib.mvc.auth
 {
     public static class AuthExtension
     {
-        public const string AuthedUserKey = "auth.user.data";
-        public const string AuthedUserUIDKey = "auth.user.id";
+        public const string AuthedUserKey = "auth.user.entity";
 
-        public static string AuthedUserUID(this HttpContext context)
-        {
-            return ConvertHelper.GetString(context.Items[AuthedUserUIDKey]);
-        }
-
-        public static void SetAuthedUserUID(this HttpContext context, string user_uid)
-        {
-            if (!ValidateHelper.IsPlumpString(user_uid))
-            {
-                throw new Exception("用户ID为空");
-            }
-            context.Items[AuthedUserUIDKey] = user_uid;
-        }
-
+        /// <summary>
+        /// 获取auth上下文
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static AuthContext AuthContext(this HttpContext context)
         {
             if (!AppContext.IsRegistered<ITokenProvider>())
@@ -46,34 +37,74 @@ namespace Lib.mvc.auth
             return new AuthContext(context, tokenProvider);
         }
 
-        public static async Task<LoginUserInfo> GetAuthUserAsync(this Controller controller)
+        /// <summary>
+        /// 获取当前登录用户
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static async Task<LoginUserInfo> GetAuthUserAsync(this HttpContext context)
         {
-            var data = ServerHelper.CacheInHttpContext(AuthedUserKey, () =>
-             {
-                 return new LoginUserInfo();
-             }, HttpContext.Current);
-
-            await Task.FromResult(1);
-            throw new NotImplementedException();
+            var data = await context.CacheInHttpContextAsync(AuthedUserKey, async () =>
+            {
+                if (!AppContext.IsRegistered<ITokenValidationProvider>())
+                {
+                    throw new Exception($"没有注册{nameof(ITokenValidationProvider)}");
+                }
+                var validator = AppContext.GetObject<ITokenValidationProvider>();
+                return await validator.FindUserAsync(context);
+            });
+            return data;
         }
 
-        public static void UseTokenProvider(this ContainerBuilder builder, Func<ITokenProvider> provider)
+        /// <summary>
+        /// 获取当前登录用户
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static LoginUserInfo GetAuthUser(this HttpContext context)
         {
-            builder.Register(x => provider.Invoke()).AsSelf();
+            var data = context.CacheInHttpContext(AuthedUserKey, () =>
+            {
+                if (!AppContext.IsRegistered<ITokenValidationProvider>())
+                {
+                    throw new Exception($"没有注册{nameof(ITokenValidationProvider)}");
+                }
+                var validator = AppContext.GetObject<ITokenValidationProvider>();
+                return validator.FindUser(context);
+            });
+            return data;
         }
 
+        /// <summary>
+        /// 使用auth server验证
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="config"></param>
+        public static void AuthUseAuthServerValidation(this ContainerBuilder builder, Func<AuthServerConfig> config)
+        {
+            builder.Register(_ => config.Invoke()).AsSelf().SingleInstance();
+            builder.RegisterType<AuthServerValidationProvider>().AsSelf().As<ITokenValidationProvider>().SingleInstance();
+        }
 
-        public static void UseWebApiAuthentication(this ContainerBuilder builder)
-        { }
+        /// <summary>
+        /// 使用token验证
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="config"></param>
+        public static void AuthUseCookieValidation(this ContainerBuilder builder, Func<LoginStatus> config)
+        {
+            builder.Register(_ => config.Invoke()).AsSelf().SingleInstance();
+            builder.RegisterType<CookieTokenValidationProvider>().AsSelf().As<ITokenValidationProvider>().SingleInstance();
+        }
 
-
-        public static void UseDatabaseAuthentication(this ContainerBuilder builder)
-        { }
-
-        public static void AuthUseAuthServerValidation(this ContainerBuilder builder)
-        { }
-
-        public static void AuthUseCustomValidation(this ContainerBuilder builder)
-        { }
+        /// <summary>
+        /// 自定义验证
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="config"></param>
+        public static void AuthUseCustomValidation(this ContainerBuilder builder, Func<ITokenValidationProvider> config)
+        {
+            builder.Register(_ => config.Invoke()).AsSelf().As<ITokenValidationProvider>().SingleInstance();
+        }
     }
 }

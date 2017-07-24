@@ -302,6 +302,7 @@
     <Compile Include="mvc\auth\IAuthStoreProvider.cs" />
     <Compile Include="mvc\auth\IAuthTokenCheckProvider.cs" />
     <Compile Include="mvc\auth\ITokenProvider.cs" />
+    <Compile Include="mvc\auth\validation\ITokenValidationProvider.cs" />
     <Compile Include="mvc\CookieHelper.cs" />
     <Compile Include="mvc\MvcExtension.cs" />
     <Compile Include="mvc\plugin\BasePaymentController.cs" />
@@ -377,9 +378,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="mvc\auth\validation\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

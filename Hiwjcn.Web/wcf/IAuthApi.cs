@@ -16,4 +16,28 @@ namespace Hiwjcn.Web.wcf
         [OperationContract]
         Task<AuthTokenWcf> CreateToken();
     }
+
+    [Serializable]
+    [DataContract]
+    public class AuthTokenWcf
+    {
+        [DataMember]
+        public string Token { get; set; }
+
+        [DataMember]
+        public string RefreshToken { get; set; }
+
+        [DataMember]
+        public int Expire { get; set; }
+
+        [DataMember]
+        public List<string> Scopes { get; set; }
+    }
+
+    [Serializable]
+    [DataContract]
+    public class AuthCodeWcf
+    { }
+
+
 }

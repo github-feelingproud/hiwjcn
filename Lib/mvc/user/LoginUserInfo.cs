@@ -50,88 +50,51 @@ namespace Lib.mvc.user
 
         public virtual int IsActive { get; set; }
 
+        public virtual bool IsValid { get; set; } = false;
+
         public virtual string LoginToken { get; set; }
 
+        public virtual string RefreshToken { get; set; }
+
+        public virtual DateTime TokenExpire { get; set; }
+
         public virtual List<string> Permissions { get; set; }
-
-        public virtual Dictionary<string, object> ExtraData { get; set; }
-
-        public virtual T GetExtraData<T>(string key)
-        {
-            try
-            {
-                if (this.ExtraData != null && this.ExtraData.ContainsKey(key))
-                {
-                    return (T)Convert.ChangeType(this.ExtraData[key], typeof(T));
-                }
-                throw new Exception($"登录信息的额外数据中不存在key为{key}的数据");
-            }
-            catch (Exception e)
-            {
-                e.AddLog("获取登录额外信息错误");
-                return default(T);
-            }
-        }
 
         /// <summary>
         /// 判断用户是否有权限
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        [Obsolete("【请在ioc中配置IFetchUserPermissions】不然这里很可能使用的缓存的权限，而不是及时获取权限！！！")]
-        public bool HasPermission(string permission)
+        public virtual bool HasPermission(string permission)
         {
-            this.LoadNewPermission();
-            return this.Permissions != null && this.Permissions.Contains(permission);
+            return ValidateHelper.IsPlumpList(this.Permissions) && this.Permissions.Contains(permission);
         }
 
-        private bool IsNewPermission = false;
+        public virtual List<string> Scopes { get; set; }
 
         /// <summary>
-        /// 加载新权限
+        /// 判断是否有scope
         /// </summary>
-        private void LoadNewPermission()
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        public virtual bool HasScope(string scope) => ValidateHelper.IsPlumpList(this.Scopes) && this.Scopes.Contains(scope);
+
+        public virtual Dictionary<string, string> ExtraData { get; set; }
+
+        public virtual void AddExtraData(string key, string value)
         {
-            //加载用户权限并缓存到httpcontext中
-            try
-            {
-                //防止多次加载
-                if (this.IsNewPermission) { return; }
-
-                Func<List<string>> fetch_func = () => AppContext.GetObject<IFetchUserPermissions>().FetchPermission(this);
-
-                var fresh_permissions = default(List<string>);
-
-                if (ServerHelper.IsHosted())
-                {
-                    var list = ServerHelper.CacheInHttpContext($"user_permission_during_httprequest:{this.UserID}", fetch_func);
-                    fresh_permissions = ConvertHelper.NotNullList(list);
-                }
-                else
-                {
-                    fresh_permissions = fetch_func();
-                }
-
-                //加入新权限
-                this.Permissions = fresh_permissions;
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog("获取用户权限错误，将使用session中存储的权限");
-            }
-            finally
-            {
-                this.IsNewPermission = true;
-            }
+            if (this.ExtraData == null) { this.ExtraData = new Dictionary<string, string>(); }
+            this.ExtraData[key] = value;
         }
 
-        /// <summary>
-        /// 重新加载新权限
-        /// </summary>
-        public void RefreshPermissions()
+        public virtual string GetExtraData(string key)
         {
-            this.IsNewPermission = false;
-            this.LoadNewPermission();
+            if (this.ExtraData == null) { this.ExtraData = new Dictionary<string, string>(); }
+            if (this.ExtraData.TryGetValue(key, out var value))
+            {
+                return value;
+            }
+            return null;
         }
 
         /// <summary>
