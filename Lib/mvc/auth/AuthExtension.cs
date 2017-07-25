@@ -76,6 +76,22 @@ namespace Lib.mvc.auth
         }
 
         /// <summary>
+        /// 获取bearer token
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static string GetBearerToken(this HttpContext context)
+        {
+            var bearer = "Bearer" + ' '.ToString();
+            var token = context.Request.Headers["Authorization"] ?? string.Empty;
+            if (token.StartsWith(bearer, StringComparison.OrdinalIgnoreCase))
+            {
+                return token.Substring(bearer.Length);
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
         /// 使用auth server验证
         /// </summary>
         /// <param name="builder"></param>

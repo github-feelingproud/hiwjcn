@@ -56,9 +56,15 @@ namespace Lib.mvc.user
 
         public LoginStatus(string uid, string token, string session, string domain)
         {
-            this.COOKIE_LOGIN_UID = uid;
-            this.COOKIE_LOGIN_TOKEN = token;
             this.COOKIE_DOMAIN = domain;
+            var prefix = string.Empty;
+            if (!ValidateHelper.IsPlumpString(this.COOKIE_DOMAIN))
+            {
+                prefix = "_";
+            }
+
+            this.COOKIE_LOGIN_UID = prefix + uid;
+            this.COOKIE_LOGIN_TOKEN = prefix + token;
             if (this.CookieExpiresMinutes <= 0)
             {
                 this.CookieExpiresMinutes = ConfigHelper.Instance.CookieExpiresMinutes;

@@ -164,6 +164,10 @@ namespace Lib.ioc
         /// <returns></returns>
         public static AutofacDependencyResolver AutofacDependencyResolver(this IContainer context) =>
             new AutofacDependencyResolver(context);
+
+        public static T Resolve_<T>(this object obj, string name = null) => AppContext.GetObject<T>(name);
+
+        public static T[] ResolveAll_<T>(this object obj, string name = null) => AppContext.GetAllObject<T>(name);
     }
 
     /*
