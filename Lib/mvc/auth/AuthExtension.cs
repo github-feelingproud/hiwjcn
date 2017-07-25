@@ -51,7 +51,7 @@ namespace Lib.mvc.auth
                     throw new Exception($"没有注册{nameof(TokenValidationProviderBase)}");
                 }
 
-                return await AppContext.Scope(async x =>
+                return await AppContext.ScopeAsync(async x =>
                 {
                     return await x.Resolve<TokenValidationProviderBase>().FindUserAsync(context);
                 });

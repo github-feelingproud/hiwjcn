@@ -8,6 +8,7 @@ using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Lib.task
 {
@@ -73,7 +74,7 @@ namespace Lib.task
         /// <summary>
         /// 初始化任务，只能调用一次
         /// </summary>
-        public static void StartAllTasks()
+        public static void StartAllTasks(params Assembly[] ass)
         {
             if (manager != null)
             {

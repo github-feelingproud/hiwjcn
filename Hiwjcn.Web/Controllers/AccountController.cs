@@ -75,7 +75,7 @@ namespace Hiwjcn.Web.Controllers
                 if (model != null && model.UserToken?.Length > 0)
                 {
                     //记录登录状态
-                    AppContext.GetObject<LoginStatus>().SetUserLogin(loginuser: new LoginUserInfo() { });
+                    this._LoginStatus.SetUserLogin(loginuser: new LoginUserInfo() { });
                     return GetJson(new { success = true, msg = "登陆成功" });
                 }
                 //登录错误，记录错误记录

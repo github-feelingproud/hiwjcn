@@ -77,17 +77,6 @@ namespace Hiwjcn.Test
         }
 
         [TestMethod]
-        public void efasync()
-        {
-            var ar = new[] { new { a = 1 }, new { a = 3 } };
-
-            using (var db = AppContext.GetObject<DbContext>())
-            {
-                //
-            }
-        }
-
-        [TestMethod]
         public void mq()
         {
             //

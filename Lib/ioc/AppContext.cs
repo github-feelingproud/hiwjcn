@@ -177,7 +177,7 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static async Task<T> Scope<T>(Func<ILifetimeScope, Task<T>> func)
+        public static async Task<T> ScopeAsync<T>(Func<ILifetimeScope, Task<T>> func)
         {
             using (var scope = Container.BeginLifetimeScope())
             {
@@ -205,13 +205,25 @@ namespace Lib.ioc
         /// <returns></returns>
         public static T[] ResolveAll<T>(this ILifetimeScope scope, string name = null)
         {
+            return scope.Resolve_<IEnumerable<T>>().ToArray();
+        }
+
+        /// <summary>
+        /// 创建实例
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="scope"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static T Resolve_<T>(this ILifetimeScope scope, string name = null)
+        {
             if (ValidateHelper.IsPlumpString(name))
             {
-                return scope.ResolveNamed<IEnumerable<T>>(name).ToArray();
+                return scope.ResolveNamed<T>(name);
             }
             else
             {
-                return scope.Resolve<IEnumerable<T>>().ToArray();
+                return scope.Resolve<T>();
             }
         }
     }
