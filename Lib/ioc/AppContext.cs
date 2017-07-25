@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Lib.ioc
 {
@@ -132,6 +133,7 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
+        [Obsolete("不使用生命周期直接使用autofac创建实例，实例会被autofac跟踪，不会被释放")]
         public static T GetObject<T>(string name = null)
         {
             if (ValidateHelper.IsPlumpString(name))
@@ -149,9 +151,38 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
+        [Obsolete("不使用生命周期直接使用autofac创建实例，实例会被autofac跟踪，不会被释放")]
         public static T[] GetAllObject<T>(string name = null)
         {
             return GetObject<IEnumerable<T>>(name).ToArray();
+        }
+
+        /// <summary>
+        /// 生命周期
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static T Scope<T>(Func<ILifetimeScope, T> func)
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                return func.Invoke(scope);
+            }
+        }
+
+        /// <summary>
+        /// 生命周期
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static async Task<T> Scope<T>(Func<ILifetimeScope, Task<T>> func)
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                return await func.Invoke(scope);
+            }
         }
     }
 
@@ -165,9 +196,24 @@ namespace Lib.ioc
         public static AutofacDependencyResolver AutofacDependencyResolver(this IContainer context) =>
             new AutofacDependencyResolver(context);
 
-        public static T Resolve_<T>(this object obj, string name = null) => AppContext.GetObject<T>(name);
-
-        public static T[] ResolveAll_<T>(this object obj, string name = null) => AppContext.GetAllObject<T>(name);
+        /// <summary>
+        /// 找出所有实例
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="scope"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static T[] ResolveAll<T>(this ILifetimeScope scope, string name = null)
+        {
+            if (ValidateHelper.IsPlumpString(name))
+            {
+                return scope.ResolveNamed<IEnumerable<T>>(name).ToArray();
+            }
+            else
+            {
+                return scope.Resolve<IEnumerable<T>>().ToArray();
+            }
+        }
     }
 
     /*

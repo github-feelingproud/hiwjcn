@@ -47,7 +47,10 @@ namespace Hiwjcn.Web
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
                     AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
                     {
-                        builder.UseDatabaseAuthentication();
+                        builder.AuthUseAuthServerValidation(() => new AuthServerConfig()
+                        {
+                            //
+                        });
                     };
 
                     //disable "X-AspNetMvc-Version" header name

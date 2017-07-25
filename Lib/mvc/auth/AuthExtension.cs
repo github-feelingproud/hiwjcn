@@ -50,8 +50,11 @@ namespace Lib.mvc.auth
                 {
                     throw new Exception($"没有注册{nameof(TokenValidationProviderBase)}");
                 }
-                var validator = AppContext.GetObject<TokenValidationProviderBase>();
-                return await validator.FindUserAsync(context);
+
+                return await AppContext.Scope(async x =>
+                {
+                    return await x.Resolve<TokenValidationProviderBase>().FindUserAsync(context);
+                });
             });
             return data;
         }
@@ -69,8 +72,11 @@ namespace Lib.mvc.auth
                 {
                     throw new Exception($"没有注册{nameof(TokenValidationProviderBase)}");
                 }
-                var validator = AppContext.GetObject<TokenValidationProviderBase>();
-                return validator.FindUser(context);
+
+                return AppContext.Scope(x =>
+                {
+                    return x.Resolve<TokenValidationProviderBase>().FindUser(context);
+                });
             });
             return data;
         }

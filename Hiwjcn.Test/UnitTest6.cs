@@ -17,12 +17,33 @@ using Newtonsoft.Json.Linq;
 using System.Threading;
 using Lib.net;
 using System.Collections.Generic;
+using Hiwjcn.Framework;
+using Lib.ioc;
+using Autofac;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest6
     {
+        [TestMethod]
+        public void fslkhahfla()
+        {
+            AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
+            {
+                builder.RegisterType<SqlConnection>().As<IDbConnection>();
+            };
+
+            var c = AppContext.Scope(x =>
+             {
+                 var con = x.Resolve<IDbConnection>();
+                 return con;
+             });
+
+            c.ConnectionString = "";
+
+        }
+
         public AutoResetEvent autoevent = new AutoResetEvent(true);
         public ManualResetEvent manualevent = new ManualResetEvent(true);
         [TestMethod]
