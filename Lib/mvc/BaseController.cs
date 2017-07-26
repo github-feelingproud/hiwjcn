@@ -289,7 +289,7 @@ namespace Lib.mvc
             else
             {
                 //没有登陆就跳转登陆
-                var redirect_url = AppContext.GetObject<IGetLoginUrl>().GetUrl(this.X.Url);
+                var redirect_url = AppContext.Scope(x => x.Resolve_<IGetLoginUrl>().GetUrl(this.X.Url));
                 return new RedirectResult(redirect_url);
             }
         }

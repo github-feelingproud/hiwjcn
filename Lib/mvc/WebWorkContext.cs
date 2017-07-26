@@ -67,7 +67,8 @@ namespace Lib.mvc
 
         public void LoadLoginUser()
         {
-            this.User = AppContext.GetObject<LoginStatus>().GetLoginUser(context);
+            this.User = AppContext.Scope(x => x.Resolve_<LoginStatus>().GetLoginUser(context));
+
             this.SSOUser = AccountHelper.SSO.GetLoginUser(context);
             this.LoginUser = AccountHelper.User.GetLoginUser(context);
             this.LoginTrader = AccountHelper.Trader.GetLoginUser(context);

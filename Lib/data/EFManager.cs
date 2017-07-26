@@ -10,6 +10,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Autofac;
 
 namespace Lib.data
 {
@@ -60,36 +61,40 @@ namespace Lib.data
         /// </summary>
         public static void TryInstallDatabase()
         {
-            using (var db = EFManager.SelectDB("db").GetDbContext())
+            AppContext.Scope(x =>
             {
-                var switcher = false;
-                if (switcher)
+                using (var db = EFManager.SelectDB("db").GetDbContext(x))
                 {
-                    db.CreateDatabaseIfNotExist();
-                }
-                else
-                {
-                    var sql = db.GetCreateTableScript();
-
-                    using (db.Database.Connection)
+                    var switcher = false;
+                    if (switcher)
                     {
-                        db.Database.Connection.OpenIfClosedWithRetry();
-                        using (var t = db.Database.Connection.StartTransaction())
+                        db.CreateDatabaseIfNotExist();
+                    }
+                    else
+                    {
+                        var sql = db.GetCreateTableScript();
+
+                        using (db.Database.Connection)
                         {
-                            try
+                            db.Database.Connection.OpenIfClosedWithRetry();
+                            using (var t = db.Database.Connection.StartTransaction())
                             {
-                                db.Database.Connection.Execute(sql, transaction: t);
-                                t.Commit();
-                            }
-                            catch (Exception e)
-                            {
-                                t.Rollback();
-                                e.AddErrorLog("创建数据表失败，可能已经存在");
+                                try
+                                {
+                                    db.Database.Connection.Execute(sql, transaction: t);
+                                    t.Commit();
+                                }
+                                catch (Exception e)
+                                {
+                                    t.Rollback();
+                                    e.AddErrorLog("创建数据表失败，可能已经存在");
+                                }
                             }
                         }
                     }
                 }
-            }
+                return true;
+            });
         }
         #endregion
 
@@ -117,24 +122,27 @@ namespace Lib.data
         /// <returns></returns>
         public string GetValidationErrors()
         {
-            using (var db = GetDbContext())
+            return AppContext.Scope(x =>
             {
-                return JsonHelper.ObjectToJson(db.GetValidationErrors());
-            }
+                using (var db = GetDbContext(x))
+                {
+                    return JsonHelper.ObjectToJson(db.GetValidationErrors());
+                }
+            });
         }
 
         /// <summary>
         /// 获取实体对象
         /// </summary>
         /// <returns></returns>
-        public DbContext GetDbContext(string db = null)
+        public DbContext GetDbContext(ILifetimeScope scope, string db = null)
         {
             /* 提升性能，不要检查
             if (!AppContext.IsRegistered<DbContext>(db_name))
             {
                 throw new Exception("请在容器中注册dbcontext实例");
             }*/
-            return AppContext.GetObject<DbContext>(name: db ?? db_name);
+            return scope.Resolve_<DbContext>(name: db ?? db_name);
         }
 
         /// <summary>
@@ -143,26 +151,34 @@ namespace Lib.data
         /// <param name="callback"></param>
         public void PrepareSession(Func<DbContext, bool> callback)
         {
-            using (var db = GetDbContext())
+            AppContext.Scope(x =>
             {
-                //执行回调
-                if (!callback.Invoke(db))
+                using (var db = GetDbContext(x))
                 {
-                    //执行失败
+                    //执行回调
+                    if (!callback.Invoke(db))
+                    {
+                        //执行失败
+                    }
                 }
-            }
+                return true;
+            });
         }
 
         public async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
         {
-            using (var db = GetDbContext())
+            await AppContext.ScopeAsync(async x =>
             {
-                //执行回调
-                if (!(await callback.Invoke(db)))
+                using (var db = GetDbContext(x))
                 {
-                    //执行失败
+                    //执行回调
+                    if (!(await callback.Invoke(db)))
+                    {
+                        //执行失败
+                    }
                 }
-            }
+                return true;
+            });
         }
 
         /// <summary>

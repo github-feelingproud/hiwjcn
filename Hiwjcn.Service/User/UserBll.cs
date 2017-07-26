@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Dal.User;
+﻿using Dal.User;
 using Hiwjcn.Core.Infrastructure.Common;
 using Hiwjcn.Core.Infrastructure.User;
 using Lib.helper;
@@ -225,27 +224,31 @@ namespace Bll.User
             #region 把文件保存到云存储
             var file_url = string.Empty;
             var file_name = string.Empty;
-            var upfileservice = AppContext.GetObject<IUpFileService>();
-            var qiniumsg = upfileservice.UploadFileAfterCheckRepeat(new FileInfo(model.FilePath), userID, ref file_url, ref file_name);
-            if (ValidateHelper.IsPlumpString(qiniumsg)) { errmsg.Add(qiniumsg); }
-            else
+
+            return AppContext.Scope(s =>
             {
-                if (ValidateHelper.IsPlumpString(file_url))
-                {
-                    //保存文件地址到数据库
-                    var updatemsg = UpdateSingleEntity(x => x.IID == userID, (ref UserModel entity) =>
-                    {
-                        entity.UserImg = file_url;
-                        return string.Empty;
-                    });
-                    if (ValidateHelper.IsPlumpString(updatemsg)) { errmsg.Add(updatemsg); }
-                }
+                var upfileservice = s.Resolve_<IUpFileService>();
+                var qiniumsg = upfileservice.UploadFileAfterCheckRepeat(new FileInfo(model.FilePath), userID, ref file_url, ref file_name);
+                if (ValidateHelper.IsPlumpString(qiniumsg)) { errmsg.Add(qiniumsg); }
                 else
                 {
-                    errmsg.Add("文件地址为空");
+                    if (ValidateHelper.IsPlumpString(file_url))
+                    {
+                        //保存文件地址到数据库
+                        var updatemsg = UpdateSingleEntity(x => x.IID == userID, (ref UserModel entity) =>
+                        {
+                            entity.UserImg = file_url;
+                            return string.Empty;
+                        });
+                        if (ValidateHelper.IsPlumpString(updatemsg)) { errmsg.Add(updatemsg); }
+                    }
+                    else
+                    {
+                        errmsg.Add("文件地址为空");
+                    }
                 }
-            }
-            return errmsg.Count() == 0 ? SUCCESS : string.Join(",", errmsg);
+                return errmsg.Count() == 0 ? SUCCESS : string.Join(",", errmsg);
+            });
             #endregion
         }
 

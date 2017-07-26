@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Lib.ioc;
 
 namespace Lib.data
 {
@@ -105,16 +106,59 @@ namespace Lib.data
         public async Task<int> DeleteAsync(params T[] models)
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
-            using (var db = this._EFManager.GetDbContext())
+            return await AppContext.ScopeAsync(async x =>
+            {
+                using (var db = this._EFManager.GetDbContext(x))
+                {
+                    var set = db.Set<T>();
+                    foreach (var m in models)
+                    {
+                        db.Entry(m).State = EntityState.Deleted;
+                        //session.Set<T>().Remove(m);
+                    }
+                    return await db.SaveChangesAsync();
+                }
+            });
+        }
+
+
+
+        public int DeleteWhere(Expression<Func<T, bool>> where)
+        {
+            var count = 0;
+            PrepareSession(db =>
             {
                 var set = db.Set<T>();
-                foreach (var m in models)
+                var q = set.AsQueryable();
+                if (where != null)
                 {
-                    db.Entry(m).State = EntityState.Deleted;
-                    //session.Set<T>().Remove(m);
+                    q = q.Where(where);
                 }
-                return await db.SaveChangesAsync();
-            }
+
+                set.RemoveRange(q);
+                count = db.SaveChanges();
+                return true;
+            });
+            return count;
+        }
+
+        public async Task<int> DeleteWhereAsync(Expression<Func<T, bool>> where)
+        {
+            var count = 0;
+            await PrepareSessionAsync(async db =>
+            {
+                var set = db.Set<T>();
+                var q = set.AsQueryable();
+                if (where != null)
+                {
+                    q = q.Where(where);
+                }
+
+                set.RemoveRange(q);
+                count = await db.SaveChangesAsync();
+                return true;
+            });
+            return count;
         }
         #endregion
 
@@ -149,7 +193,8 @@ namespace Lib.data
         public async Task<int> UpdateAsync(params T[] models)
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
-            using (var db = this._EFManager.GetDbContext())
+            var count = 0;
+            await PrepareSessionAsync(async db =>
             {
                 var set = db.Set<T>();
                 foreach (var m in models)
@@ -157,8 +202,10 @@ namespace Lib.data
                     //添加追踪（引用），如果多个追踪对象包含相同key就会抛出异常
                     db.Entry(m).State = EntityState.Modified;
                 }
-                return await db.SaveChangesAsync();
-            }
+                count = await db.SaveChangesAsync();
+                return true;
+            });
+            return count;
         }
 
         #endregion
@@ -189,10 +236,13 @@ namespace Lib.data
         public async Task<T> GetByKeysAsync(params object[] keys)
         {
             if (!ValidateHelper.IsPlumpList(keys)) { throw new Exception("参数为空"); }
-            using (var db = _EFManager.GetDbContext())
+            return await AppContext.ScopeAsync(async x =>
             {
-                return await db.Set<T>().FindAsync(keys);
-            }
+                using (var db = _EFManager.GetDbContext(x))
+                {
+                    return await db.Set<T>().FindAsync(keys);
+                }
+            });
         }
 
         /// <summary>

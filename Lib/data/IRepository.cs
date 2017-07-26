@@ -46,6 +46,20 @@ namespace Lib.data
         /// <param name="models"></param>
         /// <returns></returns>
         Task<int> DeleteAsync(params T[] models);
+
+        /// <summary>
+        /// 按照条件删除
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        int DeleteWhere(Expression<Func<T, bool>> where);
+
+        /// <summary>
+        /// 按照条件删除
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        Task<int> DeleteWhereAsync(Expression<Func<T, bool>> where);
         #endregion
 
         #region 修改

@@ -10,6 +10,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Autofac;
 
 namespace Lib.data
 {
@@ -33,13 +34,13 @@ namespace Lib.data
         /// 使用ioc中注册的数据库
         /// </summary>
         /// <returns></returns>
-        public static IDbConnection GetConnectionProvider()
+        public static IDbConnection GetConnectionProvider(ILifetimeScope scope)
         {
             if (!ValidateHelper.IsPlumpString(ConStr))
             {
                 throw new Exception("请在connectionstring或者appsetting中配置节点为db的通用链接字符串");
             }
-            var con = AppContext.GetObject<IDbConnection>();
+            var con = scope.Resolve_<IDbConnection>();
             con.ConnectionString = ConStr;
             //打开链接，重试两次
             con.OpenIfClosedWithRetry(2);
@@ -51,10 +52,14 @@ namespace Lib.data
         /// <param name="callback"></param>
         public static void PrepareConnection(Action<IDbConnection> callback)
         {
-            using (var con = GetConnectionProvider())
+            AppContext.Scope(x =>
             {
-                callback.Invoke(con);
-            }
+                using (var con = GetConnectionProvider(x))
+                {
+                    callback.Invoke(con);
+                }
+                return true;
+            });
         }
         /// <summary>
         /// 异步链接
@@ -63,10 +68,14 @@ namespace Lib.data
         /// <returns></returns>
         public static async Task PrepareConnectionAsync(Func<IDbConnection, Task> callback)
         {
-            using (var con = GetConnectionProvider())
+            await AppContext.ScopeAsync(async x =>
             {
-                await callback.Invoke(con);
-            }
+                using (var con = GetConnectionProvider(x))
+                {
+                    await callback.Invoke(con);
+                }
+                return true;
+            });
         }
         /// <summary>
         /// 使用ioc中注册的数据库

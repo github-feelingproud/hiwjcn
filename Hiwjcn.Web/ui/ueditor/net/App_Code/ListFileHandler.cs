@@ -5,7 +5,6 @@ using Lib.mvc.user;
 using System;
 using System.Linq;
 using System.Web;
-using Autofac;
 
 /// <summary>
 /// FileManager 的摘要说明
@@ -27,7 +26,7 @@ public class ListFileManager : Handler
     {
         AppContext.Scope(x =>
         {
-            var logincontext = x.Resolve<LoginStatus>();
+            var logincontext = x.Resolve_<LoginStatus>();
 
             var loginuser = logincontext.GetLoginUser(Context);
             if (loginuser == null)
@@ -46,7 +45,7 @@ public class ListFileManager : Handler
             }
             try
             {
-                var upfileservice = x.Resolve<IUpFileService>();
+                var upfileservice = x.Resolve_<IUpFileService>();
                 upfileservice.FindFiles(loginuser.IID, Start, Size, ref FileList, ref Total);
                 State = "SUCCESS";
             }

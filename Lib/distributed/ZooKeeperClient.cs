@@ -33,7 +33,7 @@ namespace Lib.distributed
 
         public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
-        public ZooKeeperClient(ZooKeeperConfigSection configuration)
+        public ZooKeeperClient(ZooKeeperConfigSection configuration, IWatcher watcher = null)
         {
             if (!ValidateHelper.IsPlumpString(configuration.Server))
             {
@@ -43,20 +43,11 @@ namespace Lib.distributed
             ConnectionLossTimeout = configuration.SessionTimeOut;
             var timeOut = TimeSpan.FromMilliseconds(configuration.SessionTimeOut);
 
-            if (AppContext.IsRegistered<IWatcher>())
-            {
-                _zookeeper = new ZooKeeper(
-                    configuration.Server,
-                    timeOut,
-                    AppContext.GetObject<IWatcher>());
-            }
-            else
-            {
-                _zookeeper = new ZooKeeper(
-                    configuration.Server,
-                    timeOut,
-                    new DefaultWatcher());
-            }
+
+            _zookeeper = new ZooKeeper(
+                configuration.Server,
+                timeOut,
+                watcher ?? new DefaultWatcher());
         }
 
         protected int ConnectionLossTimeout { get; set; }

@@ -102,13 +102,16 @@ namespace Lib.mvc.user
 
         public void Init(HttpApplication context)
         {
-            var loginstatus = AppContext.GetObject<LoginStatus>();
-
             context.BeginRequest += (sender, e) =>
             {
-                var loginuser = loginstatus.GetLoginUser();
+                AppContext.Scope(x =>
+                {
+                    var loginstatus = x.Resolve_<LoginStatus>();
+                    var loginuser = loginstatus.GetLoginUser();
 
-                //
+                    //
+                    return true;
+                });
             };
             context.EndRequest += (sender, e) => { };
         }

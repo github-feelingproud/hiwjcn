@@ -33,8 +33,7 @@ namespace Lib.mvc.auth
             {
                 throw new Exception("请注册token provider");
             }
-            var tokenProvider = AppContext.GetObject<ITokenProvider>();
-            return new AuthContext(context, tokenProvider);
+            return new AuthContext(context, null);
         }
 
         /// <summary>

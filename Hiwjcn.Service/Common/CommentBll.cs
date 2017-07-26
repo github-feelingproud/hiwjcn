@@ -9,7 +9,6 @@ using Lib.core;
 using Hiwjcn.Dal.Sys;
 using Bll.User;
 using Lib.helper;
-using Autofac;
 using Hiwjcn.Core.Infrastructure.User;
 using Lib.ioc;
 using Lib.infrastructure;
@@ -111,15 +110,19 @@ namespace Hiwjcn.Bll.Sys
                     var useridlist = data.DataList.Select(x => x.UserID).Distinct().Where(x => x > 0).ToArray();
                     if (ValidateHelper.IsPlumpList(useridlist))
                     {
-                        var userbll = AppContext.GetObject<IUserService>();
-                        var userlist = userbll.GetUserByIDS(useridlist);
-                        if (ValidateHelper.IsPlumpList(userlist))
+                        AppContext.Scope(s =>
                         {
-                            data.DataList.ForEach(x =>
+                            var userbll = s.Resolve_<IUserService>();
+                            var userlist = userbll.GetUserByIDS(useridlist);
+                            if (ValidateHelper.IsPlumpList(userlist))
                             {
-                                x.UserModel = userlist.Where(m => m.IID == x.UserID).FirstOrDefault();
-                            });
-                        }
+                                data.DataList.ForEach(x =>
+                                {
+                                    x.UserModel = userlist.Where(m => m.IID == x.UserID).FirstOrDefault();
+                                });
+                            }
+                            return true;
+                        });
                     }
 
                     var parentidlist = data.DataList.Select(x => x.ParentCommentID).Distinct().Where(x => x > 0).ToArray();
