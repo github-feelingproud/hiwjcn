@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Lib.ioc;
 
 namespace Lib.mvc.attr
 {
@@ -34,22 +35,26 @@ namespace Lib.mvc.attr
                 var (AreaName, ControllerName, ActionName) = filterContext.RouteData.GetA_C_A();
                 submitData = $"{AreaName}/{ControllerName}/{ActionName}/:{submitData}";
                 //读取缓存
-                using (var cache = CacheManager.CacheProvider())
+                AppContext.Scope(s =>
                 {
-                    var data = cache.Get<string>(key);
-                    if (data.Success)
+                    using (var cache = s.Resolve_<ICacheProvider>())
                     {
-                        if (data.Result == submitData)
+                        var data = cache.Get<string>(key);
+                        if (data.Success)
                         {
-                            filterContext.Result = ResultHelper.BadRequest(this.ErrorMessage);
-                            return;
+                            if (data.Result == submitData)
+                            {
+                                filterContext.Result = ResultHelper.BadRequest(this.ErrorMessage);
+                                return true;
+                            }
                         }
+                        //10秒钟不能提交相同的数据
+                        CacheSeconds = Math.Abs(CacheSeconds);
+                        if (CacheSeconds == 0) { throw new Exception("缓存时间不能为0"); }
+                        cache.Set(key, submitData, TimeSpan.FromSeconds(CacheSeconds));
                     }
-                    //10秒钟不能提交相同的数据
-                    CacheSeconds = Math.Abs(CacheSeconds);
-                    if (CacheSeconds == 0) { throw new Exception("缓存时间不能为0"); }
-                    cache.Set(key, submitData, TimeSpan.FromSeconds(CacheSeconds));
-                }
+                    return true;
+                });
             }
             catch (Exception e)
             {

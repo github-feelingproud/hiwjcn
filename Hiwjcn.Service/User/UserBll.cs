@@ -235,12 +235,10 @@ namespace Bll.User
                     if (ValidateHelper.IsPlumpString(file_url))
                     {
                         //保存文件地址到数据库
-                        var updatemsg = UpdateSingleEntity(x => x.IID == userID, (ref UserModel entity) =>
-                        {
-                            entity.UserImg = file_url;
-                            return string.Empty;
-                        });
-                        if (ValidateHelper.IsPlumpString(updatemsg)) { errmsg.Add(updatemsg); }
+                        var entity = this._UserDal.GetFirst(x => x.IID == userID);
+                        Com.Assert(entity, x => x != null, "不能为空");
+                        entity.UserImg = file_url;
+                        this._UserDal.Update(entity);
                     }
                     else
                     {

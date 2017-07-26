@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Lib.extension;
+using Lib.ioc;
 
 namespace Lib.mvc.attr
 {
@@ -33,18 +34,12 @@ namespace Lib.mvc.attr
         private string URL { get; set; }
 
         /// <summary>
-        /// 缓存组件
-        /// </summary>
-        private ICacheProvider cache { get; set; }
-
-        /// <summary>
         /// 缓存页面html，时间是分钟
         /// </summary>
         /// <param name="minute"></param>
         public HtmlCacheAttribute(int minute = 5)
         {
             this.Minute = minute;
-            cache = CacheManager.CacheProvider();
         }
 
         #region 执行action前，尝试读取缓存html
@@ -57,7 +52,7 @@ namespace Lib.mvc.attr
             //URL作为key
             URL = ConvertHelper.GetString(filterContext.HttpContext.Request.Url);
 
-            var data = cache.Get<string>(URL);
+            var data = AppContext.Scope(x => x.Resolve_<ICacheProvider>().Get<string>(URL));
 
             if (data.Success)
             {
@@ -116,7 +111,11 @@ namespace Lib.mvc.attr
                     view.Render(vc, sw);
                     //获取渲染后的html
                     var html = sw.ToString();
-                    cache.Set(URL, html, TimeSpan.FromMinutes(Minute));
+                    AppContext.Scope(s =>
+                    {
+                        s.Resolve_<ICacheProvider>().Set(URL, html, TimeSpan.FromMinutes(Minute));
+                        return true;
+                    });
                 }
             }
 

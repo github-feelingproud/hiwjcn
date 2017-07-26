@@ -74,8 +74,39 @@ namespace Lib.task
         /// <summary>
         /// 初始化任务，只能调用一次
         /// </summary>
-        public static void StartAllTasks(params Assembly[] ass)
+        public static void StartAllTasks(Assembly[] ass)
         {
+            if (ass.Select(x => x.FullName).Distinct().Count() != ass.Count())
+            {
+                throw new Exception("无法启动任务：传入重复的程序集");
+            }
+            var jobs = new List<QuartzJobBase>();
+            foreach (var a in ass)
+            {
+                jobs.AddRange(a.FindJobTypes().Select(x => (QuartzJobBase)Activator.CreateInstance(x)));
+            }
+
+            StartAllTasks(jobs);
+        }
+
+        public static void StartAllTasks(List<QuartzJobBase> jobs)
+        {
+            jobs = jobs.Where(x => x.AutoStart).ToList();
+            if (!ValidateHelper.IsPlumpList(jobs))
+            {
+                "没有需要启动的任务".AddBusinessInfoLog();
+                return;
+            }
+            //任务检查
+            if (jobs.Select(x => x.Name).Distinct().Count() != jobs.Count())
+            {
+                throw new Exception("注册的任务中存在重名");
+            }
+            if (jobs.Any(x => x.Trigger == null))
+            {
+                throw new Exception("注册的任务中有些Trigger没有定义");
+            }
+
             if (manager != null)
             {
                 throw new Exception("调度对象已经初始化");
@@ -92,43 +123,17 @@ namespace Lib.task
             }
             manager.Clear();
 
-            //从IOC中找到任务，并执行
-            QuartzJobBase[] jobs = null;
-            try
+            foreach (var job in jobs)
             {
-                jobs = AppContext.GetAllObject<QuartzJobBase>();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-            jobs = ConvertHelper.NotNullList(jobs).Where(x => x.AutoStart).ToArray();
-            if (ValidateHelper.IsPlumpList(jobs))
-            {
-                if (jobs.Select(x => x.Name).Distinct().Count() != jobs.Count())
-                {
-                    throw new Exception("注册的任务中存在重名");
-                }
-                if (jobs.Any(x => x.Trigger == null))
-                {
-                    throw new Exception("注册的任务中有些Trigger没有定义");
-                }
-                foreach (var job in jobs)
-                {
-                    var job_to_run = JobBuilder.Create(job.GetType()).WithIdentity(job.Name).Build();
-                    manager.ScheduleJob(job_to_run, job.Trigger);
-                }
-            }
-            else
-            {
-                return;
+                var job_to_run = JobBuilder.Create(job.GetType()).WithIdentity(job.Name).Build();
+                manager.ScheduleJob(job_to_run, job.Trigger);
             }
 
             manager.Start();
         }
 
         [Obsolete("请调用StartAllTasks")]
-        public static void InitTasks() => StartAllTasks();
+        public static void InitTasks(Assembly[] ass) => StartAllTasks(ass);
 
         /// <summary>
         /// 关闭时是否等待任务完成
@@ -198,6 +203,16 @@ namespace Lib.task
             {
                 manager.Shutdown(waitForJobsToComplete);
             }
+        }
+
+        /// <summary>
+        /// 找到任务
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
+        public static Type[] FindJobTypes(this Assembly a)
+        {
+            return a.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<QuartzJobBase>()).ToArray();
         }
     }
 

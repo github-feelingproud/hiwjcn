@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Reflection;
+using Hiwjcn.Framework.Tasks;
 
 namespace Hiwjcn.Web
 {
@@ -70,7 +72,7 @@ namespace Hiwjcn.Web
                     start_up_task = Task.Run(() =>
                     {
                         //启动后台服务
-                        TaskManager.StartAllTasks();
+                        TaskManager.StartAllTasks(new Assembly[] { typeof(CleanDatabaseTask).Assembly });
                         //do something else
                     });
                 }

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using Autofac.Integration.Mvc;
+using Castle.DynamicProxy;
 using Lib.data;
 using Lib.events;
 using Lib.extension;
@@ -37,38 +38,12 @@ namespace Lib.ioc
                 var types = a.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<IAutoRegistered>()).ToArray();
                 foreach (var t in types)
                 {
-                    var reg = builder.RegisterType(t).AsSelf();
-
-                    var interfaces = t.GetInterfaces();
-                    if (ValidateHelper.IsPlumpList(interfaces))
-                    {
-                        reg = reg.As(interfaces);
-                    }
+                    var reg = builder.RegisterType(t).AsSelf().AsImplementedInterfaces();
 
                     if (this.Intercept)
                     {
                         reg = reg.EnableClassInterceptors();
                     }
-
-                    reg = reg.DisableAutoDispose();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 注册任务
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="ass"></param>
-        protected virtual void RegTasks(ref ContainerBuilder builder, params Assembly[] ass)
-        {
-            foreach (var a in ass)
-            {
-                var jobTypes = a.GetTypes().ToArray();
-                jobTypes = jobTypes.Where(x => x.IsAssignableTo_<QuartzJobBase>() && x.IsNormalClass()).ToArray();
-                if (ValidateHelper.IsPlumpList(jobTypes))
-                {
-                    builder.RegisterTypes(jobTypes).As<QuartzJobBase>().DisableAutoDispose();
                 }
             }
         }
@@ -81,20 +56,14 @@ namespace Lib.ioc
         protected virtual void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
         {
             //注册泛型
-            builder.RegisterGeneric(typeof(EFRepository<>)).As(typeof(IRepository<>));
+            builder.RegisterGeneric(typeof(EFRepository<>)).AsSelf().As(typeof(IRepository<>));
             foreach (var a in ass)
             {
                 foreach (var t in a.GetTypes())
                 {
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(EFRepository<>)))
                     {
-                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType);
-                        var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IRepository<>)))).ToArray();
-                        if (interfaces?.Count() > 0)
-                        {
-                            reg = reg.As(interfaces);
-                        }
-                        reg = reg.DisableAutoDispose();
+                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
                     }
                 }
             }
@@ -106,7 +75,7 @@ namespace Lib.ioc
         protected virtual void RegService(ref ContainerBuilder builder, params Assembly[] ass)
         {
             //注册泛型
-            builder.RegisterGeneric(typeof(ServiceBase<>)).As(typeof(IServiceBase<>));
+            builder.RegisterGeneric(typeof(ServiceBase<>)).AsSelf().As(typeof(IServiceBase<>));
             foreach (var a in ass)
             {
                 foreach (var t in a.GetTypes())
@@ -114,22 +83,12 @@ namespace Lib.ioc
                     //注册service
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(ServiceBase<>)))
                     {
-                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType);
-
-                        //实现iservicebase的接口
-                        var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IServiceBase<>)))).ToArray();
-
-                        if (ValidateHelper.IsPlumpList(interfaces))
-                        {
-                            reg = reg.As(interfaces);
-                        }
+                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
 
                         if (this.Intercept)
                         {
                             reg = reg.EnableClassInterceptors();
                         }
-
-                        reg = reg.DisableAutoDispose();
                         #region old code
                         /*
                      if (intercept)
@@ -158,6 +117,20 @@ namespace Lib.ioc
         }
 
         /// <summary>
+        /// 注册aop拦截类
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="ass"></param>
+        protected virtual void RegAop(ref ContainerBuilder builder, params Assembly[] ass)
+        {
+            foreach (var a in ass)
+            {
+                var tps = a.GetTypes().Where(x => x.IsAssignableTo_<IInterceptor>()).ToArray();
+                builder.RegisterTypes(tps);
+            }
+        }
+
+        /// <summary>
         /// 注册事件
         /// </summary>
         /// <param name="builder"></param>
@@ -174,7 +147,7 @@ namespace Lib.ioc
                         if (interfaces?.Count() > 0)
                         {
                             //注册到所有接口
-                            builder.RegisterType(t).As(interfaces).DisableAutoDispose();
+                            builder.RegisterType(t).AsSelf().As(interfaces);
                         }
                     }
                 }
@@ -185,7 +158,7 @@ namespace Lib.ioc
                     continue;
                 }
             }
-            builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
+            builder.RegisterType<EventPublisher>().AsSelf().As<IEventPublisher>().SingleInstance();
         }
 
         /// <summary>
@@ -211,7 +184,7 @@ namespace Lib.ioc
                 var tps = a.GetTypes().Where(x => x.IsAssignableTo_<BasePaymentController>() && x.IsNormalClass()).ToArray();
                 if (ValidateHelper.IsPlumpList(tps))
                 {
-                    builder.RegisterTypes(tps).As<BasePaymentController>().DisableAutoDispose();
+                    builder.RegisterTypes(tps).As<BasePaymentController>();
                 }
             }
         }
