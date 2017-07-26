@@ -31,24 +31,6 @@ namespace Lib.infrastructure
         /// </summary>
         public int CacheExpiresMinutes { get; set; }
 
-        [Obsolete("不要直接使用，使用_DalBase")]
-        private IRepository<T> _db { get; set; }
-
-        /// <summary>
-        /// 数据访问
-        /// </summary>
-        protected IRepository<T> _DalBase
-        {
-            get
-            {
-                if (this._db == null)
-                {
-                    this._db = AppContext.GetObject<IRepository<T>>();
-                }
-                return this._db;
-            }
-        }
-
         /// <summary>
         /// 逻辑类基类
         /// </summary>
@@ -161,80 +143,6 @@ namespace Lib.infrastructure
         {
             msg = CheckModel(model);
             return !ValidateHelper.IsPlumpString(msg);
-        }
-
-        /// <summary>
-        /// 找到实体
-        /// </summary>
-        /// <param name="where"></param>
-        /// <returns></returns>
-        public T FindFirstEntity(Expression<Func<T, bool>> where)
-        {
-            return _DalBase.GetFirst(where);
-        }
-
-        /// <summary>
-        /// 添加实体
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public string AddEntity(T model)
-        {
-            var err = CheckModel(model);
-            if (ValidateHelper.IsPlumpString(err)) { return err; }
-            return _DalBase.Add(model) > 0 ? SUCCESS : "添加失败";
-        }
-
-        /// <summary>
-        /// 直接删除对象
-        /// </summary>
-        /// <param name="where"></param>
-        /// <returns></returns>
-        public string DeleteSingleEntity(Expression<Func<T, bool>> where)
-        {
-            return DeleteSingleEntity(where, _ => true);
-        }
-
-        /// <summary>
-        /// 判断可以删除后删除
-        /// </summary>
-        /// <param name="where"></param>
-        /// <param name="CanDelete"></param>
-        /// <returns></returns>
-        public string DeleteSingleEntity(Expression<Func<T, bool>> where, Func<T, bool> CanDelete)
-        {
-            var list = _DalBase.GetList(where, 2);
-            if (!ValidateHelper.IsPlumpList(list)) { return "数据不存在"; }
-            if (list.Count() > 1) { return "当前条件下有多条记录"; }
-            var model = list[0];
-            if (CanDelete.Invoke(model))
-            {
-                //del
-                return _DalBase.Delete(model) > 0 ? SUCCESS : "删除失败";
-            }
-            else
-            {
-                return "不能删除";
-            }
-        }
-
-        /// <summary>
-        /// 更新对象，返回非空字符串终止更新
-        /// </summary>
-        /// <param name="where"></param>
-        /// <param name="handler"></param>
-        /// <returns></returns>
-        public string UpdateSingleEntity(Expression<Func<T, bool>> where, RefFunc<T, string> handler)
-        {
-            var list = _DalBase.GetList(where, 2);
-            if (!ValidateHelper.IsPlumpList(list)) { return "数据不存在"; }
-            if (list.Count > 1) { return "当前条件下有多条记录"; }
-            var model = list[0];
-            var err = handler.Invoke(ref model);
-            if (ValidateHelper.IsPlumpString(err)) { return err; }
-            err = CheckModel(model);
-            if (ValidateHelper.IsPlumpString(err)) { return err; }
-            return _DalBase.Update(model) > 0 ? SUCCESS : "更新失败";
         }
 
         /// <summary>

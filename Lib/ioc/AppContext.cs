@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Builder;
 using Autofac.Integration.Mvc;
 using Lib.cache;
 using Lib.core;
@@ -226,6 +227,19 @@ namespace Lib.ioc
                 return scope.Resolve<T>();
             }
         }
+
+        /// <summary>
+        /// 不自动dispose对象
+        /// </summary>
+        /// <typeparam name="TLimit"></typeparam>
+        /// <typeparam name="TActivatorData"></typeparam>
+        /// <typeparam name="TRegistrationStyle"></typeparam>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> DisableAutoDispose<TLimit, TActivatorData, TRegistrationStyle>(this IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder) => builder.ExternallyOwned();
+
+        public static void UseDbConnection<T>()
+        { }
     }
 
     /*

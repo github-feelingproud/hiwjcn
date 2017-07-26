@@ -8,7 +8,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Lib.ioc;
 
 namespace Lib.data
 {
@@ -106,19 +105,19 @@ namespace Lib.data
         public async Task<int> DeleteAsync(params T[] models)
         {
             if (!ValidateHelper.IsPlumpList(models)) { throw new Exception("参数为空"); }
-            return await AppContext.ScopeAsync(async x =>
+            var count = 0;
+            await PrepareSessionAsync(async db =>
             {
-                using (var db = this._EFManager.GetDbContext(x))
+                var set = db.Set<T>();
+                foreach (var m in models)
                 {
-                    var set = db.Set<T>();
-                    foreach (var m in models)
-                    {
-                        db.Entry(m).State = EntityState.Deleted;
-                        //session.Set<T>().Remove(m);
-                    }
-                    return await db.SaveChangesAsync();
+                    db.Entry(m).State = EntityState.Deleted;
+                    //session.Set<T>().Remove(m);
                 }
+                count = await db.SaveChangesAsync();
+                return true;
             });
+            return count;
         }
 
 
@@ -236,13 +235,15 @@ namespace Lib.data
         public async Task<T> GetByKeysAsync(params object[] keys)
         {
             if (!ValidateHelper.IsPlumpList(keys)) { throw new Exception("参数为空"); }
-            return await AppContext.ScopeAsync(async x =>
+            var model = default(T);
+
+            await PrepareSessionAsync(async db =>
             {
-                using (var db = _EFManager.GetDbContext(x))
-                {
-                    return await db.Set<T>().FindAsync(keys);
-                }
+                model = await db.Set<T>().FindAsync(keys);
+                return true;
             });
+
+            return model;
         }
 
         /// <summary>

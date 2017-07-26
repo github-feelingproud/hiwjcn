@@ -63,7 +63,7 @@ namespace Lib.mvc.user
 
     public class 页面权限拦截Attribute : ValidLoginBaseAttribute
     {
-        public override LoginStatus GetLoginStatus() => AppContext.GetObject<LoginStatus>();
+        public override LoginStatus GetLoginStatus() => AppContext.Scope(x => x.Resolve_<LoginStatus>());
 
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {
@@ -80,7 +80,7 @@ namespace Lib.mvc.user
 
     public class 接口权限拦截Attribute : ValidLoginBaseAttribute
     {
-        public override LoginStatus GetLoginStatus() => AppContext.GetObject<LoginStatus>();
+        public override LoginStatus GetLoginStatus() => AppContext.Scope(x => x.Resolve_<LoginStatus>());
 
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {

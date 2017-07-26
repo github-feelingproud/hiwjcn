@@ -27,10 +27,7 @@ namespace Lib.mvc.user
         /// 获取登录
         /// </summary>
         /// <returns></returns>
-        public override LoginStatus GetLoginStatus()
-        {
-            return AppContext.GetObject<LoginStatus>();
-        }
+        public override LoginStatus GetLoginStatus() => AppContext.Scope(x => x.Resolve_<LoginStatus>());
 
         /// <summary>
         /// 没有权限

@@ -122,13 +122,13 @@ namespace Lib.data
         /// <returns></returns>
         public string GetValidationErrors()
         {
-            return AppContext.Scope(x =>
+            var errors = string.Empty;
+            PrepareSession(db =>
             {
-                using (var db = GetDbContext(x))
-                {
-                    return JsonHelper.ObjectToJson(db.GetValidationErrors());
-                }
+                errors = db.GetValidationErrors().ToJson();
+                return true;
             });
+            return errors;
         }
 
         /// <summary>
@@ -186,9 +186,6 @@ namespace Lib.data
         /// Where方法里不是func而是expression，
         /// 这个不会用来执行只会用来分析表达式树，不会出现空指针现象（x.age==18）
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="callback"></param>
-        /// <param name="Transaction"></param>
         public void PrepareIQueryable<T>(Func<IQueryable<T>, bool> callback, bool track = true)
             where T : class, IDBTable
         {

@@ -49,6 +49,8 @@ namespace Lib.ioc
                     {
                         reg = reg.EnableClassInterceptors();
                     }
+
+                    reg = reg.DisableAutoDispose();
                 }
             }
         }
@@ -66,7 +68,7 @@ namespace Lib.ioc
                 jobTypes = jobTypes.Where(x => x.IsAssignableTo_<QuartzJobBase>() && x.IsNormalClass()).ToArray();
                 if (ValidateHelper.IsPlumpList(jobTypes))
                 {
-                    builder.RegisterTypes(jobTypes).As<QuartzJobBase>();
+                    builder.RegisterTypes(jobTypes).As<QuartzJobBase>().DisableAutoDispose();
                 }
             }
         }
@@ -86,12 +88,13 @@ namespace Lib.ioc
                 {
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(EFRepository<>)))
                     {
-                        builder.RegisterType(t).As(t).As(t.BaseType);
+                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType);
                         var interfaces = t.GetInterfaces().Where(x => x.GetInterfaces().Any(i => i.IsGenericType_(typeof(IRepository<>)))).ToArray();
                         if (interfaces?.Count() > 0)
                         {
-                            builder.RegisterType(t).As(interfaces);
+                            reg = reg.As(interfaces);
                         }
+                        reg = reg.DisableAutoDispose();
                     }
                 }
             }
@@ -100,9 +103,6 @@ namespace Lib.ioc
         /// <summary>
         /// 注册服务
         /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="intercept"></param>
-        /// <param name="ass"></param>
         protected virtual void RegService(ref ContainerBuilder builder, params Assembly[] ass)
         {
             //注册泛型
@@ -128,6 +128,8 @@ namespace Lib.ioc
                         {
                             reg = reg.EnableClassInterceptors();
                         }
+
+                        reg = reg.DisableAutoDispose();
                         #region old code
                         /*
                      if (intercept)
@@ -172,7 +174,7 @@ namespace Lib.ioc
                         if (interfaces?.Count() > 0)
                         {
                             //注册到所有接口
-                            builder.RegisterType(t).As(interfaces);
+                            builder.RegisterType(t).As(interfaces).DisableAutoDispose();
                         }
                     }
                 }
@@ -189,8 +191,6 @@ namespace Lib.ioc
         /// <summary>
         /// 获取插件程序集(还需完善)
         /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
         protected virtual List<Assembly> FindPluginAssemblies()
         {
             return AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.StartsWith("Hiwjcn.Plugin.")).ToList();
@@ -211,7 +211,7 @@ namespace Lib.ioc
                 var tps = a.GetTypes().Where(x => x.IsAssignableTo_<BasePaymentController>() && x.IsNormalClass()).ToArray();
                 if (ValidateHelper.IsPlumpList(tps))
                 {
-                    builder.RegisterTypes(tps).As<BasePaymentController>();
+                    builder.RegisterTypes(tps).As<BasePaymentController>().DisableAutoDispose();
                 }
             }
         }
