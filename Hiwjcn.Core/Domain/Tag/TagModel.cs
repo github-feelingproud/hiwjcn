@@ -16,14 +16,6 @@ namespace WebLogic.Model.Tag
     public class TagModel : BaseEntity
     {
         /// <summary>
-        /// 标签ID
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("tag_id")]
-        public virtual int TagID { get; set; }
-
-        /// <summary>
         /// 标签名
         /// </summary>
         [Column("tag_name")]

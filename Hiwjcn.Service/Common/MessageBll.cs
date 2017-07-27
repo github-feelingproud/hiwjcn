@@ -50,7 +50,7 @@ namespace Bll.Sys
         /// <param name="receiverID"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public List<MessageModel> GetTopMessage(int receiverID, int count = 100)
+        public List<MessageModel> GetTopMessage(string receiverID, int count = 100)
         {
             string key = "topmessage,uid:" + receiverID + "count:" + count;
             return Cache(key, () =>
@@ -70,7 +70,7 @@ namespace Bll.Sys
         /// <param name="month"></param>
         /// <param name="day"></param>
         /// <returns></returns>
-        public int GetSenderMessageCount(int user_id, DateTime start, DateTime end)
+        public int GetSenderMessageCount(string user_id, DateTime start, DateTime end)
         {
             string key = Com.GetCacheKey("messagecount", user_id.ToString(), start.ToString(), end.ToString());
             return Cache(key, () =>

@@ -25,11 +25,6 @@ namespace Hiwjcn.Core.Model.Sys
     [Table("sys_reqlog")]
     public class ReqLogModel : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("uid")]
-        public virtual long UID { get; set; }
-
         [Column("req_id")]
         public virtual string ReqID { get; set; }
 
@@ -59,8 +54,5 @@ namespace Hiwjcn.Core.Model.Sys
 
         [Column("req_time")]
         public virtual double? ReqTime { get; set; }
-
-        [Column("update_time")]
-        public virtual DateTime UpdateTime { get; set; }
     }
 }

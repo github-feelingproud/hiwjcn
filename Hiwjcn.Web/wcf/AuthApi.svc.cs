@@ -76,5 +76,15 @@ namespace Hiwjcn.Web.wcf
                 DataList = clients.DataList.Select(x => (AuthClientWcf)x).ToList()
             };
         }
+
+        public async Task<List<AuthScopeWcf>> GetScopesOrDefault(string[] scopes)
+        {
+            var list = await AppContext.ScopeAsync(async s =>
+            {
+                return await s.Resolve_<IAuthScopeService>().GetScopesOrDefault(scopes);
+            });
+
+            return list.Select(x => (AuthScopeWcf)x).ToList();
+        }
     }
 }

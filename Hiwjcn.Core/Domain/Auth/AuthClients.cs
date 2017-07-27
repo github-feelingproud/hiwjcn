@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Model.User;
 using System.Runtime.Serialization;
+using Model;
 
 namespace Hiwjcn.Core.Domain.Auth
 {
@@ -16,18 +17,8 @@ namespace Hiwjcn.Core.Domain.Auth
     /// </summary>
     [Serializable]
     [Table("auth_client")]
-    public class AuthClient : IDBTable
+    public class AuthClient : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column(nameof(IID))]
-        public virtual int IID { get; set; }
-
-        [Index]
-        [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "客户端UID必填")]
-        public virtual string UID { get; set; }
-
         [Required]
         [Index(IsUnique = true)]
         [StringLength(20, MinimumLength = 1, ErrorMessage = "客户端名称必填")]
@@ -54,27 +45,13 @@ namespace Hiwjcn.Core.Domain.Auth
         [StringLength(100, MinimumLength = 20, ErrorMessage = "客户端ClientSecretUID必填")]
         public virtual string ClientSecretUID { get; set; }
 
-        public virtual int IsRemove { get; set; }
-
-        public virtual DateTime CreateTime { get; set; }
-
-        public virtual DateTime? UpdateTime { get; set; }
+        public virtual int IsActive { get; set; }
     }
 
     [Serializable]
     [Table("auth_client_useage")]
-    public class AuthClientUseage : IDBTable
+    public class AuthClientUseage : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public virtual int IID { get; set; }
-
-        [Index]
-        [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "client useage UID必填")]
-        public virtual string UID { get; set; }
-
-
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "client uid 名称必填")]
         public virtual string ClientUID { get; set; }
@@ -83,23 +60,12 @@ namespace Hiwjcn.Core.Domain.Auth
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "user uid 名称必填")]
         public virtual string UserUID { get; set; }
-
-        public virtual DateTime CreateTime { get; set; }
     }
 
     [Serializable]
     [Table("auth_scope")]
-    public class AuthScope : IDBTable
+    public class AuthScope : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public virtual int IID { get; set; }
-
-        [Index]
-        [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "scope UID必填")]
-        public virtual string UID { get; set; }
-
         [Required]
         [Index(IsUnique = true)]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "scope 名称必填")]
@@ -123,25 +89,12 @@ namespace Hiwjcn.Core.Domain.Auth
 
         [StringLength(30, ErrorMessage = "字体图标数据过长")]
         public virtual string FontIcon { get; set; }
-
-        public virtual DateTime CreateTime { get; set; }
-
-        public virtual DateTime? UpdateTime { get; set; }
     }
 
     [Serializable]
     [Table("auth_token")]
-    public class AuthToken : IDBTable
+    public class AuthToken : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public virtual int IID { get; set; }
-
-        [Index]
-        [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "token UID必填")]
-        public virtual string UID { get; set; }
-
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "refresh token 必填")]
         public virtual string RefreshToken { get; set; }
@@ -158,8 +111,6 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual string ScopesInfoJson { get; set; }
 
         public virtual DateTime ExpiryTime { get; set; }
-
-        public virtual DateTime CreateTime { get; set; }
 
         public virtual DateTime? RefreshTime { get; set; }
 
@@ -178,17 +129,8 @@ namespace Hiwjcn.Core.Domain.Auth
 
     [Serializable]
     [Table("auth_token_scope")]
-    public class AuthTokenScope : IDBTable
+    public class AuthTokenScope : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public virtual int IID { get; set; }
-
-        [Index]
-        [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "auth token UID必填")]
-        public virtual string UID { get; set; }
-
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "token UID 必填")]
         public virtual string TokenUID { get; set; }
@@ -196,23 +138,12 @@ namespace Hiwjcn.Core.Domain.Auth
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "scope UID 必填")]
         public virtual string ScopeUID { get; set; }
-
-        public virtual DateTime CreateTime { get; set; }
     }
 
     [Serializable]
     [Table("auth_code")]
-    public class AuthCode : IDBTable
+    public class AuthCode : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public virtual int IID { get; set; }
-
-        [Index]
-        [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "token UID必填")]
-        public virtual string UID { get; set; }
-
         [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "用户UID 必填")]
         public virtual string UserUID { get; set; }
@@ -222,7 +153,5 @@ namespace Hiwjcn.Core.Domain.Auth
 
         [Required(ErrorMessage = "scopes为空")]
         public virtual string ScopesJson { get; set; }
-
-        public virtual DateTime CreateTime { get; set; }
     }
 }

@@ -129,7 +129,7 @@ namespace WebLogic.Bll.Page
         /// <returns></returns>
         public string UpdateSection(SectionModel updatemodel)
         {
-            var model = _SectionDal.GetFirst(x => x.SectionID == updatemodel.SectionID);
+            var model = _SectionDal.GetFirst(x => x.UID == updatemodel.UID);
             if (model == null) { return "内容不存在"; }
 
             model.SectionName = updatemodel.SectionName;
@@ -145,7 +145,7 @@ namespace WebLogic.Bll.Page
 
             if (_SectionDal.Exist(x =>
                 x.SectionName == model.SectionName &&
-                x.SectionID != model.SectionID))
+                x.UID != model.UID))
             {
                 return "标识存在重复值";
             }

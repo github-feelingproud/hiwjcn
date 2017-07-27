@@ -11,13 +11,8 @@ namespace Hiwjcn.Core.Model.Sys
     [Table("sys_upfile")]
     public class UpFileModel : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("UpID")]
-        public virtual int UpID { get; set; }
-
         [Column("UserID")]
-        public virtual int UserID { get; set; }
+        public virtual string UserID { get; set; }
 
         [Column("FileName")]
         public virtual string FileName { get; set; }
@@ -36,8 +31,5 @@ namespace Hiwjcn.Core.Model.Sys
 
         [Column("FileMD5")]
         public virtual string FileMD5 { get; set; }
-
-        [Column("UpTime")]
-        public virtual DateTime UpTime { get; set; }
     }
 }

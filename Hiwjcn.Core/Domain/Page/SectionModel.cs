@@ -20,14 +20,6 @@ namespace WebLogic.Model.Page
         }
 
         /// <summary>
-        /// id
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("section_id")]
-        public virtual int SectionID { get; set; }
-
-        /// <summary>
         /// 名称
         /// </summary>
         [Column("section_name")]
@@ -65,12 +57,5 @@ namespace WebLogic.Model.Page
         /// </summary>
         [Column("rel_group")]
         public virtual string RelGroup { get; set; }
-
-        /// <summary>
-        /// 更新时间
-        /// </summary>
-        [Column("update_time")]
-        public virtual DateTime UpdateTime { get; set; }
-
     }
 }

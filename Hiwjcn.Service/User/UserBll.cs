@@ -224,29 +224,7 @@ namespace Bll.User
             #region 把文件保存到云存储
             var file_url = string.Empty;
             var file_name = string.Empty;
-
-            return AppContext.Scope(s =>
-            {
-                var upfileservice = s.Resolve_<IUpFileService>();
-                var qiniumsg = upfileservice.UploadFileAfterCheckRepeat(new FileInfo(model.FilePath), userID, ref file_url, ref file_name);
-                if (ValidateHelper.IsPlumpString(qiniumsg)) { errmsg.Add(qiniumsg); }
-                else
-                {
-                    if (ValidateHelper.IsPlumpString(file_url))
-                    {
-                        //保存文件地址到数据库
-                        var entity = this._UserDal.GetFirst(x => x.IID == userID);
-                        Com.Assert(entity, x => x != null, "不能为空");
-                        entity.UserImg = file_url;
-                        this._UserDal.Update(entity);
-                    }
-                    else
-                    {
-                        errmsg.Add("文件地址为空");
-                    }
-                }
-                return errmsg.Count() == 0 ? SUCCESS : string.Join(",", errmsg);
-            });
+            return SUCCESS;
             #endregion
         }
 
@@ -516,21 +494,21 @@ namespace Bll.User
         /// <returns></returns>
         private List<UserModel> GetRolesForUserList(List<UserModel> list)
         {
-            var useridlist = list.Select(x => x.IID).ToArray();
+            var useridlist = list.Select(x => x.UID).ToArray();
 
             //读取角色
             var userrolemaplist = _UserRoleDal.GetList(x => useridlist.Contains(x.UserID));
             if (ValidateHelper.IsPlumpList(userrolemaplist))
             {
                 var roleidlist = userrolemaplist.Select(x => x.RoleID).Distinct().ToArray();
-                var rolelist = _RoleDal.GetList(x => roleidlist.Contains(x.RoleID));
+                var rolelist = _RoleDal.GetList(x => roleidlist.Contains(x.UID));
                 if (ValidateHelper.IsPlumpList(rolelist))
                 {
                     foreach (var model in list)
                     {
-                        var myroleidlist = userrolemaplist.Where(x => x.UserID == model.IID).Select(x => x.RoleID).Distinct().ToArray();
+                        var myroleidlist = userrolemaplist.Where(x => x.UserID == model.UID).Select(x => x.RoleID).Distinct().ToArray();
                         if (!ValidateHelper.IsPlumpList(myroleidlist)) { continue; }
-                        model.RoleModelList = rolelist.Where(x => myroleidlist.Contains(x.RoleID)).ToList();
+                        model.RoleModelList = rolelist.Where(x => myroleidlist.Contains(x.UID)).ToList();
                     }
                 }
             }
@@ -546,13 +524,13 @@ namespace Bll.User
         private UserModel LoadAllPermissionForUser(UserModel model)
         {
             if (model == null || model.IID <= 0) { throw new Exception("用户对象为空，无法为其获取权限"); }
-            model.RoleList = new List<int>();
+            model.RoleList = new List<string>();
             model.PermissionList = new List<string>();
 
             _UserDal.PrepareSession(db =>
             {
-                var maprole = db.Set<UserRoleModel>().Where(x => x.UserID == model.IID).Select(x => x.RoleID);
-                var deftrole = db.Set<RoleModel>().Where(x => x.AutoAssignRole == "true").Select(x => x.RoleID);
+                var maprole = db.Set<UserRoleModel>().Where(x => x.UserID == model.UID).Select(x => x.RoleID);
+                var deftrole = db.Set<RoleModel>().Where(x => x.AutoAssignRole > 0).Select(x => x.UID);
 
                 var rolepermissionlist = db.Set<RolePermissionModel>()
                 .Where(x => maprole.Contains(x.RoleID) || deftrole.Contains(x.RoleID))
@@ -578,12 +556,12 @@ namespace Bll.User
         {
             var list = Cache($"user_permissions_in_cache:{loginuser.UserID}", () =>
             {
-                var RoleList = new List<int>();
+                var RoleList = new List<string>();
                 var PermissionList = new List<string>();
                 _UserDal.PrepareSession(db =>
                 {
-                    var maprole = db.Set<UserRoleModel>().Where(x => x.UserID == loginuser.IID).Select(x => x.RoleID);
-                    var deftrole = db.Set<RoleModel>().Where(x => x.AutoAssignRole == "true").Select(x => x.RoleID);
+                    var maprole = db.Set<UserRoleModel>().Where(x => x.UserID == loginuser.UserID).Select(x => x.RoleID);
+                    var deftrole = db.Set<RoleModel>().Where(x => x.AutoAssignRole > 0).Select(x => x.UID);
 
                     var rolepermissionlist = db.Set<RolePermissionModel>()
                     .Where(x => maprole.Contains(x.RoleID) || deftrole.Contains(x.RoleID))

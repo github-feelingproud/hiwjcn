@@ -28,7 +28,6 @@ namespace Hiwjcn.Bll.Sys
         public override string CheckModel(UpFileModel model)
         {
             if (model == null) { return "文件对象为空"; }
-            if (model.UserID <= 0) { return "上传人为空"; }
             if (!ValidateHelper.IsPlumpString(model.FileMD5)) { return "文件唯一标识为空"; }
             return string.Empty;
         }
@@ -46,7 +45,7 @@ namespace Hiwjcn.Bll.Sys
             var dal = new UpFileDal();
             if (dal.Exist(x => x.FileMD5 == model.FileMD5 && x.UserID == model.UserID)) { return SUCCESS; }
 
-            model.UpTime = DateTime.Now;
+            model.CreateTime = DateTime.Now;
             return dal.Add(model) > 0 ? SUCCESS : "添加文件失败";
         }
 
@@ -58,16 +57,16 @@ namespace Hiwjcn.Bll.Sys
         /// <param name="size"></param>
         /// <param name="filelist"></param>
         /// <param name="filecount"></param>
-        public void FindFiles(int uid, int start, int size, ref string[] filelist, ref int filecount)
+        public void FindFiles(string uid, int start, int size, ref string[] filelist, ref int filecount)
         {
-            if (uid <= 0 || start < 0 || size < 1) { return; }
+            if (start < 0 || size < 1) { return; }
             int count = 0;
             string[] list = null;
             new UpFileDal().PrepareIQueryable(query =>
             {
                 query = query.Where(x => x.UserID == uid);
                 count = query.Count();
-                list = query.OrderByDescending(x => x.UpTime).Skip(start).Take(size).Select(x => x.FileUrl).Distinct().ToArray();
+                list = query.OrderByDescending(x => x.CreateTime).Skip(start).Take(size).Select(x => x.FileUrl).Distinct().ToArray();
                 return true;
             });
             filecount = count;
@@ -80,10 +79,10 @@ namespace Hiwjcn.Bll.Sys
         /// <param name="fid"></param>
         /// <param name="uid"></param>
         /// <returns></returns>
-        public string DeleteFile(int fid, int uid)
+        public string DeleteFile(string fid, string uid)
         {
             var dal = new UpFileDal();
-            var model = dal.GetFirst(x => x.UpID == fid && x.UserID == uid);
+            var model = dal.GetFirst(x => x.UID == fid && x.UserID == uid);
             if (model == null) { return "数据不存在"; }
             var md5 = model.FileMD5;
             if (dal.Delete(model) > 0)
@@ -96,7 +95,7 @@ namespace Hiwjcn.Bll.Sys
             return "删除失败";
         }
 
-        public string UploadFileAfterCheckRepeat(FileInfo file, int uid,
+        public string UploadFileAfterCheckRepeat(FileInfo file, string uid,
             ref string file_url, ref string file_name, bool DeleteFileAfterUploadToQiniu = true)
         {
             try
@@ -114,7 +113,7 @@ namespace Hiwjcn.Bll.Sys
                 dbmodel.FileExt = file.Extension;
                 dbmodel.FileSize = (int)file.Length;
                 dbmodel.FilePath = file.FullName;
-                dbmodel.UpTime = DateTime.Now;
+                dbmodel.CreateTime = DateTime.Now;
                 //获取文件md5值
                 dbmodel.FileMD5 = SecureHelper.GetFileMD5(dbmodel.FilePath);
                 if (!ValidateHelper.IsPlumpString(dbmodel.FileMD5))

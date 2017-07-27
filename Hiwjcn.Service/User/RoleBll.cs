@@ -54,8 +54,7 @@ namespace WebLogic.Bll.User
         /// <returns></returns>
         public string UpdateRole(RoleModel model)
         {
-            if (model.RoleID <= 0) { return "错误的ID"; }
-            var role = _RoleDal.GetFirst(x => x.RoleID == model.RoleID);
+            var role = _RoleDal.GetFirst(x => x.UID == model.UID);
             if (role == null) { return "角色不存在"; }
             role.RoleName = model.RoleName;
             role.RoleDescription = model.RoleDescription;
@@ -70,10 +69,9 @@ namespace WebLogic.Bll.User
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public string DeleteRole(int RoleID)
+        public string DeleteRole(string RoleID)
         {
-            if (RoleID <= 0) { return "错误的ID"; }
-            var role = _RoleDal.GetFirst(x => x.RoleID == RoleID);
+            var role = _RoleDal.GetFirst(x => x.UID == RoleID);
             if (role == null) { return "角色不存在"; }
             return _RoleDal.Delete(role) > 0 ? SUCCESS : "删除失败";
         }
@@ -83,14 +81,9 @@ namespace WebLogic.Bll.User
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public RoleModel GetByID(int id)
+        public RoleModel GetByID(string id)
         {
-            if (id <= 0) { return null; }
-            string key = "rolebyid:" + id;
-            return Cache(key, () =>
-            {
-                return _RoleDal.GetFirst(x => x.RoleID == id);
-            });
+            return _RoleDal.GetFirst(x => x.UID == id);
         }
 
         /// <summary>
@@ -99,11 +92,7 @@ namespace WebLogic.Bll.User
         /// <returns></returns>
         public List<RoleModel> GetAllRoles()
         {
-            string key = "allrolescachekey";
-            return Cache(key, () =>
-            {
-                return _RoleDal.QueryList(where: null, orderby: x => x.RoleID);
-            });
+            return _RoleDal.QueryList(where: null, orderby: x => x.CreateTime);
         }
 
         /// <summary>
@@ -111,19 +100,14 @@ namespace WebLogic.Bll.User
         /// </summary>
         /// <param name="role_id"></param>
         /// <returns></returns>
-        public List<string> GetRolePermissionsList(int role_id)
+        public List<string> GetRolePermissionsList(string role_id)
         {
-            if (role_id <= 0) { return null; }
-            string key = "rolespermission_by_id" + role_id;
-            return Cache(key, () =>
+            var list = _RolePermissionDal.QueryList(where: x => x.RoleID == role_id, orderby: x => x.CreateTime);
+            if (ValidateHelper.IsPlumpList(list))
             {
-                var list = _RolePermissionDal.QueryList(where: x => x.RoleID == role_id, orderby: x => x.RolePermissionID);
-                if (ValidateHelper.IsPlumpList(list))
-                {
-                    return list.Select(x => x.PermissionID).ToList();
-                }
-                return null;
-            });
+                return list.Select(x => x.PermissionID).ToList();
+            }
+            return null;
         }
 
     }

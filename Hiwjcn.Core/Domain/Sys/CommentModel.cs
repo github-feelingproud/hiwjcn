@@ -17,14 +17,6 @@ namespace Hiwjcn.Core.Model.Sys
     public class CommentModel : BaseEntity
     {
         /// <summary>
-        /// 评论ID
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("comment_id")]
-        public virtual int CommentID { get; set; }
-
-        /// <summary>
         /// 评论内容
         /// </summary>
         [Column("comment_content")]
@@ -34,7 +26,7 @@ namespace Hiwjcn.Core.Model.Sys
         /// 评论人
         /// </summary>
         [Column("user_id")]
-        public virtual int UserID { get; set; }
+        public virtual string UserID { get; set; }
 
         /// <summary>
         /// 评论人
@@ -52,19 +44,13 @@ namespace Hiwjcn.Core.Model.Sys
         /// 回复对象id
         /// </summary>
         [Column("parent_comment_id")]
-        public virtual int ParentCommentID { get; set; }
+        public virtual string ParentCommentID { get; set; }
 
         /// <summary>
         /// 父级回复
         /// </summary>
         [NotMapped]
         public virtual CommentModel ParentComment { get; set; }
-
-        /// <summary>
-        /// 评论时间
-        /// </summary>
-        [Column("update_time")]
-        public virtual DateTime UpdateTime { get; set; }
     }
 
 }

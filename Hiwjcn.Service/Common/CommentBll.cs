@@ -32,11 +32,6 @@ namespace Hiwjcn.Bll.Sys
                 return "主题ID为空";
             }
 
-            if (model.UserID <= 0)
-            {
-                return "评论人为空";
-            }
-
             if (!ValidateHelper.IsPlumpString(model.CommentContent))
             {
                 return "评论内容为空";
@@ -55,14 +50,10 @@ namespace Hiwjcn.Bll.Sys
             return string.Empty;
         }
 
-        public CommentModel GetCommentByID(int id)
+        public CommentModel GetCommentByID(string id)
         {
-            var list = GetCommentsByIDS(id);
-            if (ValidateHelper.IsPlumpList(list))
-            {
-                return list[0];
-            }
-            return null;
+            var _commentDal = new CommentDal();
+            return _commentDal.GetFirst(x => x.UID == id);
         }
 
         /// <summary>
@@ -70,15 +61,12 @@ namespace Hiwjcn.Bll.Sys
         /// </summary>
         /// <param name="idlist"></param>
         /// <returns></returns>
-        public List<CommentModel> GetCommentsByIDS(params int[] idlist)
+        public List<CommentModel> GetCommentsByIDS(params string[] idlist)
         {
             if (!ValidateHelper.IsPlumpList(idlist)) { return null; }
-            string key = Com.GetCacheKey("commentbll.GetCommentsByIDS", string.Join(",", idlist));
-            return Cache(key, () =>
-            {
-                var _commentDal = new CommentDal();
-                return _commentDal.GetList(x => idlist.Contains(x.CommentID));
-            });
+
+            var _commentDal = new CommentDal();
+            return _commentDal.GetList(x => idlist.Contains(x.UID));
         }
 
         /// <summary>
@@ -92,54 +80,16 @@ namespace Hiwjcn.Bll.Sys
         {
             if (!ValidateHelper.IsPlumpString(threadID)) { return null; }
 
-            string key = Com.GetCacheKey("commentbll.getcomments", threadID, page.ToString(), pagesize.ToString());
-
-            return Cache(key, () =>
+            var data = new PagerData<CommentModel>();
+            var _commentDal = new CommentDal();
+            _commentDal.PrepareIQueryable((query) =>
             {
-                var data = new PagerData<CommentModel>();
-                var _commentDal = new CommentDal();
-                _commentDal.PrepareIQueryable((query) =>
-                {
-                    query = query.Where(x => x.ThreadID == threadID);
-                    data.ItemCount = query.Count();
-                    data.DataList = query.OrderByDescending(x => x.CommentID).QueryPage(page, pagesize).ToList();
-                    return true;
-                });
-                if (ValidateHelper.IsPlumpList(data.DataList))
-                {
-                    var useridlist = data.DataList.Select(x => x.UserID).Distinct().Where(x => x > 0).ToArray();
-                    if (ValidateHelper.IsPlumpList(useridlist))
-                    {
-                        AppContext.Scope(s =>
-                        {
-                            var userbll = s.Resolve_<IUserService>();
-                            var userlist = userbll.GetUserByIDS(useridlist);
-                            if (ValidateHelper.IsPlumpList(userlist))
-                            {
-                                data.DataList.ForEach(x =>
-                                {
-                                    x.UserModel = userlist.Where(m => m.IID == x.UserID).FirstOrDefault();
-                                });
-                            }
-                            return true;
-                        });
-                    }
-
-                    var parentidlist = data.DataList.Select(x => x.ParentCommentID).Distinct().Where(x => x > 0).ToArray();
-                    if (ValidateHelper.IsPlumpList(parentidlist))
-                    {
-                        var commentslist = GetCommentsByIDS(parentidlist);
-                        if (ValidateHelper.IsPlumpList(commentslist))
-                        {
-                            data.DataList.ForEach(x =>
-                            {
-                                x.ParentComment = commentslist.Where(m => m.CommentID == x.ParentCommentID).FirstOrDefault();
-                            });
-                        }
-                    }
-                }
-                return data;
+                query = query.Where(x => x.ThreadID == threadID);
+                data.ItemCount = query.Count();
+                data.DataList = query.OrderByDescending(x => x.CreateTime).QueryPage(page, pagesize).ToList();
+                return true;
             });
+            return data;
         }
 
         /// <summary>
@@ -165,11 +115,10 @@ namespace Hiwjcn.Bll.Sys
         /// <param name="id"></param>
         /// <param name="userid"></param>
         /// <returns></returns>
-        public string DeleteComment(int id, int userid)
+        public string DeleteComment(string id, string userid)
         {
-            if (id <= 0 || userid <= 0) { return "参数错误"; }
             var _commentDal = new CommentDal();
-            var model = _commentDal.GetFirst(x => x.CommentID == id && x.UserID == userid);
+            var model = _commentDal.GetFirst(x => x.UID == id && x.UserID == userid);
             if (model == null) { return "评论不存在"; }
             return _commentDal.Delete(model) > 0 ? SUCCESS : "删除失败";
         }
@@ -181,7 +130,7 @@ namespace Hiwjcn.Bll.Sys
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public int GetCommentCount(int userid, DateTime? start, DateTime? end)
+        public int GetCommentCount(string userid, DateTime? start, DateTime? end)
         {
             string key = Com.GetCacheKey("commentbll.getcommentcount",
                 userid.ToString(), ConvertHelper.GetString(start), ConvertHelper.GetString(end));
@@ -191,7 +140,7 @@ namespace Hiwjcn.Bll.Sys
                 var count = 0;
                 _commentDal.PrepareIQueryable((query) =>
                 {
-                    if (userid > 0)
+                    if (ValidateHelper.IsPlumpString(userid))
                     {
                         query = query.Where(x => x.UserID == userid);
                     }

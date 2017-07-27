@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.mvc;
 using Lib.helper;
+using Lib.extension;
 
 namespace Hiwjcn.Web.wcf
 {
@@ -26,6 +27,9 @@ namespace Hiwjcn.Web.wcf
 
         [OperationContract]
         Task<PagerData<AuthClientWcf>> GetMyAuthorizedClients(string user_id, string q, int page, int pagesize);
+
+        [OperationContract]
+        Task<List<AuthScopeWcf>> GetScopesOrDefault(string[] scopes);
     }
 
     [Serializable]
@@ -114,5 +118,48 @@ namespace Hiwjcn.Web.wcf
                 CreateTime = client.CreateTime,
                 UpdateTime = client.UpdateTime
             };
+    }
+
+    [DataContract]
+    public class AuthScopeWcf
+    {
+        [DataMember]
+        public virtual int IID { get; set; }
+
+        [DataMember]
+        public virtual string UID { get; set; }
+
+        [DataMember]
+        public virtual string Name { get; set; }
+
+        [DataMember]
+        public virtual string DisplayName { get; set; }
+
+        [DataMember]
+        public virtual string Description { get; set; }
+
+        [DataMember]
+        public virtual int Important { get; set; }
+
+        [DataMember]
+        public virtual int Sort { get; set; }
+
+        [DataMember]
+        public virtual int IsDefault { get; set; }
+
+        [DataMember]
+        public virtual string ImageUrl { get; set; }
+
+        [DataMember]
+        public virtual string FontIcon { get; set; }
+
+        [DataMember]
+        public virtual DateTime CreateTime { get; set; }
+
+        [DataMember]
+        public virtual DateTime? UpdateTime { get; set; }
+
+        public static implicit operator AuthScopeWcf(AuthScope scope) =>
+            scope.ToJson().JsonToEntity<AuthScopeWcf>();
     }
 }

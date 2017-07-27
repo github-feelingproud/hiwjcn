@@ -8,11 +8,6 @@ namespace WebLogic.Model.User
     [Table("account_login_log")]
     public class LoginErrorLogModel : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("log_id")]
-        public virtual int LogID { get; set; }
-
         [Column("login_key")]
         public virtual string LoginKey { get; set; }
 
@@ -21,8 +16,5 @@ namespace WebLogic.Model.User
 
         [Column("login_ip")]
         public virtual string LoginIP { get; set; }
-
-        [Column("login_time")]
-        public virtual DateTime LoginTime { get; set; }
     }
 }

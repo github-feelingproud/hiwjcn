@@ -10,17 +10,8 @@ using WebLogic.Model.User;
 namespace Model.User
 {
     [Table("account_user_avatar")]
-    public class UserAvatar : IDBTable
+    public class UserAvatar : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public virtual int IID { get; set; }
-
-        [Index]
-        [Required(ErrorMessage = "UID必填")]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "UID长度错误")]
-        public virtual string UID { get; set; }
-
         [Required(ErrorMessage = "头像数据为空")]
         public virtual byte[] AvatarBytes { get; set; }
 
@@ -28,33 +19,14 @@ namespace Model.User
         [Required(ErrorMessage = "UserUID必填")]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "UserUID长度错误")]
         public virtual string UserUID { get; set; }
-
-        public virtual DateTime CreateTime { get; set; }
-
     }
 
     /// <summary>
     ///用户的账户模型
     /// </summary>
     [Table("account_user")]
-    public class UserModel : BaseEntity//, UserModelBase
+    public class UserModel : BaseEntity
     {
-
-        /// <summary>
-        /// 用户ID
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("user_id")]
-        public virtual int IID { get; set; }
-
-        [Column(nameof(UID))]
-        [Editable(false)]
-        [Required(ErrorMessage = "UID不能为空")]
-        [MinLength(30, ErrorMessage = "UID最短长度30")]
-        [MaxLength(40, ErrorMessage = "UID长度最长40")]
-        public virtual string UID { get; set; }
-
         /// <summary>
         /// 昵称
         /// </summary>
@@ -123,13 +95,7 @@ namespace Model.User
         /// </summary>
         [Column("user_img")]
         public virtual string UserImg { get; set; }
-
-        /// <summary>
-        /// 注册时间
-        /// </summary>
-        [Column("user_reg_time")]
-        public virtual DateTime RegTime { get; set; }
-
+        
         /// <summary>
         /// 用户拥有的权限（大分类）
         /// </summary>
@@ -140,7 +106,7 @@ namespace Model.User
         /// 用户所有角色id
         /// </summary>
         [NotMapped]
-        public virtual List<int> RoleList { get; set; }
+        public virtual List<string> RoleList { get; set; }
 
         /// <summary>
         /// 用户所有权限id（最终拿来验证用户行为是否有权限）

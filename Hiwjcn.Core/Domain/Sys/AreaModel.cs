@@ -15,14 +15,6 @@ namespace WebLogic.Model.Sys
     public class AreaModel : BaseEntity
     {
         /// <summary>
-        /// 主键
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("primary_id")]
-        public virtual int PrimaryID { get; set; }
-
-        /// <summary>
         /// 地区编号
         /// </summary>
         [Column("area_id")]

@@ -10,14 +10,6 @@ namespace Model.Category
     public class CategoryModel : BaseEntity
     {
         /// <summary>
-        /// 节点ID
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("category_id")]
-        public virtual int CategoryID { get; set; }
-
-        /// <summary>
         /// 节点名称
         /// </summary>
         [Column("category_name")]
@@ -85,7 +77,7 @@ namespace Model.Category
         /// 节点父级
         /// </summary>
         [Column("category_parent")]
-        public virtual int CategoryParent { get; set; }
+        public virtual string CategoryParent { get; set; }
 
         /// <summary>
         /// 节点层级

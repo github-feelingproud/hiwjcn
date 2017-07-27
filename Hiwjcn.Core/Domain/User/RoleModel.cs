@@ -16,14 +16,6 @@ namespace WebLogic.Model.User
     public class RoleModel : BaseEntity
     {
         /// <summary>
-        /// 角色ID
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("role_id")]
-        public virtual int RoleID { get; set; }
-
-        /// <summary>
         /// 角色名
         /// </summary>
         [Column("role_name")]
@@ -39,6 +31,6 @@ namespace WebLogic.Model.User
         /// 用户注册的时候自动分配这些权限
         /// </summary>
         [Column("auto_assign_to_user")]
-        public virtual string AutoAssignRole { get; set; }
+        public virtual int AutoAssignRole { get; set; }
     }
 }

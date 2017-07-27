@@ -19,7 +19,6 @@ namespace WebLogic.Bll.User
         public override string CheckModel(LoginErrorLogModel model)
         {
             if (model == null) { return "model对象为空"; }
-            if (model.LoginTime == null) { return "登录时间为空"; }
             if (!ValidateHelper.IsAllPlumpString(model.LoginKey))
             {
                 return "登录名为空";
@@ -51,11 +50,11 @@ namespace WebLogic.Bll.User
             var end = DateTime.Now;
             var start = end.AddMinutes(-10);
 
-            int count = _LoginErrorLogDal.GetCount(x => x.LoginKey == LoginKey && x.LoginTime >= start && x.LoginTime <= end);
+            int count = _LoginErrorLogDal.GetCount(x => x.LoginKey == LoginKey && x.CreateTime >= start && x.CreateTime <= end);
 
             {
                 //清理更早的数据
-                var list = _LoginErrorLogDal.GetList(x => x.LoginKey == LoginKey && x.LoginTime < start);
+                var list = _LoginErrorLogDal.GetList(x => x.LoginKey == LoginKey && x.CreateTime < start);
                 if (ValidateHelper.IsPlumpList(list))
                 {
                     _LoginErrorLogDal.Delete(list.ToArray());

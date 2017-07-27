@@ -84,7 +84,6 @@ namespace Hiwjcn.Web.Controllers
                     LoginKey = ConvertHelper.GetString(email),
                     LoginPwd = ConvertHelper.GetString(pass),
                     LoginIP = ConvertHelper.GetString(this.X.IP),
-                    LoginTime = DateTime.Now
                 };
                 var errorloghandler = _LoginErrorLogBll.AddLoginErrorLog(errorLoginLog);
                 if (ValidateHelper.IsPlumpString(errorloghandler))
@@ -265,7 +264,6 @@ namespace Hiwjcn.Web.Controllers
                 model.UserImg = "/static/image/moren.png";
                 model.Sex = "1";
                 model.Flag = (int)(FunctionsEnum.普通用户 | FunctionsEnum.购物 | FunctionsEnum.发帖);
-                model.RegTime = DateTime.Now;
 
                 var res = _IUserService.Register(model);
                 return GetJsonRes(res);

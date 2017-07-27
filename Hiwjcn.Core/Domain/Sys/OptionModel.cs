@@ -7,14 +7,6 @@ namespace Model.Sys
     public class OptionModel : BaseEntity
     {
         /// <summary>
-        /// id
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("option_id")]
-        public virtual int OptionID { get; set; }
-
-        /// <summary>
         /// 名称
         /// </summary>
         [Column("option_name")]

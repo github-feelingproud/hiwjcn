@@ -9,6 +9,9 @@ using Lib.helper;
 using Lib.core;
 using Lib.extension;
 using Lib.mvc.user;
+using System.Net;
+using System.Net.Http;
+using Lib.net;
 
 namespace Lib.mvc.auth.validation
 {
@@ -42,6 +45,8 @@ namespace Lib.mvc.auth.validation
     /// </summary>
     public class AuthServerValidationProvider : TokenValidationProviderBase
     {
+        private static readonly HttpClient _client = new HttpClient();
+
         private readonly AuthServerConfig _server;
 
         public AuthServerValidationProvider(AuthServerConfig server)
@@ -51,11 +56,20 @@ namespace Lib.mvc.auth.validation
 
         public override LoginUserInfo FindUser(HttpContext context)
         {
-            throw new NotImplementedException();
+            var token = context.GetBearerToken();
+            if (!ValidateHelper.IsPlumpString(token)) { return null; }
+
+            var json = HttpClientHelper.Post_(this._server.ApiPath("auth", "authrioze"), new
+            {
+                token = token
+            });
         }
 
         public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
         {
+            var token = context.GetBearerToken();
+            if (!ValidateHelper.IsPlumpString(token)) { return null; }
+
             await Task.FromResult(1);
             throw new NotImplementedException();
         }

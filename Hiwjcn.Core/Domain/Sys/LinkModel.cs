@@ -7,14 +7,6 @@ namespace Model.Sys
     public class LinkModel : BaseEntity
     {
         /// <summary>
-        /// 链接id
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("link_id")]
-        public virtual int LinkID { get; set; }
-
-        /// <summary>
         /// 链接名称
         /// </summary>
         [Column("link_name")]
@@ -54,7 +46,7 @@ namespace Model.Sys
         /// 所有人
         /// </summary>
         [Column("link_owner")]
-        public virtual int UserID { get; set; }
+        public virtual string UserID { get; set; }
 
         /// <summary>
         /// 链接的类型，比如友情链接、轮播图、合作伙伴

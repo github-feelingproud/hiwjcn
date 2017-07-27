@@ -13,40 +13,5 @@ namespace Hiwjcn.Core.Infrastructure.Common
     public interface ILinkService : IServiceBase<LinkModel>
     {
 
-        /// <summary>
-        /// 根据ID获取连接
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        LinkModel GetLinkByID(int id);
-
-        /// <summary>
-        /// 读取链接
-        /// </summary>
-        /// <param name="link_type"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        List<LinkModel> GetTopLinks(string link_type, int count = 99999);
-
-        /// <summary>
-        /// 删除链接
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        string DeleteLink(int id);
-
-        /// <summary>
-        /// 添加链接
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        string AddLink(LinkModel model);
-
-        /// <summary>
-        /// 更新链接
-        /// </summary>
-        /// <param name="updatemodel"></param>
-        /// <returns></returns>
-        string UpdateLink(LinkModel updatemodel);
     }
 }

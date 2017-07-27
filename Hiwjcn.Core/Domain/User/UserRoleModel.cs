@@ -16,23 +16,15 @@ namespace WebLogic.Model.User
     public class UserRoleModel : BaseEntity
     {
         /// <summary>
-        /// 关联ID
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("user_role_id")]
-        public virtual int UserRoleID { get; set; }
-
-        /// <summary>
         /// 用户ID
         /// </summary>
         [Column("user_id")]
-        public virtual int UserID { get; set; }
+        public virtual string UserID { get; set; }
 
         /// <summary>
         /// 角色ID
         /// </summary>
         [Column("role_id")]
-        public virtual int RoleID { get; set; }
+        public virtual string RoleID { get; set; }
     }
 }

@@ -9,10 +9,12 @@ using Lib.helper;
 using Lib.core;
 using Lib.extension;
 using Lib.net;
+using Lib.data;
 using Lib.cache;
 using System.Threading.Tasks;
 using Hiwjcn.Core.Infrastructure.Auth;
 using Hiwjcn.Bll.Auth;
+using Hiwjcn.Core.Domain.Auth;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -24,17 +26,25 @@ namespace Hiwjcn.Web.Controllers
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly ICacheProvider _cache;
 
+        private readonly IRepository<AuthScope> _AuthScopeRepository;
+        private readonly IRepository<AuthClient> _AuthClientRepository;
+
         public AuthController(
             LoginStatus _LoginStatus,
             ICacheProvider _cache,
             IAuthTokenService _IAuthTokenService,
-            IAuthScopeService _IAuthScopeService)
+            IAuthScopeService _IAuthScopeService,
+            IRepository<AuthScope> _AuthScopeRepository,
+            IRepository<AuthClient> _AuthClientRepository)
         {
             this._LoginStatus = _LoginStatus;
             this._cache = _cache;
 
             this._IAuthTokenService = _IAuthTokenService;
             this._IAuthScopeService = _IAuthScopeService;
+
+            this._AuthScopeRepository = _AuthScopeRepository;
+            this._AuthClientRepository = _AuthClientRepository;
         }
 
         /// <summary>
@@ -167,6 +177,136 @@ namespace Hiwjcn.Web.Controllers
                 ViewData["pager"] = data.GetPagerHtml($"oauth/{nameof(MyClients)}", "page", page.Value, pagesize);
                 ViewData["list"] = data.DataList;
                 return View();
+            });
+        }
+
+        public async Task<ActionResult> InitScopes()
+        {
+            return await RunActionAsync(async () =>
+            {
+                if (!await this._AuthScopeRepository.ExistAsync(null))
+                {
+                    var now = DateTime.Now;
+                    var list = new List<AuthScope>()
+                    {
+                        new AuthScope()
+                        {
+                            UID=Com.GetUUID(),
+                            Name="order",
+                            DisplayName="订单",
+                            Description="订单",
+                            Important=(int)YesOrNoEnum.是,
+                            Sort=0,
+                            IsDefault=(int)YesOrNoEnum.是,
+                            ImageUrl="http://www.baidu.com/logo.png",
+                            FontIcon="",
+                            CreateTime=now,
+                            UpdateTime=now
+                        },
+                        new AuthScope()
+                        {
+                            UID=Com.GetUUID(),
+                            Name="product",
+                            DisplayName="商品",
+                            Description="商品",
+                            Important=(int)YesOrNoEnum.是,
+                            Sort=0,
+                            IsDefault=(int)YesOrNoEnum.是,
+                            ImageUrl="http://www.baidu.com/logo.png",
+                            FontIcon="",
+                            CreateTime=now,
+                            UpdateTime=now
+                        },
+                        new AuthScope()
+                        {
+                            UID=Com.GetUUID(),
+                            Name="user",
+                            DisplayName="个人信息",
+                            Description="个人信息",
+                            Important=(int)YesOrNoEnum.是,
+                            Sort=0,
+                            IsDefault=(int)YesOrNoEnum.是,
+                            ImageUrl="http://www.baidu.com/logo.png",
+                            FontIcon="",
+                            CreateTime=now,
+                            UpdateTime=now
+                        },
+                        new AuthScope()
+                        {
+                            UID=Com.GetUUID(),
+                            Name="auth",
+                            DisplayName="auth",
+                            Description="auth",
+                            Important=(int)YesOrNoEnum.是,
+                            Sort=0,
+                            IsDefault=(int)YesOrNoEnum.是,
+                            ImageUrl="http://www.baidu.com/logo.png",
+                            FontIcon="",
+                            CreateTime=now,
+                            UpdateTime=now
+                        },
+                        new AuthScope()
+                        {
+                            UID=Com.GetUUID(),
+                            Name="inquiry",
+                            DisplayName="询价单",
+                            Description="询价单",
+                            Important=(int)YesOrNoEnum.是,
+                            Sort=0,
+                            IsDefault=(int)YesOrNoEnum.是,
+                            ImageUrl="http://www.baidu.com/logo.png",
+                            FontIcon="",
+                            CreateTime=now,
+                            UpdateTime=now
+                        }
+                    };
+
+                    await this._AuthScopeRepository.AddAsync(list.ToArray());
+                }
+                return Content("ok");
+            });
+        }
+
+        public async Task<ActionResult> InitClients()
+        {
+            return await RunActionAsync(async () =>
+            {
+                if (!await this._AuthClientRepository.ExistAsync(null))
+                {
+                    var now = DateTime.Now;
+                    var list = new List<AuthClient>()
+                    {
+                        new AuthClient()
+                        {
+                            UID=Com.GetUUID(),
+                            ClientName="IOS",
+                            ClientUrl="http://www.baidu.com/",
+                            LogoUrl="http://www.baidu.com/",
+                            UserUID="http://www.baidu.com/",
+                            ClientSecretUID=Com.GetUUID(),
+                            IsRemove=(int)YesOrNoEnum.否,
+                            IsActive=(int)YesOrNoEnum.是,
+                            CreateTime=now,
+                            UpdateTime=now
+                        },
+                        new AuthClient()
+                        {
+                            UID=Com.GetUUID(),
+                            ClientName="Android",
+                            ClientUrl="http://www.baidu.com/",
+                            LogoUrl="http://www.baidu.com/",
+                            UserUID="http://www.baidu.com/",
+                            ClientSecretUID=Com.GetUUID(),
+                            IsRemove=(int)YesOrNoEnum.否,
+                            IsActive=(int)YesOrNoEnum.是,
+                            CreateTime=now,
+                            UpdateTime=now
+                        },
+                    };
+
+                    await this._AuthClientRepository.AddAsync(list.ToArray());
+                }
+                return Content("ok");
             });
         }
     }

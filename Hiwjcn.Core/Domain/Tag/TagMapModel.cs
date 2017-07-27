@@ -12,11 +12,6 @@ namespace WebLogic.Model.Tag
     [Table("sys_tag_map")]
     public class TagMapModel : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("map_id")]
-        public virtual int MapID { get; set; }
-
         [Column("map_key")]
         public virtual string MapKey { get; set; }
 
