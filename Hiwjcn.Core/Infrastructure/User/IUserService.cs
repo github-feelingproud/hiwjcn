@@ -22,7 +22,7 @@ namespace Hiwjcn.Core.Infrastructure.User
         /// <param name="pageSize"></param>
         /// <returns></returns>
         PagerData<UserModel> GetPagerList(
-            string name = null, string sex = null, string email = null, string keywords = null,
+            string name = null, int? sex = null, string email = null, string keywords = null,
             bool LoadRoleAndPrivilege = false,
             int page = 1, int pageSize = 20);
 

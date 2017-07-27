@@ -19,6 +19,7 @@ using Lib.mvc;
 using Lib.mvc.attr;
 using Lib.log;
 using Lib.storage;
+using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -29,7 +30,7 @@ namespace Hiwjcn.Web.Controllers
         public virtual string Key { get; set; }
     }
 
-    public class TestController : WebCore.MvcLib.Controller.UserBaseController
+    public class TestController : UserBaseController
     {
         private IEventPublisher _IEventPublisher { get; set; }
         public TestController(IEventPublisher pub)

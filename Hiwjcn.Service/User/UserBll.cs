@@ -60,7 +60,7 @@ namespace Bll.User
         /// <param name="pageSize"></param>
         /// <returns></returns>
         public PagerData<UserModel> GetPagerList(
-            string name = null, string sex = null, string email = null, string keywords = null,
+            string name = null, int? sex = null, string email = null, string keywords = null,
             bool LoadRoleAndPrivilege = false,
             int page = 1, int pageSize = 20)
         {
@@ -76,7 +76,7 @@ namespace Bll.User
                     data.UrlParams["name"] = name;
                 }
 
-                if (ValidateHelper.IsPlumpString(sex))
+                if (sex != null)
                 {
                     query = query.Where(x => x.Sex == sex);
                     data.UrlParams["sex"] = name;
@@ -157,12 +157,6 @@ namespace Bll.User
                 data = query.GroupBy(x => x.Sex)
                     .Select(x => new UserCountGroupBySex() { Sex = x.Key, Count = x.Count() })
                     .OrderBy(x => x.Sex).Skip(0).Take(4).ToList();
-
-                data.ForEach(x =>
-                {
-                    x.Sex = UserModel.ParseSex(x.Sex);
-                });
-
                 return true;
             });
             return data;

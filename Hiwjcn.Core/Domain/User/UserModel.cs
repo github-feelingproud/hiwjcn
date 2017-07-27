@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WebLogic.Model.User;
+using Lib.core;
 
 namespace Model.User
 {
@@ -83,11 +84,16 @@ namespace Model.User
         /// </summary>
         /// <param name="sex"></param>
         /// <returns></returns>
-        public static string ParseSex(string sex)
+        public static string ParseSex(int sex)
         {
-            if (sex == "1") { return "男"; }
-            if (sex == "0") { return "女"; }
-            return "未知";
+            try
+            {
+                return ((SexEnum)sex).ToString();
+            }
+            catch
+            {
+                return sex.ToString();
+            }
         }
 
         /// <summary>
@@ -95,7 +101,7 @@ namespace Model.User
         /// </summary>
         [Column("user_img")]
         public virtual string UserImg { get; set; }
-        
+
         /// <summary>
         /// 用户拥有的权限（大分类）
         /// </summary>
@@ -159,7 +165,15 @@ namespace Model.User
 
     public class UserCountGroupBySex
     {
-        public virtual string Sex { get; set; }
+        public virtual int Sex { get; set; }
+
+        public virtual string SexStr
+        {
+            get
+            {
+                return UserModel.ParseSex(this.Sex);
+            }
+        }
 
         public virtual int Count { get; set; }
 
