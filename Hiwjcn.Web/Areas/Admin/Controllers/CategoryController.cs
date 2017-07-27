@@ -57,7 +57,7 @@ namespace WebApp.Areas.Admin.Controllers
                         //没有错误节点，返回Ztree的json
                         var data = list.Select(x => new
                         {
-                            id = x.CategoryID,
+                            id = x.UID,
                             pId = x.CategoryParent,
                             name = x.OrderNum + "-" + x.CategoryName + "-" + x.CategoryDescription,
 
@@ -107,14 +107,12 @@ namespace WebApp.Areas.Admin.Controllers
         /// 编辑节点
         /// </summary>
         /// <returns></returns>
-        public ActionResult EditNode(int? node_id)
+        public ActionResult EditNode(string node_id)
         {
             return RunActionWhenLogin((loginuser) =>
             {
-                node_id = node_id ?? 0;
-                if (node_id <= 0) { return Content("节点不存在"); }
                 var bll = new CategoryBll();
-                var model = bll.GetCategoryByID(node_id.Value);
+                var model = bll.GetCategoryByID(node_id);
                 if (model == null) { return Content("节点不存在"); }
                 ViewData["model"] = model;
                 return View();
@@ -139,7 +137,7 @@ namespace WebApp.Areas.Admin.Controllers
                 var errlist = bll.AnalysisTreeStructureAndGetErrorNodesList(list);
                 if (ValidateHelper.IsPlumpList(errlist))
                 {
-                    string res = bll.DeleteSingleNodeByIDS(errlist.Select(x => x.CategoryID).ToArray());
+                    string res = bll.DeleteSingleNodeByIDS(errlist.Select(x => x.UID).ToArray());
                     return GetJsonRes(res);
                 }
                 else
@@ -154,17 +152,12 @@ namespace WebApp.Areas.Admin.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteNode(int? id)
+        public ActionResult DeleteNode(string id)
         {
             return RunActionWhenLogin((loginuser) =>
             {
-                id = id ?? 0;
-                if (id <= 0)
-                {
-                    return GetJsonRes("ID格式错误");
-                }
                 var bll = new CategoryBll();
-                var res = bll.DeleteNodesAndChildren(id.Value);
+                var res = bll.DeleteNodesAndChildren(id);
                 return GetJsonRes(res);
             });
         }
@@ -174,12 +167,12 @@ namespace WebApp.Areas.Admin.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddChildLevel(int? id, string name, string desc, string link, string img, string icon, string target, int? order, string type)
+        public ActionResult AddChildLevel(string id, string name, string desc, string link, string img, string icon, string target, int? order, string type)
         {
             return RunActionWhenLogin((loginuser) =>
             {
                 var model = new CategoryModel();
-                model.CategoryID = id ?? 0;
+                model.UID = id;
                 model.CategoryName = name;
                 model.CategoryDescription = desc;
                 model.LinkURL = link;
@@ -190,13 +183,13 @@ namespace WebApp.Areas.Admin.Controllers
                 model.CategoryType = type;
 
                 var bll = new CategoryBll();
-                var parentModel = bll.GetCategoryByID(model.CategoryID);
+                var parentModel = bll.GetCategoryByID(model.UID);
                 if (parentModel == null)
                 {
                     return GetJsonRes("父级节点不存在");
                 }
                 model.CategoryLevel = parentModel.CategoryLevel + 1;
-                model.CategoryParent = parentModel.CategoryID;
+                model.CategoryParent = parentModel.UID;
                 var res = bll.AddNode(model);
                 return GetJsonRes(res);
             });
@@ -207,12 +200,12 @@ namespace WebApp.Areas.Admin.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddSameLevel(int? id, string name, string desc, string link, string img, string icon, string target, int? order, string type)
+        public ActionResult AddSameLevel(string id, string name, string desc, string link, string img, string icon, string target, int? order, string type)
         {
             return RunActionWhenLogin((loginuser) =>
             {
                 var model = new CategoryModel();
-                model.CategoryID = id ?? 0;
+                model.UID = id;
                 model.CategoryName = name;
                 model.CategoryDescription = desc;
                 model.LinkURL = link;
@@ -223,7 +216,7 @@ namespace WebApp.Areas.Admin.Controllers
                 model.CategoryType = type;
 
                 var bll = new CategoryBll();
-                var currentModel = bll.GetCategoryByID(model.CategoryID);
+                var currentModel = bll.GetCategoryByID(model.UID);
                 if (currentModel == null)
                 {
                     return GetJsonRes("节点不存在");
@@ -240,12 +233,12 @@ namespace WebApp.Areas.Admin.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult UpdateNode(int? id, string name, string desc, string link, string img, string icon, string target, int? order, string type)
+        public ActionResult UpdateNode(string id, string name, string desc, string link, string img, string icon, string target, int? order, string type)
         {
             return RunActionWhenLogin((loginuser) =>
             {
                 var model = new CategoryModel();
-                model.CategoryID = id ?? 0;
+                model.UID = id;
                 model.CategoryName = name;
                 model.CategoryDescription = desc;
                 model.LinkURL = link;

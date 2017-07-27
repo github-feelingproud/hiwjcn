@@ -63,6 +63,8 @@ namespace Lib.mvc.auth.validation
             {
                 token = token
             });
+
+            throw new NotImplementedException();
         }
 
         public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)

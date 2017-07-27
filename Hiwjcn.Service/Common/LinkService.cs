@@ -52,11 +52,7 @@ namespace Bll.Sys
         /// <returns></returns>
         public LinkModel GetLinkByID(string id)
         {
-            string key = Com.GetCacheKey("linkbll.GetLinksByIDS", id.ToString());
-            return Cache(key, () =>
-            {
-                return _LinkDal.GetFirst(x => x.UID == id);
-            });
+            return _LinkDal.GetFirst(x => x.UID == id);
         }
 
         /// <summary>
@@ -71,15 +67,12 @@ namespace Bll.Sys
             {
                 return null;
             }
-            string key = GetCacheKey("linkbll.gettoplinks", link_type, count.ToString());
-            return Cache(key, () =>
-            {
-                var list = _LinkDal.QueryList(
-                    where: x => x.LinkType == link_type,
-                    orderby: x => x.OrderNum, Desc: true,
-                    start: 0, count: count);
-                return list;
-            });
+
+            var list = _LinkDal.QueryList(
+                where: x => x.LinkType == link_type,
+                orderby: x => x.OrderNum, Desc: true,
+                start: 0, count: count);
+            return list;
         }
 
         /// <summary>

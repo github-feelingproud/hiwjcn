@@ -54,20 +54,16 @@ namespace Bll.Category
         /// <returns></returns>
         public List<string> GetTop(int count = 1000)
         {
-            var key = GetCacheKey($"{nameof(CategoryBll)},{nameof(GetTop)}:{count}");
-            return Cache(key, () =>
+            List<string> list = null;
+
+            _CategoryDal.PrepareIQueryable((query) =>
             {
-                List<string> list = null;
-
-                _CategoryDal.PrepareIQueryable((query) =>
-                {
-                    list = query.Where(x => x.CategoryType != null && x.CategoryType != string.Empty)
-                        .Select(x => x.CategoryType).Distinct().Take(count).ToList();
-                    return true;
-                });
-
-                return list;
+                list = query.Where(x => x.CategoryType != null && x.CategoryType != string.Empty)
+                    .Select(x => x.CategoryType).Distinct().Take(count).ToList();
+                return true;
             });
+
+            return list;
         }
 
         /// <summary>

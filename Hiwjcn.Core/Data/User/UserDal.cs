@@ -44,7 +44,7 @@ namespace Dal.User
         /// </summary>
         /// <param name="uid"></param>
         /// <returns></returns>
-        public byte[] ReadUserImage(int uid)
+        public byte[] ReadUserImage(string uid)
         {
             byte[] b = null;
             DBHelper.PrepareConnection(con =>

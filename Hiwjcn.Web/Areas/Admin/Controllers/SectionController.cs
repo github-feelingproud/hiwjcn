@@ -76,7 +76,7 @@ namespace WebApp.Areas.Admin.Controllers
                 id = id ?? 0;
 
                 var model = new SectionModel();
-                model.SectionID = id.Value;
+                model.IID = id.Value;
                 model.SectionName = section_name;
                 model.SectionTitle = section_title;
                 model.SectionDescription = section_description;
@@ -87,7 +87,7 @@ namespace WebApp.Areas.Admin.Controllers
 
                 var res = string.Empty;
 
-                if (model.SectionID > 0)
+                if (model.IID > 0)
                 {
                     //update
                     res = _IPageService.UpdateSection(model);

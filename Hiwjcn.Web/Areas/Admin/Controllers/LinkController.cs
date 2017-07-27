@@ -44,7 +44,7 @@ namespace WebApp.Areas.Admin.Controllers
                 order = order ?? -1;
 
                 var model = new LinkModel();
-                model.LinkID = id.Value;
+                model.IID = id.Value;
                 model.Name = name;
                 model.Url = link;
                 model.Title = title;
@@ -67,7 +67,7 @@ namespace WebApp.Areas.Admin.Controllers
                 else
                 {
                     //add
-                    model.UserID = loginuser.IID;
+                    model.UserID = loginuser.UserID;
                     res = _ILinkService.AddLink(model);
                 }
 
@@ -81,12 +81,11 @@ namespace WebApp.Areas.Admin.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteLinkAction(int? id)
+        public ActionResult DeleteLinkAction(string id)
         {
             return RunActionWhenLogin((loginuser) =>
             {
-                id = id ?? 0;
-                var res = _ILinkService.DeleteLink(id.Value);
+                var res = _ILinkService.DeleteLink(id);
                 return GetJsonRes(res);
             });
         }
@@ -141,16 +140,15 @@ namespace WebApp.Areas.Admin.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult LinkEdit(int? id, string link_type)
+        public ActionResult LinkEdit(string id, string link_type)
         {
             return RunActionWhenLogin((loginuser) =>
             {
                 var model = new LinkEditViewModel();
 
-                id = id ?? 0;
-                if (id > 0)
+                if (ValidateHelper.IsPlumpString(id))
                 {
-                    var link = _ILinkService.GetLinkByID(id.Value);
+                    var link = _ILinkService.GetLinkByID(id);
                     if (link != null)
                     {
                         link_type = link.LinkType;

@@ -56,8 +56,7 @@ namespace Bll.Sys
         /// <returns></returns>
         public List<OptionModel> GetAllOptions()
         {
-            string cacheid = "OptionBll.GetAllOptions";
-            return Cache(cacheid, () => _OptionDal.GetList(null));
+            return _OptionDal.GetList(null);
         }
     }
 }

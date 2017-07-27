@@ -64,7 +64,7 @@ public class UploadHandler : Handler
             string file_url = string.Empty;
             string file_name = string.Empty;
             var upfileservice = s.Resolve_<IUpFileService>();
-            var res = upfileservice.UploadFileAfterCheckRepeat(new FileInfo(model.FilePath), loginuser.IID, ref file_url, ref file_name);
+            var res = upfileservice.UploadFileAfterCheckRepeat(new FileInfo(model.FilePath), loginuser.UserID, ref file_url, ref file_name);
             if (ValidateHelper.IsPlumpString(res))
             {
                 Result.State = res;

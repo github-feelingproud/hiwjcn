@@ -132,31 +132,26 @@ namespace Hiwjcn.Bll.Sys
         /// <returns></returns>
         public int GetCommentCount(string userid, DateTime? start, DateTime? end)
         {
-            string key = Com.GetCacheKey("commentbll.getcommentcount",
-                userid.ToString(), ConvertHelper.GetString(start), ConvertHelper.GetString(end));
-            return Cache(key, () =>
+            var _commentDal = new CommentDal();
+            var count = 0;
+            _commentDal.PrepareIQueryable((query) =>
             {
-                var _commentDal = new CommentDal();
-                var count = 0;
-                _commentDal.PrepareIQueryable((query) =>
+                if (ValidateHelper.IsPlumpString(userid))
                 {
-                    if (ValidateHelper.IsPlumpString(userid))
-                    {
-                        query = query.Where(x => x.UserID == userid);
-                    }
-                    if (start != null)
-                    {
-                        query = query.Where(x => x.UpdateTime >= start.Value);
-                    }
-                    if (end != null)
-                    {
-                        query = query.Where(x => x.UpdateTime < end.Value);
-                    }
-                    count = query.Count();
-                    return true;
-                });
-                return count;
+                    query = query.Where(x => x.UserID == userid);
+                }
+                if (start != null)
+                {
+                    query = query.Where(x => x.UpdateTime >= start.Value);
+                }
+                if (end != null)
+                {
+                    query = query.Where(x => x.UpdateTime < end.Value);
+                }
+                count = query.Count();
+                return true;
             });
+            return count;
         }
 
     }

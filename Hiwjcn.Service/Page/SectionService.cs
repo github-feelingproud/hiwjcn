@@ -76,34 +76,28 @@ namespace WebLogic.Bll.Page
         /// <returns></returns>
         public List<SectionModel> GetSections(string[] names = null, string section_type = null, string rel_group = null, int maxcount = 100)
         {
-            if (names == null) { names = new string[] { }; }
-            string key = GetCacheKey($"{nameof(PageService)}.{nameof(GetSections)}",
-                string.Join("|", names), section_type, rel_group, maxcount.ToString());
-            return Cache(key, () =>
+            List<SectionModel> data = null;
+
+            _SectionDal.PrepareIQueryable((query) =>
             {
-                List<SectionModel> data = null;
-
-                _SectionDal.PrepareIQueryable((query) =>
+                if (ValidateHelper.IsPlumpList(names))
                 {
-                    if (ValidateHelper.IsPlumpList(names))
-                    {
-                        query = query.Where(x => names.Contains(x.SectionName));
-                    }
-                    if (ValidateHelper.IsPlumpString(section_type))
-                    {
-                        query = query.Where(x => x.SectionType == section_type);
-                    }
-                    if (ValidateHelper.IsPlumpString(rel_group))
-                    {
-                        query = query.Where(x => x.RelGroup == rel_group);
-                    }
-                    query = query.OrderByDescending(x => x.UpdateTime).Skip(0).Take(maxcount);
-                    data = query.ToList();
-                    return true;
-                });
-
-                return data;
+                    query = query.Where(x => names.Contains(x.SectionName));
+                }
+                if (ValidateHelper.IsPlumpString(section_type))
+                {
+                    query = query.Where(x => x.SectionType == section_type);
+                }
+                if (ValidateHelper.IsPlumpString(rel_group))
+                {
+                    query = query.Where(x => x.RelGroup == rel_group);
+                }
+                query = query.OrderByDescending(x => x.UpdateTime).Skip(0).Take(maxcount);
+                data = query.ToList();
+                return true;
             });
+
+            return data;
         }
 
         /// <summary>
@@ -180,28 +174,23 @@ namespace WebLogic.Bll.Page
             string q = null, string sectionType = null,
             int page = 1, int pagesize = 10)
         {
-            string key = GetCacheKey($"{nameof(PageService)}.{nameof(GetSectionList)}", q, sectionType, page.ToString(), pagesize.ToString());
-
-            return Cache(key, () =>
+            var data = new PagerData<SectionModel>();
+            //列表
+            _SectionDal.PrepareIQueryable((query) =>
             {
-                var data = new PagerData<SectionModel>();
-                //列表
-                _SectionDal.PrepareIQueryable((query) =>
+                if (ValidateHelper.IsPlumpString(q))
                 {
-                    if (ValidateHelper.IsPlumpString(q))
-                    {
-                        query = query.Where(x => x.SectionTitle.Contains(q) || x.SectionDescription.Contains(q));
-                    }
-                    if (ValidateHelper.IsPlumpString(sectionType))
-                    {
-                        query = query.Where(x => x.SectionType == sectionType);
-                    }
-                    data.ItemCount = query.Count();
-                    data.DataList = query.OrderByDescending(x => x.UpdateTime).QueryPage(page, pagesize).ToList();
-                    return true;
-                });
-                return data;
+                    query = query.Where(x => x.SectionTitle.Contains(q) || x.SectionDescription.Contains(q));
+                }
+                if (ValidateHelper.IsPlumpString(sectionType))
+                {
+                    query = query.Where(x => x.SectionType == sectionType);
+                }
+                data.ItemCount = query.Count();
+                data.DataList = query.OrderByDescending(x => x.UpdateTime).QueryPage(page, pagesize).ToList();
+                return true;
             });
+            return data;
         }
 
     }

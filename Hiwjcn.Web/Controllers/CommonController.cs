@@ -69,7 +69,7 @@ namespace Hiwjcn.Web.Controllers
 
                 var file_url = string.Empty;
                 var file_name = string.Empty;
-                var qiniumsg = _IUpFileService.UploadFileAfterCheckRepeat(new FileInfo(model.FilePath), this.X.LoginUser.IID, ref file_url, ref file_name);
+                var qiniumsg = _IUpFileService.UploadFileAfterCheckRepeat(new FileInfo(model.FilePath), this.X.LoginUser.UserID, ref file_url, ref file_name);
 
                 if (ValidateHelper.IsPlumpString(qiniumsg)) { return GetJsonRes(qiniumsg); }
 

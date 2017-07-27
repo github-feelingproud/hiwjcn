@@ -118,7 +118,7 @@ namespace Bll.User
         /// </summary>
         /// <param name="userID"></param>
         /// <returns></returns>
-        public byte[] GetUserImage(int userID)
+        public byte[] GetUserImage(string userID)
         {
             var b = _UserDal.ReadUserImage(userID);
             //最好在这里压缩一下
@@ -130,9 +130,9 @@ namespace Bll.User
         /// </summary>
         /// <param name="userID"></param>
         /// <returns></returns>
-        public UserModel GetByID(int userID)
+        public UserModel GetByID(string userID)
         {
-            return this._UserDal.GetFirst(x => x.IID == userID);
+            return this._UserDal.GetFirst(x => x.UID == userID);
         }
 
         /// <summary>
@@ -151,25 +151,21 @@ namespace Bll.User
         /// <returns></returns>
         public List<UserCountGroupBySex> GetCountGroupBySex()
         {
-            string key = "userbll.GetCountGroupBySex";
-            return Cache(key, () =>
+            List<UserCountGroupBySex> data = null;
+            _UserDal.PrepareIQueryable((query) =>
             {
-                List<UserCountGroupBySex> data = null;
-                _UserDal.PrepareIQueryable((query) =>
+                data = query.GroupBy(x => x.Sex)
+                    .Select(x => new UserCountGroupBySex() { Sex = x.Key, Count = x.Count() })
+                    .OrderBy(x => x.Sex).Skip(0).Take(4).ToList();
+
+                data.ForEach(x =>
                 {
-                    data = query.GroupBy(x => x.Sex)
-                        .Select(x => new UserCountGroupBySex() { Sex = x.Key, Count = x.Count() })
-                        .OrderBy(x => x.Sex).Skip(0).Take(4).ToList();
-
-                    data.ForEach(x =>
-                    {
-                        x.Sex = UserModel.ParseSex(x.Sex);
-                    });
-
-                    return true;
+                    x.Sex = UserModel.ParseSex(x.Sex);
                 });
-                return data;
+
+                return true;
             });
+            return data;
         }
 
         /// <summary>
@@ -523,7 +519,6 @@ namespace Bll.User
         /// <returns></returns>
         private UserModel LoadAllPermissionForUser(UserModel model)
         {
-            if (model == null || model.IID <= 0) { throw new Exception("用户对象为空，无法为其获取权限"); }
             model.RoleList = new List<string>();
             model.PermissionList = new List<string>();
 
@@ -554,29 +549,25 @@ namespace Bll.User
         /// <returns></returns>
         public List<string> FetchPermission(LoginUserInfo loginuser)
         {
-            var list = Cache($"user_permissions_in_cache:{loginuser.UserID}", () =>
+            var RoleList = new List<string>();
+            var PermissionList = new List<string>();
+            _UserDal.PrepareSession(db =>
             {
-                var RoleList = new List<string>();
-                var PermissionList = new List<string>();
-                _UserDal.PrepareSession(db =>
+                var maprole = db.Set<UserRoleModel>().Where(x => x.UserID == loginuser.UserID).Select(x => x.RoleID);
+                var deftrole = db.Set<RoleModel>().Where(x => x.AutoAssignRole > 0).Select(x => x.UID);
+
+                var rolepermissionlist = db.Set<RolePermissionModel>()
+                .Where(x => maprole.Contains(x.RoleID) || deftrole.Contains(x.RoleID))
+                .Select(x => new { role = x.RoleID, permission = x.PermissionID }).ToList();
+
+                if (ValidateHelper.IsPlumpList(rolepermissionlist))
                 {
-                    var maprole = db.Set<UserRoleModel>().Where(x => x.UserID == loginuser.UserID).Select(x => x.RoleID);
-                    var deftrole = db.Set<RoleModel>().Where(x => x.AutoAssignRole > 0).Select(x => x.UID);
-
-                    var rolepermissionlist = db.Set<RolePermissionModel>()
-                    .Where(x => maprole.Contains(x.RoleID) || deftrole.Contains(x.RoleID))
-                    .Select(x => new { role = x.RoleID, permission = x.PermissionID }).ToList();
-
-                    if (ValidateHelper.IsPlumpList(rolepermissionlist))
-                    {
-                        RoleList.AddRange(rolepermissionlist.Select(x => x.role).Distinct());
-                        PermissionList.AddRange(rolepermissionlist.Select(x => x.permission).Distinct());
-                    }
-                    return true;
-                });
-                return PermissionList;
+                    RoleList.AddRange(rolepermissionlist.Select(x => x.role).Distinct());
+                    PermissionList.AddRange(rolepermissionlist.Select(x => x.permission).Distinct());
+                }
+                return true;
             });
-            return ConvertHelper.NotNullList(list);
+            return PermissionList;
         }
     }
 }

@@ -46,7 +46,7 @@ public class ListFileManager : Handler
             try
             {
                 var upfileservice = x.Resolve_<IUpFileService>();
-                upfileservice.FindFiles(loginuser.IID, Start, Size, ref FileList, ref Total);
+                upfileservice.FindFiles(loginuser.UserID, Start, Size, ref FileList, ref Total);
                 State = "SUCCESS";
             }
             catch (Exception e)
