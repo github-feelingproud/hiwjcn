@@ -72,7 +72,7 @@ namespace Hiwjcn.Bll.Auth
             });
         }
 
-        public virtual async Task<(AuthCode code, string msg)> CreateCode(
+        public virtual async Task<(AuthCode code, string msg)> CreateCodeAsync(
             string client_uid, List<string> scopes, string user_uid)
         {
             if (!ValidateHelper.IsPlumpList(scopes)) { return (null, "scopes为空"); }
@@ -122,7 +122,7 @@ namespace Hiwjcn.Bll.Auth
             });
         }
 
-        public virtual async Task<(AuthToken token, string msg)> CreateToken(
+        public virtual async Task<(AuthToken token, string msg)> CreateTokenAsync(
             string client_id, string client_secret, string code_uid)
         {
             try
@@ -161,7 +161,7 @@ namespace Hiwjcn.Bll.Auth
                     CreateTime = now,
                     ExpiryTime = now.AddDays(TokenExpireDays),
                     RefreshToken = Com.GetUUID(),
-                    ScopeUIDJson = scopes.Select(x => x.UID).ToJson()
+                    ScopesInfoJson = scopes.Select(x => new { uid = x.UID, name = x.Name }).ToJson()
                 };
                 if (!token.IsValid(out var msg))
                 {
@@ -196,7 +196,7 @@ namespace Hiwjcn.Bll.Auth
             }
         }
 
-        public async Task<string> DeleteClient(string client_uid, string user_uid)
+        public async Task<string> DeleteClientAsync(string client_uid, string user_uid)
         {
             var msg = SUCCESS;
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
@@ -239,7 +239,7 @@ namespace Hiwjcn.Bll.Auth
             return success;
         }
 
-        public async Task<AuthToken> FindToken(string token_uid)
+        public async Task<AuthToken> FindTokenAsync(string token_uid)
         {
             var token = default(AuthToken);
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
@@ -275,7 +275,7 @@ namespace Hiwjcn.Bll.Auth
         /// <param name="page"></param>
         /// <param name="pagesize"></param>
         /// <returns></returns>
-        public async Task<PagerData<AuthClient>> GetMyAuthorizedClients(string user_id, string q, int page, int pagesize)
+        public async Task<PagerData<AuthClient>> GetMyAuthorizedClientsAsync(string user_id, string q, int page, int pagesize)
         {
             var data = new PagerData<AuthClient>();
 

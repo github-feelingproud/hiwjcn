@@ -6,6 +6,8 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using Hiwjcn.Core.Domain.Auth;
+using Lib.mvc;
+using Lib.helper;
 
 namespace Hiwjcn.Web.wcf
 {
@@ -14,7 +16,16 @@ namespace Hiwjcn.Web.wcf
     public interface IAuthApi
     {
         [OperationContract]
-        Task<AuthTokenWcf> CreateToken();
+        Task<ResultMsg<AuthCodeWcf>> CreateCode(string client_uid, List<string> scopes, string user_uid);
+
+        [OperationContract]
+        Task<ResultMsg<AuthTokenWcf>> CreateToken(string client_uid, string client_secret, string code_uid);
+
+        [OperationContract]
+        Task<ResultMsg<AuthTokenWcf>> FindToken(string token_uid);
+
+        [OperationContract]
+        Task<PagerData<AuthClientWcf>> GetMyAuthorizedClients(string user_id, string q, int page, int pagesize);
     }
 
     [Serializable]
@@ -33,13 +44,17 @@ namespace Hiwjcn.Web.wcf
         [DataMember]
         public List<string> Scopes { get; set; }
 
+        [DataMember]
+        public string UserUID { get; set; }
+
         public static implicit operator AuthTokenWcf(AuthToken token) =>
             new AuthTokenWcf()
             {
                 Token = token.UID,
                 RefreshToken = token.RefreshToken,
                 Expire = token.ExpiryTime,
-                Scopes = token.Scopes?.Select(x => x.Name).ToList()
+                Scopes = token.Scopes?.Select(x => x.Name).ToList(),
+                UserUID = token.UserUID
             };
     }
 
@@ -57,5 +72,47 @@ namespace Hiwjcn.Web.wcf
             };
     }
 
+    [Serializable]
+    [DataContract]
+    public class AuthClientWcf
+    {
+        [DataMember]
+        public virtual int IID { get; set; }
+        [DataMember]
+        public virtual string UID { get; set; }
+        [DataMember]
+        public virtual string ClientName { get; set; }
+        [DataMember]
+        public virtual string Description { get; set; }
+        [DataMember]
+        public virtual string ClientUrl { get; set; }
+        [DataMember]
+        public virtual string LogoUrl { get; set; }
+        [DataMember]
+        public virtual string UserUID { get; set; }
+        [DataMember]
+        public virtual string ClientSecretUID { get; set; }
+        [DataMember]
+        public virtual int IsRemove { get; set; }
+        [DataMember]
+        public virtual DateTime CreateTime { get; set; }
+        [DataMember]
+        public virtual DateTime? UpdateTime { get; set; }
 
+        public static implicit operator AuthClientWcf(AuthClient client) =>
+            new AuthClientWcf()
+            {
+                IID = client.IID,
+                UID = client.UID,
+                ClientName = client.ClientName,
+                Description = client.Description,
+                ClientUrl = client.ClientUrl,
+                LogoUrl = client.LogoUrl,
+                UserUID = client.UserUID,
+                ClientSecretUID = client.ClientSecretUID,
+                IsRemove = client.IsRemove,
+                CreateTime = client.CreateTime,
+                UpdateTime = client.UpdateTime
+            };
+    }
 }

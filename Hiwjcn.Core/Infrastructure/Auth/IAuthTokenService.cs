@@ -11,14 +11,14 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 {
     public interface IAuthTokenService : IServiceBase<AuthToken>
     {
-        Task<(AuthCode code, string msg)> CreateCode(string client_uid, List<string> scopes, string user_uid);
+        Task<(AuthCode code, string msg)> CreateCodeAsync(string client_uid, List<string> scopes, string user_uid);
 
-        Task<(AuthToken token, string msg)> CreateToken(string client_id, string client_secret, string code_uid);
+        Task<(AuthToken token, string msg)> CreateTokenAsync(string client_id, string client_secret, string code_uid);
 
-        Task<AuthToken> FindToken(string token_uid);
+        Task<AuthToken> FindTokenAsync(string token_uid);
 
-        Task<string> DeleteClient(string client_uid, string user_uid);
+        Task<string> DeleteClientAsync(string client_uid, string user_uid);
 
-        Task<PagerData<AuthClient>> GetMyAuthorizedClients(string user_id, string q, int page, int pagesize);
+        Task<PagerData<AuthClient>> GetMyAuthorizedClientsAsync(string user_id, string q, int page, int pagesize);
     }
 }

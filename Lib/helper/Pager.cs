@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using Lib.extension;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace Lib.helper
 {
@@ -12,11 +13,15 @@ namespace Lib.helper
     /// 分页用的数据模型，请不要返回空对象
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [Serializable]
+    [DataContract]
     public class PagerData<T> : PagerData<T, object> { }
 
     /// <summary>
     /// 分页用的数据模型，请不要返回空对象
     /// </summary>
+    [Serializable]
+    [DataContract]
     public class PagerData<T, EXT>
     {
         public readonly Dictionary<string, string> UrlParams = new Dictionary<string, string>();
@@ -24,11 +29,13 @@ namespace Lib.helper
         /// <summary>
         /// 数据库记录总数
         /// </summary>
+        [DataMember]
         public int ItemCount { get; set; }
 
         /// <summary>
         /// 总页数，通过itemcount和pagesize计算出
         /// </summary>
+        [DataMember]
         public int PageCount
         {
             get
@@ -41,26 +48,31 @@ namespace Lib.helper
         /// <summary>
         /// 每页显示数量
         /// </summary>
+        [DataMember]
         public int PageSize { get; set; }
 
         /// <summary>
         /// 当前页码
         /// </summary>
+        [DataMember]
         public int Page { get; set; }
 
         /// <summary>
         /// 查出来的数据列表
         /// </summary>
+        [DataMember]
         public List<T> DataList { get; set; }
 
         /// <summary>
         /// 额外数据
         /// </summary>
+        [DataMember]
         public EXT ExtData { get; set; }
 
         /// <summary>
         /// 是否成功
         /// </summary>
+        [DataMember]
         public bool Success { get; set; } = true;
 
         /// <summary>

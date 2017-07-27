@@ -22,44 +22,37 @@ namespace Lib.mvc.attr
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            try
+            var sessionID = filterContext.HttpContext.Session.SessionID;
+            var key = $"{nameof(AntiReSubmitAttribute)}:{sessionID}";
+
+            var reqparams = filterContext.HttpContext.Request.Form.ToDict();
+            reqparams = reqparams.AddDict(filterContext.HttpContext.Request.QueryString.ToDict());
+
+            var dict = new SortedDictionary<string, string>(reqparams, new MyStringComparer());
+            var submitData = dict.ToUrlParam();
+            var (AreaName, ControllerName, ActionName) = filterContext.RouteData.GetA_C_A();
+            submitData = $"{AreaName}/{ControllerName}/{ActionName}/:{submitData}";
+            //读取缓存
+            AppContext.Scope(s =>
             {
-                var sessionID = filterContext.HttpContext.Session.SessionID;
-                var key = $"{nameof(AntiReSubmitAttribute)}:{sessionID}";
-
-                var reqparams = filterContext.HttpContext.Request.Form.ToDict();
-                reqparams = reqparams.AddDict(filterContext.HttpContext.Request.QueryString.ToDict());
-
-                var dict = new SortedDictionary<string, string>(reqparams, new MyStringComparer());
-                var submitData = dict.ToUrlParam();
-                var (AreaName, ControllerName, ActionName) = filterContext.RouteData.GetA_C_A();
-                submitData = $"{AreaName}/{ControllerName}/{ActionName}/:{submitData}";
-                //读取缓存
-                AppContext.Scope(s =>
+                using (var cache = s.Resolve_<ICacheProvider>())
                 {
-                    using (var cache = s.Resolve_<ICacheProvider>())
+                    var data = cache.Get<string>(key);
+                    if (data.Success)
                     {
-                        var data = cache.Get<string>(key);
-                        if (data.Success)
+                        if (data.Result == submitData)
                         {
-                            if (data.Result == submitData)
-                            {
-                                filterContext.Result = ResultHelper.BadRequest(this.ErrorMessage);
-                                return true;
-                            }
+                            filterContext.Result = ResultHelper.BadRequest(this.ErrorMessage);
+                            return true;
                         }
-                        //10秒钟不能提交相同的数据
-                        CacheSeconds = Math.Abs(CacheSeconds);
-                        if (CacheSeconds == 0) { throw new Exception("缓存时间不能为0"); }
-                        cache.Set(key, submitData, TimeSpan.FromSeconds(CacheSeconds));
                     }
-                    return true;
-                });
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog("防止重复提交组件发生错误");
-            }
+                    //10秒钟不能提交相同的数据
+                    CacheSeconds = Math.Abs(CacheSeconds);
+                    if (CacheSeconds == 0) { throw new Exception("缓存时间不能为0"); }
+                    cache.Set(key, submitData, TimeSpan.FromSeconds(CacheSeconds));
+                }
+                return true;
+            });
             base.OnActionExecuting(filterContext);
         }
     }

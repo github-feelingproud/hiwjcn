@@ -159,6 +159,12 @@ namespace Lib.ioc
         }
 
         /// <summary>
+        /// 创建一个作用域
+        /// </summary>
+        /// <returns></returns>
+        public static ILifetimeScope Scope() => Container.BeginLifetimeScope();
+
+        /// <summary>
         /// 生命周期
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -166,7 +172,7 @@ namespace Lib.ioc
         /// <returns></returns>
         public static T Scope<T>(Func<ILifetimeScope, T> func)
         {
-            using (var scope = Container.BeginLifetimeScope())
+            using (var scope = Scope())
             {
                 return func.Invoke(scope);
             }
@@ -180,7 +186,7 @@ namespace Lib.ioc
         /// <returns></returns>
         public static async Task<T> ScopeAsync<T>(Func<ILifetimeScope, Task<T>> func)
         {
-            using (var scope = Container.BeginLifetimeScope())
+            using (var scope = Scope())
             {
                 return await func.Invoke(scope);
             }

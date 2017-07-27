@@ -155,7 +155,7 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual string UserUID { get; set; }
 
         [DataType(DataType.Text)]
-        public virtual string ScopeUIDJson { get; set; }
+        public virtual string ScopesInfoJson { get; set; }
 
         public virtual DateTime ExpiryTime { get; set; }
 

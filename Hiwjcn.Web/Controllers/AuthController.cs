@@ -72,7 +72,7 @@ namespace Hiwjcn.Web.Controllers
                     return GetJsonRes("未登录");
                 }
 
-                var data = await this._IAuthTokenService.CreateCode(client_id, scope, loginuser.UserID);
+                var data = await this._IAuthTokenService.CreateCodeAsync(client_id, scope, loginuser.UserID);
 
                 return GetJson(new _() { success = !ValidateHelper.IsPlumpString(data.msg), data = data.code?.UID, msg = data.msg });
             });
@@ -163,7 +163,7 @@ namespace Hiwjcn.Web.Controllers
                 page = CheckPage(page);
                 var pagesize = 100;
 
-                var data = await this._IAuthTokenService.GetMyAuthorizedClients(this.X.User?.UserID, q, page.Value, pagesize);
+                var data = await this._IAuthTokenService.GetMyAuthorizedClientsAsync(this.X.User?.UserID, q, page.Value, pagesize);
                 ViewData["pager"] = data.GetPagerHtml($"oauth/{nameof(MyClients)}", "page", page.Value, pagesize);
                 ViewData["list"] = data.DataList;
                 return View();
