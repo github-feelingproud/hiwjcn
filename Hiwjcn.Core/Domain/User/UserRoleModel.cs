@@ -12,7 +12,7 @@ namespace WebLogic.Model.User
     /// <summary>
     /// 用户角色关联
     /// </summary>
-    [Table("wp_user_role")]
+    [Table("account_user_role")]
     public class UserRoleModel : BaseEntity
     {
         /// <summary>

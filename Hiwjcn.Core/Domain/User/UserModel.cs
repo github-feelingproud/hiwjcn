@@ -9,7 +9,7 @@ using WebLogic.Model.User;
 
 namespace Model.User
 {
-    [Table("user_avatar")]
+    [Table("account_user_avatar")]
     public class UserAvatar : IDBTable
     {
         [Key]
@@ -36,7 +36,7 @@ namespace Model.User
     /// <summary>
     ///用户的账户模型
     /// </summary>
-    [Table("wp_users")]
+    [Table("account_user")]
     public class UserModel : BaseEntity//, UserModelBase
     {
 

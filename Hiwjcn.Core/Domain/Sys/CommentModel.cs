@@ -13,7 +13,7 @@ namespace Hiwjcn.Core.Model.Sys
     /// <summary>
     /// 评论系统
     /// </summary>
-    [Table("wp_comment")]
+    [Table("sys_comment")]
     public class CommentModel : BaseEntity
     {
         /// <summary>

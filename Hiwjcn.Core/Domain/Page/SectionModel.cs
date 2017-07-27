@@ -11,7 +11,7 @@ namespace WebLogic.Model.Page
     /// <summary>
     /// 内容
     /// </summary>
-    [Table("wp_section")]
+    [Table("sys_section")]
     public class SectionModel : BaseEntity
     {
         public SectionModel()

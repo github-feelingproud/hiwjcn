@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebLogic.Model.User
 {
-    [Table("wp_login_log")]
+    [Table("account_login_log")]
     public class LoginErrorLogModel : BaseEntity
     {
         [Key]

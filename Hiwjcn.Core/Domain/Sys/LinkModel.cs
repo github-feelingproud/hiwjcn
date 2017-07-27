@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model.Sys
 {
-    [Table("wp_links")]
+    [Table("sys_links")]
     public class LinkModel : BaseEntity
     {
         /// <summary>

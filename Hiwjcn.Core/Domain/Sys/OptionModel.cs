@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model.Sys
 {
-    [Table("wp_options")]
+    [Table("sys_options")]
     public class OptionModel : BaseEntity
     {
         /// <summary>

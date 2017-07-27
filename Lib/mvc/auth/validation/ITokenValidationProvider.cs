@@ -42,6 +42,13 @@ namespace Lib.mvc.auth.validation
     /// </summary>
     public class AuthServerValidationProvider : TokenValidationProviderBase
     {
+        private readonly AuthServerConfig _server;
+
+        public AuthServerValidationProvider(AuthServerConfig server)
+        {
+            this._server = server;
+        }
+
         public override LoginUserInfo FindUser(HttpContext context)
         {
             throw new NotImplementedException();

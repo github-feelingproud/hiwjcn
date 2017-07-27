@@ -6,7 +6,7 @@ namespace Model.Category
     /// <summary>
     /// 树结构
     /// </summary>
-    [Table("wp_category")]
+    [Table("sys_category")]
     public class CategoryModel : BaseEntity
     {
         /// <summary>

@@ -11,7 +11,7 @@ namespace WebLogic.Model.Sys
     /// <summary>
     /// 全国省市区
     /// </summary>
-    [Table("wp_area")]
+    [Table("sys_area")]
     public class AreaModel : BaseEntity
     {
         /// <summary>

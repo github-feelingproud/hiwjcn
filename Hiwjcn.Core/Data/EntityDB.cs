@@ -17,6 +17,7 @@ using WebLogic.Model.Tag;
 using WebLogic.Model.User;
 using Hiwjcn.Core.Domain.Auth;
 using System.Data.Entity.SqlServer;
+using System.Configuration;
 
 namespace Hiwjcn.Dal
 {
@@ -49,14 +50,14 @@ namespace Hiwjcn.Dal
     /// EF做映射的时候也可以数据库是int，代码里是string，
     /// 用attribute mapping测试成功，用fluent测试失败
     /// </summary>
-#if use_mysql
+#if use_mysql_
     [DbConfigurationType(typeof(MySqlConfiguration))]
 #else
     [DbConfigurationType(typeof(SqlServerConfiguration))]
 #endif
     public class EntityDB : DbContext
     {
-        public EntityDB() : base(ConfigHelper.Instance.MySqlConnectionString)
+        public EntityDB() : base(ConfigurationManager.ConnectionStrings["db"]?.ConnectionString)
         {
             this.Configuration.LazyLoadingEnabled = false;
             this.Configuration.ValidateOnSaveEnabled = false;
@@ -80,11 +81,11 @@ namespace Hiwjcn.Dal
 
         public virtual DbSet<UserAvatar> UserAvatar { get; set; }
         public virtual DbSet<UserModel> UserModel { get; set; }
-
-
+        
         public virtual DbSet<LoginErrorLogModel> LoginErrorLogModel { get; set; }
         public virtual DbSet<RoleModel> RoleModel { get; set; }
         public virtual DbSet<RolePermissionModel> RolePermissionModel { get; set; }
+        public virtual DbSet<PermissionModel> PermissionModel { get; set; }
         public virtual DbSet<UserRoleModel> UserRoleModel { get; set; }
 
         public virtual DbSet<CategoryModel> CategoryModel { get; set; }

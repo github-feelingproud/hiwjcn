@@ -12,7 +12,7 @@ namespace WebLogic.Model.Tag
     /// <summary>
     /// 标签
     /// </summary>
-    [Table("wp_tag")]
+    [Table("sys_tag")]
     public class TagModel : BaseEntity
     {
         /// <summary>

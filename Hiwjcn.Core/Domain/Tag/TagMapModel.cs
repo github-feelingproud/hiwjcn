@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebLogic.Model.Tag
 {
-    [Table("wp_tag_map")]
+    [Table("sys_tag_map")]
     public class TagMapModel : BaseEntity
     {
         [Key]

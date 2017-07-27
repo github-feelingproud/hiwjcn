@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Hiwjcn.Core.Model.Sys
 {
-    [Table("wp_upfile")]
+    [Table("sys_upfile")]
     public class UpFileModel : BaseEntity
     {
         [Key]

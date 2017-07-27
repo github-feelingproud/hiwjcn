@@ -8,6 +8,7 @@ namespace Lib.mvc.auth
 {
     public class AuthServerConfig
     {
+        public string ServerUrl { get; set; }
     }
 
     public class AuthConfig

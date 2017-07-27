@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model.Sys
 {
-    [Table("wp_msg")]
+    [Table("sys_msg")]
     public class MessageModel : BaseEntity
     {
         [Key]

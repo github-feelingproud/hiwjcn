@@ -22,7 +22,7 @@ namespace Hiwjcn.Core.Model.Sys
         public virtual int ReqCount { get; set; }
     }
 
-    [Table("wp_reqlog")]
+    [Table("sys_reqlog")]
     public class ReqLogModel : BaseEntity
     {
         [Key]
