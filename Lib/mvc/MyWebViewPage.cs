@@ -59,6 +59,7 @@ namespace Lib.mvc
         {
             return Html.Partial(IncludePath(file_name));
         }
+        public M GetModel<M>(string key) where M : new() => Com.NewIfNull<M>(key);
         #endregion
 
         protected List<LangModel> Language { get; set; }

@@ -30,7 +30,7 @@ namespace Model
 
         public virtual DateTime CreateTime { get; set; }
 
-        public virtual DateTime? UpdateTime { get; set; }
+        public virtual DateTime UpdateTime { get; set; }
 
         public virtual void Init()
         {
@@ -39,6 +39,7 @@ namespace Model
             this.UID = Com.GetUUID();
             this.IsRemove = (int)YesOrNoEnum.否;
             this.CreateTime = now;
+            this.UpdateTime = now;
         }
 
         /// <summary>

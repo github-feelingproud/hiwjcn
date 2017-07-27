@@ -50,7 +50,7 @@
                             @foreach (var model in list.Where(x => x.CategoryLevel == CategoryBll.FIRST_LEVEL))
                             {
                                 var droplist = list.Where(
-                                    x => x.CategoryParent == model.CategoryID
+                                    x => x.CategoryParent == model.UID
                                     && x.CategoryLevel == model.CategoryLevel + 1).ToList();
                                 var li_cls = ValidateHelper.IsPlumpList(droplist) ? "dropdown" : "no_dropdown";
 
@@ -118,12 +118,12 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a href="/user/userinfo/" rel="nofollow" target="_self">
+                                    <a href="/user/userinfo" rel="nofollow" target="_self">
                                         <span>个人设置</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="/account/logout/" rel="nofollow" target="_self">
+                                    <a href="/account/logout" rel="nofollow" target="_self">
                                         <span>退出</span>
                                     </a>
                                 </li>
@@ -133,7 +133,7 @@
                     else
                     {
                         <li>
-                            <a href="/account/login/" rel="nofollow" target="_self">
+                            <a href="/account/login" rel="nofollow" target="_self">
                                 <span class="fa fa-lock"></span>
                                 <span>登陆</span>
                             </a>

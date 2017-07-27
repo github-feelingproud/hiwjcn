@@ -2,7 +2,7 @@
 using Hiwjcn.Core.Infrastructure.User;
 using Hiwjcn.Web.Models.User;
 using Lib.helper;
-
+using Lib.core;
 using Lib.io;
 using Lib.mvc;
 using Lib.mvc.user;
@@ -76,7 +76,7 @@ namespace Hiwjcn.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult InfoAction(string user_name, string user_sex, string user_phone,
+        public ActionResult InfoAction(string user_name, int? user_sex, string user_phone,
             string user_qq, string user_introduction)
         {
             return RunActionWhenLogin((loginuser) =>
@@ -84,7 +84,7 @@ namespace Hiwjcn.Web.Controllers
                 var model = new UserModel();
                 model.IID = loginuser.IID;
                 model.NickName = user_name;
-                model.Sex = user_sex;
+                model.Sex = user_sex??(int)SexEnum.未知;
                 model.Phone = user_phone;
                 model.QQ = user_qq;
                 model.Introduction = user_introduction;

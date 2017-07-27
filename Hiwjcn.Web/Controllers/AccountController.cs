@@ -262,7 +262,7 @@ namespace Hiwjcn.Web.Controllers
                 model.Email = email;
                 model.PassWord = SecureHelper.GetMD5(pass);
                 model.UserImg = "/static/image/moren.png";
-                model.Sex = "1";
+                model.Sex = (int)SexEnum.未知;
                 model.Flag = (int)(FunctionsEnum.普通用户 | FunctionsEnum.购物 | FunctionsEnum.发帖);
 
                 var res = _IUserService.Register(model);

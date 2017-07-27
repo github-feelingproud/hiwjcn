@@ -76,7 +76,7 @@ namespace Model.User
         /// 性别
         /// </summary>
         [Column("user_sex")]
-        public virtual string Sex { get; set; }
+        public virtual int Sex { get; set; }
 
         /// <summary>
         /// 解析性别
