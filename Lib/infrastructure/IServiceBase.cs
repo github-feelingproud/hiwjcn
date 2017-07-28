@@ -8,15 +8,6 @@ namespace Lib.infrastructure
 {
     public interface IServiceBase<T> where T : class, IDBTable
     {
-        bool UseCache { get; set; }
-
-        int CacheExpiresMinutes { get; set; }
-
-        void SetUseCacheValueTemporary(bool usecache);
-
-        void RestoreUseCacheValue();
-
-
         string SUCCESS { get; }
 
 

@@ -69,11 +69,7 @@ namespace Lib.mvc.auth.validation
 
         public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
         {
-            var token = context.GetBearerToken();
-            if (!ValidateHelper.IsPlumpString(token)) { return null; }
-
-            await Task.FromResult(1);
-            throw new NotImplementedException();
+            return await Task.FromResult(this.FindUser(context));
         }
     }
 }

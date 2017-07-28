@@ -89,11 +89,11 @@ namespace Hiwjcn.Test
             var sections = new List<SectionModel>();
 
 
-            var d = users.Where(x => x.Email.Contains("")).Join(sections.Where(x => x.SectionTitle.Length > 0), x => x.IID, x => x.SectionID, (user, section) => new { });
+            var d = users.Where(x => x.Email.Contains("")).Join(sections.Where(x => x.SectionTitle.Length > 0), x => x.UID, x => x.UID, (user, section) => new { });
 
             d = from user in users
                 join section in sections
-on user.IID equals section.SectionID
+on user.UID equals section.UID
                 where user.Email.Contains("") && section.SectionTitle.Length > 0
                 select new { };
         }

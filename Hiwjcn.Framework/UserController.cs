@@ -8,6 +8,8 @@ using Model.Sys;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System;
+using Lib.cache;
 
 namespace WebCore.MvcLib.Controller
 {
@@ -72,24 +74,19 @@ namespace WebCore.MvcLib.Controller
             {
                 //options
                 var setting = x.Resolve_<ISettingService>();
-                setting.UseCache = true;
-                this.Settings = setting.GetAllOptions();
-                if (this.Settings == null)
-                {
-                    this.Settings = new List<OptionModel>();
-                }
-                if (this.Settings.Count <= 0) { return true; }
-                var keys = new string[]
-                {
-                "web_name", "web_description","web_keywords",
-                "web_url",
-                "web_email","web_phone","web_address"
-                };
-                foreach (var key in keys)
-                {
-                    ViewData[key] = this.GetOption(key);
-                }
+                var cache = x.Resolve_<ICacheProvider>();
 
+                this.Settings = cache.GetOrSet(
+                    "sys.setting.cache",
+                    () => setting.GetAllOptions(),
+                    TimeSpan.FromMinutes(3));
+
+                this.Settings = ConvertHelper.NotNullList(this.Settings);
+
+                foreach (var set in this.Settings)
+                {
+                    ViewData[set.Key] = set.Value;
+                }
                 return true;
             });
         }

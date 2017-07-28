@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.Mvc;
+using Lib.ioc;
+using Lib.cache;
 
 namespace Hiwjcn.Framework
 {
@@ -33,9 +35,25 @@ namespace Hiwjcn.Framework
         {
             var nav_key = "nav_list";
 
-            var bll = new CategoryBll() { UseCache = UseCache };
+            AppContext.Scope(x =>
+            {
+                if (UseCache)
+                {
+                    var cache = x.Resolve_<ICacheProvider>();
+                    var data = cache.GetOrSet("nav_list_cache", () =>
+                    {
+                        return new CategoryBll().GetCategoryByType(nav_key);
+                    }, TimeSpan.FromMinutes(3));
+                    filterContext.Controller.ViewData[nav_key] = data;
+                }
+                else
+                {
+                    var data = new CategoryBll().GetCategoryByType(nav_key);
+                    filterContext.Controller.ViewData[nav_key] = data;
+                }
 
-            filterContext.Controller.ViewData[nav_key] = bll.GetCategoryByType(nav_key, maxCount: 500);
+                return true;
+            });
 
             base.OnActionExecuting(filterContext);
         }

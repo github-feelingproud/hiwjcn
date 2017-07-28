@@ -176,7 +176,7 @@ namespace WebApp.Areas.Admin.Controllers
 
                 model.User = user;
 
-                UserRoleBll bll = new UserRoleBll() { UseCache = false };
+                UserRoleBll bll = new UserRoleBll() { };
 
                 var userrolesid = bll.GetRolesByUserID(user.UID);
                 if (userrolesid == null) { userrolesid = new List<string>(); }
