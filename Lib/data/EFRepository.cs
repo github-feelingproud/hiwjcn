@@ -129,10 +129,8 @@ namespace Lib.data
             {
                 var set = db.Set<T>();
                 var q = set.AsQueryable();
-                if (where != null)
-                {
-                    q = q.Where(where);
-                }
+
+                q = q.WhereIfNotNull(where);
 
                 set.RemoveRange(q);
                 count = db.SaveChanges();
@@ -148,10 +146,8 @@ namespace Lib.data
             {
                 var set = db.Set<T>();
                 var q = set.AsQueryable();
-                if (where != null)
-                {
-                    q = q.Where(where);
-                }
+
+                q = q.WhereIfNotNull(where);
 
                 set.RemoveRange(q);
                 count = await db.SaveChangesAsync();
@@ -266,10 +262,8 @@ namespace Lib.data
             List<T> list = null;
             PrepareIQueryable(query =>
             {
-                if (where != null)
-                {
-                    query = query.Where(where);
-                }
+                query = query.WhereIfNotNull(where);
+
                 if (orderby != null)
                 {
                     if (Desc)
@@ -306,10 +300,8 @@ namespace Lib.data
             List<T> list = null;
             await PrepareIQueryableAsync(async query =>
             {
-                if (where != null)
-                {
-                    query = query.Where(where);
-                }
+                query = query.WhereIfNotNull(where);
+
                 if (orderby != null)
                 {
                     if (Desc)
@@ -385,10 +377,7 @@ namespace Lib.data
             int count = 0;
             PrepareIQueryable(query =>
             {
-                if (where != null)
-                {
-                    query = query.Where(where);
-                }
+                query = query.WhereIfNotNull(where);
                 count = query.Count();
                 return true;
             });
@@ -399,10 +388,7 @@ namespace Lib.data
             int count = 0;
             await PrepareIQueryableAsync(async query =>
             {
-                if (where != null)
-                {
-                    query = query.Where(where);
-                }
+                query = query.WhereIfNotNull(where);
                 count = await query.CountAsync();
                 return true;
             });
@@ -419,10 +405,7 @@ namespace Lib.data
             bool? ret = null;
             PrepareIQueryable(query =>
             {
-                if (where != null)
-                {
-                    query = query.Where(where);
-                }
+                query = query.WhereIfNotNull(where);
                 ret = query.Any();
                 return true;
             });
@@ -434,10 +417,7 @@ namespace Lib.data
             bool? ret = null;
             await PrepareIQueryableAsync(async query =>
             {
-                if (where != null)
-                {
-                    query = query.Where(where);
-                }
+                query = query.WhereIfNotNull(where);
                 ret = await query.AnyAsync();
                 return true;
             });

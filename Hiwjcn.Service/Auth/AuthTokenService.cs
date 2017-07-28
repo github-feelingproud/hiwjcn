@@ -58,18 +58,8 @@ namespace Hiwjcn.Bll.Auth
 
         private async Task ClearOldCode(string user_uid)
         {
-            await this._AuthCodeRepository.PrepareSessionAsync(async db =>
-            {
-                var set = db.Set<AuthCode>();
-
-                var expire = DateTime.Now.AddMinutes(-CodeExpireMinutes);
-                var old_codes = set.Where(x => x.UserUID == user_uid && x.CreateTime < expire);
-
-                set.RemoveRange(old_codes);
-
-                await db.SaveChangesAsync();
-                return true;
-            });
+            var expire = DateTime.Now.AddMinutes(-CodeExpireMinutes);
+            await this._AuthCodeRepository.DeleteWhereAsync(x => x.UserUID == user_uid && x.CreateTime < expire);
         }
 
         public virtual async Task<(AuthCode code, string msg)> CreateCodeAsync(

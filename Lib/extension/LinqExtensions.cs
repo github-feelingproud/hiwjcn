@@ -40,6 +40,22 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 如果条件不为空就使用条件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public static IQueryable<T> WhereIfNotNull<T>(this IQueryable<T> query, Expression<Func<T, bool>> where)
+        {
+            if (where != null)
+            {
+                query = query.Where(where);
+            }
+            return query;
+        }
+
+        /// <summary>
         /// 自动分页
         /// </summary>
         /// <typeparam name="T"></typeparam>
