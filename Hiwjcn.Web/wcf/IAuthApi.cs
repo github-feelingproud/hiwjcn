@@ -81,7 +81,7 @@ namespace Hiwjcn.Web.wcf
     public class AuthClientWcf
     {
         [DataMember]
-        public virtual int IID { get; set; }
+        public virtual long IID { get; set; }
         [DataMember]
         public virtual string UID { get; set; }
         [DataMember]

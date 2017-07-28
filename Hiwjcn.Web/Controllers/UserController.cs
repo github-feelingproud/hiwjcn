@@ -38,13 +38,13 @@ namespace Hiwjcn.Web.Controllers
             return Content("");
         }
 
-        [页面权限拦截(Permission = "不存在的权限")]
+        [PageAuth(Permission = "不存在的权限")]
         public ActionResult No()
         {
             return Content("");
         }
 
-        [接口权限拦截(Permission = "测试用的权限")]
+        [ApiAuth(Permission = "测试用的权限")]
         public ActionResult NoApi()
         {
             return GetJson(new _() { });
@@ -84,7 +84,7 @@ namespace Hiwjcn.Web.Controllers
                 var model = new UserModel();
                 model.IID = loginuser.IID;
                 model.NickName = user_name;
-                model.Sex = user_sex??(int)SexEnum.未知;
+                model.Sex = user_sex ?? (int)SexEnum.未知;
                 model.Phone = user_phone;
                 model.QQ = user_qq;
                 model.Introduction = user_introduction;
@@ -142,7 +142,7 @@ namespace Hiwjcn.Web.Controllers
             {
                 var file = this.X.context.Request.Files["user_mask"];
                 var save_path = this.X.context.Server.MapPath("~/static/upload/usermask/");
-                var res = _IUserService.UpdateUserMask(loginuser.IID, file, save_path);
+                var res = _IUserService.UpdateUserMask(loginuser.UserID, file, save_path);
                 if (!ValidateHelper.IsPlumpString(res))
                 {
                     return Redirect("/user/updateusermask/");

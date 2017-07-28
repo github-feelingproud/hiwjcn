@@ -25,6 +25,11 @@ namespace Lib.mvc.user
         public string Permission { get; set; }
 
         /// <summary>
+        /// auth scope
+        /// </summary>
+        public string Scope { get; set; }
+
+        /// <summary>
         /// 没有登录的时候调用
         /// </summary>
         /// <param name="filterContext"></param>
@@ -36,21 +41,37 @@ namespace Lib.mvc.user
         /// <param name="filterContext"></param>
         public abstract void WhenNoPermission(ref ActionExecutingContext filterContext);
 
+        /// <summary>
+        /// 拦截请求
+        /// </summary>
+        /// <param name="filterContext"></param>
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var context = HttpContext.Current;
 
             var loginuser = context.GetAuthUser();
 
+            //检查登录
             if (loginuser == null)
             {
                 this.WhenNotLogin(ref filterContext);
                 return;
             }
 
+            //检查权限
             if (ValidateHelper.IsPlumpString(this.Permission))
             {
                 if (this.Permission.Split(',').Where(x => x?.Length > 0).Any(x => !loginuser.HasPermission(x)))
+                {
+                    this.WhenNoPermission(ref filterContext);
+                    return;
+                }
+            }
+
+            //检查scope
+            if (ValidateHelper.IsPlumpString(this.Scope))
+            {
+                if (this.Scope.Split(',').Where(x => x?.Length > 0).Any(x => !loginuser.HasScope(x)))
                 {
                     this.WhenNoPermission(ref filterContext);
                     return;
@@ -61,7 +82,7 @@ namespace Lib.mvc.user
         }
     }
 
-    public class 页面权限拦截Attribute : ValidLoginBaseAttribute
+    public class PageAuthAttribute : ValidLoginBaseAttribute
     {
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {
@@ -76,7 +97,7 @@ namespace Lib.mvc.user
         }
     }
 
-    public class 接口权限拦截Attribute : ValidLoginBaseAttribute
+    public class ApiAuthAttribute : ValidLoginBaseAttribute
     {
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {

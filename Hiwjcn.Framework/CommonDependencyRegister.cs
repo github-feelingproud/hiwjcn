@@ -28,9 +28,6 @@ namespace Hiwjcn.Framework
                 core = typeof(EntityDB)
             };
 
-            //获取用户权限
-            builder.RegisterType<UserBll>().As<IFetchUserPermissions>();
-
             //Aop拦截
             builder.RegisterType<AopLogError_>();
             //缓存
@@ -45,7 +42,6 @@ namespace Hiwjcn.Framework
             builder.RegisterType<BasicConfigProvider>().As<ISettings>().SingleInstance();
             builder.RegisterType<EntityDB>().AsSelf().As<DbContext>().Named<DbContext>("db");
             builder.RegisterType<MySqlConnection>().As<IDbConnection>();
-            builder.RegisterType<GetLocalLoginUrl>().As<IGetLoginUrl>().SingleInstance();
             //builder.RegisterInstance(new LoginStatus()).As<LoginStatus>().SingleInstance();
             builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().As<ILoginStatus>().SingleInstance();
 

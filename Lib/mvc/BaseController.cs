@@ -2,6 +2,7 @@
 using Lib.extension;
 using Lib.helper;
 using Lib.ioc;
+using Lib.mvc.auth;
 using Lib.mvc.user;
 using System;
 using System.Linq;
@@ -289,8 +290,7 @@ namespace Lib.mvc
             else
             {
                 //没有登陆就跳转登陆
-                var redirect_url = AppContext.Scope(x => x.Resolve_<IGetLoginUrl>().GetUrl(this.X.Url));
-                return new RedirectResult(redirect_url);
+                return new ContentResult() { Content = "login first" };
             }
         }
 
@@ -310,21 +310,6 @@ namespace Lib.mvc
             }
         }
 
-        protected virtual LoginUserInfo TryGetUser()
-        {
-            var loginuser = this.X.User;
-            if (loginuser == null)
-            {
-                //尝试通过token获取登陆用户
-                var token = this.Request.Headers["token"];
-                if (ValidateHelper.IsPlumpString(token))
-                {
-                    //loginuser = null;
-                }
-            }
-            return loginuser;
-        }
-
         /// <summary>
         /// 验证是否有权限
         /// </summary>
@@ -338,7 +323,7 @@ namespace Lib.mvc
         [NonAction]
         private (LoginUserInfo loginuser, ActionResult res) TryGetLoginUser()
         {
-            var loginuser = TryGetUser();
+            var loginuser = this.X.context.GetAuthUser();
             //==================================================================================================
             //如果没登陆就跳转
             if (loginuser == null)

@@ -32,6 +32,9 @@ namespace Model
 
         public virtual DateTime UpdateTime { get; set; }
 
+        /// <summary>
+        /// 第一次写库初始化
+        /// </summary>
         public virtual void Init()
         {
             var now = DateTime.Now;

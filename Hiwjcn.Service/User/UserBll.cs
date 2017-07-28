@@ -23,7 +23,7 @@ namespace Bll.User
     /// <summary>
     /// 用户
     /// </summary>
-    public class UserBll : ServiceBase<UserModel>, IUserService, IFetchUserPermissions
+    public class UserBll : ServiceBase<UserModel>, IUserService
     {
         private UserDal _UserDal { get; set; }
         private UserRoleDal _UserRoleDal { get; set; }
