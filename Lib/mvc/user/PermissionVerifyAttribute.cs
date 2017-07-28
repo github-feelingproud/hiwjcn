@@ -22,13 +22,7 @@ namespace Lib.mvc.user
         /// 没有权限跳转的URL
         /// </summary>
         public string NoPermissionUrl { get; set; }
-
-        /// <summary>
-        /// 获取登录
-        /// </summary>
-        /// <returns></returns>
-        public override LoginStatus GetLoginStatus() => AppContext.Scope(x => x.Resolve_<LoginStatus>());
-
+        
         /// <summary>
         /// 没有权限
         /// </summary>

@@ -25,9 +25,7 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<string> AddClientAsync(AuthClient client)
         {
-            client.UID = Com.GetUUID();
-            client.CreateTime = DateTime.Now;
-            client.UpdateTime = null;
+            client.Init();
             if (!this.CheckModel(client, out var msg))
             {
                 return msg;

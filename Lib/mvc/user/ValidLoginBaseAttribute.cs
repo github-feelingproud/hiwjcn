@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using System.Web;
 using Lib.ioc;
 using Lib.mvc;
+using Lib.mvc.auth;
 
 namespace Lib.mvc.user
 {
@@ -38,9 +39,8 @@ namespace Lib.mvc.user
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var context = HttpContext.Current;
-            var _loginstatus = this.GetLoginStatus();
 
-            var loginuser = _loginstatus.GetLoginUser(context);
+            var loginuser = context.GetAuthUser();
 
             if (loginuser == null)
             {
@@ -63,8 +63,6 @@ namespace Lib.mvc.user
 
     public class 页面权限拦截Attribute : ValidLoginBaseAttribute
     {
-        public override LoginStatus GetLoginStatus() => AppContext.Scope(x => x.Resolve_<LoginStatus>());
-
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {
             filterContext.Result = new ViewResult() { ViewName = "~/Views/Shared/Limited.cshtml" };
@@ -80,8 +78,6 @@ namespace Lib.mvc.user
 
     public class 接口权限拦截Attribute : ValidLoginBaseAttribute
     {
-        public override LoginStatus GetLoginStatus() => AppContext.Scope(x => x.Resolve_<LoginStatus>());
-
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {
             filterContext.Result = GetJson(new _() { success = false, msg = "没有权限" });

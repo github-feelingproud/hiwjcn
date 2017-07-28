@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Web;
+using Lib.extension;
 
 namespace Lib.ioc
 {
@@ -235,6 +237,14 @@ namespace Lib.ioc
         }
 
         /// <summary>
+        /// 没有注册就返回null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        public static T ResolveOrDefault<T>(this ILifetimeScope scope) where T : class => scope.ResolveOptional<T>();
+
+        /// <summary>
         /// 不自动dispose对象
         /// </summary>
         /// <typeparam name="TLimit"></typeparam>
@@ -246,6 +256,52 @@ namespace Lib.ioc
 
         public static void UseDbConnection<T>()
         { }
+
+        public const string HTTPCONTEXT_AUTOFAC_SCOPE_KEY = "ioc.autofac.scope.key";
+
+        public static void SetAutofacScope(this HttpContext context, ILifetimeScope scope)
+        {
+            context.Items[HTTPCONTEXT_AUTOFAC_SCOPE_KEY] = scope ?? throw new ArgumentNullException(nameof(scope));
+        }
+
+        public static ILifetimeScope GetAutofacScope(this HttpContext context)
+        {
+            var obj = context.Items[HTTPCONTEXT_AUTOFAC_SCOPE_KEY];
+            if (obj is ILifetimeScope scope)
+            {
+                return scope;
+            }
+            throw new Exception("请求中没有缓存autofac scope");
+        }
+    }
+
+    public class RequestScopeModule : IHttpModule
+    {
+        public void Dispose()
+        {
+            //
+        }
+
+        public void Init(HttpApplication context)
+        {
+            context.BeginRequest += (sender, e) =>
+            {
+                HttpContext.Current.SetAutofacScope(AppContext.Scope());
+            };
+
+            context.EndRequest += (sender, e) =>
+            {
+                try
+                {
+                    var scope = HttpContext.Current.GetAutofacScope();
+                    scope.Dispose();
+                }
+                catch (Exception err)
+                {
+                    err.AddErrorLog("销毁请求scope失败");
+                }
+            };
+        }
     }
 
     /*

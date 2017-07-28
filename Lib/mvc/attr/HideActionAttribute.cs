@@ -12,11 +12,6 @@ namespace Lib.mvc.attr
 {
     public class HideActionAttribute : _ActionFilterBaseAttribute
     {
-        public override LoginStatus GetLoginStatus()
-        {
-            return AccountHelper.Admin;
-        }
-
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var show = (ConfigurationManager.AppSettings["show_api"] ?? "false").ToBool();

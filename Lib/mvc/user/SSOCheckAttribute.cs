@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Configuration;
 using Lib.extension;
+using Lib.mvc.auth;
 using Lib.mvc.attr;
 
 namespace Lib.mvc.user
@@ -37,9 +38,7 @@ namespace Lib.mvc.user
 
             var context = HttpContext.Current;
 
-            var _loginstatus = this.GetLoginStatus();
-
-            var loginuser = _loginstatus.GetLoginUser(context);
+            var loginuser = context.GetAuthUser();
 
             //==============================================================================
 

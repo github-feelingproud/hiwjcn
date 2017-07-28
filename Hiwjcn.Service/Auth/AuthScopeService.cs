@@ -49,9 +49,7 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<string> AddScopeAsync(AuthScope scope)
         {
-            scope.UID = Com.GetUUID();
-            scope.CreateTime = DateTime.Now;
-            scope.UpdateTime = null;
+            scope.Init();
             if (!this.CheckModel(scope, out var msg))
             {
                 return msg;
