@@ -20,7 +20,9 @@ namespace Hiwjcn.Web.Controllers
     public interface IAuthUserService
     {
         Task<LoginUserInfo> LoginByPassword();
+
         Task<LoginUserInfo> LoginByToken();
+
         Task<LoginUserInfo> LoginByOneTimeCode();
 
         Task<bool> SendOneTimeCode();

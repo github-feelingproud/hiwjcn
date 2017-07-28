@@ -169,6 +169,10 @@ namespace Lib.extension
             try
             {
                 var context = HttpContext.Current;
+                if (context == null)
+                {
+                    throw new Exception("非web环境");
+                }
 
                 var req_id = Com.GetRequestID();
 

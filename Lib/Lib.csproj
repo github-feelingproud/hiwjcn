@@ -38,6 +38,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Akka, Version=1.2.3.41, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.1.2.3\lib\net45\Akka.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
@@ -139,6 +142,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -231,6 +237,7 @@
     <Compile Include="distributed\RedisDistributedLock.cs" />
     <Compile Include="distributed\ZooKeeperClient.cs" />
     <Compile Include="distributed\ZooKeeperConfigProvider.cs" />
+    <Compile Include="events\AkkaHelper.cs" />
     <Compile Include="events\EntityDeleted.cs" />
     <Compile Include="events\EntityInserted.cs" />
     <Compile Include="events\EntityUpdated.cs" />

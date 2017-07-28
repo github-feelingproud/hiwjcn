@@ -1,5 +1,6 @@
 ﻿using Lib.data;
 using Lib.distributed;
+using Lib.events;
 using Lib.extension;
 using Lib.ioc;
 using Lib.mq;
@@ -19,6 +20,16 @@ namespace Lib.core
             {
                 //startup tasks
                 LibStartUpHelper.Dispose();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+
+            try
+            {
+                //akka system
+                AkkaSystemManager.Instance.Dispose();
             }
             catch (Exception e)
             {
@@ -84,6 +95,9 @@ namespace Lib.core
             {
                 e.AddErrorLog();
             }
+
+            //回收内存
+            GC.Collect();
         }
     }
 }

@@ -123,10 +123,11 @@ namespace Lib.core
         /// </summary>
         public virtual void Dispose()
         {
-            foreach (var kv in db)
+            foreach (var kv in this.db)
             {
                 DisposeClient(kv.Value);
             }
+            this.db.Clear();
         }
 
         #region 等待实现
