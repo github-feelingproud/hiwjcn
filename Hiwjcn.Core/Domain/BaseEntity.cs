@@ -19,7 +19,7 @@ namespace Model
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column(nameof(IID))]
-        public virtual int IID { get; set; }
+        public virtual long IID { get; set; }
 
         [Index]
         [Required]
@@ -35,7 +35,7 @@ namespace Model
         public virtual void Init()
         {
             var now = DateTime.Now;
-            this.IID = 0;
+            this.IID = default(int);
             this.UID = Com.GetUUID();
             this.IsRemove = (int)YesOrNoEnum.否;
             this.CreateTime = now;

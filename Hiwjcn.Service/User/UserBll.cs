@@ -136,16 +136,6 @@ namespace Bll.User
         }
 
         /// <summary>
-        /// 通过id获取多个user对象
-        /// </summary>
-        /// <param name="ids"></param>
-        /// <returns></returns>
-        public List<UserModel> GetUserByIDS(params int[] ids)
-        {
-            return _UserDal.GetList(x => ids.Contains(x.IID));
-        }
-
-        /// <summary>
         /// 用户数按照性别分组统计
         /// </summary>
         /// <returns></returns>
@@ -163,25 +153,13 @@ namespace Bll.User
         }
 
         /// <summary>
-        /// 删除用户
-        /// </summary>
-        /// <param name="userID"></param>
-        /// <returns></returns>
-        public string DeleteUser(int userID)
-        {
-            var model = _UserDal.GetByKeys(userID);
-            if (model == null) { return "你要删除的用户不存在"; }
-            return _UserDal.Delete(model) > 0 ? SUCCESS : "删除失败";
-        }
-
-        /// <summary>
         /// 更新用户头像
         /// </summary>
         /// <param name="userID"></param>
         /// <param name="file"></param>
         /// <param name="MaxSize"></param>
         /// <returns></returns>
-        public string UpdateUserMask(int userID, HttpPostedFile file, string save_path)
+        public string UpdateUserMask(string userID, HttpPostedFile file, string save_path)
         {
             if (file == null || file.InputStream == null)
             {
@@ -253,13 +231,13 @@ namespace Bll.User
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public string UpdateUserPass(int userID, string old_pass, string new_pass, string re_new_pass)
+        public string UpdateUserPass(string userID, string old_pass, string new_pass, string re_new_pass)
         {
             if (!ValidateHelper.IsAllPlumpString(old_pass, new_pass)) { return "请输入旧密码和新密码"; }
             if (new_pass != re_new_pass) { return "两次输入的新密码不相同"; }
 
             string md5pass = UserPassWordEncrypt(old_pass);
-            var model = _UserDal.GetFirst(x => x.IID == userID && x.PassWord == md5pass);
+            var model = _UserDal.GetFirst(x => x.UID == userID && x.PassWord == md5pass);
             if (model == null) { return "用户不存在"; }
             model.PassWord = UserPassWordEncrypt(new_pass);
 

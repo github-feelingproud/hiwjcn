@@ -20,7 +20,7 @@ namespace Dal.User
         /// <param name="uid"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public int UpdateUserMask(int uid, byte[] b)
+        public int UpdateUserMask(string uid, byte[] b)
         {
             int count = 0;
             DBHelper.PrepareConnection(con =>

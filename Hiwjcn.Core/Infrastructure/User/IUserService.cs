@@ -39,27 +39,13 @@ namespace Hiwjcn.Core.Infrastructure.User
         /// <param name="userID"></param>
         /// <returns></returns>
         UserModel GetByID(string userID);
-
-        /// <summary>
-        /// 通过id获取多个user对象
-        /// </summary>
-        /// <param name="ids"></param>
-        /// <returns></returns>
-        List<UserModel> GetUserByIDS(params int[] ids);
-
+        
         /// <summary>
         /// 用户数按照性别分组统计
         /// </summary>
         /// <returns></returns>
         List<UserCountGroupBySex> GetCountGroupBySex();
-
-        /// <summary>
-        /// 删除用户
-        /// </summary>
-        /// <param name="userID"></param>
-        /// <returns></returns>
-        string DeleteUser(int userID);
-
+        
         /// <summary>
         /// 更新用户头像
         /// </summary>
@@ -67,7 +53,7 @@ namespace Hiwjcn.Core.Infrastructure.User
         /// <param name="file"></param>
         /// <param name="MaxSize"></param>
         /// <returns></returns>
-        string UpdateUserMask(int userID, HttpPostedFile file, string save_path);
+        string UpdateUserMask(string userID, HttpPostedFile file, string save_path);
 
         /// <summary>
         /// 更新用户信息
@@ -86,7 +72,7 @@ namespace Hiwjcn.Core.Infrastructure.User
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        string UpdateUserPass(int userID, string old_pass, string new_pass, string re_new_pass);
+        string UpdateUserPass(string userID, string old_pass, string new_pass, string re_new_pass);
         
         /// <summary>
         /// 生成token
