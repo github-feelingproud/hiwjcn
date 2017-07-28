@@ -40,7 +40,7 @@ namespace Hiwjcn.Framework
                 if (UseCache)
                 {
                     var cache = x.Resolve_<ICacheProvider>();
-                    var data = cache.GetOrSet("nav_list_cache", () =>
+                    var data = cache.GetOrSet("nav_list_cache".WithCacheKeyPrefix(), () =>
                     {
                         return new CategoryBll().GetCategoryByType(nav_key);
                     }, TimeSpan.FromMinutes(3));

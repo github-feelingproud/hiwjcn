@@ -77,7 +77,7 @@ namespace WebCore.MvcLib.Controller
                 var cache = x.Resolve_<ICacheProvider>();
 
                 this.Settings = cache.GetOrSet(
-                    "sys.setting.cache",
+                    "sys.setting.cache".WithCacheKeyPrefix(),
                     () => setting.GetAllOptions(),
                     TimeSpan.FromMinutes(3));
 

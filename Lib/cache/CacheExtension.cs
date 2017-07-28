@@ -1,6 +1,7 @@
 ﻿using Lib.extension;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,17 @@ namespace Lib.cache
 {
     public static class CacheExtension
     {
+        public static readonly string CacheKeyPrefix =
+            ConfigurationManager.AppSettings["CacheKeyPrefix"] ??
+            "Lib.Cache.DefaultKeyPrefix";
+
+        /// <summary>
+        /// 缓存key加前缀
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string WithCacheKeyPrefix(this string key) => $"{CacheKeyPrefix}.{key}";
+
         /// <summary>
         /// 缓存逻辑
         /// </summary>

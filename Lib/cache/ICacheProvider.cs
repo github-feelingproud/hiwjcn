@@ -21,13 +21,7 @@ namespace Lib.cache
     /// </summary>
     public abstract class CacheBase : SerializeBase
     {
-        protected readonly string CacheKeyPrefix = ConfigurationManager.AppSettings["CacheKeyPrefix"] ?? "Lib.Default.CacheKeyPrefix";
-
-        protected string Wrapper(string key)
-        {
-            return $"{this.CacheKeyPrefix}.{key}";
-        }
-
+        //
     }
 
     /// <summary>

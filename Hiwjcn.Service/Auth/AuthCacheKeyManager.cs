@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.cache;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -11,12 +12,12 @@ namespace Hiwjcn.Bll.Auth
     /// </summary>
     public static class AuthCacheKeyManager
     {
-        public static string TokenKey(string token_uid) => $"auth.token.uid={token_uid}";
+        public static string TokenKey(string token_uid) => $"auth.token.uid={token_uid}".WithCacheKeyPrefix();
 
-        public static string ClientKey(string client_uid) => $"auth.client.uid={client_uid}";
+        public static string ClientKey(string client_uid) => $"auth.client.uid={client_uid}".WithCacheKeyPrefix();
 
-        public static string ScopeKey(string scope_uid) => $"auth.scope.uid={scope_uid}";
+        public static string ScopeKey(string scope_uid) => $"auth.scope.uid={scope_uid}".WithCacheKeyPrefix();
 
-        public static string ScopeAllKey() => "auth.scope.all";
+        public static string ScopeAllKey() => "auth.scope.all".WithCacheKeyPrefix();
     }
 }
