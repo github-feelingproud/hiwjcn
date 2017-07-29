@@ -73,7 +73,7 @@ namespace Lib.extension
         /// <param name="data">数据</param>
         public static bool ToBool(this string data)
         {
-            var list = new string[] { "1", "true", "yes", "on", "success", "t", true.ToString() };
+            var list = new string[] { "1", "true", "yes", "on", "success", true.ToString() };
             return list.Contains(data.ToString().ToLower().Trim());
         }
 
@@ -115,9 +115,6 @@ namespace Lib.extension
         /// <summary>
         /// 映射
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <returns></returns>
         public static T MapTo<T>(this object data)
         {
             return MapperHelper.GetMappedEntity<T>(data);
@@ -126,10 +123,6 @@ namespace Lib.extension
         /// <summary>
         /// 映射
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="entity"></param>
-        /// <param name="notmap"></param>
         public static void MapTo<T>(this object data, ref T entity, string[] notmap = null)
         {
             MapperHelper.MapEntity(ref entity, data, notmap);
@@ -138,8 +131,6 @@ namespace Lib.extension
         /// <summary>
         /// 格式化数字，获取xxx xxxk xxxw
         /// </summary>
-        /// <param name="num"></param>
-        /// <returns></returns>
         public static string SimpleNumber(this Int64 num)
         {
             return Com.SimpleNumber(num);

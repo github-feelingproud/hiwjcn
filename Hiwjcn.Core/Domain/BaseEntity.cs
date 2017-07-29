@@ -22,9 +22,9 @@ namespace Model
         [Column(nameof(IID))]
         public virtual long IID { get; set; }
 
-        [Index]
         [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "记录UID必填")]
+        [Index(IsUnique = true), Column(nameof(UID))]
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "UID必填")]
         public virtual string UID { get; set; }
 
         public virtual int IsRemove { get; set; }
@@ -50,7 +50,8 @@ namespace Model
             }
 
             var now = DateTime.Now;
-            this.IID = default(int);
+
+            this.IID = default(long);
             this.UID = prefix + Com.GetUUID();
             this.IsRemove = (int)YesOrNoEnum.否;
             this.CreateTime = now;

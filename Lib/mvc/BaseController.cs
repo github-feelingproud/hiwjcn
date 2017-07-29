@@ -174,30 +174,10 @@ namespace Lib.mvc
 
         #region action处理
 
-        protected ActionResult ErrorResult { get; set; }
-        protected ActionResult NoLoginResult { get; set; }
-        protected ActionResult NoPermissionResult { get; set; }
         protected List<string> PermissionList { get; set; }
-        protected readonly bool ShowExceptionResult = (ConfigurationManager.AppSettings["ShowExceptionResult"] ?? "true").ToBool();
+        protected List<string> ScopeList { get; set; }
 
-        [NonAction]
-        protected virtual ActionResult ExceptionResult(Exception e)
-        {
-            var (area, controller, action) = this.RouteData.GetA_C_A();
-            e.AddLog(this.GetType());
-            //自定义错误
-            if (this.ErrorResult != null)
-            {
-                return this.ErrorResult;
-            }
-            //捕获的错误
-            if (this.ShowExceptionResult)
-            {
-                return GetJson(e.GetInnerExceptionAsList());
-            }
-            //默认500页面
-            return Http500();
-        }
+        protected readonly bool ShowExceptionResult = (ConfigurationManager.AppSettings["ShowExceptionResult"] ?? "true").ToBool();
 
         /// <summary>
         /// 获取action的时候捕获异常
@@ -213,7 +193,7 @@ namespace Lib.mvc
             }
             catch (Exception e)
             {
-                return ExceptionResult(e);
+                return WhenError(e);
             }
         }
 
@@ -231,7 +211,7 @@ namespace Lib.mvc
             }
             catch (Exception e)
             {
-                return ExceptionResult(e);
+                return WhenError(e);
             }
         }
 
@@ -281,44 +261,29 @@ namespace Lib.mvc
         /// 没有登录的时候使用这个返回，可以重写
         /// </summary>
         /// <returns></returns>
-        protected virtual ActionResult WhenNoLogin()
+        [NonAction]
+        protected virtual ActionResult WhenNoLogin() => GetJsonRes("no login");
+
+        [NonAction]
+        protected virtual ActionResult WhenError(Exception e)
         {
-            if (NoLoginResult != null)
+            var (area, controller, action) = this.RouteData.GetA_C_A();
+            e.AddLog(this.GetType());
+            //捕获的错误
+            if (this.ShowExceptionResult)
             {
-                return NoLoginResult;
+                return GetJson(e.GetInnerExceptionAsList());
             }
-            else
-            {
-                //没有登陆就跳转登陆
-                return new ContentResult() { Content = "login first" };
-            }
+            //默认500页面
+            return Http500();
         }
 
         /// <summary>
         /// 没有权限的时候调用，可以重写
         /// </summary>
         /// <returns></returns>
-        protected virtual ActionResult WhenNoPermission()
-        {
-            if (NoPermissionResult != null)
-            {
-                return NoPermissionResult;
-            }
-            else
-            {
-                return Http403();
-            }
-        }
-
-        /// <summary>
-        /// 验证是否有权限
-        /// </summary>
-        /// <param name="loginuser"></param>
-        /// <returns></returns>
-        protected virtual bool HasPermission(LoginUserInfo loginuser)
-        {
-            return ConvertHelper.NotNullList(PermissionList).Any(x => !loginuser.HasPermission(x));
-        }
+        [NonAction]
+        protected virtual ActionResult WhenNoPermission() => Http403();
 
         [NonAction]
         private (LoginUserInfo loginuser, ActionResult res) TryGetLoginUser()
@@ -331,7 +296,11 @@ namespace Lib.mvc
                 return (loginuser, WhenNoLogin());
             }
             //所需要的全部权限值
-            if (HasPermission(loginuser))
+            if (ConvertHelper.NotNullList(this.PermissionList).Any(x => !loginuser.HasPermission(x)))
+            {
+                return (loginuser, WhenNoPermission());
+            }
+            if (ConvertHelper.NotNullList(this.ScopeList).Any(x => !loginuser.HasScope(x)))
             {
                 return (loginuser, WhenNoPermission());
             }

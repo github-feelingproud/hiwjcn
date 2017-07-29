@@ -77,7 +77,14 @@ namespace Hiwjcn.Bll.Auth
             code.Init("code");
 
             var border = now.GetDateBorder();
-            if (await this._AuthCodeRepository.GetCountAsync(x => x.ClientUID == client_uid && x.UserUID == user_uid && x.CreateTime >= border.start && x.CreateTime < border.end) >= MaxCodeCreatedDaily)
+
+            var count = await this._AuthCodeRepository.GetCountAsync(x =>
+              x.ClientUID == client_uid &&
+              x.UserUID == user_uid &&
+              x.CreateTime >= border.start &&
+              x.CreateTime < border.end);
+
+            if (count >= MaxCodeCreatedDaily)
             {
                 return (null, "授权过多");
             }

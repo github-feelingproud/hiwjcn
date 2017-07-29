@@ -17,7 +17,6 @@ namespace WebApp.Areas.Admin.Controllers
         /// <returns></returns>
         public ActionResult CategoryManage(string type)
         {
-            this.NoPermissionResult = GoHome();
             return RunActionWhenLogin((loginuser) =>
             {
                 var model = new CategoryManageViewModel();

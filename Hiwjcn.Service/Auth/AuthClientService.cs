@@ -44,6 +44,10 @@ namespace Hiwjcn.Bll.Auth
 
         public override string CheckModel(AuthClient model)
         {
+            if (model == null)
+            {
+                return "对象为空";
+            }
             return base.CheckModel(model);
         }
 
