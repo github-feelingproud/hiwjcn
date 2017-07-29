@@ -35,7 +35,7 @@ namespace Hiwjcn.Framework.Actors
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e.GetInnerExceptionAsJson());
+                    e.DebugInfo();
                 }
             });
         }

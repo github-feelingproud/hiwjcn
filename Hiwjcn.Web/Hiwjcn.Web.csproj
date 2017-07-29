@@ -602,8 +602,6 @@
     </Content>
     <Content Include="Views\Test\WJ.cshtml" />
     <Content Include="Views\Page\Show.cshtml" />
-    <Content Include="Views\Comment\Comment.cshtml" />
-    <Content Include="Views\Comment\CommentList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hiwjcn.Core\Hiwjcn.Core.csproj">

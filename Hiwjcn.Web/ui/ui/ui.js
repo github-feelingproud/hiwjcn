@@ -81,6 +81,27 @@ function sendAjax(param) {
     });
 }
 
+function formJson(id, callback) {
+    var fm = $('#' + id);
+    var url = fm.attr('action');
+    var method = fm.attr('method').toUpperCase();
+    var data = fm.serializeArray();
+    $.ajax({
+        type: method,
+        url: url,
+        data: data,
+        dataType: 'JSON',
+        success: function (data, textStatus) {
+            if (callback != null) {
+                callback(data);
+            }
+        },
+        error: function () {
+            alert('请求失败');
+        }
+    });
+}
+
 /*
  * Lazy Load - jQuery plugin for lazy loading images
  *

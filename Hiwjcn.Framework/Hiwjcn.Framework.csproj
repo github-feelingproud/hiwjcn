@@ -125,6 +125,7 @@
   <ItemGroup>
     <Compile Include="Actors\LogRequestActor.cs" />
     <Compile Include="Actors\SendMailActor.cs" />
+    <Compile Include="Actors\UpdateEsIndexActor.cs" />
     <Compile Include="AttributeBundle.cs" />
     <Compile Include="CommonDependencyRegister.cs" />
     <Compile Include="Tasks\CleanDatabaseTask.cs" />

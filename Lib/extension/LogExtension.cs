@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Web;
 using System.Linq;
 using Lib.mvc;
+using System.Diagnostics;
 
 namespace Lib.extension
 {
@@ -29,6 +30,14 @@ namespace Lib.extension
         public static List<string> GetInnerExceptionAsList(this Exception e)
         {
             return Com.GetExceptionMsgList(e);
+        }
+
+        /// <summary>
+        /// 输出
+        /// </summary>
+        public static void DebugInfo(this Exception e)
+        {
+            Debug.WriteLine(e.GetInnerExceptionAsJson());
         }
         #endregion
 
