@@ -33,6 +33,7 @@ namespace Hiwjcn.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HtmlCache(3)]
+        [RequestLog]
         [LoadNavigation]
         public ActionResult Home()
         {
@@ -52,6 +53,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
+        [RequestLog]
         [LoadNavigation]
         [Route("Page/Show/{name}/")]
         public ActionResult Show(string name)
@@ -84,6 +86,7 @@ namespace Hiwjcn.Web.Controllers
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
+        [RequestLog]
         [LoadNavigation]
         public ActionResult News(int? page)
         {

@@ -826,6 +826,7 @@
     <Content Include="Views\Test\UView.cshtml" />
     <Content Include="Views\Shared\Limited.cshtml" />
     <Content Include="Views\Auth\MyClients.cshtml" />
+    <Content Include="Views\Shared\Analysis.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

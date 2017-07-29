@@ -59,6 +59,14 @@ namespace Lib.mvc
         {
             return Html.Partial(IncludePath(file_name));
         }
+        /// <summary>
+        /// 网站统计
+        /// </summary>
+        public MvcHtmlString Analysis() => IncludeView("Analysis");
+
+        /// <summary>
+        /// 获取非空对象
+        /// </summary>
         public M GetModel<M>(string key) where M : new() => Com.NewIfNull<M>(key);
         #endregion
 

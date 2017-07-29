@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Hiwjcn.Core.Infrastructure.Auth;
 using Hiwjcn.Bll.Auth;
 using Lib.mvc.auth;
+using Hiwjcn.Framework;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -39,6 +40,7 @@ namespace Hiwjcn.Web.Controllers
             this._IUserService = _IUserService;
         }
 
+        [RequestLog]
         public async Task<ActionResult> Login(string url)
         {
             return await RunActionAsync(async () =>
