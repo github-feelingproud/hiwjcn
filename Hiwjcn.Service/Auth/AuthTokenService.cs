@@ -70,12 +70,11 @@ namespace Hiwjcn.Bll.Auth
 
             var code = new AuthCode()
             {
-                UID = Com.GetUUID(),
                 UserUID = user_uid,
                 ClientUID = client_uid,
-                ScopesJson = scopes.ToJson(),
-                CreateTime = now
+                ScopesJson = scopes.ToJson()
             };
+            code.Init("code");
 
             var border = now.GetDateBorder();
             if (await this._AuthCodeRepository.GetCountAsync(x => x.ClientUID == client_uid && x.UserUID == user_uid && x.CreateTime >= border.start && x.CreateTime < border.end) >= MaxCodeCreatedDaily)
@@ -147,12 +146,11 @@ namespace Hiwjcn.Bll.Auth
                 //create new token
                 var token = new AuthToken()
                 {
-                    UID = Com.GetUUID(),
-                    CreateTime = now,
                     ExpiryTime = now.AddDays(TokenExpireDays),
                     RefreshToken = Com.GetUUID(),
                     ScopesInfoJson = scopes.Select(x => new { uid = x.UID, name = x.Name }).ToJson()
                 };
+                token.Init("token");
                 if (!token.IsValid(out var msg))
                 {
                     throw new MsgException(msg);
@@ -162,12 +160,15 @@ namespace Hiwjcn.Bll.Auth
                     throw new MsgException("保存token失败");
                 }
                 //scope map
-                var scope_list = scopes.Select(x => new AuthTokenScope()
+                var scope_list = scopes.Select(x =>
                 {
-                    UID = Com.GetUUID(),
-                    ScopeUID = x.UID,
-                    TokenUID = token.UID,
-                    CreateTime = now
+                    var s = new AuthTokenScope()
+                    {
+                        ScopeUID = x.UID,
+                        TokenUID = token.UID,
+                    };
+                    s.Init("token-scope");
+                    return s;
                 }).ToArray();
                 if (await this._AuthTokenScopeRepository.AddAsync(scope_list) <= 0)
                 {
@@ -218,8 +219,10 @@ namespace Hiwjcn.Bll.Auth
                 var token = await token_query.Where(x => x.UID == tk.UID && x.ExpiryTime > now).FirstOrDefaultAsync();
 
                 if (token != null)
-                {                //refresh expire time
+                {
+                    //refresh expire time
                     token.ExpiryTime = now.AddDays(TokenExpireDays);
+                    token.UpdateTime = now;
 
                     success = await db.SaveChangesAsync() > 0;
                 }

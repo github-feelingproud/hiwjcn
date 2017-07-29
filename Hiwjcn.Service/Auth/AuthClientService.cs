@@ -29,7 +29,7 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<string> AddClientAsync(AuthClient client)
         {
-            client.Init();
+            client.Init("client");
             if (!this.CheckModel(client, out var msg))
             {
                 return msg;
@@ -118,7 +118,7 @@ namespace Hiwjcn.Bll.Auth
             if (await this._AuthClientRepository.UpdateAsync(model) > 0)
             {
                 var log = new AuthClientCheckLog();
-                log.Init();
+                log.Init("clientchecklog");
                 log.CheckStatus = model.IsActive;
                 log.Msg = reason ?? "no reason";
                 await this._AuthClientCheckLogRepository.AddAsync(log);

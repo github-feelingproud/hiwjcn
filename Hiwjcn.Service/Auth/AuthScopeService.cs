@@ -49,7 +49,7 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<string> AddScopeAsync(AuthScope scope)
         {
-            scope.Init();
+            scope.Init("scope");
             if (!this.CheckModel(scope, out var msg))
             {
                 return msg;

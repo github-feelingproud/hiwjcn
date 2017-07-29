@@ -14,6 +14,7 @@ namespace Model
     /// <summary>
     /// 实体基类
     /// </summary>
+    [Serializable]
     public abstract class BaseEntity : IDBTable
     {
         [Key]
@@ -35,11 +36,22 @@ namespace Model
         /// <summary>
         /// 第一次写库初始化
         /// </summary>
-        public virtual void Init()
+        public virtual void Init(string flag = null)
         {
+            flag = ConvertHelper.GetString(flag);
+            if (flag.ToArray().Any(x => x == ' '))
+            {
+                throw new Exception("init.flag不可以出现空格");
+            }
+            var prefix = string.Empty;
+            if (ValidateHelper.IsPlumpString(flag))
+            {
+                prefix = $"{flag}-";
+            }
+
             var now = DateTime.Now;
             this.IID = default(int);
-            this.UID = Com.GetUUID();
+            this.UID = prefix + Com.GetUUID();
             this.IsRemove = (int)YesOrNoEnum.否;
             this.CreateTime = now;
             this.UpdateTime = now;
