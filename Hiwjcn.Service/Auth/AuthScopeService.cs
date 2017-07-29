@@ -44,7 +44,7 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<List<AuthScope>> AllScopes()
         {
-            return (await this._AuthScopeRepository.GetListAsync(null)).OrderByDescending(x => x.Important).OrderBy(x => x.Name).ToList();
+            return (await this._AuthScopeRepository.GetListAsync(x => x.IsRemove <= 0)).OrderByDescending(x => x.Important).OrderBy(x => x.Name).ToList();
         }
 
         public async Task<string> AddScopeAsync(AuthScope scope)
@@ -54,6 +54,7 @@ namespace Hiwjcn.Bll.Auth
             {
                 return msg;
             }
+            scope.Name = scope.Name.ToLower();
 
             if (await this._AuthScopeRepository.ExistAsync(x => x.Name == scope.Name))
             {

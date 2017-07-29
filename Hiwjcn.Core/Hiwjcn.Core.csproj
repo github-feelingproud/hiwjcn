@@ -124,7 +124,6 @@
     <Compile Include="Domain\User\UserRoleModel.cs" />
     <Compile Include="Infrastructure\Auth\IAuthClientService.cs" />
     <Compile Include="Infrastructure\Auth\IAuthScopeService.cs" />
-    <Compile Include="Infrastructure\Auth\IAuthTokenScopeService.cs" />
     <Compile Include="Infrastructure\Auth\IAuthTokenService.cs" />
     <Compile Include="Infrastructure\Common\IAreaService.cs" />
     <Compile Include="Infrastructure\Common\ILinkService.cs" />

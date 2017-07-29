@@ -49,6 +49,15 @@ namespace Hiwjcn.Core.Domain.Auth
     }
 
     [Serializable]
+    [Table("auth_client_checklog")]
+    public class AuthClientCheckLog : BaseEntity
+    {
+        public virtual int CheckStatus { get; set; }
+
+        public virtual string Msg { get; set; }
+    }
+
+    [Serializable]
     [Table("auth_client_useage")]
     public class AuthClientUseage : BaseEntity
     {

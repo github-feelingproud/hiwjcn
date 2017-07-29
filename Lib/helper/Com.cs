@@ -32,13 +32,14 @@ namespace Lib.helper
             return new T();
         }
 
+        public static void AssertNotNull<T>(T target, string err_msg)
+        {
+            Assert(target, x => x != null, err_msg);
+        }
+
         /// <summary>
         /// 断言
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="target"></param>
-        /// <param name="condition"></param>
-        /// <param name="err_msg"></param>
         public static void Assert<T>(T target, Func<T, bool> condition, string err_msg)
         {
             Assert(target, condition, () => new Exception(err_msg ?? "默认的断言异常信息"));
@@ -47,11 +48,6 @@ namespace Lib.helper
         /// <summary>
         /// 断言
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="E"></typeparam>
-        /// <param name="target"></param>
-        /// <param name="condition"></param>
-        /// <param name="err"></param>
         public static void Assert<T, E>(T target, Func<T, bool> condition, Func<E> err)
             where E : Exception
         {

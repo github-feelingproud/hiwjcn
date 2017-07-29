@@ -73,11 +73,13 @@ namespace Hiwjcn.Dal
         #region model对应的实体
 
         public virtual DbSet<AuthClient> AuthClient { get; set; }
-        public virtual DbSet<AuthClientUseage> AuthClientUseage { get; set; }
         public virtual DbSet<AuthScope> AuthScope { get; set; }
         public virtual DbSet<AuthToken> AuthToken { get; set; }
         public virtual DbSet<AuthTokenScope> AuthTokenScope { get; set; }
         public virtual DbSet<AuthCode> AuthCode { get; set; }
+
+        public virtual DbSet<AuthClientCheckLog> AuthClientCheckLog { get; set; }
+        public virtual DbSet<AuthClientUseage> AuthClientUseage { get; set; }
 
         public virtual DbSet<UserAvatar> UserAvatar { get; set; }
         public virtual DbSet<UserModel> UserModel { get; set; }

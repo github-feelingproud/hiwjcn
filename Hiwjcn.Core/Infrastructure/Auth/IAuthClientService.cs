@@ -11,6 +11,8 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 {
     public interface IAuthClientService : IServiceBase<AuthClient>
     {
+        Task<AuthClient> GetByID(string uid);
+
         Task<string> AddClientAsync(AuthClient client);
 
         Task<string> DeleteClientAsync(string client_uid, string user_uid);
@@ -19,6 +21,8 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 
         Task<string> UpdateClientAsync(AuthClient updatemodel);
 
-        Task<PagerData<AuthClient>> QueryListAsync(string user_uid, string q, int page, int pagesize);
+        Task<PagerData<AuthClient>> QueryListAsync(
+            string user_uid = null, string q = null, bool? is_active = null, 
+            int page = 1, int pagesize = 10);
     }
 }

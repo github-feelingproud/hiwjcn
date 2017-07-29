@@ -18,9 +18,13 @@ namespace Hiwjcn.Bll.Auth
     public class AuthClientService : ServiceBase<AuthClient>, IAuthClientService
     {
         private readonly IRepository<AuthClient> _AuthClientRepository;
-        public AuthClientService(IRepository<AuthClient> _AuthClientRepository)
+        private readonly IRepository<AuthClientCheckLog> _AuthClientCheckLogRepository;
+        public AuthClientService(
+            IRepository<AuthClient> _AuthClientRepository,
+            IRepository<AuthClientCheckLog> _AuthClientCheckLogRepository)
         {
             this._AuthClientRepository = _AuthClientRepository;
+            this._AuthClientCheckLogRepository = _AuthClientCheckLogRepository;
         }
 
         public async Task<string> AddClientAsync(AuthClient client)
@@ -94,14 +98,58 @@ namespace Hiwjcn.Bll.Auth
             throw new MsgException("更新client激活状态异常");
         }
 
-        public async Task<PagerData<AuthClient>> QueryListAsync(string user_uid, string q, int page, int pagesize)
+        public async Task<AuthClient> GetByID(string uid)
+        {
+            var model = await this._AuthClientRepository.GetFirstAsync(x => x.UID == uid && x.IsActive > 0 && x.IsRemove <= 0);
+
+            return model;
+        }
+
+        public async Task<string> ApproveClient(string client_uid, bool active, string reason)
+        {
+            var model = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid);
+            Com.AssertNotNull(model, $"can not find client by uid:{client_uid}");
+            var active_data = active.ToString().ToBoolInt();
+            if (model.IsActive == active_data)
+            {
+                return "状态无需改变";
+            }
+            model.IsActive = active_data;
+            if (await this._AuthClientRepository.UpdateAsync(model) > 0)
+            {
+                var log = new AuthClientCheckLog();
+                log.Init();
+                log.CheckStatus = model.IsActive;
+                log.Msg = reason ?? "no reason";
+                await this._AuthClientCheckLogRepository.AddAsync(log);
+
+                return SUCCESS;
+            }
+            throw new Exception("更新client失败");
+        }
+
+        public async Task<PagerData<AuthClient>> QueryListAsync(
+            string user_uid = null, string q = null, bool? is_active = null,
+            int page = 1, int pagesize = 10)
         {
             var data = new PagerData<AuthClient>();
 
             await this._AuthClientRepository.PrepareSessionAsync(async db =>
             {
                 var query = db.Set<AuthClient>().AsNoTrackingQueryable();
+                query = query.Where(x => x.IsRemove <= 0);
                 query = query.Where(x => x.UserUID == user_uid);
+                if (is_active != null)
+                {
+                    if (is_active.Value)
+                    {
+                        query = query.Where(x => x.IsActive > 0);
+                    }
+                    else
+                    {
+                        query = query.Where(x => x.IsActive <= 0);
+                    }
+                }
                 if (ValidateHelper.IsPlumpString(q))
                 {
                     query = query.Where(x => x.ClientName.Contains(q));
@@ -117,7 +165,8 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<string> UpdateClientAsync(AuthClient updatemodel)
         {
-            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == updatemodel.UID && x.UserUID == updatemodel.UserUID) ?? throw new SourceNotExistException();
+            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == updatemodel.UID && x.UserUID == updatemodel.UserUID);
+            Com.Assert(client, x => x != null, $"client不存在:{updatemodel.ToJson()}");
 
             client.ClientName = updatemodel.ClientName;
             client.ClientUrl = updatemodel.ClientUrl;
