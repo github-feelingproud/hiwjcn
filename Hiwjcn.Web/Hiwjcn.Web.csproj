@@ -193,7 +193,6 @@
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
     <Folder Include="Views\AuthManage\" />
-    <Folder Include="Views\Connect\" />
     <Folder Include="Views\UserApi\" />
   </ItemGroup>
   <ItemGroup>
@@ -832,6 +831,8 @@
     <Content Include="Views\Shared\Limited.cshtml" />
     <Content Include="Views\Auth\MyClients.cshtml" />
     <Content Include="Views\Shared\Analysis.cshtml" />
+    <Content Include="Views\Connect\Login.cshtml" />
+    <Content Include="Views\Connect\Authorize.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
