@@ -2,6 +2,8 @@
 using Lib.ioc;
 using System;
 using System.Web;
+using Lib.mvc.auth;
+using System.Threading.Tasks;
 
 namespace Lib.mvc
 {
@@ -32,7 +34,13 @@ namespace Lib.mvc
         public string Url { get; private set; }
 
         #region 登录信息
-        public LoginUserInfo User { get; private set; }
+        public LoginUserInfo User
+        {
+            get
+            {
+                return this.context.GetAuthUser();
+            }
+        }
 
         public LoginUserInfo SSOUser { get; private set; }
 
@@ -67,8 +75,6 @@ namespace Lib.mvc
 
         public void LoadLoginUser()
         {
-            this.User = AppContext.Scope(x => x.Resolve_<LoginStatus>().GetLoginUser(context));
-
             this.SSOUser = AccountHelper.SSO.GetLoginUser(context);
             this.LoginUser = AccountHelper.User.GetLoginUser(context);
             this.LoginTrader = AccountHelper.Trader.GetLoginUser(context);

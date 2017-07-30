@@ -39,15 +39,18 @@ namespace Hiwjcn.Web.Controllers
         private readonly IAuthUserService _IUserService;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
+        private readonly IAuthClientService _IAuthClientService;
 
         public ConnectController(
             IAuthUserService _IUserService,
             IAuthTokenService _IAuthTokenService,
-            IAuthScopeService _IAuthScopeService)
+            IAuthScopeService _IAuthScopeService,
+            IAuthClientService _IAuthClientService)
         {
             this._IUserService = _IUserService;
             this._IAuthTokenService = _IAuthTokenService;
             this._IAuthScopeService = _IAuthScopeService;
+            this._IAuthClientService = _IAuthClientService;
         }
 
         private readonly ReadOnlyDictionary<string, string> LoginTypeDict = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
@@ -130,7 +133,7 @@ namespace Hiwjcn.Web.Controllers
                 return View();
             });
         }
-        
+
         [RequestLog]
         public async Task<ActionResult> Authorize(string client_id, string redirect_uri, string scope,
             string response_type, string state)
@@ -141,8 +144,20 @@ namespace Hiwjcn.Web.Controllers
                 var scopelist = await this._IAuthScopeService.GetScopesOrDefault(scopes.ToArray());
                 ViewData["scopes"] = scopelist;
 
+                var client = await this._IAuthClientService.GetByID(client_id);
+                if (client == null)
+                {
+                    return Content("client_id无效");
+                }
+                ViewData["client"] = client;
+
+
                 var loginuser = await this.X.context.GetAuthUserAsync();
 
+                if (loginuser == null)
+                { }
+                else
+                { }
 
                 return View();
             });
