@@ -107,15 +107,17 @@ namespace Hiwjcn.Web.Controllers
 
         [RequestLog]
         public async Task<ActionResult> Authorize(string client_id, string redirect_uri, string scope,
-            string response_type, string state, string login_type)
+            string response_type, string state, string login_type, string return_type)
         {
             return await RunActionAsync(async () =>
             {
+                ViewData[nameof(redirect_uri)] = redirect_uri;
                 ViewData[nameof(login_type)] = login_type;
+                ViewData[nameof(return_type)] = return_type;
 
-                var scopes = ConvertHelper.GetString(scope).Trim().Split(',').ToList();
+                var scopes = ConvertHelper.GetString(scope).Trim().Split(',').Where(x => ValidateHelper.IsPlumpString(x)).ToList();
                 var scopelist = await this._IAuthScopeService.GetScopesOrDefault(scopes.ToArray());
-                ViewData["scopes"] = scopelist;
+                ViewData["scopes"] = scopelist.OrderByDescending(x => x.Important).ToList();
 
                 var client = await this._IAuthClientService.GetByID(client_id);
                 if (client == null)

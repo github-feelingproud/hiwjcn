@@ -116,7 +116,7 @@ namespace Lib.mvc.auth
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="config"></param>
-        public static void UseUserLoginService(this ContainerBuilder builder, Func<IAuthLoginService> config)
+        public static void AuthUseUserLoginService(this ContainerBuilder builder, Func<IAuthLoginService> config)
         {
             builder.Register(_ => config.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
         }

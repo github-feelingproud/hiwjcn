@@ -21,6 +21,7 @@ using System.Web.Routing;
 using System.Reflection;
 using Hiwjcn.Framework.Tasks;
 using Lib.mvc.user;
+using Hiwjcn.Bll;
 
 namespace Hiwjcn.Web
 {
@@ -50,6 +51,7 @@ namespace Hiwjcn.Web
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
                     AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
                     {
+                        builder.AuthUseUserLoginService(() => new QipeilongLoginService());
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
                         builder.AuthUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
                     };

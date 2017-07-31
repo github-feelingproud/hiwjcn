@@ -18,5 +18,7 @@ namespace Lib.mvc.auth
         Task<LoginUserInfo> LoginByToken(string token);
 
         Task<LoginUserInfo> GetUserInfoByUID(string uid);
+
+        Task<List<string>> GetUserPermission(string uid);
     }
 }

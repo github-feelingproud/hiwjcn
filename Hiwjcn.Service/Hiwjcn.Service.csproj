@@ -153,6 +153,7 @@
     <Compile Include="Common\SettingService.cs" />
     <Compile Include="Common\ReqLogBll.cs" />
     <Compile Include="Common\UpFileBll.cs" />
+    <Compile Include="QipeilongLoginService.cs" />
     <Compile Include="Tag\TagBll.cs" />
     <Compile Include="Tag\TagMapBll.cs" />
     <Compile Include="User\FunctionPermission.cs" />
