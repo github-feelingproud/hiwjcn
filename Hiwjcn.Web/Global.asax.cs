@@ -20,6 +20,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Reflection;
 using Hiwjcn.Framework.Tasks;
+using Lib.mvc.user;
 
 namespace Hiwjcn.Web
 {
@@ -49,10 +50,8 @@ namespace Hiwjcn.Web
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
                     AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
                     {
-                        builder.AuthUseAuthServerValidation(() => new AuthServerConfig()
-                        {
-                            //
-                        });
+                        //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
+                        builder.AuthUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
                     };
 
                     //disable "X-AspNetMvc-Version" header name

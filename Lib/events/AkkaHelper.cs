@@ -63,7 +63,7 @@ namespace Lib.events
     {
         public static readonly AkkaSystemManager Instance = new AkkaSystemManager();
 
-        public override string DefaultKey => "default_actor_system";
+        public override string DefaultKey => "DefaultActorSystem";
 
         public override bool CheckClient(ActorSystem ins)
         {

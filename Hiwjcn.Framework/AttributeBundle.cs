@@ -92,9 +92,9 @@ namespace Hiwjcn.Framework
 
                 var route = filterContext.RouteData.GetA_C_A();
 
-                model.AreaName = route.area;
-                model.ControllerName = route.controller;
-                model.ActionName = route.action;
+                model.AreaName = route.area?.ToLower();
+                model.ControllerName = route.controller?.ToLower();
+                model.ActionName = route.action?.ToLower();
 
                 model.ReqMethod = filterContext.HttpContext.Request.HttpMethod;
 

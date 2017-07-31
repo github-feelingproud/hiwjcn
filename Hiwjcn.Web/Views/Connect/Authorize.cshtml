@@ -1,14 +1,89 @@
-﻿@{
-
-}
-
+﻿@using Hiwjcn.Core.Domain.Auth;
 @{
-    if (this.X.User == null)
-    {
-        //login form
-    }
-    else
-    {
-        //auth button
-    }
+    this.SetTitle("登录授权");
+    this.SetDescription("登录授权");
 }
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="center-block" style="max-width:600px;">
+                @{
+                    if (this.X.User == null && false)
+                    {
+                        var login_type = ConvertHelper.GetString(ViewData["login_type"]);
+                        if (login_type == "code")
+                        {
+                            @IncludeView("auth_loginbycode")
+                        }
+                        else
+                        {
+                            @IncludeView("auth_loginbypassword")
+                        }
+                    }
+                    else
+                    {
+                        var scopes = Com.NewIfNull<List<AuthScope>>(ViewData["scopes"]);
+                        var scopesJson = scopes.Select(x => x.Name).ToJson();
+                        var client = Com.NewIfNull<AuthClient>(ViewData["client"]);
+
+                        <div class="panel panel-default" style="margin-top:20px;">
+                            <div class="panel-heading">
+                                <h3>授权访问</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="box_con">
+                                    <a href="@(client.ClientUrl)" target="_blank" class="thumbnail">
+                                        <img src="@(client.LogoUrl)" alt="">
+                                    </a>
+                                </div>
+                                <p>授予@(client.ClientName)以下权限</p>
+                            </div>
+                            <div class="list-group">
+                                @foreach (var s in scopes)
+                                {
+                                    <a href="javascript:;" class="list-group-item@(s.Important>0 ? " active":"")" target="_blank">
+                                        <h4 class="list-group-item-heading">@(s.DisplayName)</h4>
+                                        <p class="list-group-item-text">@(s.Description)</p>
+                                    </a>
+                                }
+                                <a href="#" class="list-group-item active">
+                                    <h4 class="list-group-item-heading">基本信息</h4>
+                                    <p class="list-group-item-text">个人资料，头像，地址</p>
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <h4 class="list-group-item-heading">订单</h4>
+                                    <p class="list-group-item-text">订单数据的访问删除修改</p>
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <h4 class="list-group-item-heading">商品</h4>
+                                    <p class="list-group-item-text">修改删除商品</p>
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <h4 class="list-group-item-heading">论坛</h4>
+                                    <p class="list-group-item-text">论坛发帖删帖回复</p>
+                                </a>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="pull-right">
+                                            <button class="btn btn-danger">
+                                                <span class="fa fa-remove"></span>
+                                                <span>取消</span>
+                                            </button>
+                                            <button class="btn btn-success">
+                                                <span class="fa fa-check"></span>
+                                                <span>授权</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

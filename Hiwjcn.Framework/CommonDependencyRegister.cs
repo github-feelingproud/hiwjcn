@@ -43,7 +43,7 @@ namespace Hiwjcn.Framework
             builder.RegisterType<EntityDB>().AsSelf().As<DbContext>().Named<DbContext>("db");
             builder.RegisterType<MySqlConnection>().As<IDbConnection>();
             //builder.RegisterInstance(new LoginStatus()).As<LoginStatus>().SingleInstance();
-            builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().As<ILoginStatus>().SingleInstance();
+            //builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().As<ILoginStatus>().SingleInstance();
 
             #region 自动注册
             AutoRegistered(ref builder, tps.core.Assembly, tps.service.Assembly);

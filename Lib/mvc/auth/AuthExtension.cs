@@ -97,6 +97,21 @@ namespace Lib.mvc.auth
         }
 
         /// <summary>
+        /// 使用cookie登录
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="loginuser"></param>
+        public static void CookieLogin(this HttpContext context, LoginUserInfo loginuser)
+        {
+            AppContext.Scope(s =>
+            {
+                var loginstatus = s.Resolve_<LoginStatus>();
+                loginstatus.SetUserLogin(context, loginuser);
+                return true;
+            });
+        }
+
+        /// <summary>
         /// 使用auth server验证
         /// </summary>
         /// <param name="builder"></param>

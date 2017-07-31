@@ -36,18 +36,15 @@ namespace Hiwjcn.Web.Controllers
     [RoutePrefix("connect")]
     public class ConnectController : BaseController
     {
-        private readonly IAuthUserService _IUserService;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly IAuthClientService _IAuthClientService;
 
         public ConnectController(
-            IAuthUserService _IUserService,
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService,
             IAuthClientService _IAuthClientService)
         {
-            this._IUserService = _IUserService;
             this._IAuthTokenService = _IAuthTokenService;
             this._IAuthScopeService = _IAuthScopeService;
             this._IAuthClientService = _IAuthClientService;
@@ -60,36 +57,6 @@ namespace Hiwjcn.Web.Controllers
             //["token"] = "",
         });
 
-        [RequestLog]
-        public async Task<ActionResult> Login(string url, string loginType)
-        {
-            return await RunActionAsync(async () =>
-            {
-                if (!ValidateHelper.IsPlumpString(url))
-                {
-                    url = "/";
-                }
-
-                var loginuser = await this.X.context.GetAuthUserAsync();
-                if (loginuser != null)
-                {
-                    return Redirect(url);
-                }
-
-                if (!ValidateHelper.IsPlumpString(loginType))
-                {
-                    loginType = "password";
-                }
-
-                if (!LoginTypeDict.ContainsKey(loginType))
-                {
-                    return Content("不支持的登录方式");
-                }
-
-                return View(LoginTypeDict[loginType]);
-            });
-        }
-
         [HttpPost]
         [RequestLog]
         public async Task<ActionResult> LoginByPassword(string username, string password)
@@ -97,7 +64,10 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 await Task.FromResult(1);
-                return View();
+
+                this.X.context.CookieLogin(new LoginUserInfo() { });
+
+                return GetJsonRes("");
             });
         }
 
@@ -108,7 +78,10 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 await Task.FromResult(1);
-                return View();
+
+                this.X.context.CookieLogin(new LoginUserInfo() { });
+
+                return GetJsonRes("");
             });
         }
 
@@ -119,7 +92,10 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 await Task.FromResult(1);
-                return View();
+
+                this.X.context.CookieLogin(new LoginUserInfo() { });
+
+                return GetJsonRes("");
             });
         }
 
@@ -130,16 +106,19 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 await Task.FromResult(1);
-                return View();
+
+                return GetJsonRes("");
             });
         }
 
         [RequestLog]
         public async Task<ActionResult> Authorize(string client_id, string redirect_uri, string scope,
-            string response_type, string state)
+            string response_type, string state, string login_type)
         {
             return await RunActionAsync(async () =>
             {
+                ViewData[nameof(login_type)] = login_type;
+
                 var scopes = ConvertHelper.GetString(scope).Trim().Split(',').ToList();
                 var scopelist = await this._IAuthScopeService.GetScopesOrDefault(scopes.ToArray());
                 ViewData["scopes"] = scopelist;
@@ -147,17 +126,12 @@ namespace Hiwjcn.Web.Controllers
                 var client = await this._IAuthClientService.GetByID(client_id);
                 if (client == null)
                 {
-                    return Content("client_id无效");
+                    //return Content("client_id无效");
                 }
                 ViewData["client"] = client;
 
-
+                //使用异步加载
                 var loginuser = await this.X.context.GetAuthUserAsync();
-
-                if (loginuser == null)
-                { }
-                else
-                { }
 
                 return View();
             });
