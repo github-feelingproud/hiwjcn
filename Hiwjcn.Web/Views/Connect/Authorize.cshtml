@@ -32,7 +32,7 @@
                             <div class="panel-heading">
                                 <h3>授权访问</h3>
                             </div>
-                            <div class="panel-body">
+                            <div class="panel-body" style="background-color:#1f91bd;color:white;">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="box_con">
@@ -42,7 +42,9 @@
                                         </div>
                                     </div>
                                     <div class="col-md-8">
-                                        <p><h5>授予<span class="label label-primary">@(client.ClientName)</span>以下权限</h5></p>
+                                        <p><h4><span class="label label-primary">@(client.ClientName)</span></h4></p>
+                                        <p>@(client.Description)</p>
+                                        <p>授予以下权限</p>
                                     </div>
                                 </div>
                             </div>
