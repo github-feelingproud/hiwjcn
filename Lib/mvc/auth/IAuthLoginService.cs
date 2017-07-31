@@ -9,16 +9,14 @@ namespace Lib.mvc.auth
 {
     public interface IAuthLoginService
     {
-        Task<LoginUserInfo> LoginByPassword(string user_name, string password);
+        Task<(LoginUserInfo loginuser, string msg)> LoginByPassword(string user_name, string password);
 
-        Task<LoginUserInfo> LoginByCode(string phoneOrEmail, string code);
+        Task<(LoginUserInfo loginuser, string msg)> LoginByCode(string phoneOrEmail, string code);
 
         Task<string> SendOneTimeCode(string phoneOrEmail);
 
-        Task<LoginUserInfo> LoginByToken(string token);
+        Task<(LoginUserInfo loginuser, string msg)> LoginByToken(string token);
 
         Task<LoginUserInfo> GetUserInfoByUID(string uid);
-
-        Task<List<string>> GetUserPermission(string uid);
     }
 }

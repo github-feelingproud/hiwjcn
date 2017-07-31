@@ -8,43 +8,120 @@ using Lib.mvc.user;
 using Dapper;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Lib.data;
+using Lib.helper;
+using Lib.extension;
+using Lib.core;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.Configuration;
 
 namespace Hiwjcn.Bll
 {
     public class QipeilongLoginService : IAuthLoginService
     {
-        public Task<LoginUserInfo> GetUserInfoByUID(string uid)
+        private IDbConnection db()
         {
-            throw new NotImplementedException();
+            var con = new SqlConnection(ConfigurationManager.ConnectionStrings["db"]?.ConnectionString);
+            con.OpenIfClosedWithRetry(2);
+            return con;
         }
 
-        public async Task<List<string>> GetUserPermission(string uid)
+        private LoginUserInfo Parse(UserInfo model)
         {
-            return await Task.FromResult(new List<string>() { "basic_info" });
+            return new LoginUserInfo()
+            {
+                IID = model.IID,
+                UserID = model.UID,
+                Email = model.Email,
+                HeadImgUrl = model.Images,
+                IsActive = model.IsActive ?? 0,
+                IsValid = true,
+            };
         }
 
-        public Task<LoginUserInfo> LoginByCode(string phoneOrEmail, string code)
+        public async Task<LoginUserInfo> GetUserInfoByUID(string uid)
         {
-            throw new NotImplementedException();
+            var user = default(LoginUserInfo);
+            using (var con = db())
+            {
+                var sql = "select top 1 * from parties.dbo.UserInfo where UID=@uid";
+                var xx = (await con.QueryAsync<UserInfo>(sql, new { uid = uid })).FirstOrDefault();
+                if (xx != null)
+                {
+                    user = this.Parse(xx);
+                }
+            }
+            return user;
         }
 
-        public Task<LoginUserInfo> LoginByPassword(string user_name, string password)
+        public async Task<(LoginUserInfo loginuser, string msg)> LoginByCode(string phoneOrEmail, string code)
         {
-            throw new NotImplementedException();
+            using (var con = db())
+            {
+                var time = DateTime.Now.AddSeconds(-300);
+                var sql = "select top 1 * from parties.dbo.sms where recipient=@uname and createddate>=@time order by createddate desc";
+                var sms = (await con.QueryAsync<Sms>(sql, new { uname = phoneOrEmail, time = time })).FirstOrDefault();
+                if (sms == null || sms.MsgCode != code)
+                {
+                    return (null, "验证码错误");
+                }
+                sql = "select top 1 * from parties.dbo.userinfo where username=@uname";
+                var user = (await con.QueryAsync<UserInfo>(sql, new { uname = phoneOrEmail })).FirstOrDefault();
+                if (user == null)
+                {
+                    return (null, "用户不存在");
+                }
+                return (this.Parse(user), null);
+            }
         }
 
-        public Task<LoginUserInfo> LoginByToken(string token)
+        public async Task<(LoginUserInfo loginuser, string msg)> LoginByPassword(string user_name, string password)
         {
-            throw new NotImplementedException();
+            (LoginUserInfo loginuser, string msg) data = (null, "没有实现");
+            return await Task.FromResult(data);
         }
 
-        public Task<string> SendOneTimeCode(string phoneOrEmail)
+        public async Task<(LoginUserInfo loginuser, string msg)> LoginByToken(string token)
         {
-            throw new NotImplementedException();
+            (LoginUserInfo loginuser, string msg) data = (null, "没有实现");
+            return await Task.FromResult(data);
+        }
+
+        public async Task<string> SendOneTimeCode(string phoneOrEmail)
+        {
+            using (var con = db())
+            {
+                var now = DateTime.Now;
+                var ran = new Random((int)now.Ticks);
+                var code = string.Empty.Join_(ran.Sample(Com.Range(10).ToList(), 4));
+                //send sms
+
+                var model = new Sms();
+                model.UID = Com.GetUUID();
+                model.MsgCode = code;
+                model.Msg = $"汽配龙登录验证码：{code}";
+                model.TemplateId = "no data";
+                model.Recipient = phoneOrEmail;
+                model.SmsType = 0;
+                model.Status = (int)YesOrNoEnum.是;
+                model.Sender = "大汉三通";
+                model.CreatedDate = model.UpdatedDate = now;
+                var sql = @"insert into parties.dbo.Sms 
+(UID,MsgCode,Msg,TemplateId,Sender,Recipient,SmsType,IsRemove,CreatedDate,UpdatedDate,IsRead,Status) values 
+(@UID,@MsgCode,@Msg,@TemplateId,@Sender,@Recipient,@SmsType,@IsRemove,@CreatedDate,@UpdatedDate,@IsRead,@Status)";
+                if (await con.ExecuteAsync(sql, model) <= 0)
+                {
+                    return "发送验证码失败";
+                }
+                return string.Empty;
+            }
         }
     }
 
-    public class UserInfo
+    [Serializable]
+    public class UserInfo : IDBTable
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -86,7 +163,8 @@ namespace Hiwjcn.Bll
         public string RepositoryUID { get; set; }
     }
 
-    public class Sms
+    [Serializable]
+    public class Sms : IDBTable
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
