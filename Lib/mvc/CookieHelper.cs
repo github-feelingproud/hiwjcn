@@ -13,8 +13,6 @@ namespace Lib.mvc
         /// <summary>
         /// 删除cookie
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="names"></param>
         public static void RemoveCookie(HttpContext context, string[] names, string domain = null)
         {
             if (!ValidateHelper.IsPlumpList(names)) { throw new ArgumentException(); }

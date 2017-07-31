@@ -108,7 +108,16 @@ namespace Hiwjcn.Web.Controllers
                     });
                 }
 
-                return GetJson(new _() { success = token != null, data = token });
+                var data = new
+                {
+                    token = token?.UID,
+                    refresh_token = token?.RefreshToken,
+                    expire = token?.ExpiryTime,
+                    user_uid = token?.UserUID,
+                    scope = token?.Scopes?.Select(x => x.Name).ToList()
+                };
+
+                return GetJson(new _() { success = token != null, data = data });
             });
         }
 

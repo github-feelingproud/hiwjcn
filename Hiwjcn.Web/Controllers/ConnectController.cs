@@ -173,16 +173,15 @@ namespace Hiwjcn.Web.Controllers
                 return Redirect(url);
             });
         }
-
-        [ActionName("user_js")]
+        
         [RequestLog]
         public async Task<ActionResult> LoginUser()
         {
             return await RunActionAsync(async () =>
             {
                 var loginuser = await this.X.context.GetAuthUserAsync();
-                await Task.FromResult(1);
-                return View();
+
+                return GetJsonp(new _() { success = loginuser != null, data = loginuser });
             });
         }
     }

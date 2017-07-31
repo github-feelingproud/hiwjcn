@@ -350,7 +350,6 @@
     <Compile Include="mvc\NameValueCollectionHelper.cs" />
     <Compile Include="mvc\user\CheckLoginInfoData.cs" />
     <Compile Include="mvc\HtmlExtensions.cs" />
-    <Compile Include="mvc\user\ILoadUserPermission.cs" />
     <Compile Include="mvc\user\LoginUserInfo.cs" />
     <Compile Include="mvc\MySQLSessionProvider.cs" />
     <Compile Include="mvc\ResultBundle.cs" />

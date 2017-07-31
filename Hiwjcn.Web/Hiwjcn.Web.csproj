@@ -835,6 +835,7 @@
     <Content Include="Views\Connect\Authorize.cshtml" />
     <Content Include="Views\Shared\auth_loginbypassword.cshtml" />
     <Content Include="Views\Shared\auth_loginbycode.cshtml" />
+    <Content Include="Views\Shared\auth_scope_confirm.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

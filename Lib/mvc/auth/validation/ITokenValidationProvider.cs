@@ -40,6 +40,15 @@ namespace Lib.mvc.auth.validation
         }
     }
 
+    class TokenReturn
+    {
+        public string token { get; set; }
+        public string refresh_token { get; set; }
+        public DateTime expire { get; set; }
+        public string user_uid { get; set; }
+        public List<string> scope { get; set; }
+    }
+
     /// <summary>
     /// 请求auth server验证
     /// </summary>
@@ -56,15 +65,36 @@ namespace Lib.mvc.auth.validation
 
         public override LoginUserInfo FindUser(HttpContext context)
         {
-            var token = context.GetBearerToken();
-            if (!ValidateHelper.IsPlumpString(token)) { return null; }
-
-            var json = HttpClientHelper.Post_(this._server.ApiPath("auth", "authrioze"), new
+            try
             {
-                token = token
-            });
+                var token = context.GetBearerToken();
+                var client_id = context.Request.Headers["client_id"];
+                if (!ValidateHelper.IsAllPlumpString(token, client_id))
+                {
+                    return null;
+                }
 
-            throw new NotImplementedException();
+                var json = HttpClientHelper.Post_(this._server.ApiPath("auth", "CheckToken"), new
+                {
+                    client_id = client_id,
+                    access_token = token
+                });
+                var data = json.JsonToEntity<TokenReturn>();
+
+                return new LoginUserInfo()
+                {
+                    UserID = data.user_uid,
+                    LoginToken = data.token,
+                    RefreshToken = data.refresh_token,
+                    TokenExpire = data.expire,
+                    Scopes = data.scope
+                };
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+                return null;
+            }
         }
 
         public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)

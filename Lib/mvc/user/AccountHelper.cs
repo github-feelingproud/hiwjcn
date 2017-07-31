@@ -6,39 +6,10 @@ using System.Web.SessionState;
 
 namespace Lib.mvc.user
 {
-    public interface ILoginStatus
-    {
-        //COOKIE
-        string COOKIE_LOGIN_UID { get; }
-        //TOKEN
-        string COOKIE_LOGIN_TOKEN { get; }
-        //SESSION
-        string LOGIN_USER_SESSION { get; }
-        //DOMAIN
-        string COOKIE_DOMAIN { get; }
-        //cookie过期的时间
-        int CookieExpiresMinutes { get; }
-
-        string GetCookieUID(HttpContext context = null);
-
-        string GetCookieToken(HttpContext context = null);
-
-        void SetUserLogin(HttpContext context = null, LoginUserInfo loginuser = null);
-
-        void SetUserLogout(HttpContext context = null);
-
-        void DeleteExtraCookie(HttpContext context = null);
-
-        void DeleteCookie(HttpContext context = null, bool cookies_with_domain = true);
-
-        LoginUserInfo GetLoginUser(HttpContext context = null);
-
-    }
-
     /// <summary>
     /// 登录状态存取
     /// </summary>
-    public class LoginStatus : ILoginStatus, IRequiresSessionState
+    public class LoginStatus : IRequiresSessionState
     {
         //COOKIE
         public string COOKIE_LOGIN_UID { get; private set; }
@@ -139,46 +110,7 @@ namespace Lib.mvc.user
             SessionHelper.RemoveSession(context.Session, LOGIN_USER_SESSION);
             //清空其他cookie操作
             //CookieHelper.RemoveResponseCookies(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN });
-            if (ValidateHelper.IsPlumpString(COOKIE_DOMAIN))
-            {
-                //删除带域名的cookie
-                DeleteCookie(context, true);
-            }
-            else
-            {
-                //删除不带域名的cookie
-                DeleteCookie(context, false);
-            }
-        }
-
-        /// <summary>
-        /// 如果有域名就删除没有域名的cookie，如果没有域名就删除有域名的cookie
-        /// </summary>
-        /// <param name="context"></param>
-        public void DeleteExtraCookie(HttpContext context = null)
-        {
-            context = GetContext(context);
-
-            if (ValidateHelper.IsPlumpString(COOKIE_DOMAIN))
-            {
-                DeleteCookie(context, false);
-            }
-            else
-            {
-                DeleteCookie(context, true);
-            }
-        }
-
-        /// <summary>
-        /// 删除cookie
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="cookies_with_domain"></param>
-        public void DeleteCookie(HttpContext context = null, bool cookies_with_domain = true)
-        {
-            context = GetContext(context);
-
-            if (cookies_with_domain)
+            if (ValidateHelper.IsPlumpString(this.COOKIE_DOMAIN))
             {
                 CookieHelper.RemoveCookie(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN }, domain: COOKIE_DOMAIN);
             }
