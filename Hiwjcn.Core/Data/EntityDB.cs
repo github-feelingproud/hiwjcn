@@ -83,7 +83,7 @@ namespace Hiwjcn.Dal
 
         public virtual DbSet<UserAvatar> UserAvatar { get; set; }
         public virtual DbSet<UserModel> UserModel { get; set; }
-        
+
         public virtual DbSet<LoginErrorLogModel> LoginErrorLogModel { get; set; }
         public virtual DbSet<RoleModel> RoleModel { get; set; }
         public virtual DbSet<RolePermissionModel> RolePermissionModel { get; set; }
@@ -98,6 +98,7 @@ namespace Hiwjcn.Dal
         public virtual DbSet<MessageModel> MessageModel { get; set; }
         public virtual DbSet<OptionModel> OptionModel { get; set; }
         public virtual DbSet<ReqLogModel> ReqLogModel { get; set; }
+        public virtual DbSet<CacheHitLog> CacheHitLog { get; set; }
         public virtual DbSet<UpFileModel> UpFileModel { get; set; }
         public virtual DbSet<TagMapModel> TagMapModel { get; set; }
         public virtual DbSet<TagModel> TagModel { get; set; }

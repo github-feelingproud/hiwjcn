@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 using Hiwjcn.Core.Infrastructure.Auth;
 using Hiwjcn.Bll.Auth;
 using Hiwjcn.Core.Domain.Auth;
+using Lib.events;
+using Hiwjcn.Core.Model.Sys;
+using Hiwjcn.Framework.Actors;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -48,47 +51,6 @@ namespace Hiwjcn.Web.Controllers
         }
 
         /// <summary>
-        /// 授权页面
-        /// </summary>
-        /// <param name="client_id"></param>
-        /// <param name="redirect_uri"></param>
-        /// <param name="response_type"></param>
-        /// <param name="state"></param>
-        /// <returns></returns>
-        [Route("authorize")]
-        public async Task<ActionResult> Authorize(
-            string client_id, string redirect_uri, string scope, string response_type, string state)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var scope_list = ConvertHelper.NotNullList(scope?.Split(',').ToList()).Where(x => ValidateHelper.IsPlumpString(x)).ToList();
-
-                var list = await this._IAuthScopeService.GetScopesOrDefault(scope_list.ToArray());
-                list = list.OrderByDescending(x => x.Important).OrderBy(x => x.Name).ToList();
-
-                ViewData["scopes"] = list;
-                return View();
-            });
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> AuthorizeCode(string client_id, List<string> scope)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var loginuser = this._LoginStatus.GetLoginUser();
-                if (loginuser == null)
-                {
-                    return GetJsonRes("未登录");
-                }
-
-                var data = await this._IAuthTokenService.CreateCodeAsync(client_id, scope, loginuser.UserID);
-
-                return GetJson(new _() { success = !ValidateHelper.IsPlumpString(data.msg), data = data.code?.UID, msg = data.msg });
-            });
-        }
-
-        /// <summary>
         /// 用code换token
         /// </summary>
         /// <param name="client_id"></param>
@@ -107,6 +69,12 @@ namespace Hiwjcn.Web.Controllers
                 return View();
             });
         }
+
+        /// <summary>
+        /// 记录1%4的log
+        /// </summary>
+        private static readonly List<bool> HitLogProbability = new List<bool>() { true, false, false, false };
+        private static readonly Random ran = new Random((int)DateTime.Now.Ticks);
 
         /// <summary>
         /// 合法则返回200， 否则返回404
@@ -128,8 +96,10 @@ namespace Hiwjcn.Web.Controllers
 
                 var hit_status = CacheHitStatusEnum.Hit;
 
+                var cache_key = AuthCacheKeyManager.TokenKey(access_token);
+
                 var res = await this._cache.GetOrSetAsync(
-                    AuthCacheKeyManager.TokenKey(access_token),
+                    cache_key,
                     async () =>
                     {
 
@@ -138,7 +108,14 @@ namespace Hiwjcn.Web.Controllers
                     },
                     TimeSpan.FromMinutes(5));
 
-                $"token：{access_token}缓存命中情况：{hit_status}".AddBusinessInfoLog();
+                if (ran.Choice(HitLogProbability))
+                {
+                    AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog()
+                    {
+                        CacheKey = cache_key,
+                        Hit = (int)hit_status
+                    });
+                }
 
                 return GetJson(new _() { success = true });
             });
