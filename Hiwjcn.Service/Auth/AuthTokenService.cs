@@ -239,14 +239,17 @@ namespace Hiwjcn.Bll.Auth
             return success;
         }
 
-        public async Task<AuthToken> FindTokenAsync(string token_uid)
+        public async Task<AuthToken> FindTokenAsync(string client_uid, string token_uid)
         {
             var token = default(AuthToken);
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
             {
                 var now = DateTime.Now;
                 var token_query = db.Set<AuthToken>().AsNoTrackingQueryable();
-                token = await token_query.Where(x => x.UID == token_uid && x.ExpiryTime > now).FirstOrDefaultAsync();
+                token = await token_query.Where(x =>
+                x.UID == token_uid &&
+                x.ClientUID == client_uid &&
+                x.ExpiryTime > now).FirstOrDefaultAsync();
 
                 if (token != null)
                 {

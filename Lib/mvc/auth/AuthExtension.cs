@@ -112,6 +112,16 @@ namespace Lib.mvc.auth
         }
 
         /// <summary>
+        /// 注册登录逻辑
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="config"></param>
+        public static void UseUserLoginService(this ContainerBuilder builder, Func<IAuthLoginService> config)
+        {
+            builder.Register(_ => config.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
+        }
+
+        /// <summary>
         /// 使用auth server验证
         /// </summary>
         /// <param name="builder"></param>

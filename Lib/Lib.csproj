@@ -306,6 +306,7 @@
     <Compile Include="mvc\auth\AuthTokenCheckFromDatabaseProvider.cs" />
     <Compile Include="mvc\auth\AuthTokenCheckFromWebApiProvider.cs" />
     <Compile Include="mvc\auth\AuthValidBaseAttribute.cs" />
+    <Compile Include="mvc\auth\IAuthLoginService.cs" />
     <Compile Include="mvc\auth\IAuthStoreProvider.cs" />
     <Compile Include="mvc\auth\IAuthTokenCheckProvider.cs" />
     <Compile Include="mvc\auth\ITokenProvider.cs" />

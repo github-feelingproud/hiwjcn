@@ -15,7 +15,7 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 
         Task<(AuthToken token, string msg)> CreateTokenAsync(string client_id, string client_secret, string code_uid);
 
-        Task<AuthToken> FindTokenAsync(string token_uid);
+        Task<AuthToken> FindTokenAsync(string client_uid, string token_uid);
 
         Task<string> DeleteClientAsync(string client_uid, string user_uid);
 

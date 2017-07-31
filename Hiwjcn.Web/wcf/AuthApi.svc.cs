@@ -53,7 +53,7 @@ namespace Hiwjcn.Web.wcf
         {
             var token = await AppContext.ScopeAsync(async s =>
             {
-                return await s.Resolve_<IAuthTokenService>().FindTokenAsync(token_uid);
+                return await s.Resolve_<IAuthTokenService>().FindTokenAsync("", token_uid);
             });
 
             return new ResultMsg<AuthTokenWcf>()

@@ -18,10 +18,11 @@ using Hiwjcn.Core.Domain.Auth;
 using Lib.events;
 using Hiwjcn.Core.Model.Sys;
 using Hiwjcn.Framework.Actors;
+using Lib.mvc.auth;
+using Hiwjcn.Framework;
 
 namespace Hiwjcn.Web.Controllers
 {
-    [RoutePrefix("oauth2")]
     public class AuthController : BaseController
     {
         private readonly LoginStatus _LoginStatus;
@@ -59,14 +60,18 @@ namespace Hiwjcn.Web.Controllers
         /// <param name="grant_type"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("access_token")]
+        [RequestLog]
         public async Task<ActionResult> AccessToken(
             string client_id, string client_secret, string code, string grant_type)
         {
             return await RunActionAsync(async () =>
             {
-                await Task.FromResult(1);
-                return View();
+                var data = await this._IAuthTokenService.CreateTokenAsync(client_id, client_secret, code);
+                if (ValidateHelper.IsPlumpString(data.msg))
+                {
+                    return GetJsonRes(data.msg);
+                }
+                return GetJson(new _() { success = true, data = data.token });
             });
         }
 
@@ -76,37 +81,22 @@ namespace Hiwjcn.Web.Controllers
         private static readonly List<bool> HitLogProbability = new List<bool>() { true, false, false, false };
         private static readonly Random ran = new Random((int)DateTime.Now.Ticks);
 
-        /// <summary>
-        /// 合法则返回200， 否则返回404
-        /// </summary>
-        /// <param name="client_id"></param>
-        /// <param name="access_token"></param>
-        /// <returns></returns>
-        [Route("check_token/{client_id}/{access_token}")]
+        [HttpPost]
+        [RequestLog]
         public async Task<ActionResult> CheckToken(string client_id, string access_token)
         {
             return await RunActionAsync(async () =>
             {
-                await Task.FromResult(1);
-                var bad = true;
-                if (bad)
-                {
-                    return Http404();
-                }
-
                 var hit_status = CacheHitStatusEnum.Hit;
 
                 var cache_key = AuthCacheKeyManager.TokenKey(access_token);
 
-                var res = await this._cache.GetOrSetAsync(
-                    cache_key,
-                    async () =>
-                    {
+                var token = await this._cache.GetOrSetAsync(cache_key, async () =>
+                     {
+                         hit_status = CacheHitStatusEnum.NotHit;
 
-                        hit_status = CacheHitStatusEnum.NotHit;
-                        return await Task.FromResult("");
-                    },
-                    TimeSpan.FromMinutes(5));
+                         return await this._IAuthTokenService.FindTokenAsync(client_id, access_token);
+                     }, TimeSpan.FromMinutes(5));
 
                 if (ran.Choice(HitLogProbability))
                 {
@@ -117,32 +107,12 @@ namespace Hiwjcn.Web.Controllers
                     });
                 }
 
-                return GetJson(new _() { success = true });
+                return GetJson(new _() { success = token != null, data = token });
             });
         }
 
-        /// <summary>
-        /// 检查token是否对某个scope有访问权限
-        /// </summary>
-        /// <param name="client_id"></param>
-        /// <param name="access_token"></param>
-        /// <returns></returns>
-        [Route("check_token_scope/{access_token}/{scope}")]
-        public async Task<ActionResult> CheckTokenScope(string access_token, string scope)
-        {
-            return await RunActionAsync(async () =>
-            {
-                await Task.FromResult(1);
-                var bad = true;
-                if (bad)
-                {
-                    return Http404();
-                }
-
-                return GetJson(new _() { success = true });
-            });
-        }
-
+        [PageAuth]
+        [RequestLog]
         public async Task<ActionResult> MyClients(string q, int? page)
         {
             return await RunActionAsync(async () =>
@@ -150,8 +120,10 @@ namespace Hiwjcn.Web.Controllers
                 page = CheckPage(page);
                 var pagesize = 100;
 
-                var data = await this._IAuthTokenService.GetMyAuthorizedClientsAsync(this.X.User?.UserID, q, page.Value, pagesize);
-                ViewData["pager"] = data.GetPagerHtml($"oauth/{nameof(MyClients)}", "page", page.Value, pagesize);
+                var loginuser = await this.X.context.GetAuthUserAsync();
+
+                var data = await this._IAuthTokenService.GetMyAuthorizedClientsAsync(loginuser?.UserID, q, page.Value, pagesize);
+                ViewData["pager"] = data.GetPagerHtml($"Auth/{nameof(MyClients)}", "page", page.Value, pagesize);
                 ViewData["list"] = data.DataList;
                 return View();
             });

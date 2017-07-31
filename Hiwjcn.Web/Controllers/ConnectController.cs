@@ -20,31 +20,23 @@ using System.Collections.ObjectModel;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public interface IAuthUserService
-    {
-        Task<LoginUserInfo> LoginByPassword();
-
-        Task<LoginUserInfo> LoginByToken();
-
-        Task<LoginUserInfo> LoginByOneTimeCode();
-
-        Task<bool> SendOneTimeCode();
-
-        Task<string[]> GetUserPemission();
-    }
-
     [RoutePrefix("connect")]
     public class ConnectController : BaseController
     {
+        private readonly IAuthLoginService _IAuthLoginService;
+
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly IAuthClientService _IAuthClientService;
 
         public ConnectController(
+            IAuthLoginService _IAuthLoginService,
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService,
             IAuthClientService _IAuthClientService)
         {
+            this._IAuthLoginService = _IAuthLoginService;
+
             this._IAuthTokenService = _IAuthTokenService;
             this._IAuthScopeService = _IAuthScopeService;
             this._IAuthClientService = _IAuthClientService;
@@ -63,7 +55,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                await Task.FromResult(1);
+                var data = await this._IAuthLoginService.LoginByPassword(username, password);
 
                 this.X.context.CookieLogin(new LoginUserInfo() { });
 
@@ -77,6 +69,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
+                var data = await this._IAuthLoginService.LoginByToken("");
                 await Task.FromResult(1);
 
                 this.X.context.CookieLogin(new LoginUserInfo() { });
@@ -91,6 +84,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
+                var data = await this._IAuthLoginService.LoginByCode(phone, code);
                 await Task.FromResult(1);
 
                 this.X.context.CookieLogin(new LoginUserInfo() { });

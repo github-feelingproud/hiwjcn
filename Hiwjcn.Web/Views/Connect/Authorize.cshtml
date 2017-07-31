@@ -47,22 +47,10 @@
                                         <p class="list-group-item-text">@(s.Description)</p>
                                     </a>
                                 }
-                                <a href="#" class="list-group-item active">
-                                    <h4 class="list-group-item-heading">基本信息</h4>
-                                    <p class="list-group-item-text">个人资料，头像，地址</p>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <h4 class="list-group-item-heading">订单</h4>
-                                    <p class="list-group-item-text">订单数据的访问删除修改</p>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <h4 class="list-group-item-heading">商品</h4>
-                                    <p class="list-group-item-text">修改删除商品</p>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <h4 class="list-group-item-heading">论坛</h4>
-                                    <p class="list-group-item-text">论坛发帖删帖回复</p>
-                                </a>
+                                else
+                                {
+                                    <div class="alert alert-danger">没有指定scope</div>
+                                }
                             </div>
                             <div class="panel-footer">
                                 <div class="row">
