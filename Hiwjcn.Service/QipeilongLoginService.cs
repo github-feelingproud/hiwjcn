@@ -21,7 +21,7 @@ namespace Hiwjcn.Bll
 {
     public class QipeilongLoginService : IAuthLoginService
     {
-        private IDbConnection db()
+        private IDbConnection Database()
         {
             var con = new SqlConnection(ConfigurationManager.ConnectionStrings["db"]?.ConnectionString);
             con.OpenIfClosedWithRetry(2);
@@ -38,13 +38,14 @@ namespace Hiwjcn.Bll
                 HeadImgUrl = model.Images,
                 IsActive = model.IsActive ?? 0,
                 IsValid = true,
+                LoginToken = $"{model.IID}-{model.UID}-{model.UpdatedDate}".ToMD5()
             };
         }
 
         public async Task<LoginUserInfo> GetUserInfoByUID(string uid)
         {
             var user = default(LoginUserInfo);
-            using (var con = db())
+            using (var con = Database())
             {
                 var sql = "select top 1 * from parties.dbo.UserInfo where UID=@uid";
                 var xx = (await con.QueryAsync<UserInfo>(sql, new { uid = uid })).FirstOrDefault();
@@ -58,7 +59,7 @@ namespace Hiwjcn.Bll
 
         public async Task<(LoginUserInfo loginuser, string msg)> LoginByCode(string phoneOrEmail, string code)
         {
-            using (var con = db())
+            using (var con = Database())
             {
                 var time = DateTime.Now.AddSeconds(-300);
                 var sql = "select top 1 * from parties.dbo.sms where recipient=@uname and createddate>=@time order by createddate desc";
@@ -91,7 +92,7 @@ namespace Hiwjcn.Bll
 
         public async Task<string> SendOneTimeCode(string phoneOrEmail)
         {
-            using (var con = db())
+            using (var con = Database())
             {
                 var now = DateTime.Now;
                 var ran = new Random((int)now.Ticks);

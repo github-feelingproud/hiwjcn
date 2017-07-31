@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebLogic.Bll.User;
 using WebLogic.Model.User;
+using Lib.extension;
+using Lib.mvc.auth;
 
 namespace Hiwjcn.Web.Controllers
 {

@@ -85,11 +85,15 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var data = await this._IAuthLoginService.LoginByCode(phone, code);
-                await Task.FromResult(1);
 
-                this.X.context.CookieLogin(new LoginUserInfo() { });
+                if (ValidateHelper.IsPlumpString(data.msg))
+                {
+                    return GetJsonRes(data.msg);
+                }
 
-                return GetJsonRes("");
+                this.X.context.CookieLogin(data.loginuser);
+
+                return GetJsonRes(string.Empty);
             });
         }
 
@@ -99,9 +103,8 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                await Task.FromResult(1);
-
-                return GetJsonRes("");
+                var data = await this._IAuthLoginService.SendOneTimeCode(phone);
+                return GetJsonRes(data);
             });
         }
 
@@ -111,6 +114,11 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
+                if (!ValidateHelper.IsPlumpString(redirect_uri))
+                {
+                    return Content($"{nameof(redirect_uri)}为空");
+                }
+
                 ViewData[nameof(redirect_uri)] = redirect_uri;
                 ViewData[nameof(login_type)] = login_type;
                 ViewData[nameof(return_type)] = return_type;
@@ -122,7 +130,7 @@ namespace Hiwjcn.Web.Controllers
                 var client = await this._IAuthClientService.GetByID(client_id);
                 if (client == null)
                 {
-                    //return Content("client_id无效");
+                    return Content("client_id无效");
                 }
                 ViewData["client"] = client;
 
@@ -147,7 +155,22 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(data.msg);
                 }
-                return GetJson(new _() { success = true, data = data.code });
+                return GetJson(new _() { success = true, data = data.code?.UID });
+            });
+        }
+
+        public ActionResult Logout(string url)
+        {
+            return RunAction(() =>
+            {
+                this.X.context.CookieLogout();
+
+                if (!ValidateHelper.IsPlumpString(url))
+                {
+                    url = "/";
+                }
+
+                return Redirect(url);
             });
         }
 

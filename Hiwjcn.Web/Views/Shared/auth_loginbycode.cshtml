@@ -49,7 +49,7 @@
             var btn = $(this);
             
             var phone = $("input[name='phone']").val();
-            postJson('/connect/SendOneTimeCode', new { phone: phone }, function (res) {
+            postJson('/connect/SendOneTimeCode', { phone: phone }, function (res) {
                 if (res.success) {
                     btn.text('Sent!').attr('disabled', 'disabled');
                     setTimeout(1000 * 3 * 10, function () {

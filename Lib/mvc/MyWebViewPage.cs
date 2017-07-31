@@ -68,6 +68,19 @@ namespace Lib.mvc
         /// 获取非空对象
         /// </summary>
         public M GetModel<M>(string key) where M : new() => Com.NewIfNull<M>(key);
+
+        /// <summary>
+        /// 设置模板
+        /// </summary>
+        public void SetLayout(string name)
+        {
+            if (!ValidateHelper.IsPlumpString(name))
+            {
+                this.Layout = null;
+                return;
+            }
+            this.Layout = IncludePath(name);
+        }
         #endregion
 
         protected List<LangModel> Language { get; set; }

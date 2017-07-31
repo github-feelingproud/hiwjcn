@@ -25,7 +25,8 @@ namespace Hiwjcn.Web.Controllers
 {
     public class AuthController : BaseController
     {
-        private readonly LoginStatus _LoginStatus;
+        private readonly IAuthLoginService _IAuthLoginService;
+
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly ICacheProvider _cache;
@@ -34,14 +35,14 @@ namespace Hiwjcn.Web.Controllers
         private readonly IRepository<AuthClient> _AuthClientRepository;
 
         public AuthController(
-            LoginStatus _LoginStatus,
+            IAuthLoginService _IAuthLoginService,
             ICacheProvider _cache,
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService,
             IRepository<AuthScope> _AuthScopeRepository,
             IRepository<AuthClient> _AuthClientRepository)
         {
-            this._LoginStatus = _LoginStatus;
+            this._IAuthLoginService = _IAuthLoginService;
             this._cache = _cache;
 
             this._IAuthTokenService = _IAuthTokenService;
@@ -229,8 +230,8 @@ namespace Hiwjcn.Web.Controllers
                         {
                             UID=Com.GetUUID(),
                             ClientName="IOS",
-                            ClientUrl="http://www.baidu.com/",
-                            LogoUrl="http://www.baidu.com/",
+                            ClientUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
+                            LogoUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
                             UserUID="http://www.baidu.com/",
                             ClientSecretUID=Com.GetUUID(),
                             IsRemove=(int)YesOrNoEnum.否,
@@ -242,8 +243,8 @@ namespace Hiwjcn.Web.Controllers
                         {
                             UID=Com.GetUUID(),
                             ClientName="Android",
-                            ClientUrl="http://www.baidu.com/",
-                            LogoUrl="http://www.baidu.com/",
+                            ClientUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
+                            LogoUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
                             UserUID="http://www.baidu.com/",
                             ClientSecretUID=Com.GetUUID(),
                             IsRemove=(int)YesOrNoEnum.否,
