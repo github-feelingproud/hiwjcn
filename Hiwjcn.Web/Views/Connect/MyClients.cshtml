@@ -15,7 +15,8 @@
                     <thead>
                         <tr>
                             <td></td>
-                            <td width="70%"></td>
+                            <td></td>
+                            <td></td>
                             <td width="10%"></td>
                         </tr>
                     </thead>
@@ -23,22 +24,46 @@
                         @foreach (var m in clients)
                         {
                             <tr>
+                                <td>
+                                    <a href="@(m.ClientUrl)" target="_blank" class="thumbnail" style="margin:0;">
+                                        <img src="@(m.LogoUrl)" alt="">
+                                    </a>
+                                </td>
                                 <td>@(m.ClientName)</td>
                                 <td>@(m.Description)</td>
                                 <td>
-                                    <button class="btn btn-link">取消授权</button>
+                                    <button class="btn btn-link del" data-id="@(m.UID)">取消授权</button>
                                 </td>
                             </tr>
                         }
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="3" class="right">
+                            <td colspan="4" class="right">
                                 @(Html.Raw(ViewData["pager"]))
                             </td>
                         </tr>
                     </tfoot>
                 </table>
+                <script type="text/javascript">
+                    $(function () {
+                        $('.del').click(function () {
+                            if (!confirm('确定取消授权？')) {
+                                return;
+                            }
+                            var btn = $(this);
+                            var id = btn.data('id');
+                            postJson('/user/DelClient', { id: id }, function (res) {
+                                if (res.success) {
+                                    window.location.reload();
+                                }
+                                else {
+                                    alert(res.msg);
+                                }
+                            });
+                        });
+                    });
+                </script>
             }
             else
             {

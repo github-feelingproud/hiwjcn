@@ -193,6 +193,7 @@
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
     <Folder Include="Views\AuthManage\" />
+    <Folder Include="Views\Auth\" />
     <Folder Include="Views\UserApi\" />
   </ItemGroup>
   <ItemGroup>
@@ -829,7 +830,7 @@
     <Content Include="Views\Shared\UserLayout.cshtml" />
     <Content Include="Views\Test\UView.cshtml" />
     <Content Include="Views\Shared\Limited.cshtml" />
-    <Content Include="Views\Auth\MyClients.cshtml" />
+    <Content Include="Views\Connect\MyClients.cshtml" />
     <Content Include="Views\Shared\Analysis.cshtml" />
     <Content Include="Views\Connect\Login.cshtml" />
     <Content Include="Views\Connect\Authorize.cshtml" />
