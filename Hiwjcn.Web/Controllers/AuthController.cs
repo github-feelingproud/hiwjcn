@@ -76,10 +76,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        /// <summary>
-        /// 记录1%4的log
-        /// </summary>
-        private static readonly List<bool> HitLogProbability = new List<bool>() { true, false, false, false };
+        private static readonly List<bool> HitLogProbability = new List<bool>() { true, false };
         private static readonly Random ran = new Random((int)DateTime.Now.Ticks);
 
         [HttpPost]

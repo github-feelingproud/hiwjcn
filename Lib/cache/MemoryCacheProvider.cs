@@ -29,14 +29,17 @@ namespace Lib.cache
         /// <returns>The value associated with the specified key.</returns>
         public virtual CacheResult<T> Get<T>(string key)
         {
-            var cache = new CacheResult<T>() { Success = false };
-            var bs = Cache[key] as byte[];
-            if (bs != null)
+            var data = Cache[key];
+            if (data is byte[] bs)
             {
-                cache.Result = Deserialize<T>(bs);
-                cache.Success = true;
+                var res = this.Deserialize<CacheResult<T>>(bs);
+                if (res != null)
+                {
+                    res.Success = true;
+                    return res;
+                }
             }
-            return cache;
+            return new CacheResult<T>() { Success = false };
         }
 
         /// <summary>
@@ -46,7 +49,9 @@ namespace Lib.cache
         {
             var policy = new CacheItemPolicy();
             policy.AbsoluteExpiration = DateTime.Now + expire;
-            Cache.Add(new CacheItem(key, Serialize(data)), policy);
+
+            var res = new CacheResult<object>() { Result = data, Success = true };
+            Cache.Add(new CacheItem(key, Serialize(res)), policy);
         }
 
         /// <summary>
@@ -56,7 +61,7 @@ namespace Lib.cache
         /// <returns>Result</returns>
         public virtual bool IsSet(string key)
         {
-            return (Cache.Contains(key));
+            return Cache.Contains(key);
         }
 
         /// <summary>
