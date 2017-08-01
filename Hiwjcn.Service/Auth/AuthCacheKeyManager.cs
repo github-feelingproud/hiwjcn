@@ -19,5 +19,7 @@ namespace Hiwjcn.Bll.Auth
         public static string ScopeKey(string scope_uid) => $"auth.scope.uid={scope_uid}".WithCacheKeyPrefix();
 
         public static string ScopeAllKey() => "auth.scope.all".WithCacheKeyPrefix();
+
+        public static string UserInfoKey(string user_uid) => $"auth.user.uid={user_uid}".WithCacheKeyPrefix();
     }
 }

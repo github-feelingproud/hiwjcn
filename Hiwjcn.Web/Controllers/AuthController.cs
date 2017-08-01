@@ -92,12 +92,13 @@ namespace Hiwjcn.Web.Controllers
 
                 var cache_key = AuthCacheKeyManager.TokenKey(access_token);
 
+                //查找token
                 var token = await this._cache.GetOrSetAsync(cache_key, async () =>
                      {
                          hit_status = CacheHitStatusEnum.NotHit;
 
                          return await this._IAuthTokenService.FindTokenAsync(client_id, access_token);
-                     }, TimeSpan.FromMinutes(5));
+                     }, TimeSpan.FromMinutes(3));
 
                 if (ran.Choice(HitLogProbability))
                 {
@@ -108,16 +109,41 @@ namespace Hiwjcn.Web.Controllers
                     });
                 }
 
-                var data = new
+                if (token == null)
                 {
-                    token = token?.UID,
-                    refresh_token = token?.RefreshToken,
-                    expire = token?.ExpiryTime,
-                    user_uid = token?.UserUID,
-                    scope = token?.Scopes?.Select(x => x.Name).ToList()
-                };
+                    return GetJsonRes("token不存在");
+                }
 
-                return GetJson(new _() { success = token != null, data = data });
+                hit_status = CacheHitStatusEnum.Hit;
+                cache_key = AuthCacheKeyManager.UserInfoKey(token.UserUID);
+                //查找用户
+                var loginuser = await this._cache.GetOrSetAsync(cache_key, async () =>
+                {
+                    hit_status = CacheHitStatusEnum.NotHit;
+
+                    return await this._IAuthLoginService.GetUserInfoByUID(token.UserUID);
+                }, TimeSpan.FromMinutes(3));
+
+                if (ran.Choice(HitLogProbability))
+                {
+                    AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog()
+                    {
+                        CacheKey = cache_key,
+                        Hit = (int)hit_status
+                    });
+                }
+
+                if (loginuser == null)
+                {
+                    return GetJsonRes("用户不存在");
+                }
+
+                loginuser.LoginToken = token.UID;
+                loginuser.RefreshToken = token.RefreshToken;
+                loginuser.TokenExpire = token.ExpiryTime;
+                loginuser.Scopes = token.Scopes?.Select(x => x.Name).ToList();
+
+                return GetJson(new _() { success = true, data = loginuser });
             });
         }
 

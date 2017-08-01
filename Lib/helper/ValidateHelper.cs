@@ -523,7 +523,14 @@ namespace Lib.helper
                 if (!CheckProp(prop.GetCustomAttributes<CreditCardAttribute>().FirstOrDefault(), value)) { continue; }
             }
 
-            return list.Where(x => IsPlumpString(x)).Distinct().ToList();
+            list = list.Where(x => IsPlumpString(x)).Distinct().ToList();
+
+            if (ValidateHelper.IsPlumpList(list))
+            {
+                Console.WriteLine("".Join_(list));
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -569,7 +576,14 @@ namespace Lib.helper
                 if (!CheckProp(prop.GetCustomAttributes_<ValidationAttribute>(), value, prop)) { continue; }
             }
 
-            return list.Where(x => IsPlumpString(x)).Distinct().ToList();
+            list = list.Where(x => IsPlumpString(x)).Distinct().ToList();
+
+            if (ValidateHelper.IsPlumpList(list))
+            {
+                Console.WriteLine("".Join_(list));
+            }
+
+            return list;
         }
 
         /// <summary>

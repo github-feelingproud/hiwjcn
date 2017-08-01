@@ -79,16 +79,13 @@ namespace Lib.mvc.auth.validation
                     client_id = client_id,
                     access_token = token
                 });
-                var data = json.JsonToEntity<TokenReturn>();
-
-                return new LoginUserInfo()
+                var data = json.JsonToEntity<_<LoginUserInfo>>();
+                if (!data.success)
                 {
-                    UserID = data.user_uid,
-                    LoginToken = data.token,
-                    RefreshToken = data.refresh_token,
-                    TokenExpire = data.expire,
-                    Scopes = data.scope
-                };
+                    $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
+                    return null;
+                }
+                return data.data;
             }
             catch (Exception e)
             {

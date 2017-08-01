@@ -144,13 +144,13 @@ namespace Hiwjcn.Web.Controllers
         [HttpPost]
         [ApiAuth]
         [RequestLog]
-        public async Task<ActionResult> CreateAuthorizeCode(string client_id, List<string> scope)
+        public async Task<ActionResult> CreateAuthorizeCode(string client_id, string scope)
         {
             return await RunActionAsync(async () =>
             {
                 var loginuser = await this.X.context.GetAuthUserAsync();
 
-                var data = await this._IAuthTokenService.CreateCodeAsync(client_id, scope, loginuser.UserID);
+                var data = await this._IAuthTokenService.CreateCodeAsync(client_id, scope?.JsonToEntity<List<string>>(), loginuser.UserID);
                 if (ValidateHelper.IsPlumpString(data.msg))
                 {
                     return GetJsonRes(data.msg);
@@ -173,7 +173,7 @@ namespace Hiwjcn.Web.Controllers
                 return Redirect(url);
             });
         }
-        
+
         [RequestLog]
         public async Task<ActionResult> LoginUser()
         {

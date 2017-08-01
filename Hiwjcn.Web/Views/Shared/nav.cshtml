@@ -22,7 +22,7 @@
 </style>
 
 <div id="nav_wrapper">
-    <div class="navbar nav_cls white_nav z-depth-1" style="margin-bottom: 20px;">
+    <div class="navbar nav_cls z-depth-1" style="margin-bottom: 20px;">
 
         <div class="container">
             <!-- logo和折叠按钮 -->
@@ -81,7 +81,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/hotel/choose/" target="_self">切换酒店</a>
+                        <a href="/hotel/choose/" target="_self">123</a>
                     </li>
                     <li>
                         <a href="/user/msg/" class="layer_win" target="_blank" data-toggle="tooltip" data-placement="bottom" title="消息" style="color:red;">
@@ -108,12 +108,12 @@
                             });
                         </script>
                     </li>
-                    @if (this.X.LoginUser != null)
+                    @if (this.X.User != null)
                     {
                         <li class="dropdown">
                             <a href="/user/me/" rel="nofollow" target="_self">
                                 <span class="fa fa-user"></span>
-                                <span>@(this.X.LoginUser.NickName)</span>
+                                <span>@(this.X.User.NickName)</span>
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">

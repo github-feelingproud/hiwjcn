@@ -54,6 +54,8 @@ namespace Hiwjcn.Core.Model.Sys
     [Table("sys_cachehitlog")]
     public class CacheHitLog : BaseEntity
     {
+        [Required]
+        [MaxLength(3000)]
         public virtual string CacheKey { get; set; }
 
         public virtual int Hit { get; set; }

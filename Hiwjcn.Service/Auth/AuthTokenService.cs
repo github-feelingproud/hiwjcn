@@ -155,7 +155,9 @@ namespace Hiwjcn.Bll.Auth
                 {
                     ExpiryTime = now.AddDays(TokenExpireDays),
                     RefreshToken = Com.GetUUID(),
-                    ScopesInfoJson = scopes.Select(x => new { uid = x.UID, name = x.Name }).ToJson()
+                    ScopesInfoJson = scopes.Select(x => new { uid = x.UID, name = x.Name }).ToJson(),
+                    ClientUID = code.ClientUID,
+                    UserUID = code.UserUID
                 };
                 token.Init("token");
                 if (!token.IsValid(out var msg))

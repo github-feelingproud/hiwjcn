@@ -44,11 +44,25 @@ namespace Lib.mvc
     public class _ : ResJson { }
 
     /// <summary>
+    /// 接口公共返回值的缩写
+    /// </summary>
+    [Serializable]
+    [DataContract]
+    public class _<T> : ResJson<T> { }
+
+    /// <summary>
+    /// 通用返回
+    /// </summary>
+    [Serializable]
+    [DataContract]
+    public class ResJson : ResJson<object> { }
+
+    /// <summary>
     /// json格式
     /// </summary>
     [Serializable]
     [DataContract]
-    public class ResJson : ResultMsg
+    public class ResJson<T> : ResultMsg<T>
     {
         [DataMember]
         public virtual bool success
@@ -65,7 +79,7 @@ namespace Lib.mvc
         }
 
         [DataMember]
-        public virtual object data
+        public virtual T data
         {
             get { return this.Data; }
             set { this.Data = value; }
@@ -81,8 +95,7 @@ namespace Lib.mvc
 
     [Serializable]
     [DataContract]
-    public class ResultMsg : ResultMsg<object>
-    { }
+    public class ResultMsg : ResultMsg<object> { }
 
     /// <summary>
     /// 汽配龙的model
@@ -91,6 +104,14 @@ namespace Lib.mvc
     [DataContract]
     public class ResultMsg<T>
     {
+        public void ThrowIfNotSuccess()
+        {
+            if (!this.Success)
+            {
+                throw new Exception(this.ErrorMsg ?? $"{nameof(ResultMsg)}默认错误信息");
+            }
+        }
+
         [DataMember]
         public string UserToken { get; set; }
 

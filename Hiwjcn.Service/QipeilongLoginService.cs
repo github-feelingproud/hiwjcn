@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.mvc.auth;
 using Lib.mvc.user;
+using Lib.mvc;
 using Dapper;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -28,6 +29,11 @@ namespace Hiwjcn.Bll
             return con;
         }
 
+        private string ParseToken(UserInfo model)
+        {
+            return $"{model.IID}-{model.UID}-{model.UpdatedDate}".ToMD5();
+        }
+
         private LoginUserInfo Parse(UserInfo model)
         {
             return new LoginUserInfo()
@@ -35,10 +41,11 @@ namespace Hiwjcn.Bll
                 IID = model.IID,
                 UserID = model.UID,
                 Email = model.Email,
+                NickName = model.ShopName,
                 HeadImgUrl = model.Images,
                 IsActive = model.IsActive ?? 0,
                 IsValid = true,
-                LoginToken = $"{model.IID}-{model.UID}-{model.UpdatedDate}".ToMD5()
+                LoginToken = ParseToken(model)
             };
         }
 
@@ -82,6 +89,30 @@ namespace Hiwjcn.Bll
         {
             (LoginUserInfo loginuser, string msg) data = (null, "没有实现");
             return await Task.FromResult(data);
+        }
+
+        public async Task<_<LoginUserInfo>> LoginByToken(string userUID, string token)
+        {
+            var data = new _<LoginUserInfo>();
+            using (var con = Database())
+            {
+                var sql = "select top 1 * from parties.dbo.userinfo where uid=@uid";
+                var model = (await con.QueryAsync<UserInfo>(sql, new { uid = userUID })).FirstOrDefault();
+                if (model == null)
+                {
+                    data.msg = "用户不存在";
+                    return data;
+                }
+                var logininfo = Parse(model);
+                if (logininfo.LoginToken != token)
+                {
+                    data.msg = "token错误";
+                    return data;
+                }
+                data.data = logininfo;
+                data.success = true;
+            }
+            return data;
         }
 
         public async Task<(LoginUserInfo loginuser, string msg)> LoginByToken(string token)

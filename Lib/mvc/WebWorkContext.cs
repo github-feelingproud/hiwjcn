@@ -34,11 +34,16 @@ namespace Lib.mvc
         public string Url { get; private set; }
 
         #region 登录信息
+        private LoginUserInfo _user;
         public LoginUserInfo User
         {
             get
             {
-                return this.context.GetAuthUser();
+                if (this._user == null)
+                {
+                    this._user = this.context.GetAuthUser();
+                }
+                return this._user;
             }
         }
 
