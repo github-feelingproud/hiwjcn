@@ -112,6 +112,18 @@ namespace Lib.mvc
             }
         }
 
+        public void SetSuccessData(T data)
+        {
+            this.Data = data;
+            this.Success = true;
+        }
+
+        public void SetErrorMsg(string msg)
+        {
+            this.ErrorMsg = msg;
+            this.Success = false;
+        }
+
         [DataMember]
         public string UserToken { get; set; }
 
@@ -119,7 +131,7 @@ namespace Lib.mvc
         public string SafeCode { get; set; }
 
         [DataMember]
-        public bool Success { get; set; }
+        public bool Success { get; set; } = false;
 
         [DataMember]
         public string ErrorCode { get; set; }

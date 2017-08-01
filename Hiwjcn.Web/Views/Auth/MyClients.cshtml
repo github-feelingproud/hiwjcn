@@ -1,8 +1,49 @@
-﻿
+﻿@using Hiwjcn.Core.Domain.Auth;
 @{
-    ViewBag.Title = "MyClients";
-    Layout = "UserLayout";
+    this.SetLayout("UserLayout");
+    this.SetTitle("已授权");
 }
 
-<h2>MyClients</h2>
-
+<div class="panel panel-default">
+    <div class="panel-heading">已授权应用</div>
+    <div class="panel-body">
+        @{
+            var clients = Com.NewIfNull<List<AuthClient>>(ViewData["list"]);
+            if (ValidateHelper.IsPlumpList(clients))
+            {
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <td width="70%"></td>
+                            <td width="10%"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in clients)
+                        {
+                            <tr>
+                                <td>@(m.ClientName)</td>
+                                <td>@(m.Description)</td>
+                                <td>
+                                    <button class="btn btn-link">取消授权</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="right">
+                                @(Html.Raw(ViewData["pager"]))
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info">没有授权应用</div>
+            }
+        }
+    </div>
+</div>

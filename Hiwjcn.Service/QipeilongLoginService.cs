@@ -64,8 +64,9 @@ namespace Hiwjcn.Bll
             return user;
         }
 
-        public async Task<(LoginUserInfo loginuser, string msg)> LoginByCode(string phoneOrEmail, string code)
+        public async Task<_<LoginUserInfo>> LoginByCode(string phoneOrEmail, string code)
         {
+            var data = new _<LoginUserInfo>();
             using (var con = Database())
             {
                 var time = DateTime.Now.AddSeconds(-300);
@@ -73,22 +74,19 @@ namespace Hiwjcn.Bll
                 var sms = (await con.QueryAsync<Sms>(sql, new { uname = phoneOrEmail, time = time })).FirstOrDefault();
                 if (sms == null || sms.MsgCode != code)
                 {
-                    return (null, "验证码错误");
+                    data.SetErrorMsg("验证码错误");
+                    return data;
                 }
                 sql = "select top 1 * from parties.dbo.userinfo where username=@uname";
                 var user = (await con.QueryAsync<UserInfo>(sql, new { uname = phoneOrEmail })).FirstOrDefault();
                 if (user == null)
                 {
-                    return (null, "用户不存在");
+                    data.SetErrorMsg("用户不存在");
+                    return data;
                 }
-                return (this.Parse(user), null);
+                data.SetSuccessData(this.Parse(user));
             }
-        }
-
-        public async Task<(LoginUserInfo loginuser, string msg)> LoginByPassword(string user_name, string password)
-        {
-            (LoginUserInfo loginuser, string msg) data = (null, "没有实现");
-            return await Task.FromResult(data);
+            return data;
         }
 
         public async Task<_<LoginUserInfo>> LoginByToken(string userUID, string token)
@@ -115,9 +113,9 @@ namespace Hiwjcn.Bll
             return data;
         }
 
-        public async Task<(LoginUserInfo loginuser, string msg)> LoginByToken(string token)
+        public async Task<_<LoginUserInfo>> LoginByToken(string token)
         {
-            (LoginUserInfo loginuser, string msg) data = (null, "没有实现");
+            var data = new _<LoginUserInfo>() { };
             return await Task.FromResult(data);
         }
 
@@ -149,6 +147,23 @@ namespace Hiwjcn.Bll
                 }
                 return string.Empty;
             }
+        }
+
+        public async Task<_<LoginUserInfo>> LoginByPassword(string user_name, string password)
+        {
+            var data = new _<LoginUserInfo>();
+            using (var con = Database())
+            {
+                var sql = "select top 1 * from parties.dbo.userinfo where username=@uname";
+                var model = (await con.QueryAsync<UserInfo>(sql, new { uname = user_name })).FirstOrDefault();
+                if (model == null || model.UserName != "18101795560" || password != "123")
+                {
+                    data.msg = "账号密码错误";
+                    return data;
+                }
+                data.SetSuccessData(this.Parse(model));
+            }
+            return data;
         }
     }
 

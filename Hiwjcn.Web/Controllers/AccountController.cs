@@ -13,24 +13,24 @@ using WebLogic.Bll.User;
 using WebLogic.Model.User;
 using Lib.extension;
 using Lib.mvc.auth;
+using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class AccountController : WebCore.MvcLib.Controller.UserBaseController
+    public class AccountController : UserBaseController
     {
-        private bool UseSSO = false;
-
-        private IUserService _IUserService { get; set; }
-
-        private ILoginLogService _LoginErrorLogBll { get; set; }
-
-        private LoginStatus _LoginStatus { get; set; }
+        private readonly IAuthLoginService _IAuthLoginService;
+        private readonly IUserService _IUserService;
+        private readonly ILoginLogService _LoginErrorLogBll;
+        private readonly LoginStatus _LoginStatus;
 
         public AccountController(
+            IAuthLoginService _IAuthLoginService,
             IUserService user,
             ILoginLogService loginlog,
             LoginStatus logincontext)
         {
+            this._IAuthLoginService = _IAuthLoginService;
             this._IUserService = user;
             this._LoginErrorLogBll = loginlog;
             this._LoginStatus = logincontext;
@@ -46,7 +46,7 @@ namespace Hiwjcn.Web.Controllers
             return RunAction(() =>
             {
                 var loginuser = this.X.LoginUser;
-                return GetJson(new { success = loginuser != null, data = loginuser });
+                return GetJson(new _() { success = loginuser != null, data = loginuser });
             });
         }
 
@@ -152,17 +152,6 @@ namespace Hiwjcn.Web.Controllers
         [NonAction]
         private ActionResult GoToPostChildCallBack(string url, string callback)
         {
-            if (!UseSSO)
-            {
-                if (ValidateHelper.IsPlumpString(url))
-                {
-                    return Redirect(url);
-                }
-                else
-                {
-                    return GoHome();
-                }
-            }
             url = ConvertHelper.GetString(url);
             callback = ConvertHelper.GetString(callback);
             return Redirect(string.Format("/Account/PostChildCallBack/?url={0}&callback={1}",

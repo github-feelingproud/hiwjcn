@@ -56,25 +56,12 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var data = await this._IAuthLoginService.LoginByPassword(username, password);
-
-                this.X.context.CookieLogin(new LoginUserInfo() { });
-
-                return GetJsonRes("");
-            });
-        }
-
-        [HttpPost]
-        [RequestLog]
-        public async Task<ActionResult> LoginByToken()
-        {
-            return await RunActionAsync(async () =>
-            {
-                var data = await this._IAuthLoginService.LoginByToken("");
-                await Task.FromResult(1);
-
-                this.X.context.CookieLogin(new LoginUserInfo() { });
-
-                return GetJsonRes("");
+                if (data.success)
+                {
+                    this.X.context.CookieLogin(data.data);
+                    return GetJsonRes(string.Empty);
+                }
+                return GetJsonRes(data.msg);
             });
         }
 
@@ -91,7 +78,7 @@ namespace Hiwjcn.Web.Controllers
                     return GetJsonRes(data.msg);
                 }
 
-                this.X.context.CookieLogin(data.loginuser);
+                this.X.context.CookieLogin(data.data);
 
                 return GetJsonRes(string.Empty);
             });

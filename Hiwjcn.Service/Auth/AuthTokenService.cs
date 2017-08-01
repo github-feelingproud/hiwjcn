@@ -291,7 +291,7 @@ namespace Hiwjcn.Bll.Auth
                 var client_query = db.Set<AuthClient>().AsNoTrackingQueryable();
                 var token_query = db.Set<AuthToken>().AsNoTrackingQueryable();
 
-                var client_uids = token_query.Where(x => x.UserUID == user_id && x.ExpiryTime < now).Select(x => x.ClientUID);
+                var client_uids = token_query.Where(x => x.UserUID == user_id && x.ExpiryTime > now).Select(x => x.ClientUID);
 
                 client_query = client_query.Where(x => client_uids.Contains(x.UID) && x.IsRemove <= 0);
                 if (ValidateHelper.IsPlumpString(q))

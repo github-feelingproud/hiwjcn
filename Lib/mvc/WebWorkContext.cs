@@ -80,6 +80,7 @@ namespace Lib.mvc
 
         public void LoadLoginUser()
         {
+            this._user = null;
             this.SSOUser = AccountHelper.SSO.GetLoginUser(context);
             this.LoginUser = AccountHelper.User.GetLoginUser(context);
             this.LoginTrader = AccountHelper.Trader.GetLoginUser(context);

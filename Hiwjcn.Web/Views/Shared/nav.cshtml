@@ -77,7 +77,7 @@
                     <li>
                         <a href="/page/help/" target="_blank" data-toggle="tooltip" data-placement="bottom" title="帮助">
                             <span class="fa fa-life-ring"></span>
-                            <span style="text-indent:-999px;display:inline-block;width:0;">帮助</span>
+                            <span style="text-indent:-999999px;display:inline-block;width:0;">帮助</span>
                         </a>
                     </li>
                     <li>
@@ -87,7 +87,7 @@
                         <a href="/user/msg/" class="layer_win" target="_blank" data-toggle="tooltip" data-placement="bottom" title="消息" style="color:red;">
                             <span class="fa fa-bell-o"></span>
                             <span><strong>3</strong></span>
-                            <span style="text-indent:-999px;display:inline-block;width:0;">消息</span>
+                            <span style="text-indent:-999999px;display:inline-block;width:0;">消息</span>
                         </a>
                         <script type="text/javascript">
                             $(function () {
@@ -147,50 +147,3 @@
 
     </div>
 </div>
-
-
-
-
-<script type="text/javascript">
-    $(function () {
-        var fancy = true;
-
-        var nav_wapper = $('#nav_wrapper');
-        var nav = $('.nav_cls');
-
-        $(window).resize(function () {
-            if (!fancy) {
-                return;
-            }
-            nav.addClass('navbar-fixed-top').addClass('z-depth-1');
-            if ($('body').attr('data-navflow') != 'true') {
-                nav_wapper.height(nav.height());
-            }
-        }).trigger('resize');
-
-        //导航的自动显示和隐藏
-        var prevScroll = 0;
-        var curDir = 'down';
-        var prevDir = 'up';
-        $(window).scroll(function () {
-            if (!fancy) {
-                return;
-            }
-            if ($(this).scrollTop() > prevScroll) {
-                curDir = 'down';
-                if (curDir != prevDir) {
-                    nav.stop().animate({ top: -1 * nav.height() }, 'fast');
-                    prevDir = curDir;
-                }
-            } else {
-                curDir = 'up';
-                if (curDir != prevDir) {
-                    nav.stop().animate({ top: 0 }, 'fast');
-                    prevDir = curDir;
-                }
-            }
-            prevScroll = $(this).scrollTop();
-        });
-
-    });
-</script>
