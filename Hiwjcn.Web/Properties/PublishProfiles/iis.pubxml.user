@@ -12,6 +12,9 @@
     <File Include="App_Data/Config/log4net.config">
       <publishTime>06/26/2017 18:39:17</publishTime>
     </File>
+    <File Include="App_Data/Config/sentry.config">
+      <publishTime>07/29/2017 17:30:34</publishTime>
+    </File>
     <File Include="App_Data/hiwjcn.sql">
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
@@ -114,11 +117,14 @@
     <File Include="Areas/Admin/Views/_ViewStart.cshtml">
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
+    <File Include="bin/Akka.dll">
+      <publishTime>07/10/2017 14:16:12</publishTime>
+    </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>07/27/2017 13:27:57</publishTime>
+      <publishTime>08/01/2017 17:20:37</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>07/27/2017 13:27:57</publishTime>
+      <publishTime>08/01/2017 17:20:37</publishTime>
     </File>
     <File Include="bin/Autofac.dll">
       <publishTime>08/12/2014 13:20:26</publishTime>
@@ -163,40 +169,40 @@
       <publishTime>03/02/2015 09:32:26</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.dll">
-      <publishTime>07/27/2017 13:27:37</publishTime>
+      <publishTime>08/01/2017 17:17:21</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.dll.config">
-      <publishTime>07/24/2017 15:27:03</publishTime>
+      <publishTime>07/28/2017 13:05:35</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.pdb">
-      <publishTime>07/27/2017 13:27:37</publishTime>
+      <publishTime>08/01/2017 17:17:21</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.dll">
-      <publishTime>07/27/2017 13:27:35</publishTime>
+      <publishTime>08/01/2017 17:17:19</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.dll.config">
-      <publishTime>04/21/2017 11:22:27</publishTime>
+      <publishTime>07/28/2017 13:05:35</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.pdb">
-      <publishTime>07/27/2017 13:27:35</publishTime>
+      <publishTime>08/01/2017 17:17:19</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Dal.dll">
       <publishTime>02/22/2017 14:16:09</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.dll">
-      <publishTime>07/27/2017 13:27:39</publishTime>
+      <publishTime>08/01/2017 17:17:22</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.dll.config">
-      <publishTime>07/24/2017 15:27:03</publishTime>
+      <publishTime>07/29/2017 01:07:58</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.pdb">
-      <publishTime>07/27/2017 13:27:39</publishTime>
+      <publishTime>08/01/2017 17:17:22</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Web.dll">
-      <publishTime>07/27/2017 13:27:42</publishTime>
+      <publishTime>08/01/2017 17:17:24</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Web.pdb">
-      <publishTime>07/27/2017 13:27:42</publishTime>
+      <publishTime>08/01/2017 17:17:24</publishTime>
     </File>
     <File Include="bin/HtmlAgilityPack.dll">
       <publishTime>07/14/2016 11:01:16</publishTime>
@@ -211,13 +217,13 @@
       <publishTime>01/29/2017 23:35:42</publishTime>
     </File>
     <File Include="bin/Lib.dll">
-      <publishTime>07/27/2017 13:27:31</publishTime>
+      <publishTime>08/01/2017 17:17:16</publishTime>
     </File>
     <File Include="bin/Lib.dll.config">
-      <publishTime>04/21/2017 11:22:24</publishTime>
+      <publishTime>07/28/2017 13:05:34</publishTime>
     </File>
     <File Include="bin/Lib.pdb">
-      <publishTime>07/27/2017 13:27:31</publishTime>
+      <publishTime>08/01/2017 17:17:16</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>01/02/2017 06:32:48</publishTime>
@@ -282,11 +288,29 @@
     <File Include="bin/RabbitMQ.Client.dll">
       <publishTime>11/21/2016 16:21:12</publishTime>
     </File>
+    <File Include="bin/SharpRaven.dll">
+      <publishTime>02/18/2016 16:30:04</publishTime>
+    </File>
+    <File Include="bin/SharpRaven.Log4Net.dll">
+      <publishTime>07/22/2016 12:52:50</publishTime>
+    </File>
+    <File Include="bin/SharpRaven.Log4Net.dll.config">
+      <publishTime>07/22/2016 12:52:50</publishTime>
+    </File>
+    <File Include="bin/SharpRaven.Log4Net.pdb">
+      <publishTime>07/22/2016 12:52:50</publishTime>
+    </File>
+    <File Include="bin/SharpRaven.pdb">
+      <publishTime>02/18/2016 16:30:04</publishTime>
+    </File>
     <File Include="bin/StackExchange.Redis.dll">
       <publishTime>01/11/2017 10:36:48</publishTime>
     </File>
     <File Include="bin/StackExchange.Redis.StrongName.dll">
       <publishTime>02/03/2017 14:30:40</publishTime>
+    </File>
+    <File Include="bin/System.Collections.Immutable.dll">
+      <publishTime>12/19/2016 12:17:42</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>05/07/2013 13:09:16</publishTime>
@@ -364,10 +388,10 @@
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>07/27/2017 11:28:27</publishTime>
+      <publishTime>07/29/2017 17:27:20</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>07/27/2017 13:27:51</publishTime>
+      <publishTime>08/01/2017 17:20:32</publishTime>
     </File>
     <File Include="Static/epc_web/css/bootstrap.min.css">
       <publishTime>05/21/2016 23:15:59</publishTime>
@@ -2068,10 +2092,10 @@
       <publishTime>06/25/2017 18:14:40</publishTime>
     </File>
     <File Include="ui/ui/ui.css">
-      <publishTime>06/29/2017 17:46:16</publishTime>
+      <publishTime>08/01/2017 09:51:11</publishTime>
     </File>
     <File Include="ui/ui/ui.js">
-      <publishTime>06/25/2017 18:14:40</publishTime>
+      <publishTime>07/29/2017 12:48:23</publishTime>
     </File>
     <File Include="Views/Account/Forgot.cshtml">
       <publishTime>03/05/2017 00:19:27</publishTime>
@@ -2096,6 +2120,15 @@
     </File>
     <File Include="Views/Comment/CommentList.cshtml">
       <publishTime>03/04/2017 17:48:46</publishTime>
+    </File>
+    <File Include="Views/Connect/Authorize.cshtml">
+      <publishTime>07/31/2017 17:06:59</publishTime>
+    </File>
+    <File Include="Views/Connect/Login.cshtml">
+      <publishTime>07/30/2017 13:50:05</publishTime>
+    </File>
+    <File Include="Views/Connect/MyClients.cshtml">
+      <publishTime>08/01/2017 15:03:08</publishTime>
     </File>
     <File Include="Views/Crm/Index.cshtml">
       <publishTime>07/30/2016 12:04:28</publishTime>
@@ -2262,8 +2295,20 @@
     <File Include="Views/Seller/ProductList.cshtml">
       <publishTime>12/15/2016 22:47:43</publishTime>
     </File>
+    <File Include="Views/Shared/Analysis.cshtml">
+      <publishTime>07/29/2017 09:54:59</publishTime>
+    </File>
     <File Include="Views/Shared/AreaGroup.cshtml">
       <publishTime>03/04/2017 17:48:46</publishTime>
+    </File>
+    <File Include="Views/Shared/auth_loginbycode.cshtml">
+      <publishTime>07/31/2017 16:22:40</publishTime>
+    </File>
+    <File Include="Views/Shared/auth_loginbypassword.cshtml">
+      <publishTime>07/31/2017 10:11:16</publishTime>
+    </File>
+    <File Include="Views/Shared/auth_scope_confirm.cshtml">
+      <publishTime>07/31/2017 17:55:20</publishTime>
     </File>
     <File Include="Views/Shared/body_bottom.cshtml">
       <publishTime>03/04/2017 17:48:46</publishTime>
@@ -2278,10 +2323,10 @@
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
     <File Include="Views/Shared/footer.cshtml">
-      <publishTime>03/05/2017 00:19:27</publishTime>
+      <publishTime>08/01/2017 09:42:15</publishTime>
     </File>
     <File Include="Views/Shared/header.cshtml">
-      <publishTime>06/29/2017 17:40:25</publishTime>
+      <publishTime>07/29/2017 09:59:15</publishTime>
     </File>
     <File Include="Views/Shared/hotel_nav.cshtml">
       <publishTime>03/04/2017 17:48:46</publishTime>
@@ -2302,7 +2347,7 @@
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
     <File Include="Views/Shared/nav.cshtml">
-      <publishTime>03/04/2017 17:48:46</publishTime>
+      <publishTime>08/01/2017 14:37:11</publishTime>
     </File>
     <File Include="Views/Shared/seller_menu.cshtml">
       <publishTime>03/05/2017 00:19:27</publishTime>
@@ -2326,13 +2371,13 @@
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
     <File Include="Views/Shared/UserLayout.cshtml">
-      <publishTime>06/26/2017 17:44:05</publishTime>
+      <publishTime>08/01/2017 14:48:06</publishTime>
     </File>
     <File Include="Views/Shared/user_menu.cshtml">
-      <publishTime>03/05/2017 00:19:27</publishTime>
+      <publishTime>07/27/2017 17:23:26</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>06/27/2017 14:58:44</publishTime>
+      <publishTime>07/30/2017 13:34:38</publishTime>
     </File>
     <File Include="Views/Shop/Good.cshtml">
       <publishTime>12/15/2016 22:47:43</publishTime>
@@ -2365,7 +2410,7 @@
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
     <File Include="Views/Test/TB.cshtml">
-      <publishTime>03/04/2017 17:48:46</publishTime>
+      <publishTime>07/27/2017 17:22:51</publishTime>
     </File>
     <File Include="Views/Test/UView.cshtml">
       <publishTime>06/26/2017 17:43:00</publishTime>
@@ -2374,25 +2419,25 @@
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
     <File Include="Views/User/Me.cshtml">
-      <publishTime>03/05/2017 00:19:27</publishTime>
+      <publishTime>07/27/2017 17:22:22</publishTime>
     </File>
     <File Include="Views/User/Msg.cshtml">
-      <publishTime>03/05/2017 00:19:27</publishTime>
+      <publishTime>07/27/2017 17:18:57</publishTime>
     </File>
     <File Include="Views/User/SendMessage.cshtml">
-      <publishTime>03/05/2017 00:19:27</publishTime>
+      <publishTime>07/27/2017 17:17:00</publishTime>
     </File>
     <File Include="Views/User/UpdateUserMask.cshtml">
-      <publishTime>03/05/2017 00:19:27</publishTime>
+      <publishTime>07/27/2017 17:16:24</publishTime>
     </File>
     <File Include="Views/User/UserInfo.cshtml">
-      <publishTime>03/05/2017 00:19:27</publishTime>
+      <publishTime>07/29/2017 12:44:51</publishTime>
     </File>
     <File Include="Views/Web.config">
-      <publishTime>03/04/2017 17:48:46</publishTime>
+      <publishTime>07/31/2017 09:55:14</publishTime>
     </File>
     <File Include="Views/Widget/Nav.cshtml">
-      <publishTime>03/04/2017 17:48:46</publishTime>
+      <publishTime>07/27/2017 17:09:46</publishTime>
     </File>
     <File Include="Views/_ViewStart.cshtml">
       <publishTime>03/04/2017 17:48:46</publishTime>
@@ -2401,7 +2446,7 @@
       <publishTime>07/23/2017 22:06:10</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>07/27/2017 13:27:47</publishTime>
+      <publishTime>08/01/2017 17:17:28</publishTime>
     </File>
   </ItemGroup>
 </Project>

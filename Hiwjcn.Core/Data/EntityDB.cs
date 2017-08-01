@@ -89,6 +89,7 @@ namespace Hiwjcn.Dal
         public virtual DbSet<RolePermissionModel> RolePermissionModel { get; set; }
         public virtual DbSet<PermissionModel> PermissionModel { get; set; }
         public virtual DbSet<UserRoleModel> UserRoleModel { get; set; }
+        public virtual DbSet<UserOneTimeCode> UserOneTimeCode { get; set; }
 
         public virtual DbSet<CategoryModel> CategoryModel { get; set; }
         public virtual DbSet<SectionModel> SectionModel { get; set; }

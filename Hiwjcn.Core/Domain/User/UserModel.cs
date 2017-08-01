@@ -10,6 +10,7 @@ using Lib.core;
 
 namespace Model.User
 {
+    [Serializable]
     [Table("account_user_avatar")]
     public class UserAvatar : BaseEntity
     {
@@ -23,8 +24,25 @@ namespace Model.User
     }
 
     /// <summary>
+    /// 一次性登录用的code
+    /// </summary>
+    [Serializable]
+    [Table("account_user_onetimecode")]
+    public class UserOneTimeCode : BaseEntity
+    {
+        [Required]
+        public virtual string Code { get; set; }
+
+        [Required]
+        public virtual string UserUID { get; set; }
+
+        public virtual int CodeType { get; set; }
+    }
+
+    /// <summary>
     ///用户的账户模型
     /// </summary>
+    [Serializable]
     [Table("account_user")]
     public class UserModel : BaseEntity
     {
