@@ -51,9 +51,9 @@ namespace Hiwjcn.Web
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
                     AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
                     {
-                        builder.AuthUseUserLoginService(() => new QipeilongLoginService());
+                        builder.AuthServerUseUserLoginService(() => new QipeilongLoginService());
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
-                        builder.AuthUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
+                        builder.AuthClientUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
                     };
 
                     //disable "X-AspNetMvc-Version" header name

@@ -5,6 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.extension;
 using Lib.helper;
+using Lib.mvc.user;
+using Lib.mvc.auth;
+using Lib.mvc.auth.validation;
+using Lib.mvc;
 
 namespace Lib.mvc.auth
 {
@@ -19,15 +23,6 @@ namespace Lib.mvc.auth
         }
 
         public string CheckToken() => this.ApiPath("Auth", "CheckToken");
-    }
-
-    public class AuthConfig
-    {
-        public Func<ITokenProvider> TokenProvider { get; set; }
-
-        public Func<IAuthStoreProvider> AuthStoreProvider { get; set; }
-
-        public Func<IAuthTokenCheckProvider> AuthTokenCheckProvider { get; set; }
     }
 
 }

@@ -12,7 +12,7 @@
             if (ValidateHelper.IsPlumpList(clients))
             {
                 <table class="table table-hover">
-                    <thead>
+                    <thead style="display:none;">
                         <tr>
                             <td></td>
                             <td></td>
@@ -29,7 +29,13 @@
                                         <img src="@(m.LogoUrl)" alt="">
                                     </a>
                                 </td>
-                                <td>@(m.ClientName)</td>
+                                <td>
+                                    <span>@(m.ClientName)</span>
+                                    @if (m.IsOfficial > 0)
+                                    {
+                                        <span class="label label-danger">官方</span>
+                                    }
+                                </td>
                                 <td>@(m.Description)</td>
                                 <td>
                                     <button class="btn btn-link del" data-id="@(m.UID)">取消授权</button>

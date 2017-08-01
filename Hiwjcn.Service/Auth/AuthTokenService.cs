@@ -300,7 +300,7 @@ namespace Hiwjcn.Bll.Auth
                 }
 
                 data.ItemCount = await client_query.CountAsync();
-                client_query = client_query.OrderBy(x => x.ClientName).QueryPage(page, pagesize);
+                client_query = client_query.OrderByDescending(x => x.IsOfficial).OrderBy(x => x.ClientName).QueryPage(page, pagesize);
                 data.DataList = await client_query.ToListAsync();
 
                 if (ValidateHelper.IsPlumpList(data.DataList))

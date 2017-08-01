@@ -46,6 +46,8 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual string ClientSecretUID { get; set; }
 
         public virtual int IsActive { get; set; }
+        
+        public virtual int IsOfficial { get; set; }
     }
 
     [Serializable]

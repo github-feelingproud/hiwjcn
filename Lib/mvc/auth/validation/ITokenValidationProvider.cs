@@ -40,13 +40,36 @@ namespace Lib.mvc.auth.validation
         }
     }
 
-    class TokenReturn
+    /// <summary>
+    /// 查询本地库
+    /// </summary>
+    public class AuthLocalValidationProvider : TokenValidationProviderBase
     {
-        public string token { get; set; }
-        public string refresh_token { get; set; }
-        public DateTime expire { get; set; }
-        public string user_uid { get; set; }
-        public List<string> scope { get; set; }
+        private readonly IValidationDataProvider _dataProvider;
+
+        public AuthLocalValidationProvider(IValidationDataProvider _dataProvider)
+        {
+            this._dataProvider = _dataProvider;
+        }
+
+        public override LoginUserInfo FindUser(HttpContext context)
+        {
+            try
+            {
+                var token = this._dataProvider.GetToken(context);
+                var client_id = this._dataProvider.GetClientID(context);
+                if (!ValidateHelper.IsAllPlumpString(token, client_id))
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+                return null;
+            }
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -54,21 +77,21 @@ namespace Lib.mvc.auth.validation
     /// </summary>
     public class AuthServerValidationProvider : TokenValidationProviderBase
     {
-        private static readonly HttpClient _client = new HttpClient();
-
         private readonly AuthServerConfig _server;
+        private readonly IValidationDataProvider _dataProvider;
 
-        public AuthServerValidationProvider(AuthServerConfig server)
+        public AuthServerValidationProvider(AuthServerConfig server, IValidationDataProvider _dataProvider)
         {
             this._server = server;
+            this._dataProvider = _dataProvider;
         }
 
         public override LoginUserInfo FindUser(HttpContext context)
         {
             try
             {
-                var token = context.GetBearerToken();
-                var client_id = context.Request.Headers["client_id"];
+                var token = this._dataProvider.GetToken(context);
+                var client_id = this._dataProvider.GetClientID(context);
                 if (!ValidateHelper.IsAllPlumpString(token, client_id))
                 {
                     return null;
