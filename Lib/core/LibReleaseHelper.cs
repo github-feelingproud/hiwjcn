@@ -5,6 +5,7 @@ using Lib.extension;
 using Lib.ioc;
 using Lib.mq;
 using Lib.task;
+using Lib.net;
 using System;
 
 namespace Lib.core
@@ -90,6 +91,16 @@ namespace Lib.core
             {
                 //IOC
                 AppContext.Dispose();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+
+            try
+            {
+                //httpclient
+                HttpClientManager.Instance.Dispose();
             }
             catch (Exception e)
             {

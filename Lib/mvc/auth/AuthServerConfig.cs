@@ -17,6 +17,8 @@ namespace Lib.mvc.auth
             var path = "/".Join_(paths.Where(x => ValidateHelper.IsPlumpString(x)));
             return ServerUrl.EnsureTrailingSlash() + path;
         }
+
+        public string CheckToken() => this.ApiPath("Auth", "CheckToken");
     }
 
     public class AuthConfig

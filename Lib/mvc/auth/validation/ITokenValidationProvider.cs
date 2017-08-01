@@ -74,7 +74,7 @@ namespace Lib.mvc.auth.validation
                     return null;
                 }
 
-                var json = HttpClientHelper.Post_(this._server.ApiPath("auth", "CheckToken"), new
+                var json = HttpClientHelper.Post_(this._server.CheckToken(), new
                 {
                     client_id = client_id,
                     access_token = token
@@ -96,7 +96,39 @@ namespace Lib.mvc.auth.validation
 
         public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
         {
-            return await Task.FromResult(this.FindUser(context));
+            try
+            {
+                var token = context.GetBearerToken();
+                var client_id = context.Request.Headers["client_id"];
+                if (!ValidateHelper.IsAllPlumpString(token, client_id))
+                {
+                    return null;
+                }
+
+                var client = HttpClientManager.Instance.DefaultClient;
+                var response = await client.PostAsJsonAsync(this._server.CheckToken(), new
+                {
+                    client_id = client_id,
+                    access_token = token
+                });
+
+                using (response)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var data = json.JsonToEntity<_<LoginUserInfo>>();
+                    if (!data.success)
+                    {
+                        $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
+                        return null;
+                    }
+                    return data.data;
+                }
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+                return null;
+            }
         }
     }
 }
