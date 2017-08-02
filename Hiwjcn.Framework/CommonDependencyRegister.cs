@@ -46,7 +46,7 @@ namespace Hiwjcn.Framework
             //builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().As<ILoginStatus>().SingleInstance();
 
             #region 自动注册
-            AutoRegistered(ref builder, tps.core.Assembly, tps.service.Assembly);
+            AutoRegistered(ref builder, tps.core.Assembly, tps.service.Assembly, tps.framework.Assembly);
             #endregion
 
             #region 注册Data

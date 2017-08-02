@@ -184,15 +184,11 @@ namespace Lib.extension
                 }
 
                 var req_id = Com.GetRequestID();
-
                 var method = context.Request.HttpMethod;
-
+                var header = context.Request.Headers.ToDict();
                 var url = context.Request.Url.ToString();
-
                 var p = context.Request.Form.ToDict().ToUrlParam();
-
-                var cookies = context.Request.Cookies.AllKeys.Select(x =>
-                new
+                var cookies = context.Request.Cookies.AllKeys.Select(x => new
                 {
                     key = x,
                     value = context.Request.Cookies[x]?.Value
@@ -201,10 +197,12 @@ namespace Lib.extension
                 //请求上下文信息
                 return new
                 {
-                    method = method,
-                    url = url,
-                    req_param = p,
-                    cookies = cookies
+                    RequestID = req_id,
+                    RequestMethod = method,
+                    RequestUrl = url,
+                    RequestParam = p,
+                    RequestHeader = header,
+                    RequestCookie = cookies
                 };
             }
             catch

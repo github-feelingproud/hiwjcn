@@ -34,13 +34,16 @@ namespace Hiwjcn.Web.Controllers
         private readonly IRepository<AuthScope> _AuthScopeRepository;
         private readonly IRepository<AuthClient> _AuthClientRepository;
 
+        private readonly IAuthTokenToUserService _IAuthTokenToUserService;
+
         public AuthController(
             IAuthLoginService _IAuthLoginService,
             ICacheProvider _cache,
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService,
             IRepository<AuthScope> _AuthScopeRepository,
-            IRepository<AuthClient> _AuthClientRepository)
+            IRepository<AuthClient> _AuthClientRepository,
+            IAuthTokenToUserService _IAuthTokenToUserService)
         {
             this._IAuthLoginService = _IAuthLoginService;
             this._cache = _cache;
@@ -50,6 +53,7 @@ namespace Hiwjcn.Web.Controllers
 
             this._AuthScopeRepository = _AuthScopeRepository;
             this._AuthClientRepository = _AuthClientRepository;
+            this._IAuthTokenToUserService = _IAuthTokenToUserService;
         }
 
         /// <summary>
@@ -75,75 +79,38 @@ namespace Hiwjcn.Web.Controllers
                 return GetJson(new _() { success = true, data = data.token });
             });
         }
-
-        private static readonly List<bool> HitLogProbability = new List<bool>() { true, false };
-        private static readonly Random ran = new Random((int)DateTime.Now.Ticks);
-
+        
+        /// <summary>
+        /// 检查token 返回用户信息
+        /// </summary>
+        /// <param name="client_id"></param>
+        /// <param name="access_token"></param>
+        /// <returns></returns>
         [HttpPost]
         [RequestLog]
         public async Task<ActionResult> CheckToken(string client_id, string access_token)
         {
             return await RunActionAsync(async () =>
             {
-                var hit_status = CacheHitStatusEnum.Hit;
+                var loginuser = await this._IAuthTokenToUserService.FindUserByTokenAsync(access_token, client_id);
 
-                var cache_key = AuthCacheKeyManager.TokenKey(access_token);
-
-                //查找token
-                var token = await this._cache.GetOrSetAsync(cache_key, async () =>
-                     {
-                         hit_status = CacheHitStatusEnum.NotHit;
-
-                         return await this._IAuthTokenService.FindTokenAsync(client_id, access_token);
-                     }, TimeSpan.FromMinutes(3));
-
-                if (ran.Choice(HitLogProbability))
+                if (!loginuser.success)
                 {
-                    AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog()
-                    {
-                        CacheKey = cache_key,
-                        Hit = (int)hit_status
-                    });
+                    return GetJsonRes(loginuser.msg);
                 }
 
-                if (token == null)
-                {
-                    return GetJsonRes("token不存在");
-                }
-
-                hit_status = CacheHitStatusEnum.Hit;
-                cache_key = AuthCacheKeyManager.UserInfoKey(token.UserUID);
-                //查找用户
-                var loginuser = await this._cache.GetOrSetAsync(cache_key, async () =>
-                {
-                    hit_status = CacheHitStatusEnum.NotHit;
-
-                    return await this._IAuthLoginService.GetUserInfoByUID(token.UserUID);
-                }, TimeSpan.FromMinutes(3));
-
-                if (ran.Choice(HitLogProbability))
-                {
-                    AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog()
-                    {
-                        CacheKey = cache_key,
-                        Hit = (int)hit_status
-                    });
-                }
-
-                if (loginuser == null)
-                {
-                    return GetJsonRes("用户不存在");
-                }
-
-                loginuser.LoginToken = token.UID;
-                loginuser.RefreshToken = token.RefreshToken;
-                loginuser.TokenExpire = token.ExpiryTime;
-                loginuser.Scopes = token.Scopes?.Select(x => x.Name).ToList();
-
-                return GetJson(new _() { success = true, data = loginuser });
+                return GetJson(new _() { success = true, data = loginuser.data });
             });
         }
 
+        /// <summary>
+        /// 用账户密码换取token
+        /// </summary>
+        /// <param name="client_id"></param>
+        /// <param name="scope"></param>
+        /// <param name="phone"></param>
+        /// <param name="sms"></param>
+        /// <returns></returns>
         [HttpPost]
         [RequestLog]
         public async Task<ActionResult> AuthCodeByOneTimeCode(string client_id, string scope, string phone, string sms)

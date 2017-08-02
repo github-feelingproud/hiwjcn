@@ -18,7 +18,7 @@ namespace Lib.mvc
             if (!ValidateHelper.IsPlumpList(names)) { throw new ArgumentException(); }
             foreach (var name in names)
             {
-                SetCookie(context, name, "Bye,Cookie", domain: domain, expires_minutes: -60 * 24);
+                SetCookie(context, name, string.Empty, domain: domain, expires_minutes: -60 * 24);
             }
             /*
             foreach (var name in names)
