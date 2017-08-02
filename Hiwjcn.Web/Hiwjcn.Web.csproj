@@ -192,7 +192,6 @@
   <ItemGroup>
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
-    <Folder Include="Views\AuthManage\" />
     <Folder Include="Views\Auth\" />
     <Folder Include="Views\UserApi\" />
   </ItemGroup>
@@ -837,6 +836,8 @@
     <Content Include="Views\Shared\auth_loginbypassword.cshtml" />
     <Content Include="Views\Shared\auth_loginbycode.cshtml" />
     <Content Include="Views\Shared\auth_scope_confirm.cshtml" />
+    <Content Include="Views\AuthManage\Scopes.cshtml" />
+    <Content Include="Views\Shared\AuthManageLayout.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

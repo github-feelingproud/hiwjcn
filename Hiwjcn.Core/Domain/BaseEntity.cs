@@ -23,8 +23,8 @@ namespace Model
         public virtual long IID { get; set; }
 
         [Required]
-        [Index(IsUnique = true), Column(nameof(UID))]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "UID必填")]
+        [Index(IsUnique = true), Column(nameof(UID))]
         public virtual string UID { get; set; }
 
         public virtual int IsRemove { get; set; }

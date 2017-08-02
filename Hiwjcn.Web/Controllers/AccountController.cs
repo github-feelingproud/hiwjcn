@@ -102,12 +102,17 @@ namespace Hiwjcn.Web.Controllers
         private async Task<_<LoginUserInfo>> CreateAuthToken(LoginUserInfo loginuser)
         {
             var data = new _<LoginUserInfo>();
+            if (loginuser == null)
+            {
+                data.SetErrorMsg("登录失败");
+                return data;
+            }
 
             var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
             var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
 
             var allscopes = await this._AuthScopeRepository.GetListAsync(null);
-            var code = await this._IAuthTokenService.CreateCodeAsync(client_id, allscopes.Select(x => x.Name).ToList(), data.data.UserID);
+            var code = await this._IAuthTokenService.CreateCodeAsync(client_id, allscopes.Select(x => x.Name).ToList(), loginuser.UserID);
 
             if (ValidateHelper.IsPlumpString(code.msg))
             {

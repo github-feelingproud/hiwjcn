@@ -56,7 +56,11 @@ namespace Hiwjcn.Web.Controllers
         [PageAuth(Permission = Permission)]
         public async Task<ActionResult> Scopes()
         {
-            throw new NotImplementedException();
+            return await RunActionAsync(async () =>
+            {
+                await Task.FromResult(1);
+                return View();
+            });
         }
 
         [ApiAuth(Permission = Permission)]

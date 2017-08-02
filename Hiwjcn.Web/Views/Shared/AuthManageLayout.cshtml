@@ -1,0 +1,40 @@
+﻿@{
+    Layout = null;
+}
+
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- header page -->
+    @Html.Partial(IncludePath("header"))
+</head>
+
+<body>
+
+    @IncludeView("nav")
+
+    <div class="container">
+        <div class="row" style="margin-top:20px;">
+            <div class="col-md-3">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Auth管理
+                    </div>
+                    <div class="list-group">
+                        <a class="list-group-item" href="/authmanage/scopes" target="_self">Scope</a>
+                        <a class="list-group-item" href="/authmanage/clients" target="_self">Client</a>
+                        <a class="list-group-item" href="/authmanage/tokens" target="_self">Token</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
