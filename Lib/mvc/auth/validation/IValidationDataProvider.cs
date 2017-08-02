@@ -7,6 +7,7 @@ using System.Web;
 using Lib.mvc.auth;
 using Lib.mvc.user;
 using System.Configuration;
+using Lib.extension;
 
 namespace Lib.mvc.auth.validation
 {
@@ -48,12 +49,12 @@ namespace Lib.mvc.auth.validation
 
         public string GetClientID(HttpContext context)
         {
-            return ConfigurationManager.AppSettings["auth.client_id"];
+            return ConfigurationManager.AppSettings["auth.client_id"]?.ToMD5();
         }
 
         public string GetClientSecurity(HttpContext context)
         {
-            return ConfigurationManager.AppSettings["auth.client_security"];
+            return ConfigurationManager.AppSettings["auth.client_security"]?.ToMD5();
         }
 
         public string GetToken(HttpContext context)

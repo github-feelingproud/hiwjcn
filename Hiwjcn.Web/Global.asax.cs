@@ -22,6 +22,8 @@ using System.Reflection;
 using Hiwjcn.Framework.Tasks;
 using Lib.mvc.user;
 using Hiwjcn.Bll;
+using Hiwjcn.Framework.Provider;
+using Lib.mvc.auth.validation;
 
 namespace Hiwjcn.Web
 {
@@ -53,7 +55,12 @@ namespace Hiwjcn.Web
                     {
                         builder.AuthServerUseUserLoginService(() => new QipeilongLoginService());
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
-                        builder.AuthClientUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
+                        //new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")
+                        //builder.AuthClientUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
+
+                        builder.AuthUseCookieStoreProvider(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
+                        builder.AuthUseValidationDataProvider<WebValidationDataProvider>();
+                        builder.AuthClientUseCustomValidation<AuthLocalValidationProvider>();
                     };
 
                     //disable "X-AspNetMvc-Version" header name

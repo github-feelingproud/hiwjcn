@@ -41,38 +41,6 @@ namespace Lib.mvc.auth.validation
     }
 
     /// <summary>
-    /// 查询本地库
-    /// </summary>
-    public class AuthLocalValidationProvider : TokenValidationProviderBase
-    {
-        private readonly IValidationDataProvider _dataProvider;
-
-        public AuthLocalValidationProvider(IValidationDataProvider _dataProvider)
-        {
-            this._dataProvider = _dataProvider;
-        }
-
-        public override LoginUserInfo FindUser(HttpContext context)
-        {
-            try
-            {
-                var token = this._dataProvider.GetToken(context);
-                var client_id = this._dataProvider.GetClientID(context);
-                if (!ValidateHelper.IsAllPlumpString(token, client_id))
-                {
-                    return null;
-                }
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-                return null;
-            }
-            throw new NotImplementedException();
-        }
-    }
-
-    /// <summary>
     /// 请求auth server验证
     /// </summary>
     public class AuthServerValidationProvider : TokenValidationProviderBase

@@ -18,12 +18,15 @@ using Hiwjcn.Core.Domain.Auth;
 using Lib.mvc.auth;
 using Hiwjcn.Framework;
 using System.Collections.ObjectModel;
+using Lib.mvc.auth.validation;
 
 namespace Hiwjcn.Web.Controllers
 {
     [RoutePrefix("connect")]
     public class ConnectController : BaseController
     {
+        private readonly IValidationDataProvider _IValidationDataProvider;
+
         private readonly IAuthLoginService _IAuthLoginService;
 
         private readonly IAuthTokenService _IAuthTokenService;
@@ -34,6 +37,7 @@ namespace Hiwjcn.Web.Controllers
         private readonly IRepository<AuthClient> _AuthClientRepository;
 
         public ConnectController(
+            IValidationDataProvider _IValidationDataProvider,
             IAuthLoginService _IAuthLoginService,
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService,
@@ -41,6 +45,7 @@ namespace Hiwjcn.Web.Controllers
             IRepository<AuthScope> _AuthScopeRepository,
             IRepository<AuthClient> _AuthClientRepository)
         {
+            this._IValidationDataProvider = _IValidationDataProvider;
             this._IAuthLoginService = _IAuthLoginService;
 
             this._IAuthTokenService = _IAuthTokenService;
@@ -58,6 +63,38 @@ namespace Hiwjcn.Web.Controllers
             //["token"] = "",
         });
 
+        [NonAction]
+        private async Task<_<LoginUserInfo>> LoadToken(_<LoginUserInfo> data)
+        {
+            if (!data.success)
+            {
+                return data;
+            }
+            var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
+            var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
+
+            var allscopes = await this._AuthScopeRepository.GetListAsync(null);
+            var code = await this._IAuthTokenService.CreateCodeAsync(client_id, allscopes.Select(x => x.Name).ToList(), data.data.UserID);
+
+            if (ValidateHelper.IsPlumpString(code.msg))
+            {
+                data.msg = code.msg;
+                return data;
+            }
+
+            var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, code.code.UID);
+            if (ValidateHelper.IsPlumpString(token.msg))
+            {
+                data.msg = token.msg;
+                return data;
+            }
+
+            data.data.LoginToken = token.token.UID;
+            data.data.RefreshToken = token.token.RefreshToken;
+            data.data.TokenExpire = token.token.ExpiryTime;
+            return data;
+        }
+
         [HttpPost]
         [RequestLog]
         public async Task<ActionResult> LoginByPassword(string username, string password)
@@ -65,6 +102,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var data = await this._IAuthLoginService.LoginByPassword(username, password);
+                data = await LoadToken(data);
                 if (data.success)
                 {
                     this.X.context.CookieLogin(data.data);
@@ -81,6 +119,8 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var data = await this._IAuthLoginService.LoginByCode(phone, code);
+
+                data = await LoadToken(data);
 
                 if (ValidateHelper.IsPlumpString(data.msg))
                 {
@@ -199,14 +239,16 @@ namespace Hiwjcn.Web.Controllers
                 return View();
             });
         }
+       
 
-        public async Task<ActionResult> InitScopes()
+        public async Task<ActionResult> InitData()
         {
             return await RunActionAsync(async () =>
             {
+                var now = DateTime.Now;
+                
                 if (!await this._AuthScopeRepository.ExistAsync(null))
                 {
-                    var now = DateTime.Now;
                     var list = new List<AuthScope>()
                     {
                         new AuthScope()
@@ -229,7 +271,7 @@ namespace Hiwjcn.Web.Controllers
                             Name="product",
                             DisplayName="商品",
                             Description="商品",
-                            Important=(int)YesOrNoEnum.是,
+                            Important=(int)YesOrNoEnum.否,
                             Sort=0,
                             IsDefault=(int)YesOrNoEnum.是,
                             ImageUrl="http://www.baidu.com/logo.png",
@@ -243,7 +285,7 @@ namespace Hiwjcn.Web.Controllers
                             Name="user",
                             DisplayName="个人信息",
                             Description="个人信息",
-                            Important=(int)YesOrNoEnum.是,
+                            Important=(int)YesOrNoEnum.否,
                             Sort=0,
                             IsDefault=(int)YesOrNoEnum.是,
                             ImageUrl="http://www.baidu.com/logo.png",
@@ -271,7 +313,7 @@ namespace Hiwjcn.Web.Controllers
                             Name="inquiry",
                             DisplayName="询价单",
                             Description="询价单",
-                            Important=(int)YesOrNoEnum.是,
+                            Important=(int)YesOrNoEnum.否,
                             Sort=0,
                             IsDefault=(int)YesOrNoEnum.是,
                             ImageUrl="http://www.baidu.com/logo.png",
@@ -283,23 +325,16 @@ namespace Hiwjcn.Web.Controllers
 
                     await this._AuthScopeRepository.AddAsync(list.ToArray());
                 }
-                return Content("ok");
-            });
-        }
 
-        public async Task<ActionResult> InitClients()
-        {
-            return await RunActionAsync(async () =>
-            {
                 if (!await this._AuthClientRepository.ExistAsync(null))
                 {
-                    var now = DateTime.Now;
                     var list = new List<AuthClient>()
                     {
                         new AuthClient()
                         {
                             UID=Com.GetUUID(),
-                            ClientName="IOS",
+                            ClientName="汽配龙IOS客户端",
+                            Description="汽配龙IOS客户端",
                             ClientUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
                             LogoUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
                             UserUID="http://www.baidu.com/",
@@ -312,7 +347,8 @@ namespace Hiwjcn.Web.Controllers
                         new AuthClient()
                         {
                             UID=Com.GetUUID(),
-                            ClientName="Android",
+                            ClientName="汽配龙Android客户端",
+                            Description="汽配龙Android客户端",
                             ClientUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
                             LogoUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
                             UserUID="http://www.baidu.com/",
@@ -326,6 +362,35 @@ namespace Hiwjcn.Web.Controllers
 
                     await this._AuthClientRepository.AddAsync(list.ToArray());
                 }
+
+                var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
+                var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
+
+                if (!ValidateHelper.IsAllPlumpString(client_id, client_security))
+                {
+                    return Content("default client data is empty");
+                }
+
+                if (!await this._AuthClientRepository.ExistAsync(x => x.UID == client_id && x.ClientSecretUID == client_security))
+                {
+                    await this._AuthClientRepository.DeleteWhereAsync(x => x.UID == client_id || x.ClientSecretUID == client_security);
+                    var official = new AuthClient()
+                    {
+                        UID = client_id,
+                        ClientName = "auth管理端",
+                        Description = "auth管理端",
+                        ClientUrl = "http://images.qipeilong.cn/ico/logo.png?t=111",
+                        LogoUrl = "http://images.qipeilong.cn/ico/logo.png?t=111",
+                        UserUID = "http://www.baidu.com/",
+                        ClientSecretUID = client_security,
+                        IsRemove = (int)YesOrNoEnum.否,
+                        IsActive = (int)YesOrNoEnum.是,
+                        CreateTime = now,
+                        UpdateTime = now
+                    };
+                    await this._AuthClientRepository.AddAsync(official);
+                }
+
                 return Content("ok");
             });
         }

@@ -38,7 +38,12 @@ namespace Lib.mvc.auth
 
                 return await AppContext.ScopeAsync(async x =>
                 {
-                    return await x.Resolve<TokenValidationProviderBase>().FindUserAsync(context);
+                    var loginuser = await x.Resolve_<TokenValidationProviderBase>().FindUserAsync(context);
+                    if (loginuser == null)
+                    {
+                        x.Resolve_<LoginStatus>().SetUserLogout(context);
+                    }
+                    return loginuser;
                 });
             });
             return data;
@@ -60,7 +65,12 @@ namespace Lib.mvc.auth
 
                 return AppContext.Scope(x =>
                 {
-                    return x.Resolve<TokenValidationProviderBase>().FindUser(context);
+                    var loginuser = x.Resolve_<TokenValidationProviderBase>().FindUser(context);
+                    if (loginuser == null)
+                    {
+                        x.Resolve_<LoginStatus>().SetUserLogout(context);
+                    }
+                    return loginuser;
                 });
             });
             return data;
@@ -149,16 +159,6 @@ namespace Lib.mvc.auth
             builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().SingleInstance();
         }
 
-        public static void AuthUseAppValidationDataProvider(this ContainerBuilder builder)
-        {
-            builder.AuthUseValidationDataProvider<AppValidationDataProvider>();
-        }
-
-        public static void AuthUseWebValidationDataProvider(this ContainerBuilder builder)
-        {
-            builder.AuthUseValidationDataProvider<WebValidationDataProvider>();
-        }
-
         /// <summary>
         /// 注册登录逻辑
         /// </summary>
@@ -188,9 +188,10 @@ namespace Lib.mvc.auth
         /// <summary>
         /// 自定义验证
         /// </summary>
-        public static void AuthClientUseCustomValidation(this ContainerBuilder builder, Func<TokenValidationProviderBase> config)
+        public static void AuthClientUseCustomValidation<T>(this ContainerBuilder builder)
+            where T : TokenValidationProviderBase
         {
-            builder.Register(_ => config.Invoke()).AsSelf().As<TokenValidationProviderBase>().SingleInstance();
+            builder.RegisterType<T>().AsSelf().As<TokenValidationProviderBase>().SingleInstance();
         }
     }
 }
