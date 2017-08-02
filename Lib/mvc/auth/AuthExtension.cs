@@ -20,7 +20,7 @@ namespace Lib.mvc.auth
 {
     public static class AuthExtension
     {
-        public const string AuthedUserKey = "auth.user.entity";
+        public const string AuthedUserKey = "context.items.auth.user.entity";
 
         /// <summary>
         /// 获取当前登录用户
@@ -31,17 +31,13 @@ namespace Lib.mvc.auth
         {
             var data = await context.CacheInHttpContextAsync(AuthedUserKey, async () =>
             {
-                if (!AppContext.IsRegistered<TokenValidationProviderBase>())
-                {
-                    throw new Exception($"没有注册{nameof(TokenValidationProviderBase)}");
-                }
-
                 return await AppContext.ScopeAsync(async x =>
                 {
                     var loginuser = await x.Resolve_<TokenValidationProviderBase>().FindUserAsync(context);
                     if (loginuser == null)
                     {
-                        x.Resolve_<LoginStatus>().SetUserLogout(context);
+                        var loginstatus = x.ResolveOptional<LoginStatus>();
+                        loginstatus?.SetUserLogout(context);
                     }
                     return loginuser;
                 });
@@ -58,17 +54,13 @@ namespace Lib.mvc.auth
         {
             var data = context.CacheInHttpContext(AuthedUserKey, () =>
             {
-                if (!AppContext.IsRegistered<TokenValidationProviderBase>())
-                {
-                    throw new Exception($"没有注册{nameof(TokenValidationProviderBase)}");
-                }
-
                 return AppContext.Scope(x =>
                 {
                     var loginuser = x.Resolve_<TokenValidationProviderBase>().FindUser(context);
                     if (loginuser == null)
                     {
-                        x.Resolve_<LoginStatus>().SetUserLogout(context);
+                        var loginstatus = x.ResolveOptional<LoginStatus>();
+                        loginstatus?.SetUserLogout(context);
                     }
                     return loginuser;
                 });
@@ -146,43 +138,27 @@ namespace Lib.mvc.auth
         /// <summary>
         /// cookie store
         /// </summary>
-        public static void AuthUseCookieStoreProvider(this ContainerBuilder builder, Func<LoginStatus> config)
-        {
-            builder.Register(_ => config.Invoke()).AsSelf().SingleInstance();
-        }
-
-        /// <summary>
-        /// 获取token client的逻辑
-        /// </summary>
-        public static void AuthUseValidationDataProvider<T>(this ContainerBuilder builder) where T : IValidationDataProvider
-        {
-            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().SingleInstance();
-        }
-
-        /// <summary>
-        /// 注册登录逻辑
-        /// </summary>
-        public static void AuthServerUseUserLoginService(this ContainerBuilder builder, Func<IAuthLoginService> config)
+        public static void AuthUseLoginStatus(this ContainerBuilder builder, Func<LoginStatus> config)
         {
             builder.Register(_ => config.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
         }
 
         /// <summary>
-        /// 使用auth server验证
+        /// 获取token client的逻辑
         /// </summary>
-        public static void AuthClientUseAuthServerValidation(this ContainerBuilder builder, Func<AuthServerConfig> config)
+        public static void AuthUseValidationDataProvider<T>(this ContainerBuilder builder)
+            where T : IValidationDataProvider
         {
-            builder.Register(_ => config.Invoke()).AsSelf().SingleInstance();
-            builder.RegisterType<AuthServerValidationProvider>().AsSelf().As<TokenValidationProviderBase>().SingleInstance();
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().SingleInstance();
         }
 
         /// <summary>
-        /// 使用token验证
+        /// auth服务器配置
         /// </summary>
-        public static void AuthClientUseCookieValidation(this ContainerBuilder builder, Func<LoginStatus> config)
+        public static void AuthUseServerConfig<T>(this ContainerBuilder builder)
+            where T : AuthServerConfig
         {
-            builder.AuthUseCookieStoreProvider(config);
-            builder.RegisterType<CookieTokenValidationProvider>().AsSelf().As<TokenValidationProviderBase>().SingleInstance();
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().SingleInstance();
         }
 
         /// <summary>

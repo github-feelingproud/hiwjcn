@@ -15,6 +15,9 @@ using Lib.net;
 
 namespace Lib.mvc.auth.validation
 {
+    /// <summary>
+    /// 拿到token和client信息后去验证信息，并拿到用户信息
+    /// </summary>
     public abstract class TokenValidationProviderBase
     {
         public abstract LoginUserInfo FindUser(HttpContext context);
@@ -62,6 +65,7 @@ namespace Lib.mvc.auth.validation
                 var client_id = this._dataProvider.GetClientID(context);
                 if (!ValidateHelper.IsAllPlumpString(token, client_id))
                 {
+                    $"token和client_id为空:{token}-{client_id}".AddBusinessInfoLog();
                     return null;
                 }
 
@@ -76,7 +80,7 @@ namespace Lib.mvc.auth.validation
                     $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
                     return null;
                 }
-                return data.data;
+                return data.data ?? throw new Exception("服务器返回数据为空-769876");
             }
             catch (Exception e)
             {
@@ -93,6 +97,7 @@ namespace Lib.mvc.auth.validation
                 var client_id = context.Request.Headers["client_id"];
                 if (!ValidateHelper.IsAllPlumpString(token, client_id))
                 {
+                    $"token和client_id为空:{token}-{client_id}".AddBusinessInfoLog();
                     return null;
                 }
 
@@ -112,7 +117,7 @@ namespace Lib.mvc.auth.validation
                         $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
                         return null;
                     }
-                    return data.data;
+                    return data.data ?? throw new Exception("服务器返回数据为空-769876");
                 }
             }
             catch (Exception e)

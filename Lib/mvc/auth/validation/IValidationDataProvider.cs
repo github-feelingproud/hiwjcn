@@ -11,6 +11,9 @@ using Lib.extension;
 
 namespace Lib.mvc.auth.validation
 {
+    /// <summary>
+    /// 获取token和client 信息的渠道
+    /// </summary>
     public interface IValidationDataProvider
     {
         string GetToken(HttpContext context);
@@ -20,6 +23,9 @@ namespace Lib.mvc.auth.validation
         string GetClientSecurity(HttpContext context);
     }
 
+    /// <summary>
+    /// 从header中获取token和client信息
+    /// </summary>
     public class AppValidationDataProvider : IValidationDataProvider
     {
         public string GetClientID(HttpContext context)
@@ -38,6 +44,9 @@ namespace Lib.mvc.auth.validation
         }
     }
 
+    /// <summary>
+    /// 从cookie中获取token，从web.config中获取client信息
+    /// </summary>
     public class WebValidationDataProvider : IValidationDataProvider
     {
         private readonly LoginStatus _LoginStatus;
@@ -49,17 +58,19 @@ namespace Lib.mvc.auth.validation
 
         public string GetClientID(HttpContext context)
         {
-            return ConfigurationManager.AppSettings["auth.client_id"]?.ToMD5();
+            var data = ConfigurationManager.AppSettings["auth.client_id"];
+            return data?.ToMD5();
         }
 
         public string GetClientSecurity(HttpContext context)
         {
-            return ConfigurationManager.AppSettings["auth.client_security"]?.ToMD5();
+            var data = ConfigurationManager.AppSettings["auth.client_security"];
+            return data?.ToMD5();
         }
 
         public string GetToken(HttpContext context)
         {
-            return this._LoginStatus.GetLoginUser()?.LoginToken;
+            return this._LoginStatus.GetCookieToken();
         }
     }
 }

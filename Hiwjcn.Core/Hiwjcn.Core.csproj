@@ -123,6 +123,7 @@
     <Compile Include="Domain\User\UserModel.cs" />
     <Compile Include="Domain\User\UserRoleModel.cs" />
     <Compile Include="Infrastructure\Auth\IAuthClientService.cs" />
+    <Compile Include="Infrastructure\Auth\IAuthLoginService.cs" />
     <Compile Include="Infrastructure\Auth\IAuthScopeService.cs" />
     <Compile Include="Infrastructure\Auth\IAuthTokenService.cs" />
     <Compile Include="Infrastructure\Common\IAreaService.cs" />

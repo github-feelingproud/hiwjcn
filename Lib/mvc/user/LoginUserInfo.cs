@@ -27,6 +27,8 @@ namespace Lib.mvc.user
             set { this.UserID = value; }
         }
 
+        public virtual string UserName { get; set; }
+
         public virtual string NickName { get; set; }
 
         public virtual string Email { get; set; }
@@ -48,7 +50,7 @@ namespace Lib.mvc.user
         public virtual List<string> Scopes { get; set; }
 
         public virtual Dictionary<string, string> ExtraData { get; set; }
-        
+
 
         public static implicit operator LoginUserInfo(string json) => json.JsonToEntity<LoginUserInfo>();
     }

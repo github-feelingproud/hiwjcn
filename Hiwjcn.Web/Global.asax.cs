@@ -24,6 +24,7 @@ using Lib.mvc.user;
 using Hiwjcn.Bll;
 using Hiwjcn.Framework.Provider;
 using Lib.mvc.auth.validation;
+using Hiwjcn.Bll.Auth;
 
 namespace Hiwjcn.Web
 {
@@ -53,12 +54,12 @@ namespace Hiwjcn.Web
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
                     AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
                     {
-                        builder.AuthServerUseUserLoginService(() => new QipeilongLoginService());
+                        builder.RegisterType<QipeilongLoginService>().AsSelf().AsImplementedInterfaces().SingleInstance();
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
                         //new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")
                         //builder.AuthClientUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
 
-                        builder.AuthUseCookieStoreProvider(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
+                        builder.AuthUseLoginStatus(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_session", ""));
                         builder.AuthUseValidationDataProvider<WebValidationDataProvider>();
                         builder.AuthClientUseCustomValidation<AuthLocalValidationProvider>();
                     };

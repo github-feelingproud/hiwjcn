@@ -26,13 +26,10 @@ namespace Hiwjcn.Web.Controllers
     public class ConnectController : BaseController
     {
         private readonly IValidationDataProvider _IValidationDataProvider;
-
         private readonly IAuthLoginService _IAuthLoginService;
-
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly IAuthClientService _IAuthClientService;
-
         private readonly IRepository<AuthScope> _AuthScopeRepository;
         private readonly IRepository<AuthClient> _AuthClientRepository;
 
@@ -54,94 +51,6 @@ namespace Hiwjcn.Web.Controllers
 
             this._AuthScopeRepository = _AuthScopeRepository;
             this._AuthClientRepository = _AuthClientRepository;
-        }
-
-        private readonly ReadOnlyDictionary<string, string> LoginTypeDict = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
-        {
-            ["password"] = "~/Views/Connect/Login.cshtml",
-            ["onetimecode"] = "~/Views/Connect/LoginByCode.cshtml",
-            //["token"] = "",
-        });
-
-        [NonAction]
-        private async Task<_<LoginUserInfo>> LoadToken(_<LoginUserInfo> data)
-        {
-            if (!data.success)
-            {
-                return data;
-            }
-            var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
-            var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
-
-            var allscopes = await this._AuthScopeRepository.GetListAsync(null);
-            var code = await this._IAuthTokenService.CreateCodeAsync(client_id, allscopes.Select(x => x.Name).ToList(), data.data.UserID);
-
-            if (ValidateHelper.IsPlumpString(code.msg))
-            {
-                data.msg = code.msg;
-                return data;
-            }
-
-            var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, code.code.UID);
-            if (ValidateHelper.IsPlumpString(token.msg))
-            {
-                data.msg = token.msg;
-                return data;
-            }
-
-            data.data.LoginToken = token.token.UID;
-            data.data.RefreshToken = token.token.RefreshToken;
-            data.data.TokenExpire = token.token.ExpiryTime;
-            return data;
-        }
-
-        [HttpPost]
-        [RequestLog]
-        public async Task<ActionResult> LoginByPassword(string username, string password)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var data = await this._IAuthLoginService.LoginByPassword(username, password);
-                data = await LoadToken(data);
-                if (data.success)
-                {
-                    this.X.context.CookieLogin(data.data);
-                    return GetJsonRes(string.Empty);
-                }
-                return GetJsonRes(data.msg);
-            });
-        }
-
-        [HttpPost]
-        [RequestLog]
-        public async Task<ActionResult> LoginByOneTimeCode(string phone, string code)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var data = await this._IAuthLoginService.LoginByCode(phone, code);
-
-                data = await LoadToken(data);
-
-                if (ValidateHelper.IsPlumpString(data.msg))
-                {
-                    return GetJsonRes(data.msg);
-                }
-
-                this.X.context.CookieLogin(data.data);
-
-                return GetJsonRes(string.Empty);
-            });
-        }
-
-        [HttpPost]
-        [RequestLog]
-        public async Task<ActionResult> SendOneTimeCode(string phone)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var data = await this._IAuthLoginService.SendOneTimeCode(phone);
-                return GetJsonRes(data);
-            });
         }
 
         [RequestLog]
@@ -194,34 +103,7 @@ namespace Hiwjcn.Web.Controllers
                 return GetJson(new _() { success = true, data = data.code?.UID });
             });
         }
-
-        public ActionResult Logout(string url)
-        {
-            return RunAction(() =>
-            {
-                this.X.context.CookieLogout();
-
-                if (!ValidateHelper.IsPlumpString(url))
-                {
-                    url = "/";
-                }
-
-                return Redirect(url);
-            });
-        }
-
-        [RequestLog]
-        public async Task<ActionResult> LoginUser()
-        {
-            return await RunActionAsync(async () =>
-            {
-                var loginuser = await this.X.context.GetAuthUserAsync();
-
-                return GetJsonp(new _() { success = loginuser != null, data = loginuser });
-            });
-        }
-
-
+        
         [PageAuth]
         [RequestLog]
         public async Task<ActionResult> MyClients(string q, int? page)
@@ -239,160 +121,6 @@ namespace Hiwjcn.Web.Controllers
                 return View();
             });
         }
-       
 
-        public async Task<ActionResult> InitData()
-        {
-            return await RunActionAsync(async () =>
-            {
-                var now = DateTime.Now;
-                
-                if (!await this._AuthScopeRepository.ExistAsync(null))
-                {
-                    var list = new List<AuthScope>()
-                    {
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="order",
-                            DisplayName="订单",
-                            Description="订单",
-                            Important=(int)YesOrNoEnum.是,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="product",
-                            DisplayName="商品",
-                            Description="商品",
-                            Important=(int)YesOrNoEnum.否,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="user",
-                            DisplayName="个人信息",
-                            Description="个人信息",
-                            Important=(int)YesOrNoEnum.否,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="auth",
-                            DisplayName="auth",
-                            Description="auth",
-                            Important=(int)YesOrNoEnum.是,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="inquiry",
-                            DisplayName="询价单",
-                            Description="询价单",
-                            Important=(int)YesOrNoEnum.否,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        }
-                    };
-
-                    await this._AuthScopeRepository.AddAsync(list.ToArray());
-                }
-
-                if (!await this._AuthClientRepository.ExistAsync(null))
-                {
-                    var list = new List<AuthClient>()
-                    {
-                        new AuthClient()
-                        {
-                            UID=Com.GetUUID(),
-                            ClientName="汽配龙IOS客户端",
-                            Description="汽配龙IOS客户端",
-                            ClientUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
-                            LogoUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
-                            UserUID="http://www.baidu.com/",
-                            ClientSecretUID=Com.GetUUID(),
-                            IsRemove=(int)YesOrNoEnum.否,
-                            IsActive=(int)YesOrNoEnum.是,
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthClient()
-                        {
-                            UID=Com.GetUUID(),
-                            ClientName="汽配龙Android客户端",
-                            Description="汽配龙Android客户端",
-                            ClientUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
-                            LogoUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
-                            UserUID="http://www.baidu.com/",
-                            ClientSecretUID=Com.GetUUID(),
-                            IsRemove=(int)YesOrNoEnum.否,
-                            IsActive=(int)YesOrNoEnum.是,
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                    };
-
-                    await this._AuthClientRepository.AddAsync(list.ToArray());
-                }
-
-                var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
-                var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
-
-                if (!ValidateHelper.IsAllPlumpString(client_id, client_security))
-                {
-                    return Content("default client data is empty");
-                }
-
-                if (!await this._AuthClientRepository.ExistAsync(x => x.UID == client_id && x.ClientSecretUID == client_security))
-                {
-                    await this._AuthClientRepository.DeleteWhereAsync(x => x.UID == client_id || x.ClientSecretUID == client_security);
-                    var official = new AuthClient()
-                    {
-                        UID = client_id,
-                        ClientName = "auth管理端",
-                        Description = "auth管理端",
-                        ClientUrl = "http://images.qipeilong.cn/ico/logo.png?t=111",
-                        LogoUrl = "http://images.qipeilong.cn/ico/logo.png?t=111",
-                        UserUID = "http://www.baidu.com/",
-                        ClientSecretUID = client_security,
-                        IsRemove = (int)YesOrNoEnum.否,
-                        IsActive = (int)YesOrNoEnum.是,
-                        CreateTime = now,
-                        UpdateTime = now
-                    };
-                    await this._AuthClientRepository.AddAsync(official);
-                }
-
-                return Content("ok");
-            });
-        }
     }
 }

@@ -10,10 +10,16 @@ using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebLogic.Bll.User;
+using System.Linq;
 using WebLogic.Model.User;
+using Lib.data;
 using Lib.extension;
+using Hiwjcn.Core.Domain.Auth;
 using Lib.mvc.auth;
+using Lib.cache;
 using WebCore.MvcLib.Controller;
+using Hiwjcn.Core.Infrastructure.Auth;
+using Lib.mvc.auth.validation;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -23,31 +29,26 @@ namespace Hiwjcn.Web.Controllers
         private readonly IUserService _IUserService;
         private readonly ILoginLogService _LoginErrorLogBll;
         private readonly LoginStatus _LoginStatus;
+        private readonly IRepository<AuthScope> _AuthScopeRepository;
+        private readonly IAuthTokenService _IAuthTokenService;
+        private readonly IValidationDataProvider _IValidationDataProvider;
 
         public AccountController(
             IAuthLoginService _IAuthLoginService,
             IUserService user,
             ILoginLogService loginlog,
-            LoginStatus logincontext)
+            LoginStatus logincontext,
+            IRepository<AuthScope> _AuthScopeRepository,
+            IAuthTokenService _IAuthTokenService,
+            IValidationDataProvider _IValidationDataProvider)
         {
             this._IAuthLoginService = _IAuthLoginService;
             this._IUserService = user;
             this._LoginErrorLogBll = loginlog;
             this._LoginStatus = logincontext;
-        }
-
-        /// <summary>
-        /// 获取登录信息
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult GetLoginInfo()
-        {
-            return RunAction(() =>
-            {
-                var loginuser = this.X.LoginUser;
-                return GetJson(new _() { success = loginuser != null, data = loginuser });
-            });
+            this._AuthScopeRepository = _AuthScopeRepository;
+            this._IAuthTokenService = _IAuthTokenService;
+            this._IValidationDataProvider = _IValidationDataProvider;
         }
 
         #region SSO
@@ -97,94 +98,109 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        /// <summary>
-        /// 子站post请求这个接口验证token是否正确，并获取返回的loginuser对象
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="email"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult CheckChildSiteToken(string email, string token)
+        [NonAction]
+        private async Task<_<LoginUserInfo>> CreateAuthToken(LoginUserInfo loginuser)
         {
-            return RunAction(() =>
+            var data = new _<LoginUserInfo>();
+
+            var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
+            var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
+
+            var allscopes = await this._AuthScopeRepository.GetListAsync(null);
+            var code = await this._IAuthTokenService.CreateCodeAsync(client_id, allscopes.Select(x => x.Name).ToList(), data.data.UserID);
+
+            if (ValidateHelper.IsPlumpString(code.msg))
             {
-                if (!ValidateHelper.IsAllPlumpString(email, token))
+                data.SetErrorMsg(code.msg);
+                return data;
+            }
+
+            var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, code.code.UID);
+            if (ValidateHelper.IsPlumpString(token.msg))
+            {
+                data.SetErrorMsg(token.msg);
+                return data;
+            }
+
+            loginuser.LoginToken = token.token.UID;
+            loginuser.RefreshToken = token.token.RefreshToken;
+            loginuser.TokenExpire = token.token.ExpiryTime;
+
+            data.SetSuccessData(loginuser);
+            return data;
+        }
+
+        [HttpPost]
+        [RequestLog]
+        public async Task<ActionResult> LoginByPassword(string username, string password)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var data = await this._IAuthLoginService.LoginByPassword(username, password);
+                if (ValidateHelper.IsPlumpString(data.msg))
                 {
-                    return GetJson(new CheckLoginInfoData() { success = false, message = "参数错误" });
+                    return GetJsonRes(data.msg);
                 }
-                var usermodel = _IUserService.LoginByToken(email, token);
-                if (usermodel == null || usermodel.UserToken == null)
+                var loginuser = await this.CreateAuthToken(data.data);
+                if (ValidateHelper.IsPlumpString(loginuser.msg))
                 {
-                    return GetJson(new CheckLoginInfoData() { success = false, message = "登陆错误" });
+                    return GetJsonRes(loginuser.msg);
                 }
-                var info = new LoginUserInfo() { };
-                return GetJson(new CheckLoginInfoData() { success = true, data = info });
+                this.X.context.CookieLogin(loginuser.data);
+                return GetJsonRes(string.Empty);
             });
         }
 
-        /// <summary>
-        /// post请求子站回调页面，请求子站主动验证token是否正确
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        public ActionResult PostChildCallBack(string url, string callback)
+        [HttpPost]
+        [RequestLog]
+        public async Task<ActionResult> LoginByOneTimeCode(string phone, string code)
         {
-            //这里不要用actionhelper，那么跳转逻辑会复杂
-            var loginuser = this.X.LoginUser;
-
-            if (loginuser == null) { return GoHome(); }
-
-            //没有子站信息就跳转默认页
-            if (!ValidateHelper.IsAllPlumpString(url, callback))
+            return await RunActionAsync(async () =>
             {
-                return GoHome();
-            }
-
-            ViewData["token"] = loginuser.LoginToken;
-            ViewData["uid"] = loginuser.UserID;
-            ViewData["url"] = url;
-            ViewData["callback"] = callback;
-            return View();
+                var data = await this._IAuthLoginService.LoginByCode(phone, code);
+                if (ValidateHelper.IsPlumpString(data.msg))
+                {
+                    return GetJsonRes(data.msg);
+                }
+                var loginuser = await this.CreateAuthToken(data.data);
+                if (ValidateHelper.IsPlumpString(loginuser.msg))
+                {
+                    return GetJsonRes(loginuser.msg);
+                }
+                this.X.context.CookieLogin(loginuser.data);
+                return GetJsonRes(string.Empty);
+            });
         }
 
-        [NonAction]
-        private ActionResult GoToPostChildCallBack(string url, string callback)
+        [HttpPost]
+        [RequestLog]
+        public async Task<ActionResult> SendOneTimeCode(string phone)
         {
-            url = ConvertHelper.GetString(url);
-            callback = ConvertHelper.GetString(callback);
-            return Redirect(string.Format("/Account/PostChildCallBack/?url={0}&callback={1}",
-                                       Server.UrlEncode(url), Server.UrlEncode(callback)));
+            return await RunActionAsync(async () =>
+            {
+                var data = await this._IAuthLoginService.SendOneTimeCode(phone);
+                return GetJsonRes(data);
+            });
         }
 
         /// <summary>
         /// 登录账户
         /// </summary>
         /// <returns></returns>
-        public ActionResult Login(string url, string callback)
+        public async Task<ActionResult> Login(string url, string callback)
         {
-            return RunAction(() =>
+            return await RunActionAsync(async () =>
             {
-                //如果已经登陆
-                if (this.X.LoginUser != null)
+                var session_loginuser = this._LoginStatus.GetLoginUser(this.X.context);
+                if (session_loginuser == null)
                 {
-                    return GoToPostChildCallBack(url, callback);
+                    var auth_user = await this.X.context.GetAuthUserAsync();
+                    if (auth_user != null)
+                    {
+                        this._LoginStatus.SetUserLogin(this.X.context, auth_user);
+                    }
                 }
 
-                var email = _LoginStatus.GetCookieUID();
-                var token = _LoginStatus.GetCookieToken();
-                if (ValidateHelper.IsAllPlumpString(email, token))
-                {
-                    var model = _IUserService.LoginByToken(email, token);
-                    //如果通过token登陆成功
-                    if (model != null && model.UserToken != null)
-                    {
-                        _LoginStatus.SetUserLogin(loginuser: new LoginUserInfo() { });
-                        return GoToPostChildCallBack(url, callback);
-                    }
-                    _LoginStatus.SetUserLogout();
-                }
                 return View();
             });
         }
@@ -193,14 +209,29 @@ namespace Hiwjcn.Web.Controllers
         /// 退出地址
         /// </summary>
         /// <returns></returns>
-        public ActionResult LogOutSSO()
+        public ActionResult LogOut()
         {
             return RunAction(() =>
             {
                 _LoginStatus.SetUserLogout();
-                return View();
+                return GoHome();
             });
         }
+
+        [RequestLog]
+        public async Task<ActionResult> LoginUser()
+        {
+            return await RunActionAsync(async () =>
+            {
+                var loginuser = await this.X.context.GetAuthUserAsync();
+
+                return GetJsonp(new _() { success = loginuser != null, data = loginuser });
+            });
+        }
+
+        #endregion
+
+        #region 注册
 
         /// <summary>
         /// 注册账户
@@ -210,10 +241,6 @@ namespace Hiwjcn.Web.Controllers
         {
             return RunAction(() =>
             {
-                if (this.GetOption("can_reg").ToLower() != "true")
-                {
-                    return Content("管理员关闭了注册功能");
-                }
                 return View();
             });
         }
@@ -260,6 +287,9 @@ namespace Hiwjcn.Web.Controllers
                 return GetJsonRes(res);
             });
         }
+        #endregion
+
+        #region 忘记密码
 
         /// <summary>
         /// 获取临时登陆权限
@@ -285,78 +315,5 @@ namespace Hiwjcn.Web.Controllers
             });
         }
         #endregion
-
-        /// <summary>
-        /// 退出地址
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult LogOut()
-        {
-            return RunAction(() =>
-            {
-                _LoginStatus.SetUserLogout();
-                return GoHome();
-            });
-        }
-
-        /// <summary>
-        /// 单点登录回调
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="email"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<ActionResult> GetCallBackResult(string url, string email, string token)
-        {
-            return await RunActionAsync(async () =>
-            {
-                if (!ValidateHelper.IsAllPlumpString(email, token))
-                {
-                    return GoHome();
-                }
-
-                var logininfo = await CheckTokenAndSaveLoginStatus(email, token);
-                if (ValidateHelper.IsPlumpString(logininfo))
-                {
-                    return Content(logininfo);
-                }
-                else
-                {
-                    //默认跳转地址
-                    string deft_url = this.X.BaseUrl + ConfigHelper.Instance.DefaultRedirectUrl;
-                    if (!ValidateHelper.IsAllPlumpString(url)) { url = deft_url; }
-                    return Redirect(url);
-                }
-            });
-        }
-
-
-        /// <summary>
-        /// 检查token并保存登陆状态
-        /// </summary>
-        /// <param name="email"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        [NonAction]
-        private async Task<string> CheckTokenAndSaveLoginStatus(string email, string token)
-        {
-            var data = await SSOClientHelper.GetCheckTokenResult(email, token);
-
-            if (data != null && data.success && data.data != null)
-            {
-                //如果当前已经登陆就先退出
-                if (this.X.LoginUser != null) { _LoginStatus.SetUserLogout(); }
-                //记录登陆状态并跳转
-                _LoginStatus.SetUserLogin(loginuser: data.data);
-                return string.Empty;
-            }
-            else
-            {
-                string msg = string.Empty;
-                if (data != null) { msg = data.message; }
-                return "获取登陆状态失败,sso服务器返回消息：" + msg;
-            }
-        }
     }
 }

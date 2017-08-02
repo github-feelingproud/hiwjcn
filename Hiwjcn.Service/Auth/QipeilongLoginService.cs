@@ -17,21 +17,20 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Configuration;
+using Hiwjcn.Core.Infrastructure.Auth;
 
-namespace Hiwjcn.Bll
+namespace Hiwjcn.Bll.Auth
 {
     public class QipeilongLoginService : IAuthLoginService
     {
+        private readonly string[] sys_users = new string[] { "13915280232", "18101795560" };
+
+
         private IDbConnection Database()
         {
             var con = new SqlConnection(ConfigurationManager.ConnectionStrings["db"]?.ConnectionString);
             con.OpenIfClosedWithRetry(2);
             return con;
-        }
-
-        private string ParseToken(UserInfo model)
-        {
-            return $"{model.IID}-{model.UID}-{model.UpdatedDate}".ToMD5();
         }
 
         private LoginUserInfo Parse(UserInfo model)
@@ -41,12 +40,29 @@ namespace Hiwjcn.Bll
                 IID = model.IID,
                 UserID = model.UID,
                 Email = model.Email,
+                UserName = model.UserName,
                 NickName = model.ShopName,
                 HeadImgUrl = model.Images,
                 IsActive = model.IsActive ?? 0,
                 IsValid = true,
-                LoginToken = ParseToken(model)
+                LoginToken = "please load auth token"
             };
+        }
+
+        public async Task<LoginUserInfo> LoadPermissions(LoginUserInfo model)
+        {
+            if (sys_users.Contains(model.UserName))
+            {
+                model.Permissions = new List<string>()
+                {
+                    "manage.auth",
+                    "manage.user",
+                    "manage.system",
+                    "manage.order",
+                    "manage.product"
+                };
+            }
+            return await Task.FromResult(model);
         }
 
         public async Task<LoginUserInfo> GetUserInfoByUID(string uid)
@@ -61,7 +77,7 @@ namespace Hiwjcn.Bll
                     user = this.Parse(xx);
                 }
             }
-            return user;
+            return await LoadPermissions(user);
         }
 
         public async Task<_<LoginUserInfo>> LoginByCode(string phoneOrEmail, string code)
@@ -84,39 +100,9 @@ namespace Hiwjcn.Bll
                     data.SetErrorMsg("用户不存在");
                     return data;
                 }
-                data.SetSuccessData(this.Parse(user));
+                data.SetSuccessData(await this.LoadPermissions(this.Parse(user)));
             }
             return data;
-        }
-
-        public async Task<_<LoginUserInfo>> LoginByToken(string userUID, string token)
-        {
-            var data = new _<LoginUserInfo>();
-            using (var con = Database())
-            {
-                var sql = "select top 1 * from parties.dbo.userinfo where uid=@uid";
-                var model = (await con.QueryAsync<UserInfo>(sql, new { uid = userUID })).FirstOrDefault();
-                if (model == null)
-                {
-                    data.msg = "用户不存在";
-                    return data;
-                }
-                var logininfo = Parse(model);
-                if (logininfo.LoginToken != token)
-                {
-                    data.msg = "token错误";
-                    return data;
-                }
-                data.data = logininfo;
-                data.success = true;
-            }
-            return data;
-        }
-
-        public async Task<_<LoginUserInfo>> LoginByToken(string token)
-        {
-            var data = new _<LoginUserInfo>() { };
-            return await Task.FromResult(data);
         }
 
         public async Task<string> SendOneTimeCode(string phoneOrEmail)
@@ -156,7 +142,7 @@ namespace Hiwjcn.Bll
             {
                 var sql = "select top 1 * from parties.dbo.userinfo where username=@uname";
                 var model = (await con.QueryAsync<UserInfo>(sql, new { uname = user_name })).FirstOrDefault();
-                if (model == null || model.UserName != "18101795560" || password != "123")
+                if (model == null || !sys_users.Contains(model.UserName) || password != "123")
                 {
                     data.msg = "账号密码错误";
                     return data;
