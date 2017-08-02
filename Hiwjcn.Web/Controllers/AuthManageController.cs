@@ -72,7 +72,11 @@ namespace Hiwjcn.Web.Controllers
         [PageAuth(Permission = Permission)]
         public async Task<ActionResult> Clients()
         {
-            throw new NotImplementedException();
+            return await RunActionAsync(async () =>
+            {
+                await Task.FromResult(1);
+                return View();
+            });
         }
 
 
