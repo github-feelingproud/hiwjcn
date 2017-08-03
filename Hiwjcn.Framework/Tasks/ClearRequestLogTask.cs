@@ -19,7 +19,7 @@ namespace Hiwjcn.Framework.Tasks
 
         public override bool AutoStart => true;
 
-        public override ITrigger Trigger => TriggerInterval(60);
+        public override ITrigger Trigger => TriggerInterval(60 * 5);
 
         public override void Execute(IJobExecutionContext context)
         {

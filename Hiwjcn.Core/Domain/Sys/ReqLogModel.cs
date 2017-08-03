@@ -138,7 +138,7 @@ namespace Hiwjcn.Core.Model.Sys
                 {
                     return string.Empty;
                 }
-                return ((double)this.HitCount / (double)this.AllCount).ToString("0.00");
+                return $"{(((double)this.HitCount / (double)this.AllCount) * 100).ToString("0.00")}%";
             }
         }
     }
