@@ -192,6 +192,7 @@ namespace Hiwjcn.Web.Controllers
         /// 登录账户
         /// </summary>
         /// <returns></returns>
+        [RequestLog]
         public async Task<ActionResult> Login(string url, string @continue, string next, string callback)
         {
             return await RunActionAsync(async () =>
@@ -218,6 +219,7 @@ namespace Hiwjcn.Web.Controllers
         /// 退出地址
         /// </summary>
         /// <returns></returns>
+        [RequestLog]
         public ActionResult LogOut()
         {
             return RunAction(() =>

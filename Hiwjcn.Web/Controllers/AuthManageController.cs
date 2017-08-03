@@ -18,6 +18,8 @@ using Lib.data;
 using Hiwjcn.Core.Model.Sys;
 using System.Data.Entity;
 using Hiwjcn.Framework;
+using Lib.cache;
+using Lib.task;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -34,6 +36,7 @@ namespace Hiwjcn.Web.Controllers
         private readonly IRepository<AuthClient> _AuthClientRepository;
         private readonly IRepository<ReqLogModel> _ReqLogModelRepository;
         private readonly IRepository<CacheHitLog> _CacheHitLogRepository;
+        private readonly ICacheProvider _cache;
 
         public AuthManageController(
             IValidationDataProvider _IValidationDataProvider,
@@ -44,7 +47,8 @@ namespace Hiwjcn.Web.Controllers
             IRepository<AuthScope> _AuthScopeRepository,
             IRepository<AuthClient> _AuthClientRepository,
             IRepository<ReqLogModel> _ReqLogModelRepository,
-            IRepository<CacheHitLog> _CacheHitLogRepository)
+            IRepository<CacheHitLog> _CacheHitLogRepository,
+            ICacheProvider _cache)
         {
             this._IValidationDataProvider = _IValidationDataProvider;
             this._IAuthLoginService = _IAuthLoginService;
@@ -55,6 +59,7 @@ namespace Hiwjcn.Web.Controllers
             this._AuthClientRepository = _AuthClientRepository;
             this._ReqLogModelRepository = _ReqLogModelRepository;
             this._CacheHitLogRepository = _CacheHitLogRepository;
+            this._cache = _cache;
         }
 
         [PageAuth(Permission = Permission)]
@@ -66,6 +71,7 @@ namespace Hiwjcn.Web.Controllers
                 var now = DateTime.Now;
                 var count = 30;
                 var start = now.AddDays(-count);
+                var expire = TimeSpan.FromMinutes(10);
 
                 await this._ReqLogModelRepository.PrepareSessionAsync(async db =>
                 {
@@ -73,54 +79,74 @@ namespace Hiwjcn.Web.Controllers
                     var cachehit_query = db.Set<CacheHitLog>().AsNoTrackingQueryable();
                     #region 请求日志
                     //请求日志按照时间分组
-                    var reqlog_groupbytime = await reqlog_query
-                    .Where(x => x.CreateTime >= start)
-                    .GroupBy(x => new { x.TimeYear, x.TimeMonth, x.TimeDay })
-                    .Select(x => new ReqLogGroupModel()
-                    {
-                        Year = x.Key.TimeYear,
-                        Month = x.Key.TimeMonth,
-                        Day = x.Key.TimeDay,
-                        ReqTime = x.Average(m => m.ReqTime),
-                        ReqCount = x.Count()
-                    }).Take(count).ToListAsync();
+                    var reqlog_groupbytime = await this._cache.GetOrSetAsync(
+                        "auth.statics.reqlog_groupbytime".WithCacheKeyPrefix(), async () =>
+                     {
+                         return await reqlog_query
+                         .Where(x => x.CreateTime >= start)
+                         .GroupBy(x => new { x.TimeYear, x.TimeMonth, x.TimeDay })
+                         .Select(x => new ReqLogGroupModel()
+                         {
+                             Year = x.Key.TimeYear,
+                             Month = x.Key.TimeMonth,
+                             Day = x.Key.TimeDay,
+                             ReqTime = x.Average(m => m.ReqTime),
+                             ReqCount = x.Count()
+                         }).Take(count).ToListAsync();
+                     }, expire);
+
                     ViewData[nameof(reqlog_groupbytime)] = reqlog_groupbytime;
                     //请求日志按照控制器分组
-                    var reqlog_groupbyaction = await reqlog_query
-                    .Where(x => x.CreateTime >= start)
-                    .GroupBy(x => new { x.AreaName, x.ControllerName, x.ActionName })
-                    .Select(x => new ReqLogGroupModel()
-                    {
-                        AreaName = x.Key.AreaName,
-                        ControllerName = x.Key.ControllerName,
-                        ActionName = x.Key.ActionName,
-                        ReqTime = x.Average(m => m.ReqTime),
-                        ReqCount = x.Count()
-                    }).Take(count).ToListAsync();
+                    var reqlog_groupbyaction = await this._cache.GetOrSetAsync(
+                        "auth.statics.reqlog_groupbyaction".WithCacheKeyPrefix(), async () =>
+                     {
+                         return await reqlog_query
+                         .Where(x => x.CreateTime >= start)
+                         .GroupBy(x => new { x.AreaName, x.ControllerName, x.ActionName })
+                         .Select(x => new ReqLogGroupModel()
+                         {
+                             AreaName = x.Key.AreaName,
+                             ControllerName = x.Key.ControllerName,
+                             ActionName = x.Key.ActionName,
+                             ReqTime = x.Average(m => m.ReqTime),
+                             ReqCount = x.Count()
+                         }).Take(count).ToListAsync();
+                     }, expire);
+
                     ViewData[nameof(reqlog_groupbyaction)] = reqlog_groupbyaction;
                     #endregion
 
                     #region 缓存命中
                     //缓存命中按照时间分组
-                    var cachehit_groupbytime = await cachehit_query.Where(x => x.CreateTime >= start)
-                    .GroupBy(x => new { x.TimeYear, x.TimeMonth, x.TimeDay })
-                    .Select(x => new CacheHitGroupModel()
-                    {
-                        Year = x.Key.TimeYear,
-                        Month = x.Key.TimeMonth,
-                        Day = x.Key.TimeDay,
-                        HitCount = x.Sum(m => m.Hit),
-                        NotHitCount = x.Sum(m => m.NotHit)
-                    }).Take(count).ToListAsync();
+                    var cachehit_groupbytime = await this._cache.GetOrSetAsync(
+                        "auth.statics.cachehit_groupbytime".WithCacheKeyPrefix(), async () =>
+                     {
+                         return await cachehit_query.Where(x => x.CreateTime >= start)
+                         .GroupBy(x => new { x.TimeYear, x.TimeMonth, x.TimeDay })
+                         .Select(x => new CacheHitGroupModel()
+                         {
+                             Year = x.Key.TimeYear,
+                             Month = x.Key.TimeMonth,
+                             Day = x.Key.TimeDay,
+                             HitCount = x.Sum(m => m.Hit),
+                             NotHitCount = x.Sum(m => m.NotHit)
+                         }).Take(count).ToListAsync();
+                     }, expire);
+
                     ViewData[nameof(cachehit_groupbytime)] = cachehit_groupbytime;
                     //缓存命中按照key分组
-                    var cachehit_groupbykey = await cachehit_query.Where(x => x.CreateTime >= start)
-                    .GroupBy(x => x.CacheKey).Select(x => new CacheHitGroupModel()
+                    var cachehit_groupbykey = await this._cache.GetOrSetAsync(
+                        "auth.statics.cachehit_groupbykey".WithCacheKeyPrefix(), async () =>
                     {
-                        CacheKey = x.Key,
-                        HitCount = x.Sum(m => m.Hit),
-                        NotHitCount = x.Sum(m => m.NotHit)
-                    }).Take(count).ToListAsync();
+                        return await cachehit_query.Where(x => x.CreateTime >= start)
+                        .GroupBy(x => x.CacheKey).Select(x => new CacheHitGroupModel()
+                        {
+                            CacheKey = x.Key,
+                            HitCount = x.Sum(m => m.Hit),
+                            NotHitCount = x.Sum(m => m.NotHit)
+                        }).Take(count).ToListAsync();
+                    }, expire);
+
                     ViewData[nameof(cachehit_groupbykey)] = cachehit_groupbykey;
                     #endregion
                     return true;
@@ -165,7 +191,26 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
+        [PageAuth(Permission = Permission)]
+        [RequestLog]
+        public async Task<ActionResult> Tasks()
+        {
+            return await RunActionAsync(async () =>
+            {
+                await Task.FromResult(1);
 
+                try
+                {
+                    ViewData["list"] = TaskManager.GetAllTasks();
+                }
+                catch (Exception e)
+                {
+                    e.AddErrorLog();
+                }
+
+                return View();
+            });
+        }
 
         public async Task<ActionResult> InitData()
         {

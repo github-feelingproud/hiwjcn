@@ -73,7 +73,7 @@ else
                     var reqlog_groupbyaction = Com.NewIfNull<List<ReqLogGroupModel>>(ViewData["reqlog_groupbyaction"]);
                     if (ValidateHelper.IsPlumpList(reqlog_groupbyaction))
                     {
-                        reqlog_groupbyaction = reqlog_groupbyaction.OrderByDescending(x => x.ReqCount).ToList();
+                        reqlog_groupbyaction = reqlog_groupbyaction.OrderByDescending(x => x.ReqTime).ToList();
                         <table class="table table-striped table-hover">
                             <thead>
                                 <tr>

@@ -55,9 +55,9 @@ namespace Lib.task
                     job.TriggerGroup = trigger.Key.Group;
 
                     //trigger information
-                    job.StartTime = trigger.StartTimeUtc.DateTime;
-                    job.PreTriggerTime = trigger.GetPreviousFireTimeUtc()?.DateTime;
-                    job.NextTriggerTime = trigger.GetNextFireTimeUtc()?.DateTime;
+                    job.StartTime = trigger.StartTimeUtc.LocalDateTime;
+                    job.PreTriggerTime = trigger.GetPreviousFireTimeUtc()?.LocalDateTime;
+                    job.NextTriggerTime = trigger.GetNextFireTimeUtc()?.LocalDateTime;
                     job.JobStatus = GetTriggerState(manager.GetTriggerState(trigger.Key));
 
                     //判断是否在运行
