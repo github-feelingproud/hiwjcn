@@ -3,6 +3,21 @@
 @{
     this.SetLayout("AuthManageLayout");
 }
+@helper RenderTime(ReqLogGroupModel model)
+{
+
+model.ReqTime = model.ReqTime ?? 0;
+var s = model.ReqTime.Value.ToString("0.00");
+if (model.ReqTime > 100)
+{
+        <span style="color:red;">@(s)</span>
+}
+else
+{
+        <span style="color:green;">@(s)</span>
+}
+
+}
 
 <div class="row">
     <div class="col-md-12">
@@ -39,7 +54,7 @@
                                 {
                                     <tr>
                                         <td>@(m.Time.ToDateString())</td>
-                                        <td>@((m.ReqTime ?? 0).ToString("0.00"))</td>
+                                        <td>@(RenderTime(m))</td>
                                         <td>@(m.ReqCount)</td>
                                     </tr>
                                 }
@@ -72,7 +87,7 @@
                                 {
                                     <tr>
                                         <td>@(m.Url)</td>
-                                        <td>@((m.ReqTime ?? 0).ToString("0.00"))</td>
+                                        <td>@(RenderTime(m))</td>
                                         <td>@(m.ReqCount)</td>
                                     </tr>
                                 }
@@ -93,6 +108,32 @@
         <div class="panel panel-default">
             <div class="panel-heading">按照时间</div>
             <div class="panel-body">
+                @{
+                    var cachehit_groupbytime = Com.NewIfNull<List<CacheHitGroupModel>>(ViewData["cachehit_groupbytime"]);
+                    if (ValidateHelper.IsPlumpList(cachehit_groupbytime))
+                    {
+                        cachehit_groupbytime = cachehit_groupbytime.OrderByDescending(x => x.Time).ToList();
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>时间</td>
+                                    <td>命中率</td>
+                                    <td>读取次数</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var m in cachehit_groupbytime)
+                                {
+                                    <tr>
+                                        <td>@(m.Time.ToDateString())</td>
+                                        <td>@(m.Per)</td>
+                                        <td>@(m.AllCount)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                }
             </div>
         </div>
     </div>
@@ -100,6 +141,32 @@
         <div class="panel panel-default">
             <div class="panel-heading">按照缓存Key</div>
             <div class="panel-body">
+                @{
+                    var cachehit_groupbykey = Com.NewIfNull<List<CacheHitGroupModel>>(ViewData["cachehit_groupbykey"]);
+                    if (ValidateHelper.IsPlumpList(cachehit_groupbykey))
+                    {
+                        cachehit_groupbykey = cachehit_groupbykey.OrderByDescending(x => x.AllCount).ToList();
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>缓存Key</td>
+                                    <td>命中率</td>
+                                    <td>读取次数</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var m in cachehit_groupbykey)
+                                {
+                                    <tr>
+                                        <td style="overflow:hidden;word-break:break-all;width:150px;">@(m.CacheKey)</td>
+                                        <td>@(m.Per)</td>
+                                        <td>@(m.AllCount)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                }
             </div>
         </div>
     </div>
