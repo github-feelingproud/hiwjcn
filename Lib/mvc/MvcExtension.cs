@@ -25,14 +25,28 @@ namespace Lib.mvc
         /// <summary>
         /// 获取Area Controller Action
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="route"></param>
         /// <returns></returns>
-        public static (string area, string controller, string action) GetA_C_A(this RouteData data)
+        public static (string area, string controller, string action) GetA_C_A(this RouteData route)
         {
-            var AreaName = ConvertHelper.GetString(data.Values["Area"]);
-            var ControllerName = ConvertHelper.GetString(data.Values["Controller"]);
-            var ActionName = ConvertHelper.GetString(data.Values["Action"]);
+            var AreaName = ConvertHelper.GetString(route.Values["Area"]);
+            var ControllerName = ConvertHelper.GetString(route.Values["Controller"]);
+            var ActionName = ConvertHelper.GetString(route.Values["Action"]);
             return (AreaName, ControllerName, ActionName);
+        }
+
+        /// <summary>
+        /// 获取类似/home/index的url
+        /// </summary>
+        public static string ActionUrl(this RouteData route)
+        {
+            var data = route.GetA_C_A();
+            var sp = new string[] { data.area, data.controller, data.action }.Where(x => ValidateHelper.IsPlumpString(x)).ToList();
+            if (!ValidateHelper.IsPlumpList(sp))
+            {
+                throw new Exception("无法获取action访问路径");
+            }
+            return "/" + "/".Join_(sp);
         }
 
         /// <summary>

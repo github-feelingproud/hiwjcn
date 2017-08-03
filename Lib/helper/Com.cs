@@ -62,7 +62,7 @@ namespace Lib.helper
         /// </summary>
         /// <param name="strs"></param>
         /// <returns></returns>
-        public static string FirstPlumpStr(params string[] strs) =>
+        public static string FirstPlumpStrOrNot(params string[] strs) =>
             ConvertHelper.NotNullEnumerable(strs).Where(x => ValidateHelper.IsPlumpString(x)).FirstOrDefault();
 
         /// <summary>
@@ -189,13 +189,7 @@ namespace Lib.helper
             list.Add(e?.InnerException?.InnerException?.InnerException?.InnerException?.Message);
 
             list = list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
-
-            if (list.Count <= 1)
-            {
-                //ef报错不在innerexception里
-                try { if (e != null) { list.Add(JsonHelper.ObjectToJson(e)); } } catch { }
-            }
-
+            
             return list;
         }
 

@@ -42,6 +42,7 @@ namespace Hiwjcn.Bll.Auth
             }
 
             var hit_status = CacheHitStatusEnum.Hit;
+            var cache_expire = TimeSpan.FromMinutes(5);
 
             var cache_key = AuthCacheKeyManager.TokenKey(access_token);
 
@@ -51,7 +52,7 @@ namespace Hiwjcn.Bll.Auth
                 hit_status = CacheHitStatusEnum.NotHit;
 
                 return await this._IAuthTokenService.FindTokenAsync(client_id, access_token);
-            }, TimeSpan.FromMinutes(3));
+            }, cache_expire);
 
             AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog()
             {
@@ -78,7 +79,7 @@ namespace Hiwjcn.Bll.Auth
                     user = await this._IAuthLoginService.LoadPermissions(user);
                 }
                 return user;
-            }, TimeSpan.FromMinutes(3));
+            }, cache_expire);
 
             AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog()
             {

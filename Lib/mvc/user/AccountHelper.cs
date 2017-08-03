@@ -125,6 +125,7 @@ namespace Lib.mvc.user
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
+        [Obsolete("即将失效")]
         public LoginUserInfo GetLoginUser(HttpContext context = null)
         {
             context = GetContext(context);

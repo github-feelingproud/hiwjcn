@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.infrastructure;
 using Hiwjcn.Core.Domain.Auth;
+using Lib.helper;
 
 namespace Hiwjcn.Core.Infrastructure.Auth
 {
@@ -19,5 +20,7 @@ namespace Hiwjcn.Core.Infrastructure.Auth
         Task<string> DeleteScope(string scope_uid);
 
         Task<string> UpdateScope(AuthScope updatemodel);
+
+        Task<PagerData<AuthScope>> QueryPager(string q = null, int page = 1, int pagesize = 10);
     }
 }

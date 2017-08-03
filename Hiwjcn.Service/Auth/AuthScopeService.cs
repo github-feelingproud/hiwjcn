@@ -11,6 +11,7 @@ using Lib.helper;
 using Lib.events;
 using Lib.core;
 using Lib.extension;
+using System.Data.Entity;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -113,5 +114,26 @@ namespace Hiwjcn.Bll.Auth
             return base.CheckModel(model);
         }
 
+        public async Task<PagerData<AuthScope>> QueryPager(string q = null, int page = 1, int pagesize = 10)
+        {
+            var data = new PagerData<AuthScope>();
+
+            await this._AuthScopeRepository.PrepareSessionAsync(async db =>
+            {
+                var query = db.Set<AuthScope>().AsNoTrackingQueryable();
+
+                if (ValidateHelper.IsPlumpString(q))
+                {
+                    query = query.Where(x => x.Name.Contains(q) || x.DisplayName.Contains(q) || x.Description.Contains(q));
+                }
+
+                data.ItemCount = await query.CountAsync();
+                data.DataList = await query.OrderBy(x => x.IsRemove).OrderByDescending(x => x.Important).QueryPage(page, pagesize).ToListAsync();
+
+                return true;
+            });
+
+            return data;
+        }
     }
 }

@@ -54,11 +54,18 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [PageAuth(Permission = Permission)]
-        public async Task<ActionResult> Scopes()
+        public async Task<ActionResult> Scopes(string q, int? page)
         {
             return await RunActionAsync(async () =>
             {
-                await Task.FromResult(1);
+                page = CheckPage(page);
+                var pagesize = 20;
+
+                var data = await this._IAuthScopeService.QueryPager(q, page.Value, pagesize);
+
+                ViewData["list"] = data.DataList;
+                ViewData["pager"] = data.GetPagerHtml(this.RouteData.ActionUrl(), nameof(page), page.Value, pagesize, this.X.context);
+
                 return View();
             });
         }

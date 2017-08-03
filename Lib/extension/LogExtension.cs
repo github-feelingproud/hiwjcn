@@ -124,14 +124,33 @@ namespace Lib.extension
     {
         public static readonly string LoggerName = ConfigurationManager.AppSettings["LoggerName"] ?? "WebLogger";
 
+        public static readonly bool LogFullException = (ConfigurationManager.AppSettings["LogFullException"] ?? "true").ToBool();
+
         /// <summary>
         /// 错误日志
         /// </summary>
         public static void AddErrorLog(this Exception e, string extra_data = null)
         {
+            string ExceptionJson()
+            {
+                try
+                {
+                    if (!LogFullException)
+                    {
+                        return "无法记录整个异常对象，请修改配置文件";
+                    }
+                    return JsonHelper.ObjectToJson(e);
+                }
+                catch
+                {
+                    return "无法把整个Exception对象转为json";
+                }
+            }
+
             var json = new
             {
                 error_msg = e.GetInnerExceptionAsList(),
+                full_exception = ExceptionJson(),
                 req_data = ReqData(),
                 extra_data = extra_data
             }.ToJson();

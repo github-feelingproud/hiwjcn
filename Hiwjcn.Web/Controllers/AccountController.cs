@@ -192,18 +192,22 @@ namespace Hiwjcn.Web.Controllers
         /// 登录账户
         /// </summary>
         /// <returns></returns>
-        public async Task<ActionResult> Login(string url, string callback)
+        public async Task<ActionResult> Login(string url, string @continue, string next, string callback)
         {
             return await RunActionAsync(async () =>
             {
-                var session_loginuser = this._LoginStatus.GetLoginUser(this.X.context);
-                if (session_loginuser == null)
+                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback);
+                //url = url ?? @continue ?? next ?? callback;
+
+                var auth_user = await this.X.context.GetAuthUserAsync();
+                if (auth_user != null)
                 {
-                    var auth_user = await this.X.context.GetAuthUserAsync();
-                    if (auth_user != null)
+                    this._LoginStatus.SetUserLogin(this.X.context, auth_user);
+                    if (!ValidateHelper.IsPlumpString(url))
                     {
-                        this._LoginStatus.SetUserLogin(this.X.context, auth_user);
+                        url = "/";
                     }
+                    return Redirect(url);
                 }
 
                 return View();

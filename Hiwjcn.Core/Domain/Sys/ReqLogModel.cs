@@ -24,7 +24,7 @@ namespace Hiwjcn.Core.Model.Sys
 
     [Serializable]
     [Table("sys_reqlog")]
-    public class ReqLogModel : BaseEntity
+    public class ReqLogModel : TimeBaseEntity
     {
         public virtual string ReqID { get; set; }
 
@@ -52,7 +52,7 @@ namespace Hiwjcn.Core.Model.Sys
     /// </summary>
     [Serializable]
     [Table("sys_cachehitlog")]
-    public class CacheHitLog : BaseEntity
+    public class CacheHitLog : TimeBaseEntity
     {
         [Required]
         [MaxLength(3000)]
