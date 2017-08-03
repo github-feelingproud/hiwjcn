@@ -839,6 +839,7 @@
     <Content Include="Views\AuthManage\Scopes.cshtml" />
     <Content Include="Views\Shared\AuthManageLayout.cshtml" />
     <Content Include="Views\AuthManage\Clients.cshtml" />
+    <Content Include="Views\AuthManage\Statics.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

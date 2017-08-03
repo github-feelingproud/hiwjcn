@@ -84,7 +84,7 @@ namespace Hiwjcn.Framework
 
                 var model = new ReqLogModel();
 
-                model.ReqTime = (DateTime.Now - start).TotalSeconds;
+                model.ReqTime = (DateTime.Now - start).TotalMilliseconds;
                 model.ReqID = Com.GetRequestID();
 
                 model.ReqRefURL = ConvertHelper.GetString(context.Request.UrlReferrer);

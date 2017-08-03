@@ -1,0 +1,106 @@
+﻿@using Hiwjcn.Core.Domain.Auth;
+@using Hiwjcn.Core.Model.Sys;
+@{
+    this.SetLayout("AuthManageLayout");
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-info">
+            <span class="fa fa-info-circle"></span>
+            <span>数据来自最近30天</span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>接口响应统计</h4>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">按照时间</div>
+            <div class="panel-body">
+                @{
+                    var reqlog_groupbytime = Com.NewIfNull<List<ReqLogGroupModel>>(ViewData["reqlog_groupbytime"]);
+                    if (ValidateHelper.IsPlumpList(reqlog_groupbytime))
+                    {
+                        reqlog_groupbytime = reqlog_groupbytime.OrderByDescending(x => x.Time).ToList();
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>日期</td>
+                                    <td>响应（ms）</td>
+                                    <td>请求次数</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var m in reqlog_groupbytime)
+                                {
+                                    <tr>
+                                        <td>@(m.Time.ToDateString())</td>
+                                        <td>@((m.ReqTime ?? 0).ToString("0.00"))</td>
+                                        <td>@(m.ReqCount)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">按照接口</div>
+            <div class="panel-body">
+                @{
+                    var reqlog_groupbyaction = Com.NewIfNull<List<ReqLogGroupModel>>(ViewData["reqlog_groupbyaction"]);
+                    if (ValidateHelper.IsPlumpList(reqlog_groupbyaction))
+                    {
+                        reqlog_groupbyaction = reqlog_groupbyaction.OrderByDescending(x => x.ReqCount).ToList();
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>接口</td>
+                                    <td>响应（ms）</td>
+                                    <td>请求次数</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var m in reqlog_groupbyaction)
+                                {
+                                    <tr>
+                                        <td>@(m.Url)</td>
+                                        <td>@((m.ReqTime ?? 0).ToString("0.00"))</td>
+                                        <td>@(m.ReqCount)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>缓存命中统计</h4>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">按照时间</div>
+            <div class="panel-body">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">按照缓存Key</div>
+            <div class="panel-body">
+            </div>
+        </div>
+    </div>
+</div>

@@ -15,6 +15,9 @@ using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.mvc.auth.validation;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.data;
+using Hiwjcn.Core.Model.Sys;
+using System.Data.Entity;
+using Hiwjcn.Framework;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -23,15 +26,14 @@ namespace Hiwjcn.Web.Controllers
         public const string Permission = "manage.auth";
 
         private readonly IValidationDataProvider _IValidationDataProvider;
-
         private readonly IAuthLoginService _IAuthLoginService;
-
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly IAuthClientService _IAuthClientService;
-
         private readonly IRepository<AuthScope> _AuthScopeRepository;
         private readonly IRepository<AuthClient> _AuthClientRepository;
+        private readonly IRepository<ReqLogModel> _ReqLogModelRepository;
+        private readonly IRepository<CacheHitLog> _CacheHitLogRepository;
 
         public AuthManageController(
             IValidationDataProvider _IValidationDataProvider,
@@ -40,20 +42,95 @@ namespace Hiwjcn.Web.Controllers
             IAuthScopeService _IAuthScopeService,
             IAuthClientService _IAuthClientService,
             IRepository<AuthScope> _AuthScopeRepository,
-            IRepository<AuthClient> _AuthClientRepository)
+            IRepository<AuthClient> _AuthClientRepository,
+            IRepository<ReqLogModel> _ReqLogModelRepository,
+            IRepository<CacheHitLog> _CacheHitLogRepository)
         {
             this._IValidationDataProvider = _IValidationDataProvider;
             this._IAuthLoginService = _IAuthLoginService;
-
             this._IAuthTokenService = _IAuthTokenService;
             this._IAuthScopeService = _IAuthScopeService;
             this._IAuthClientService = _IAuthClientService;
-
             this._AuthScopeRepository = _AuthScopeRepository;
             this._AuthClientRepository = _AuthClientRepository;
+            this._ReqLogModelRepository = _ReqLogModelRepository;
+            this._CacheHitLogRepository = _CacheHitLogRepository;
         }
 
         [PageAuth(Permission = Permission)]
+        [RequestLog]
+        public async Task<ActionResult> Statics()
+        {
+            return await RunActionAsync(async () =>
+            {
+                var now = DateTime.Now;
+                var count = 30;
+                var start = now.AddDays(-count);
+
+                await this._ReqLogModelRepository.PrepareSessionAsync(async db =>
+                {
+                    var reqlog_query = db.Set<ReqLogModel>().AsNoTrackingQueryable();
+                    var cachehit_query = db.Set<CacheHitLog>().AsNoTrackingQueryable();
+                    #region 请求日志
+                    //请求日志按照时间分组
+                    var reqlog_groupbytime = await reqlog_query
+                    .Where(x => x.CreateTime >= start)
+                    .GroupBy(x => new { x.TimeYear, x.TimeMonth, x.TimeDay })
+                    .Select(x => new ReqLogGroupModel()
+                    {
+                        Year = x.Key.TimeYear,
+                        Month = x.Key.TimeMonth,
+                        Day = x.Key.TimeDay,
+                        ReqTime = x.Average(m => m.ReqTime),
+                        ReqCount = x.Count()
+                    }).Take(count).ToListAsync();
+                    ViewData[nameof(reqlog_groupbytime)] = reqlog_groupbytime;
+                    //请求日志按照控制器分组
+                    var reqlog_groupbyaction = await reqlog_query
+                    .Where(x => x.CreateTime >= start)
+                    .GroupBy(x => new { x.AreaName, x.ControllerName, x.ActionName })
+                    .Select(x => new ReqLogGroupModel()
+                    {
+                        AreaName = x.Key.AreaName,
+                        ControllerName = x.Key.ControllerName,
+                        ActionName = x.Key.ActionName,
+                        ReqTime = x.Average(m => m.ReqTime),
+                        ReqCount = x.Count()
+                    }).Take(count).ToListAsync();
+                    ViewData[nameof(reqlog_groupbyaction)] = reqlog_groupbyaction;
+                    #endregion
+
+                    #region 缓存命中
+                    //缓存命中按照时间分组
+                    var cachehit_groupbytime = await cachehit_query.Where(x => x.CreateTime >= start)
+                    .GroupBy(x => new { x.TimeYear, x.TimeMonth, x.TimeDay })
+                    .Select(x => new CacheHitGroupModel()
+                    {
+                        Year = x.Key.TimeYear,
+                        Month = x.Key.TimeMonth,
+                        Day = x.Key.TimeDay,
+                        HitCount = x.Sum(m => m.Hit),
+                        NotHitCount = x.Sum(m => m.NotHit)
+                    }).Take(count).ToListAsync();
+                    ViewData[nameof(cachehit_groupbytime)] = cachehit_groupbytime;
+                    //缓存命中按照key分组
+                    var cachehit_groupbykey = await cachehit_query.Where(x => x.CreateTime >= start)
+                    .GroupBy(x => x.CacheKey).Select(x => new CacheHitGroupModel()
+                    {
+                        CacheKey = x.Key,
+                        HitCount = x.Sum(m => m.Hit),
+                        NotHitCount = x.Sum(m => m.NotHit)
+                    }).Take(count).ToListAsync();
+                    ViewData[nameof(cachehit_groupbykey)] = cachehit_groupbykey;
+                    #endregion
+                    return true;
+                });
+                return View();
+            });
+        }
+
+        [PageAuth(Permission = Permission)]
+        [RequestLog]
         public async Task<ActionResult> Scopes(string q, int? page)
         {
             return await RunActionAsync(async () =>
@@ -71,12 +148,14 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [ApiAuth(Permission = Permission)]
+        [RequestLog]
         public async Task<ActionResult> SaveScopeAction()
         {
             throw new NotImplementedException();
         }
 
         [PageAuth(Permission = Permission)]
+        [RequestLog]
         public async Task<ActionResult> Clients()
         {
             return await RunActionAsync(async () =>

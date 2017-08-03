@@ -54,11 +54,8 @@ namespace Hiwjcn.Bll.Auth
                 return await this._IAuthTokenService.FindTokenAsync(client_id, access_token);
             }, cache_expire);
 
-            AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog()
-            {
-                CacheKey = cache_key,
-                Hit = (int)hit_status
-            });
+            //统计缓存命中
+            AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog(cache_key, hit_status));
 
             if (token == null)
             {
@@ -81,11 +78,8 @@ namespace Hiwjcn.Bll.Auth
                 return user;
             }, cache_expire);
 
-            AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog()
-            {
-                CacheKey = cache_key,
-                Hit = (int)hit_status
-            });
+            //统计缓存命中
+            AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog(cache_key, hit_status));
 
             if (loginuser == null)
             {
