@@ -269,10 +269,21 @@ namespace Lib.mvc
         {
             return RunAction(() =>
             {
-                var (loginuser, error) = TryGetLoginUser();
-                if (error != null)
+                var loginuser = this.X.context.GetAuthUser();
+                //判断是否登录
+                if (loginuser == null)
                 {
-                    return error;
+                    return WhenNoLogin();
+                }
+                //判断权限
+                if (ConvertHelper.NotNullList(this.PermissionList).Any(x => !loginuser.HasPermission(x)))
+                {
+                    return WhenNoPermission();
+                }
+                //判断scope
+                if (ConvertHelper.NotNullList(this.ScopeList).Any(x => !loginuser.HasScope(x)))
+                {
+                    return WhenNoPermission();
                 }
 
                 return GetActionFunc.Invoke(loginuser);
@@ -289,38 +300,26 @@ namespace Lib.mvc
         {
             return await RunActionAsync(async () =>
             {
-                var (loginuser, error) = TryGetLoginUser();
-                if (error != null)
+                var loginuser = await this.X.context.GetAuthUserAsync();
+                //判断是否登录
+                if (loginuser == null)
                 {
-                    return error;
+                    return WhenNoLogin();
+                }
+                //判断权限
+                if (ConvertHelper.NotNullList(this.PermissionList).Any(x => !loginuser.HasPermission(x)))
+                {
+                    return WhenNoPermission();
+                }
+                //判断scope
+                if (ConvertHelper.NotNullList(this.ScopeList).Any(x => !loginuser.HasScope(x)))
+                {
+                    return WhenNoPermission();
                 }
 
                 return await GetActionFunc.Invoke(loginuser);
             });
         }
-
-        [NonAction]
-        private (LoginUserInfo loginuser, ActionResult res) TryGetLoginUser()
-        {
-            var loginuser = this.X.context.GetAuthUser();
-            //==================================================================================================
-            //如果没登陆就跳转
-            if (loginuser == null)
-            {
-                return (loginuser, WhenNoLogin());
-            }
-            //所需要的全部权限值
-            if (ConvertHelper.NotNullList(this.PermissionList).Any(x => !loginuser.HasPermission(x)))
-            {
-                return (loginuser, WhenNoPermission());
-            }
-            if (ConvertHelper.NotNullList(this.ScopeList).Any(x => !loginuser.HasScope(x)))
-            {
-                return (loginuser, WhenNoPermission());
-            }
-            return (loginuser, null);
-        }
-
         #endregion
 
     }

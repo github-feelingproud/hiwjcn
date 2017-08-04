@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Mvc;
 using Lib.extension;
+using Lib.mvc;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
@@ -76,12 +78,18 @@ namespace Lib.helper
         public bool Success { get; set; } = true;
 
         /// <summary>
+        /// 获取分页
+        /// </summary>
+        public string GetPagerHtml(Controller controller, string pageKey, int currentPage, int pageSize = 15)
+        {
+            var url = controller.RouteData.ActionUrl();
+            return this.GetPagerHtml(url, pageKey, currentPage, pageSize, HttpContext.Current);
+        }
+
+        /// <summary>
         /// 分页控件的html代码
         /// </summary>
-        public string GetPagerHtml(
-            string base_url, string pageKey,
-            int currentPage, int pageSize,
-            HttpContext _context = null)
+        public string GetPagerHtml(string base_url, string pageKey, int currentPage, int pageSize = 15, HttpContext _context = null)
         {
             if (!ValidateHelper.IsPlumpDict(this.UrlParams))
             {
@@ -104,7 +112,7 @@ namespace Lib.helper
                 url: base_url,
                 pageKey: pageKey,
                 urlParams: this.UrlParams,
-                itemCount: ItemCount,
+                itemCount: this.ItemCount,
                 page: currentPage,
                 pageSize: pageSize);
         }

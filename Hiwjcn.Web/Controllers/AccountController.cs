@@ -51,51 +51,35 @@ namespace Hiwjcn.Web.Controllers
             this._IValidationDataProvider = _IValidationDataProvider;
         }
 
-        #region SSO
-        /// <summary>
-        /// 处理登录
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult LoginAction(string email, string pass)
+        #region 登录
+
+        [NonAction]
+        private async Task<string> LogLoginErrorInfo(string user_name, string password, Func<Task<string>> func)
         {
-            return RunAction(() =>
+            if (!ValidateHelper.IsAllPlumpString(user_name, password))
             {
-                if (!ValidateHelper.IsAllPlumpString(email, pass))
+                return "登录信息未填写";
+            }
+            if (await this._LoginErrorLogBll.GetRecentLoginErrorTimes(user_name) > 5)
+            {
+                return "你短时间内有多次错误登录记录，请稍后再试";
+            }
+            var res = await func.Invoke();
+            if (ValidateHelper.IsPlumpString(res))
+            {
+                var errinfo = new LoginErrorLogModel()
                 {
-                    return GetJsonRes("账户密码不能为空");
-                }
-
-                //检查登录尝试
-                var err_count = _LoginErrorLogBll.GetRecentLoginErrorTimes(email);
-                if (err_count > 5)
-                {
-                    return GetJsonRes($"你短时间内有{err_count}次错误登录记录，请稍后再试");
-                }
-                //开始登录
-                string msg = string.Empty;
-                var model = _IUserService.LoginByPassWord(email, pass, ref msg);
-                if (model != null && model.UserToken?.Length > 0)
-                {
-                    //记录登录状态
-                    this._LoginStatus.SetUserLogin(loginuser: new LoginUserInfo() { });
-                    return GetJson(new { success = true, msg = "登陆成功" });
-                }
-                //登录错误，记录错误记录
-                var errorLoginLog = new LoginErrorLogModel()
-                {
-                    LoginKey = ConvertHelper.GetString(email),
-                    LoginPwd = ConvertHelper.GetString(pass),
-                    LoginIP = ConvertHelper.GetString(this.X.IP),
+                    LoginKey = user_name,
+                    LoginPwd = password,
+                    LoginIP = this.X.IP,
                 };
-                var errorloghandler = _LoginErrorLogBll.AddLoginErrorLog(errorLoginLog);
-                if (ValidateHelper.IsPlumpString(errorloghandler))
+                var logres = await this._LoginErrorLogBll.AddLoginErrorLog(errinfo);
+                if (ValidateHelper.IsPlumpString(logres))
                 {
-                    LogHelper.Info(this.GetType(), "记录错误登录日志错误：" + errorloghandler);
+                    new Exception($"记录错误登录日志错误:{logres}").AddErrorLog();
                 }
-
-                return GetJson(new { success = false, msg = msg });
-            });
+            }
+            return res;
         }
 
         [NonAction]
@@ -141,18 +125,22 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var data = await this._IAuthLoginService.LoginByPassword(username, password);
-                if (ValidateHelper.IsPlumpString(data.msg))
+                var res = await this.LogLoginErrorInfo(username, password, async () =>
                 {
-                    return GetJsonRes(data.msg);
-                }
-                var loginuser = await this.CreateAuthToken(data.data);
-                if (ValidateHelper.IsPlumpString(loginuser.msg))
-                {
-                    return GetJsonRes(loginuser.msg);
-                }
-                this.X.context.CookieLogin(loginuser.data);
-                return GetJsonRes(string.Empty);
+                    var data = await this._IAuthLoginService.LoginByPassword(username, password);
+                    if (ValidateHelper.IsPlumpString(data.msg))
+                    {
+                        return data.msg;
+                    }
+                    var loginuser = await this.CreateAuthToken(data.data);
+                    if (ValidateHelper.IsPlumpString(loginuser.msg))
+                    {
+                        return loginuser.msg;
+                    }
+                    this.X.context.CookieLogin(loginuser.data);
+                    return string.Empty;
+                });
+                return GetJsonRes(res);
             });
         }
 
@@ -162,18 +150,22 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var data = await this._IAuthLoginService.LoginByCode(phone, code);
-                if (ValidateHelper.IsPlumpString(data.msg))
+                var res = await this.LogLoginErrorInfo(phone, code, async () =>
                 {
-                    return GetJsonRes(data.msg);
-                }
-                var loginuser = await this.CreateAuthToken(data.data);
-                if (ValidateHelper.IsPlumpString(loginuser.msg))
-                {
-                    return GetJsonRes(loginuser.msg);
-                }
-                this.X.context.CookieLogin(loginuser.data);
-                return GetJsonRes(string.Empty);
+                    var data = await this._IAuthLoginService.LoginByCode(phone, code);
+                    if (ValidateHelper.IsPlumpString(data.msg))
+                    {
+                        return data.msg;
+                    }
+                    var loginuser = await this.CreateAuthToken(data.data);
+                    if (ValidateHelper.IsPlumpString(loginuser.msg))
+                    {
+                        return loginuser.msg;
+                    }
+                    this.X.context.CookieLogin(loginuser.data);
+                    return string.Empty;
+                });
+                return GetJsonRes(res);
             });
         }
 
@@ -204,11 +196,11 @@ namespace Hiwjcn.Web.Controllers
                 if (auth_user != null)
                 {
                     this._LoginStatus.SetUserLogin(this.X.context, auth_user);
-                    if (!ValidateHelper.IsPlumpString(url))
+                    if (ValidateHelper.IsPlumpString(url))
                     {
-                        url = "/";
+                        return Redirect(url);
                     }
-                    return Redirect(url);
+                    return GoHome();
                 }
 
                 return View();
@@ -220,11 +212,19 @@ namespace Hiwjcn.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [RequestLog]
-        public ActionResult LogOut()
+        public ActionResult LogOut(string url, string @continue, string next, string callback)
         {
             return RunAction(() =>
             {
                 _LoginStatus.SetUserLogout();
+
+                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback);
+
+                if (ValidateHelper.IsPlumpString(url))
+                {
+                    return Redirect(url);
+                }
+
                 return GoHome();
             });
         }
