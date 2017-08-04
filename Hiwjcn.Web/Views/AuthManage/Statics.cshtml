@@ -2,6 +2,7 @@
 @using Hiwjcn.Core.Model.Sys;
 @{
     this.SetLayout("AuthManageLayout");
+    this.SetTitle("数据统计");
 }
 @helper RenderTime(ReqLogGroupModel model)
 {
@@ -23,7 +24,7 @@ else
     <div class="col-md-12">
         <div class="alert alert-info">
             <span class="fa fa-info-circle"></span>
-            <span>数据来自最近30天</span>
+            <span>数据来自最近10天，数据每10分钟更新</span>
         </div>
     </div>
 </div>

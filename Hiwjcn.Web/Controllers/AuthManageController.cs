@@ -69,7 +69,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var now = DateTime.Now;
-                var count = 30;
+                var count = 10;
                 var start = now.AddDays(-count);
                 var expire = TimeSpan.FromMinutes(10);
 
