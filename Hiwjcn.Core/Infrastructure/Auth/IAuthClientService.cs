@@ -22,7 +22,7 @@ namespace Hiwjcn.Core.Infrastructure.Auth
         Task<string> UpdateClientAsync(AuthClient updatemodel);
 
         Task<PagerData<AuthClient>> QueryListAsync(
-            string user_uid = null, string q = null, bool? is_active = null, 
+            string user_uid = null, string q = null, bool? is_active = null, bool? is_remove = null,
             int page = 1, int pagesize = 10);
     }
 }

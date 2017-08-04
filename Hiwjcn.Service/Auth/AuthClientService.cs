@@ -133,7 +133,7 @@ namespace Hiwjcn.Bll.Auth
         }
 
         public async Task<PagerData<AuthClient>> QueryListAsync(
-            string user_uid = null, string q = null, bool? is_active = null,
+            string user_uid = null, string q = null, bool? is_active = null, bool? is_remove = null,
             int page = 1, int pagesize = 10)
         {
             var data = new PagerData<AuthClient>();
@@ -141,8 +141,21 @@ namespace Hiwjcn.Bll.Auth
             await this._AuthClientRepository.PrepareSessionAsync(async db =>
             {
                 var query = db.Set<AuthClient>().AsNoTrackingQueryable();
-                query = query.Where(x => x.IsRemove <= 0);
-                query = query.Where(x => x.UserUID == user_uid);
+                if (is_remove != null)
+                {
+                    if (is_remove.Value)
+                    {
+                        query = query.Where(x => x.IsRemove > 0);
+                    }
+                    else
+                    {
+                        query = query.Where(x => x.IsRemove <= 0);
+                    }
+                }
+                if (ValidateHelper.IsPlumpString(user_uid))
+                {
+                    query = query.Where(x => x.UserUID == user_uid);
+                }
                 if (is_active != null)
                 {
                     if (is_active.Value)
@@ -160,7 +173,9 @@ namespace Hiwjcn.Bll.Auth
                 }
 
                 data.ItemCount = await query.CountAsync();
-                data.DataList = await query.OrderByDescending(x => x.CreateTime).QueryPage(page, pagesize).ToListAsync();
+                data.DataList = await query
+                .OrderByDescending(x => x.IsOfficial).OrderByDescending(x => x.CreateTime)
+                .QueryPage(page, pagesize).ToListAsync();
                 return true;
             });
 

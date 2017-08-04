@@ -110,13 +110,13 @@ namespace Lib.mvc.user
             SessionHelper.RemoveSession(context.Session, LOGIN_USER_SESSION);
             //清空其他cookie操作
             //CookieHelper.RemoveResponseCookies(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN });
-            if (ValidateHelper.IsPlumpString(this.COOKIE_DOMAIN))
+            if (ValidateHelper.IsPlumpString(this.GetCookieToken()))
             {
-                CookieHelper.RemoveCookie(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN }, domain: COOKIE_DOMAIN);
+                CookieHelper.RemoveCookie(context, new string[] { this.COOKIE_LOGIN_TOKEN }, domain: this.COOKIE_DOMAIN);
             }
-            else
+            if (ValidateHelper.IsPlumpString(this.GetCookieUID()))
             {
-                CookieHelper.RemoveCookie(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN });
+                CookieHelper.RemoveCookie(context, new string[] { this.COOKIE_LOGIN_UID }, domain: this.COOKIE_DOMAIN);
             }
         }
 

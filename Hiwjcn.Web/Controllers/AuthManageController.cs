@@ -25,7 +25,7 @@ namespace Hiwjcn.Web.Controllers
 {
     public class AuthManageController : BaseController
     {
-        public const string Permission = "manage.auth";
+        public const string manage_auth = "manage.auth";
 
         private readonly IValidationDataProvider _IValidationDataProvider;
         private readonly IAuthLoginService _IAuthLoginService;
@@ -62,7 +62,7 @@ namespace Hiwjcn.Web.Controllers
             this._cache = _cache;
         }
 
-        [PageAuth(Permission = Permission)]
+        [PageAuth(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> Statics()
         {
@@ -155,7 +155,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [PageAuth(Permission = Permission)]
+        [PageAuth(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> Scopes(string q, int? page)
         {
@@ -173,25 +173,32 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [ApiAuth(Permission = Permission)]
+        [ApiAuth(Permission = manage_auth)]
         [RequestLog]
-        public async Task<ActionResult> SaveScopeAction()
+        public Task<ActionResult> SaveScopeAction()
         {
             throw new NotImplementedException();
         }
 
-        [PageAuth(Permission = Permission)]
+        [PageAuth(Permission = manage_auth)]
         [RequestLog]
-        public async Task<ActionResult> Clients()
+        public async Task<ActionResult> Clients(string q, int? page)
         {
             return await RunActionAsync(async () =>
             {
-                await Task.FromResult(1);
+                page = CheckPage(page);
+                var pagesize = 20;
+
+                var data = await this._IAuthClientService.QueryListAsync(q: q, page: page.Value, pagesize: pagesize);
+
+                ViewData["list"] = data.DataList;
+                ViewData["pager"] = data.GetPagerHtml(this.RouteData.ActionUrl(), nameof(page), page.Value, pagesize, this.X.context);
+
                 return View();
             });
         }
 
-        [PageAuth(Permission = Permission)]
+        [PageAuth(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> Tasks()
         {

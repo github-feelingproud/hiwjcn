@@ -1,6 +1,7 @@
 ﻿using Lib.helper;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 
@@ -63,6 +64,8 @@ namespace Lib.mvc
         /// 网站统计
         /// </summary>
         public MvcHtmlString Analysis() => IncludeView("Analysis");
+
+        public IHtmlString Pager(string name = "pager") => Html.Raw(ConvertHelper.GetString(ViewData[name]));
 
         /// <summary>
         /// 获取非空对象
