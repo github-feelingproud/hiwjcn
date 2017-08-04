@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Configuration;
+using System.Net;
 
 namespace Lib.mvc
 {
@@ -101,12 +102,10 @@ namespace Lib.mvc
         /// <summary>
         /// 获取默认的json
         /// </summary>
-        /// <param name="errmsg"></param>
-        /// <returns></returns>
         [NonAction]
-        public ActionResult GetJsonRes(string errmsg)
+        public ActionResult GetJsonRes(string errmsg, string code = default(string))
         {
-            return GetJson(new _() { success = IsSuccess(errmsg), msg = errmsg });
+            return GetJson(new _() { success = IsSuccess(errmsg), msg = errmsg, code = code });
         }
 
         /// <summary>
@@ -176,8 +175,51 @@ namespace Lib.mvc
 
         protected List<string> PermissionList { get; set; }
         protected List<string> ScopeList { get; set; }
+        protected Func<ActionResult> NoLoginResult { get; set; }
+        protected Func<ActionResult> NoPermissionResult { get; set; }
+        protected Func<ActionResult> ErrorResult { get; set; }
 
         protected readonly bool ShowExceptionResult = (ConfigurationManager.AppSettings["ShowExceptionResult"] ?? "true").ToBool();
+
+
+        [NonAction]
+        protected virtual ActionResult WhenError(Exception e)
+        {
+            var (area, controller, action) = this.RouteData.GetA_C_A();
+            e.AddLog(this.GetType());
+
+            var custom_error = this.ErrorResult?.Invoke();
+            if (custom_error != null)
+            {
+                return custom_error;
+            }
+
+            //捕获的错误
+            if (this.ShowExceptionResult)
+            {
+                return GetJsonRes(e.GetInnerExceptionAsJson());
+            }
+
+            return GetJsonRes("服务器发生错误");
+        }
+
+        /// <summary>
+        /// 没有登录的时候使用这个返回，可以重写
+        /// </summary>
+        /// <returns></returns>
+        [NonAction]
+        protected virtual ActionResult WhenNoLogin() =>
+            this.NoLoginResult?.Invoke() ??
+            this.GetJsonRes("没有登录", ((int)HttpStatusCode.Forbidden).ToString());
+
+        /// <summary>
+        /// 没有权限的时候调用，可以重写
+        /// </summary>
+        /// <returns></returns>
+        [NonAction]
+        protected virtual ActionResult WhenNoPermission() =>
+            this.NoPermissionResult?.Invoke() ??
+            this.GetJsonRes("没有权限", ((int)HttpStatusCode.Unauthorized).ToString());
 
         /// <summary>
         /// 获取action的时候捕获异常
@@ -256,34 +298,6 @@ namespace Lib.mvc
                 return await GetActionFunc.Invoke(loginuser);
             });
         }
-
-        /// <summary>
-        /// 没有登录的时候使用这个返回，可以重写
-        /// </summary>
-        /// <returns></returns>
-        [NonAction]
-        protected virtual ActionResult WhenNoLogin() => GetJsonRes("no login");
-
-        [NonAction]
-        protected virtual ActionResult WhenError(Exception e)
-        {
-            var (area, controller, action) = this.RouteData.GetA_C_A();
-            e.AddLog(this.GetType());
-            //捕获的错误
-            if (this.ShowExceptionResult)
-            {
-                return GetJson(e.GetInnerExceptionAsList());
-            }
-            //默认500页面
-            return Http500();
-        }
-
-        /// <summary>
-        /// 没有权限的时候调用，可以重写
-        /// </summary>
-        /// <returns></returns>
-        [NonAction]
-        protected virtual ActionResult WhenNoPermission() => Http403();
 
         [NonAction]
         private (LoginUserInfo loginuser, ActionResult res) TryGetLoginUser()
