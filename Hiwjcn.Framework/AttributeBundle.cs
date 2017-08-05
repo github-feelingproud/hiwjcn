@@ -13,6 +13,7 @@ using Lib.cache;
 using Lib.mvc;
 using Hiwjcn.Framework.Actors;
 using System.Web;
+using Akka.Actor;
 
 namespace Hiwjcn.Framework
 {
@@ -101,7 +102,7 @@ namespace Hiwjcn.Framework
                 model.PostParams = context.Request.Form.ToDict().ToUrlParam();
                 model.GetParams = context.Request.QueryString.ToDict().ToUrlParam();
 
-                AkkaHelper<LogRequestActor>.Tell(model);
+                ActorsManager<LogRequestActor>.Instance.DefaultClient.Tell(model);
             }
             catch (Exception e)
             {

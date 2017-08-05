@@ -13,6 +13,7 @@ using Hiwjcn.Core.Model.Sys;
 using Lib.events;
 using Hiwjcn.Framework.Actors;
 using Lib.mvc;
+using Akka.Actor;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -54,8 +55,10 @@ namespace Hiwjcn.Bll.Auth
                 return await this._IAuthTokenService.FindTokenAsync(client_id, access_token);
             }, cache_expire);
 
+            var Actor = ActorsManager<CacheHitLogActor>.Instance.DefaultClient;
+
             //统计缓存命中
-            AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog(cache_key, hit_status));
+            Actor?.Tell(new CacheHitLog(cache_key, hit_status));
 
             if (token == null)
             {
@@ -71,15 +74,11 @@ namespace Hiwjcn.Bll.Auth
                 hit_status = CacheHitStatusEnum.NotHit;
 
                 var user = await this._IAuthLoginService.GetUserInfoByUID(token.UserUID);
-                if (user != null)
-                {
-                    user = await this._IAuthLoginService.LoadPermissions(user);
-                }
                 return user;
             }, cache_expire);
 
             //统计缓存命中
-            AkkaHelper<CacheHitLogActor>.Tell(new CacheHitLog(cache_key, hit_status));
+            Actor?.Tell(new CacheHitLog(cache_key, hit_status));
 
             if (loginuser == null)
             {

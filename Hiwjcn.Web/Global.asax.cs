@@ -25,6 +25,7 @@ using Hiwjcn.Bll;
 using Hiwjcn.Framework.Provider;
 using Lib.mvc.auth.validation;
 using Hiwjcn.Bll.Auth;
+using Hiwjcn.Framework.Factory;
 
 namespace Hiwjcn.Web
 {
@@ -97,6 +98,7 @@ namespace Hiwjcn.Web
         {
             try
             {
+                ActorsFactory.Dispose();
                 //关闭的时候不等待任务完成
                 TaskManager._WaitForJobsToComplete = false;
                 LibReleaseHelper.DisposeAll();

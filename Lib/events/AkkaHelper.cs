@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,27 +82,62 @@ namespace Lib.events
         }
     }
 
+    /// <summary>
+    /// actors manager
+    /// </summary>
+    public class ActorsManager<T> : StaticClientManager<IActorRef> where T : ActorBase, new()
+    {
+        public static readonly ActorsManager<T> Instance = new ActorsManager<T>();
+
+        public override string DefaultKey => null;
+
+        public override bool CheckClient(IActorRef ins)
+        {
+            return ins != null;
+        }
+
+        public override IActorRef CreateNewClient(string key)
+        {
+            $"Create a actor:{typeof(T).FullName},name:{key}".AddBusinessInfoLog();
+            return AkkaHelper<T>.GetActor(key);
+        }
+
+        public override void DisposeClient(IActorRef ins)
+        {
+            //do nothing
+        }
+    }
+
+    /// <summary>
+    /// akka helper
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public static class AkkaHelper<T> where T : ActorBase, new()
     {
         public static ActorSystem Container => AkkaSystemManager.Instance.DefaultClient;
 
         public static IActorRef GetActor(string name = null)
         {
+            var actor = default(IActorRef);
             if (ValidateHelper.IsPlumpString(name))
             {
-                return Container.ActorOf<T>(name);
+                actor = Container.ActorOf<T>(name);
             }
             else
             {
-                return Container.ActorOf<T>();
+                actor = Container.ActorOf<T>();
             }
+
+            return actor;
         }
 
+        [Obsolete("每次都会创建新的actor")]
         public static void Tell(object data, string actor_name = null)
         {
             GetActor(actor_name).Tell(data);
         }
 
+        [Obsolete("每次都会创建新的actor")]
         public static async Task<Answer> Ask<Answer>(object data, string actor_name = null,
             TimeSpan? timeout = null, CancellationToken? cancellationToken = null)
         {
@@ -121,6 +157,5 @@ namespace Lib.events
 
             return await GetActor(actor_name).Ask<Answer>(data);
         }
-
     }
 }

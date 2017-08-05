@@ -131,6 +131,7 @@
     <Compile Include="AttributeBundle.cs" />
     <Compile Include="CommonDependencyRegister.cs" />
     <Compile Include="DataBaseInitData.cs" />
+    <Compile Include="Factory\ActorsFactory.cs" />
     <Compile Include="Provider\AuthLocalValidationProvider.cs" />
     <Compile Include="Provider\AuthTokenToUserService.cs" />
     <Compile Include="Provider\IAuthTokenToUserService.cs" />

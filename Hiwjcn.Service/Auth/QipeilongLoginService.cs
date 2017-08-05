@@ -35,7 +35,7 @@ namespace Hiwjcn.Bll.Auth
 
         private LoginUserInfo Parse(UserInfo model)
         {
-            return new LoginUserInfo()
+            var loginuser = new LoginUserInfo()
             {
                 IID = model.IID,
                 UserID = model.UID,
@@ -47,10 +47,23 @@ namespace Hiwjcn.Bll.Auth
                 IsValid = true,
                 LoginToken = "please load auth token"
             };
+
+            loginuser.AddExtraData(nameof(model.address), model.address);
+            loginuser.AddExtraData(nameof(model.CompanyName), model.CompanyName);
+            loginuser.AddExtraData(nameof(model.Contact), model.Contact);
+            loginuser.AddExtraData(nameof(model.CustomerType), model.CustomerType);
+            loginuser.AddExtraData(nameof(model.IsCheck), model.IsCheck.ToString());
+            loginuser.AddExtraData(nameof(model.Phone), model.Phone);
+
+            return loginuser;
         }
 
         public async Task<LoginUserInfo> LoadPermissions(LoginUserInfo model)
         {
+            if (model == null)
+            {
+                return model;
+            }
             if (sys_users.Contains(model.UserName))
             {
                 model.Permissions = new List<string>()
@@ -67,17 +80,16 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<LoginUserInfo> GetUserInfoByUID(string uid)
         {
-            var user = default(LoginUserInfo);
             using (var con = Database())
             {
                 var sql = "select top 1 * from parties.dbo.UserInfo where UID=@uid";
-                var xx = (await con.QueryAsync<UserInfo>(sql, new { uid = uid })).FirstOrDefault();
-                if (xx != null)
+                var userinfo = (await con.QueryAsync<UserInfo>(sql, new { uid = uid })).FirstOrDefault();
+                if (userinfo != null)
                 {
-                    user = this.Parse(xx);
+                    return await this.LoadPermissions(this.Parse(userinfo));
                 }
             }
-            return await LoadPermissions(user);
+            return null;
         }
 
         public async Task<_<LoginUserInfo>> LoginByCode(string phoneOrEmail, string code)
@@ -100,7 +112,8 @@ namespace Hiwjcn.Bll.Auth
                     data.SetErrorMsg("用户不存在");
                     return data;
                 }
-                data.SetSuccessData(await this.LoadPermissions(this.Parse(user)));
+                var loginuser = await this.LoadPermissions(this.Parse(user));
+                data.SetSuccessData(loginuser);
             }
             return data;
         }
@@ -144,10 +157,11 @@ namespace Hiwjcn.Bll.Auth
                 var model = (await con.QueryAsync<UserInfo>(sql, new { uname = user_name })).FirstOrDefault();
                 if (model == null || !sys_users.Contains(model.UserName) || password != "123")
                 {
-                    data.msg = "账号密码错误";
+                    data.SetErrorMsg("账号密码错误");
                     return data;
                 }
-                data.SetSuccessData(this.Parse(model));
+                var loginuser = await this.LoadPermissions(this.Parse(model));
+                data.SetSuccessData(loginuser);
             }
             return data;
         }
