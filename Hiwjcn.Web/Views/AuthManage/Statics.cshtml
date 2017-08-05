@@ -30,6 +30,16 @@ else
 </div>
 
 <div class="row">
+
+    <div class="col-md-12 today_req_box">
+        <div class="panel panel-default">
+            <div class="panel-heading">今日流量</div>
+            <div class="panel-body">
+                <div id="today_req" style="height:400px;width:100%;"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-md-12">
         <h4>接口响应统计</h4>
     </div>
@@ -172,3 +182,65 @@ else
         </div>
     </div>
 </div>
+
+@{
+    var reqlog_groupbyhour = Com.NewIfNull<List<ReqLogGroupModel>>(ViewData["reqlog_groupbyhour"]);
+    if (ValidateHelper.IsPlumpList(reqlog_groupbyhour))
+    {
+        <script src="~/ui/echarts/echarts.min.js"></script>
+        <script type="text/javascript">
+    var option = {
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                data: [@(Html.Raw(reqlog_groupbyhour.Select(x=>x.Hour).ToJson()))][0]
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: [
+            {
+                name: '请求数量',
+                type: 'line',
+                stack: '请求数量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#1a88d2'
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: '#3498db'
+                    }
+                },
+                data: [@(Html.Raw(reqlog_groupbyhour.Select(x=>x.ReqCount).ToJson()))][0]
+            }
+        ]
+    };
+    $(function () {
+
+        $('.today_req_box').show();
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('today_req'));
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    });
+        </script>
+    }
+}

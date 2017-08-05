@@ -76,10 +76,10 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(data.msg);
                 }
-                return GetJson(new _() { success = true, data = data.token });
+                return GetJson(new _() { success = true, data = data.data });
             });
         }
-        
+
         /// <summary>
         /// 检查token 返回用户信息
         /// </summary>
@@ -127,7 +127,7 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(code.msg);
                 }
-                return GetJson(new _() { success = true, data = code.code });
+                return GetJson(new _() { success = true, data = code.data });
             });
         }
     }

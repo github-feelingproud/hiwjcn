@@ -104,16 +104,16 @@ namespace Hiwjcn.Web.Controllers
                 return data;
             }
 
-            var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, code.code.UID);
+            var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, code.data.UID);
             if (ValidateHelper.IsPlumpString(token.msg))
             {
                 data.SetErrorMsg(token.msg);
                 return data;
             }
 
-            loginuser.LoginToken = token.token.UID;
-            loginuser.RefreshToken = token.token.RefreshToken;
-            loginuser.TokenExpire = token.token.ExpiryTime;
+            loginuser.LoginToken = token.data.UID;
+            loginuser.RefreshToken = token.data.RefreshToken;
+            loginuser.TokenExpire = token.data.ExpiryTime;
 
             data.SetSuccessData(loginuser);
             return data;

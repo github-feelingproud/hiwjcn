@@ -77,13 +77,49 @@ namespace Hiwjcn.Web.Controllers
                 {
                     var reqlog_query = db.Set<ReqLogModel>().AsNoTrackingQueryable();
                     var cachehit_query = db.Set<CacheHitLog>().AsNoTrackingQueryable();
+
+                    #region 今天请求频次
+                    var border = now.GetDateBorder();
+                    var reqlog_groupbyhour = await this._cache.GetOrSetAsync(
+                        "auth.statics.reqlog_groupbyhour".WithCacheKeyPrefix(), async () =>
+                        {
+                            return await reqlog_query
+                            .Where(x => x.CreateTime >= border.start && x.CreateTime < border.end && x.IsRemove <= 0)
+                            .GroupBy(x => x.TimeHour)
+                            .Select(x => new ReqLogGroupModel()
+                            {
+                                Hour = x.Key,
+                                ReqCount = x.Count()
+                            }).ToListAsync();
+                        }, expire);
+
+                    if (reqlog_groupbyhour != null)
+                    {
+                        for (var i = reqlog_groupbyhour.Min(x => x.Hour); i <= reqlog_groupbyhour.Max(x => x.Hour); ++i)
+                        {
+                            var hour_data = reqlog_groupbyhour.Where(x => x.Hour == i).FirstOrDefault();
+                            if (hour_data == null)
+                            {
+                                reqlog_groupbyhour.Add(new ReqLogGroupModel()
+                                {
+                                    Hour = i,
+                                    ReqCount = 0
+                                });
+                            }
+                        }
+                        reqlog_groupbyhour = reqlog_groupbyhour.OrderBy(x => x.Hour).ToList();
+                    }
+
+                    ViewData[nameof(reqlog_groupbyhour)] = reqlog_groupbyhour;
+                    #endregion
+
                     #region 请求日志
                     //请求日志按照时间分组
                     var reqlog_groupbytime = await this._cache.GetOrSetAsync(
                         "auth.statics.reqlog_groupbytime".WithCacheKeyPrefix(), async () =>
                      {
                          return await reqlog_query
-                         .Where(x => x.CreateTime >= start)
+                         .Where(x => x.CreateTime >= start && x.IsRemove <= 0)
                          .GroupBy(x => new { x.TimeYear, x.TimeMonth, x.TimeDay })
                          .Select(x => new ReqLogGroupModel()
                          {
@@ -101,7 +137,7 @@ namespace Hiwjcn.Web.Controllers
                         "auth.statics.reqlog_groupbyaction".WithCacheKeyPrefix(), async () =>
                      {
                          return await reqlog_query
-                         .Where(x => x.CreateTime >= start)
+                         .Where(x => x.CreateTime >= start && x.IsRemove <= 0)
                          .GroupBy(x => new { x.AreaName, x.ControllerName, x.ActionName })
                          .Select(x => new ReqLogGroupModel()
                          {
@@ -121,7 +157,8 @@ namespace Hiwjcn.Web.Controllers
                     var cachehit_groupbytime = await this._cache.GetOrSetAsync(
                         "auth.statics.cachehit_groupbytime".WithCacheKeyPrefix(), async () =>
                      {
-                         return await cachehit_query.Where(x => x.CreateTime >= start)
+                         return await cachehit_query
+                         .Where(x => x.CreateTime >= start && x.IsRemove <= 0)
                          .GroupBy(x => new { x.TimeYear, x.TimeMonth, x.TimeDay })
                          .Select(x => new CacheHitGroupModel()
                          {
@@ -138,7 +175,8 @@ namespace Hiwjcn.Web.Controllers
                     var cachehit_groupbykey = await this._cache.GetOrSetAsync(
                         "auth.statics.cachehit_groupbykey".WithCacheKeyPrefix(), async () =>
                     {
-                        return await cachehit_query.Where(x => x.CreateTime >= start)
+                        return await cachehit_query
+                        .Where(x => x.CreateTime >= start && x.IsRemove <= 0)
                         .GroupBy(x => x.CacheKey).Select(x => new CacheHitGroupModel()
                         {
                             CacheKey = x.Key,

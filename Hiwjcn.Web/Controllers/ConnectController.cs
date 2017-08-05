@@ -100,7 +100,7 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(data.msg);
                 }
-                return GetJson(new _() { success = true, data = data.code?.UID });
+                return GetJson(new _() { success = true, data = data.data?.UID });
             });
         }
         

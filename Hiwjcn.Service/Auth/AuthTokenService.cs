@@ -13,6 +13,7 @@ using Lib.helper;
 using System.Data.Entity;
 using Lib.events;
 using System.Configuration;
+using Lib.mvc;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -62,11 +63,24 @@ namespace Hiwjcn.Bll.Auth
             await this._AuthCodeRepository.DeleteWhereAsync(x => x.UserUID == user_uid && x.CreateTime < expire);
         }
 
-        public virtual async Task<(AuthCode code, string msg)> CreateCodeAsync(
+        public virtual async Task<_<AuthCode>> CreateCodeAsync(
             string client_uid, List<string> scopes, string user_uid)
         {
-            if (!ValidateHelper.IsPlumpList(scopes)) { return (null, "scopes为空"); }
+            var data = new _<AuthCode>();
+
+            if (!ValidateHelper.IsPlumpList(scopes))
+            {
+                data.SetErrorMsg("scopes为空");
+                return data;
+            }
             var now = DateTime.Now;
+
+            var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.IsRemove <= 0);
+            if (client == null)
+            {
+                data.SetErrorMsg("授权的应用已被删除");
+                return data;
+            }
 
             var code = new AuthCode()
             {
@@ -86,17 +100,17 @@ namespace Hiwjcn.Bll.Auth
 
             if (count >= MaxCodeCreatedDaily)
             {
-                return (null, "授权过多");
+                data.SetErrorMsg("授权过多");
+                return data;
             }
 
-            var ok = await this._AuthCodeRepository.AddAsync(code) > 0;
-
-            if (ok)
+            if (await this._AuthCodeRepository.AddAsync(code) > 0)
             {
                 //clear old data
                 await this.ClearOldCode(user_uid);
 
-                return (code, SUCCESS);
+                data.SetSuccessData(code);
+                return data;
             }
             throw new MsgException("保存票据失败");
         }
@@ -118,22 +132,30 @@ namespace Hiwjcn.Bll.Auth
             });
         }
 
-        public virtual async Task<(AuthToken token, string msg)> CreateTokenAsync(
+        public virtual async Task<_<AuthToken>> CreateTokenAsync(
             string client_id, string client_secret, string code_uid)
         {
+            var data = new _<AuthToken>();
             try
             {
                 var now = DateTime.Now;
 
                 //code
                 var expire = now.AddMinutes(-CodeExpireMinutes);
-                var code = await this._AuthCodeRepository.GetFirstAsync(x => x.UID == code_uid && x.ClientUID == client_id && x.CreateTime > expire);
+                var code = await this._AuthCodeRepository.GetFirstAsync(x =>
+                x.UID == code_uid &&
+                x.ClientUID == client_id &&
+                x.CreateTime > expire &&
+                x.IsRemove <= 0);
                 if (code == null)
                 {
                     throw new MsgException("code已失效");
                 }
                 //client
-                var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_id && x.ClientSecretUID == client_secret && x.IsRemove <= 0);
+                var client = await this._AuthClientRepository.GetFirstAsync(x =>
+                x.UID == client_id &&
+                x.ClientSecretUID == client_secret &&
+                x.IsRemove <= 0);
                 if (client == null)
                 {
                     throw new MsgException("应用不存在");
@@ -144,7 +166,7 @@ namespace Hiwjcn.Bll.Auth
                 {
                     throw new MsgException("scope为空");
                 }
-                var scopes = await this._AuthScopeRepository.GetListAsync(x => scope_names.Contains(x.Name));
+                var scopes = await this._AuthScopeRepository.GetListAsync(x => scope_names.Contains(x.Name) && x.IsRemove <= 0);
                 if (scopes.Count != scope_names.Count)
                 {
                     throw new MsgException("scope数据存在错误");
@@ -188,11 +210,13 @@ namespace Hiwjcn.Bll.Auth
                     //clear old token
                     await ClearOldToken(code.UserUID);
                 }
-                return (token, SUCCESS);
+                data.SetSuccessData(token);
+                return data;
             }
             catch (MsgException e)
             {
-                return (null, e.Message);
+                data.SetErrorMsg(e.Message);
+                return data;
             }
         }
 
@@ -225,7 +249,7 @@ namespace Hiwjcn.Bll.Auth
             {
                 var now = DateTime.Now;
                 var token_query = db.Set<AuthToken>();
-                var token = await token_query.Where(x => x.UID == tk.UID && x.ExpiryTime > now).FirstOrDefaultAsync();
+                var token = await token_query.Where(x => x.UID == tk.UID && x.ExpiryTime > now && x.IsRemove <= 0).FirstOrDefaultAsync();
 
                 if (token != null)
                 {
@@ -251,10 +275,12 @@ namespace Hiwjcn.Bll.Auth
                 token = await token_query.Where(x =>
                 x.UID == token_uid &&
                 x.ClientUID == client_uid &&
-                x.ExpiryTime > now).FirstOrDefaultAsync();
+                x.ExpiryTime > now &&
+                x.IsRemove <= 0).FirstOrDefaultAsync();
 
                 if (token != null)
                 {
+                    //对于scope不去排除isremove，这个条件在授权的时候已经拦截了
                     var scope_uids = db.Set<AuthTokenScope>().AsNoTrackingQueryable().Where(x => x.TokenUID == token.UID).Select(x => x.ScopeUID);
                     var scope_query = db.Set<AuthScope>().AsNoTrackingQueryable();
                     token.Scopes = await scope_query.Where(x => scope_uids.Contains(x.UID)).ToListAsync();
@@ -291,7 +317,7 @@ namespace Hiwjcn.Bll.Auth
                 var client_query = db.Set<AuthClient>().AsNoTrackingQueryable();
                 var token_query = db.Set<AuthToken>().AsNoTrackingQueryable();
 
-                var client_uids = token_query.Where(x => x.UserUID == user_id && x.ExpiryTime > now).Select(x => x.ClientUID);
+                var client_uids = token_query.Where(x => x.UserUID == user_id && x.ExpiryTime > now && x.IsRemove <= 0).Select(x => x.ClientUID);
 
                 client_query = client_query.Where(x => client_uids.Contains(x.UID) && x.IsRemove <= 0);
                 if (ValidateHelper.IsPlumpString(q))
