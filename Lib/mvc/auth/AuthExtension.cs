@@ -34,11 +34,17 @@ namespace Lib.mvc.auth
                 return await AppContext.ScopeAsync(async x =>
                 {
                     var loginuser = await x.Resolve_<TokenValidationProviderBase>().FindUserAsync(context);
+
+                    var loginstatus = x.ResolveOptional<LoginStatus>();
                     if (loginuser == null)
                     {
-                        var loginstatus = x.ResolveOptional<LoginStatus>();
                         loginstatus?.SetUserLogout(context);
                     }
+                    else
+                    {
+                        loginstatus?.SetUserLogin(context, loginuser);
+                    }
+
                     return loginuser;
                 });
             });
@@ -57,11 +63,17 @@ namespace Lib.mvc.auth
                 return AppContext.Scope(x =>
                 {
                     var loginuser = x.Resolve_<TokenValidationProviderBase>().FindUser(context);
+
+                    var loginstatus = x.ResolveOptional<LoginStatus>();
                     if (loginuser == null)
                     {
-                        var loginstatus = x.ResolveOptional<LoginStatus>();
                         loginstatus?.SetUserLogout(context);
                     }
+                    else
+                    {
+                        loginstatus?.SetUserLogin(context, loginuser);
+                    }
+
                     return loginuser;
                 });
             });

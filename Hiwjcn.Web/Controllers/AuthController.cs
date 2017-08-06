@@ -76,7 +76,13 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(data.msg);
                 }
-                return GetJson(new _() { success = true, data = data.data });
+                var token_data = new TokenModel()
+                {
+                    Token = data.data.UID,
+                    RefreshToken = data.data.RefreshToken,
+                    Expire = data.data.ExpiryTime
+                };
+                return GetJson(new _() { success = true, data = token_data });
             });
         }
 
@@ -127,7 +133,7 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(code.msg);
                 }
-                return GetJson(new _() { success = true, data = code.data });
+                return GetJson(new _() { success = true, data = code.data?.UID });
             });
         }
     }

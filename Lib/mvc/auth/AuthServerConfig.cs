@@ -22,7 +22,21 @@ namespace Lib.mvc.auth
             return ServerUrl.EnsureTrailingSlash() + path;
         }
 
+        /// <summary>
+        /// 获取code
+        /// </summary>
+        public string CreateCodeByOneTimeCode() => this.ApiPath("Auth", "AuthCodeByOneTimeCode");
+
+        /// <summary>
+        /// 获取token
+        /// </summary>
+        public string CreateToken() => this.ApiPath("Auth", "AccessToken");
+
+        /// <summary>
+        /// token换用户信息
+        /// </summary>
         public string CheckToken() => this.ApiPath("Auth", "CheckToken");
+
     }
 
 }

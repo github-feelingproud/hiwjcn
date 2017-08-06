@@ -69,7 +69,7 @@ namespace Lib.mvc.auth.validation
                     return null;
                 }
 
-                var json = HttpClientHelper.Post_(this._server.CheckToken(), new
+                var json = HttpClientHelper.PostJson(this._server.CheckToken(), new
                 {
                     client_id = client_id,
                     access_token = token
