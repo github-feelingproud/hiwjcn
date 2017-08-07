@@ -101,24 +101,14 @@ namespace Lib.mvc.auth.validation
                     return null;
                 }
 
-                var client = HttpClientManager.Instance.DefaultClient;
-                var response = await client.PostAsJsonAsync(this._server.CheckToken(), new
+                var caller = new AuthServerApiCaller(this._server);
+                var data = await caller.CheckToken(client_id, token);
+                if (!data.success)
                 {
-                    client_id = client_id,
-                    access_token = token
-                });
-
-                using (response)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var data = json.JsonToEntity<_<LoginUserInfo>>();
-                    if (!data.success)
-                    {
-                        $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
-                        return null;
-                    }
-                    return data.data ?? throw new Exception("服务器返回数据为空-769876");
+                    $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
+                    return null;
                 }
+                return data.data;
             }
             catch (Exception e)
             {

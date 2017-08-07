@@ -210,7 +210,7 @@ namespace Lib.mvc
         [NonAction]
         protected virtual ActionResult WhenNoLogin() =>
             this.NoLoginResult?.Invoke() ??
-            this.GetJsonRes("没有登录", ((int)HttpStatusCode.Forbidden).ToString());
+            this.GetJsonRes("没有登录", (-999).ToString());
 
         /// <summary>
         /// 没有权限的时候调用，可以重写
@@ -219,7 +219,7 @@ namespace Lib.mvc
         [NonAction]
         protected virtual ActionResult WhenNoPermission() =>
             this.NoPermissionResult?.Invoke() ??
-            this.GetJsonRes("没有权限", ((int)HttpStatusCode.Unauthorized).ToString());
+            this.GetJsonRes("没有权限", (-(int)HttpStatusCode.Unauthorized).ToString());
 
         /// <summary>
         /// 获取action的时候捕获异常

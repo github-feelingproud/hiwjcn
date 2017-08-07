@@ -11,6 +11,7 @@ using System.Web;
 using Lib.ioc;
 using Lib.mvc;
 using Lib.mvc.auth;
+using System.Net;
 
 namespace Lib.mvc.user
 {
@@ -101,12 +102,22 @@ namespace Lib.mvc.user
     {
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {
-            filterContext.Result = GetJson(new _() { success = false, msg = "没有权限" });
+            filterContext.Result = GetJson(new _()
+            {
+                success = false,
+                msg = "没有权限",
+                code = (-999).ToString()
+            });
         }
 
         public override void WhenNotLogin(ref ActionExecutingContext filterContext)
         {
-            filterContext.Result = GetJson(new _() { success = false, msg = "登录过期，请刷新页面" });
+            filterContext.Result = GetJson(new _()
+            {
+                success = false,
+                msg = "登录过期，请刷新页面",
+                code = (-(int)HttpStatusCode.Unauthorized).ToString()
+            });
         }
     }
 
