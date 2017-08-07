@@ -100,6 +100,7 @@ namespace Lib.mvc
             string domain = null, string path = null, bool? httpOnly = null,
             double expires_minutes = 60 * 24)
         {
+            context.Request.Cookies.Remove(name);
             //直接创建新cookie，覆盖本地cookie或者使用过期来删除本地cookie
             var cookie = context.Request.Cookies[name];
             if (cookie == null)

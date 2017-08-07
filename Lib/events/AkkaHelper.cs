@@ -89,7 +89,7 @@ namespace Lib.events
     {
         public static readonly ActorsManager<T> Instance = new ActorsManager<T>();
 
-        public override string DefaultKey => null;
+        public override string DefaultKey => string.Empty;
 
         public override bool CheckClient(IActorRef ins)
         {
