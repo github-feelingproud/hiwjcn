@@ -95,7 +95,7 @@ namespace Hiwjcn.Web.Controllers
 
                     if (reqlog_groupbyhour != null)
                     {
-                        for (var i = 0; i <= reqlog_groupbyhour.Max(x => x.Hour); ++i)
+                        for (var i = 0; i <= now.Hour; ++i)
                         {
                             var hour_data = reqlog_groupbyhour.Where(x => x.Hour == i).FirstOrDefault();
                             if (hour_data == null)

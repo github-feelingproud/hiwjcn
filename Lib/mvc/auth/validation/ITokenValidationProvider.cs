@@ -93,8 +93,8 @@ namespace Lib.mvc.auth.validation
         {
             try
             {
-                var token = context.GetBearerToken();
-                var client_id = context.Request.Headers["client_id"];
+                var token = this._dataProvider.GetToken(context);
+                var client_id = this._dataProvider.GetClientID(context);
                 if (!ValidateHelper.IsAllPlumpString(token, client_id))
                 {
                     $"token和client_id为空:{token}-{client_id}".AddBusinessInfoLog();

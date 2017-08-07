@@ -14,7 +14,18 @@ namespace Lib.mvc.auth
 {
     public class AuthServerConfig
     {
-        public string ServerUrl { get; set; }
+        public string ServerUrl { get; private set; }
+
+        public AuthServerConfig(string host)
+        {
+            this.ServerUrl = ConvertHelper.GetString(host);
+
+            var cp = this.ServerUrl.ToLower();
+            if (!(cp.StartsWith("http://") || cp.StartsWith("https://")))
+            {
+                throw new Exception("auth服务器地址必须以http或者https开头");
+            }
+        }
 
         public string ApiPath(params string[] paths)
         {

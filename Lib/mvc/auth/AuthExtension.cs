@@ -167,10 +167,9 @@ namespace Lib.mvc.auth
         /// <summary>
         /// auth服务器配置
         /// </summary>
-        public static void AuthUseServerConfig<T>(this ContainerBuilder builder)
-            where T : AuthServerConfig
+        public static void AuthUseServerConfig(this ContainerBuilder builder, Func<AuthServerConfig> config)
         {
-            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().SingleInstance();
+            builder.Register(_ => config.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
         }
 
         /// <summary>

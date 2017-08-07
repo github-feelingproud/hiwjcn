@@ -23,8 +23,9 @@ namespace Lib.mvc.auth
             this._server = _server;
         }
 
-        public async Task<string> CreateAuthCodeByOneTimeCode(string client_id, List<string> scope, string phone, string sms)
+        public async Task<_<string>> CreateAuthCodeByOneTimeCode(string client_id, List<string> scope, string phone, string sms)
         {
+            var data = new _<string>();
             var response = await client.PostAsJsonAsync(this._server.CreateCodeByOneTimeCode(), new
             {
                 client_id = client_id,
@@ -35,13 +36,15 @@ namespace Lib.mvc.auth
             using (response)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var data = json.JsonToEntity<_<string>>();
-                if (!data.success || !ValidateHelper.IsPlumpString(data.data))
+                var code = json.JsonToEntity<_<string>>();
+                if (!code.success || !ValidateHelper.IsPlumpString(code.data))
                 {
-                    return data.msg;
+                    data.SetErrorMsg(code.msg);
+                    return data;
                 }
-                return data.data;
+                data.SetSuccessData(code.data);
             }
+            return data;
         }
 
         public async Task<_<TokenModel>> AccessToken(string client_id, string client_secret, string code, string grant_type)
