@@ -103,6 +103,8 @@ namespace Hiwjcn.Framework
                 model.GetParams = context.Request.QueryString.ToDict().ToUrlParam();
 
                 ActorsManager<LogRequestActor>.Instance.DefaultClient.Tell(model);
+
+                //Com.Range(3).ForEach_(x => AkkaHelper<TestActor>.Tell($"测试actor内存占用{DateTime.Now}"));
             }
             catch (Exception e)
             {

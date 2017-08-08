@@ -45,9 +45,9 @@ namespace Lib.mvc.user
 
         public virtual DateTime TokenExpire { get; set; }
 
-        public virtual List<string> Permissions { get; set; }
-
         public virtual List<string> Scopes { get; set; }
+
+        public virtual List<string> Permissions { get; set; }
 
         public virtual Dictionary<string, string> ExtraData { get; set; }
 
@@ -57,6 +57,14 @@ namespace Lib.mvc.user
 
     public static class LoginUserInfoExtension
     {
+        /// <summary>
+        /// 去除权限等敏感信息
+        /// </summary>
+        public static void ClearPrivateInfo(this LoginUserInfo loginuser)
+        {
+            loginuser.Permissions?.Clear();
+            loginuser.Scopes?.Clear();
+        }
 
         /// <summary>
         /// 判断用户是否有权限
@@ -71,13 +79,18 @@ namespace Lib.mvc.user
         public static bool HasScope(this LoginUserInfo loginuser, string scope) =>
             ValidateHelper.IsPlumpList(loginuser.Scopes) && loginuser.Scopes.Contains(scope);
 
-
+        /// <summary>
+        /// 添加额外信息
+        /// </summary>
         public static void AddExtraData(this LoginUserInfo loginuser, string key, string value)
         {
             if (loginuser.ExtraData == null) { loginuser.ExtraData = new Dictionary<string, string>(); }
             loginuser.ExtraData[key] = value;
         }
 
+        /// <summary>
+        /// 获取额外信息
+        /// </summary>
         public static string GetExtraData(this LoginUserInfo loginuser, string key)
         {
             if (loginuser.ExtraData == null) { loginuser.ExtraData = new Dictionary<string, string>(); }

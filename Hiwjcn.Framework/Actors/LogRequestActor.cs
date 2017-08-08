@@ -40,4 +40,20 @@ namespace Hiwjcn.Framework.Actors
             });
         }
     }
+
+    public class TestActor : ReceiveActor
+    {
+        public TestActor()
+        {
+            this.Receive<string>(x =>
+            {
+                Thread.Sleep(500);
+                x?.AddBusinessInfoLog();
+
+                //这里stop似乎就可以释放资源
+                //测试是这样的，还有待求证
+                Context.Stop(this.Self);
+            });
+        }
+    }
 }
