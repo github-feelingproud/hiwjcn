@@ -1,0 +1,92 @@
+﻿@using Hiwjcn.Core.Domain.Auth;
+@{
+    this.SetLayout("AuthManageLayout");
+    this.SetTitle("编辑Scope");
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">编辑Scope</div>
+    <div class="panel-body">
+        <form>
+            <table class="table table-striped table-hover">
+                <thead style="display:none;">
+                    <tr>
+                        <td width="10%;"></td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>名称</td>
+                        <td>
+                            <input type="text" class="form-control" name="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>描述</td>
+                        <td>
+                            <input type="text" class="form-control" name="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>图标</td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-addon">图标URL</span>
+                                <input type="text" class="form-control" name="" />
+                                <span class="input-group-addon">字体图标Class</span>
+                                <input type="text" class="form-control" name="" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>排序</td>
+                        <td>
+                            <input type="text" class="form-control" name="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>选项</td>
+                        <td>
+                            <div class="btn-group select" data-value="">
+                                <button type="button" class="btn btn-info">重要</button>
+                                <button type="button" class="btn">不重要</button>
+                            </div>
+                            <div class="btn-group select" data-value="">
+                                <button type="button" class="btn">默认</button>
+                                <button type="button" class="btn btn-info">不默认</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">
+                            <div class="text-right">
+                                <button type="submit" class="btn btn-success">保存</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var selects = $('.btn-group.select');
+        selects.each(function (i) {
+            var select = $(this);
+            var btns = select.find('button');
+            btns.each(function (j) {
+                var btn = $(this);
+                btn.click(function () {
+                    btns.removeClass('btn-info');
+                    btn.addClass('btn-info');
+                    return false;
+                });
+            });
+        });
+    });
+</script>

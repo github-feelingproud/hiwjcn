@@ -211,6 +211,20 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
+        [PageAuth(Permission = manage_auth)]
+        [RequestLog]
+        [Route("AuthManage/EditScope/{uid}")]
+        public async Task<ActionResult> EditScope(string uid)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var model = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == uid);
+
+                ViewData["model"] = model;
+                return View();
+            });
+        }
+
         [ApiAuth(Permission = manage_auth)]
         [RequestLog]
         public Task<ActionResult> SaveScopeAction()
