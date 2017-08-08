@@ -128,7 +128,13 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(loginuser.msg);
                 }
-                var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scope?.JsonToEntity<List<string>>(), loginuser.data.UserID);
+                var scopeslist = scope?.JsonToEntity<List<string>>();
+                if (!ValidateHelper.IsPlumpList(scopeslist))
+                {
+                    scopeslist = (await this._AuthScopeRepository.GetListAsync(null)).Select(x => x.Name).ToList();
+                }
+
+                var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
                 if (ValidateHelper.IsPlumpString(code.msg))
                 {
                     return GetJsonRes(code.msg);
