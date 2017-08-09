@@ -5,6 +5,9 @@ using System;
 using System.Linq;
 using System.Web;
 using System.Web.SessionState;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 
 namespace Lib.mvc.user
 {
@@ -26,45 +29,50 @@ namespace Lib.mvc.user
             public string Result { get; set; }
         }
 
+        private readonly int TrashLen = 2;
+
+        public DefaultCookieTokenEncryption()
+        {
+            //
+        }
+
         private string CreateResult(string token, string salt)
         {
             return $"{token}={nameof(DefaultCookieTokenEncryption)}={salt}".ToMD5().ToLower();
         }
 
-        private readonly int TrashLen = 2;
-
         public string Decrypt(string data)
         {
             try
             {
-                if (data.Length <= this.TrashLen)
-                {
-                    return null;
-                }
+                if (data.Length <= this.TrashLen * 2) { return string.Empty; }
                 //->remove trash
-                data = data.Substring(0, data.Length - this.TrashLen);
+                data = data.Substring(this.TrashLen, data.Length - this.TrashLen * 2);
                 //->reverse
-                data = string.Empty.Join_(data.ToCharArray().Reverse_());
+                data = data.ToCharArray().Reverse_().AsString();
                 //->entity
                 var entry = data.Base64ToString().JsonToEntity<EncryptEntry>();
                 if (entry.Result != this.CreateResult(entry.Token, entry.Salt))
                 {
-                    return null;
+                    return string.Empty;
                 }
                 return entry.Token;
             }
             catch
             {
-                return null;
+                return string.Empty;
             }
         }
 
         public string Encrypt(string data)
         {
             var ran = new Random((int)DateTime.Now.Ticks);
-            var chars = Com.Range((int)'a', (int)'z').Select(x => (char)x).ToList();
 
-            var salt = string.Empty.Join_(Com.Range(ran.RealNext(3, 6)).Select(x => ran.Choice(chars)));
+            var chars = Com.Range((int)'a', (int)'z').Select(x => (char)x).ToList();
+            chars.AddRange(Com.Range((int)'A', (int)'Z').Select(x => (char)x));
+            chars.AddRange(new char[] { '+', '-', '*', '/', '=' });
+
+            var salt = ran.Sample(chars, ran.RealNext(3, 6)).AsString();
             var entry = new EncryptEntry()
             {
                 Token = data,
@@ -74,9 +82,9 @@ namespace Lib.mvc.user
             //->base64
             data = entry.ToJson().StringToBase64();
             //->reverse
-            data = string.Empty.Join_(data.ToCharArray().Reverse_());
+            data = data.ToCharArray().Reverse_().AsString();
             //->add trash
-            data = data + string.Empty.Join_(Com.Range(this.TrashLen).Select(x => ran.Choice(chars)));
+            data = ran.Sample(chars, this.TrashLen).AsString() + data + ran.Sample(chars, this.TrashLen).AsString();
 
             return data;
         }

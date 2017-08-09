@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Lib.helper;
 
@@ -10,6 +10,20 @@ namespace Lib.extension
 {
     public static class CollectionExtension
     {
+        /// <summary>
+        /// 拼接item.tostring()
+        /// </summary>
+        public static string AsString<T>(this IEnumerable<T> list)
+        {
+            var data = new StringBuilder();
+            foreach (var item in list)
+            {
+                if (item == null) { continue; }
+                data.Append(item.ToString());
+            }
+            return data.ToString();
+        }
+
         /// <summary>
         /// 解决ilist没有foreach的问题
         /// </summary>
