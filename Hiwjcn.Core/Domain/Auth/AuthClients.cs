@@ -46,7 +46,7 @@ namespace Hiwjcn.Core.Domain.Auth
         public virtual string ClientSecretUID { get; set; }
 
         public virtual int IsActive { get; set; }
-        
+
         public virtual int IsOfficial { get; set; }
     }
 
@@ -79,11 +79,11 @@ namespace Hiwjcn.Core.Domain.Auth
     {
         [Required]
         [Index(IsUnique = true)]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "scope 名称必填")]
+        [StringLength(100, ErrorMessage = "scope 名称必填")]
         public virtual string Name { get; set; }
 
         [Required]
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "scope 展示名称必填")]
+        [StringLength(100, ErrorMessage = "scope 展示名称必填")]
         public virtual string DisplayName { get; set; }
 
         [StringLength(100, ErrorMessage = "描述太长")]

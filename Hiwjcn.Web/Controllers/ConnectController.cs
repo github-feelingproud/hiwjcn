@@ -69,7 +69,7 @@ namespace Hiwjcn.Web.Controllers
                 ViewData[nameof(return_type)] = return_type;
 
                 var scopes = ConvertHelper.GetString(scope).Trim().Split(',').Where(x => ValidateHelper.IsPlumpString(x)).ToList();
-                var scopelist = await this._IAuthScopeService.GetScopesOrDefault(scopes.ToArray());
+                var scopelist = await this._IAuthScopeService.GetScopesOrDefaultAsync(scopes.ToArray());
                 ViewData["scopes"] = scopelist.OrderByDescending(x => x.Important).ToList();
 
                 var client = await this._IAuthClientService.GetByID(client_id);

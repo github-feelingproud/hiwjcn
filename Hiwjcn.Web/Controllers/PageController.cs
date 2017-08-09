@@ -14,7 +14,7 @@ using Lib.mvc.attr;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class PageController : WebCore.MvcLib.Controller.UserBaseController
+    public class PageController : BaseController
     {
         private IPageService _IPageService { get; set; }
         private ILinkService _ILinkService { get; set; }

@@ -7,25 +7,37 @@
 <div class="panel panel-default">
     <div class="panel-heading">编辑Scope</div>
     <div class="panel-body">
-        <form>
+        @{
+            var m = Com.NewIfNull<AuthScope>(ViewData["m"]);
+        }
+        <form id="fm">
             <table class="table table-striped table-hover">
                 <thead style="display:none;">
                     <tr>
                         <td width="10%;"></td>
-                        <td></td>
+                        <td>
+                            <input type="hidden" name="IID" value="@(m.IID)" />
+                            <input type="hidden" name="UID" value="@(m.UID)" />
+                        </td>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>名称</td>
                         <td>
-                            <input type="text" class="form-control" name="" />
+                            <input type="text" class="form-control" name="Name" value="@(m.Name)" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>展示</td>
+                        <td>
+                            <input type="text" class="form-control" name="DisplayName" value="@(m.DisplayName)" />
                         </td>
                     </tr>
                     <tr>
                         <td>描述</td>
                         <td>
-                            <input type="text" class="form-control" name="" />
+                            <input type="text" class="form-control" name="Description" value="@(m.Description)" />
                         </td>
                     </tr>
                     <tr>
@@ -33,28 +45,32 @@
                         <td>
                             <div class="input-group">
                                 <span class="input-group-addon">图标URL</span>
-                                <input type="text" class="form-control" name="" />
+                                <input type="text" class="form-control" name="ImageUrl" value="@(m.ImageUrl)" />
                                 <span class="input-group-addon">字体图标Class</span>
-                                <input type="text" class="form-control" name="" />
+                                <input type="text" class="form-control" name="FontIcon" value="@(m.FontIcon)" />
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>排序</td>
                         <td>
-                            <input type="text" class="form-control" name="" />
+                            <input type="number" class="form-control" name="Sort" value="@(m.Sort)" />
                         </td>
                     </tr>
                     <tr>
                         <td>选项</td>
                         <td>
-                            <div class="btn-group select" data-value="">
-                                <button type="button" class="btn btn-info">重要</button>
-                                <button type="button" class="btn">不重要</button>
-                            </div>
-                            <div class="btn-group select" data-value="">
-                                <button type="button" class="btn">默认</button>
-                                <button type="button" class="btn btn-info">不默认</button>
+                            <div class="input-group">
+                                <span class="input-group-addon">是否是重要权限</span>
+                                <select class="form-control" name="Important" data-value="@(m.Important)">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                                <span class="input-group-addon">是否是默认权限</span>
+                                <select class="form-control" name="IsDefault" data-value="@(m.IsDefault)">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
                             </div>
                         </td>
                     </tr>
@@ -75,18 +91,18 @@
 
 <script type="text/javascript">
     $(function () {
-        var selects = $('.btn-group.select');
-        selects.each(function (i) {
-            var select = $(this);
-            var btns = select.find('button');
-            btns.each(function (j) {
-                var btn = $(this);
-                btn.click(function () {
-                    btns.removeClass('btn-info');
-                    btn.addClass('btn-info');
-                    return false;
-                });
+        var form = $('#fm');
+        form.submit(function () {
+            var data = form.serializeArray();
+            postJson('/AuthManage/SaveScopeAction', data, function (res) {
+                if (res && res.success) {
+                    window.location.href = '/AuthManage/Scopes';
+                }
+                else {
+                    alert(res.msg);
+                }
             });
+            return false;
         });
     });
 </script>

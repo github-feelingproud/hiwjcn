@@ -11,16 +11,16 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 {
     public interface IAuthScopeService : IServiceBase<AuthScope>
     {
-        Task<List<AuthScope>> AllScopes();
+        Task<List<AuthScope>> AllScopesAsync();
 
-        Task<List<AuthScope>> GetScopesOrDefault(params string[] names);
+        Task<List<AuthScope>> GetScopesOrDefaultAsync(params string[] names);
 
         Task<string> AddScopeAsync(AuthScope scope);
 
-        Task<string> DeleteScope(string scope_uid);
+        Task<string> DeleteScopeAsync(string scope_uid);
 
-        Task<string> UpdateScope(AuthScope updatemodel);
+        Task<string> UpdateScopeAsync(AuthScope updatemodel);
 
-        Task<PagerData<AuthScope>> QueryPager(string q = null, int page = 1, int pagesize = 10);
+        Task<PagerData<AuthScope>> QueryPagerAsync(string q = null, int page = 1, int pagesize = 10);
     }
 }

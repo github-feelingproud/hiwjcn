@@ -29,7 +29,7 @@ namespace Hiwjcn.Bll.Auth
             this._AuthScopeRepository = _AuthScopeRepository;
         }
 
-        public async Task<List<AuthScope>> GetScopesOrDefault(params string[] names)
+        public async Task<List<AuthScope>> GetScopesOrDefaultAsync(params string[] names)
         {
             if (!ValidateHelper.IsPlumpList(names))
             {
@@ -43,7 +43,7 @@ namespace Hiwjcn.Bll.Auth
             return await this._AuthScopeRepository.GetListAsync(x => names.Contains(x.Name));
         }
 
-        public async Task<List<AuthScope>> AllScopes()
+        public async Task<List<AuthScope>> AllScopesAsync()
         {
             return (await this._AuthScopeRepository.GetListAsync(x => x.IsRemove <= 0)).OrderByDescending(x => x.Important).OrderBy(x => x.Name).ToList();
         }
@@ -55,7 +55,7 @@ namespace Hiwjcn.Bll.Auth
             {
                 return msg;
             }
-            scope.Name = scope.Name.ToLower();
+            scope.Name = scope.Name?.ToLower();
 
             if (await this._AuthScopeRepository.ExistAsync(x => x.Name == scope.Name))
             {
@@ -70,10 +70,10 @@ namespace Hiwjcn.Bll.Auth
             throw new MsgException("保存scope异常");
         }
 
-        public async Task<string> DeleteScope(string scope_uid)
+        public async Task<string> DeleteScopeAsync(string scope_uid)
         {
             var scope = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == scope_uid);
-            Com.Assert(scope, x => x != null, $"找不到scope[scope_uid={scope_uid}]");
+            Com.AssertNotNull(scope, $"找不到scope[scope_uid={scope_uid}]");
             if (await this._AuthScopeRepository.DeleteAsync(scope) > 0)
             {
                 this._publisher.EntityDeleted(scope);
@@ -82,10 +82,10 @@ namespace Hiwjcn.Bll.Auth
             throw new MsgException("删除scope失败");
         }
 
-        public async Task<string> UpdateScope(AuthScope updatemodel)
+        public async Task<string> UpdateScopeAsync(AuthScope updatemodel)
         {
             var scope = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == updatemodel.UID);
-            Com.Assert(scope, x => x != null, $"找不到scope[scope_uid={updatemodel.UID}]");
+            Com.AssertNotNull(scope, $"找不到scope[scope_uid={updatemodel.UID}]");
 
             //scope.Name = updatemodel.Name;
             scope.DisplayName = updatemodel.DisplayName;
@@ -114,7 +114,7 @@ namespace Hiwjcn.Bll.Auth
             return base.CheckModel(model);
         }
 
-        public async Task<PagerData<AuthScope>> QueryPager(string q = null, int page = 1, int pagesize = 10)
+        public async Task<PagerData<AuthScope>> QueryPagerAsync(string q = null, int page = 1, int pagesize = 10)
         {
             var data = new PagerData<AuthScope>();
 
@@ -128,7 +128,9 @@ namespace Hiwjcn.Bll.Auth
                 }
 
                 data.ItemCount = await query.CountAsync();
-                data.DataList = await query.OrderBy(x => x.IsRemove).OrderByDescending(x => x.Important).QueryPage(page, pagesize).ToListAsync();
+                data.DataList = await query
+                .OrderBy(x => x.IsRemove).OrderByDescending(x => x.Important).OrderByDescending(x => x.Sort)
+                .QueryPage(page, pagesize).ToListAsync();
 
                 return true;
             });

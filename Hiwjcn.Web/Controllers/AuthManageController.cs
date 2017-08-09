@@ -202,7 +202,7 @@ namespace Hiwjcn.Web.Controllers
                 page = CheckPage(page);
                 var pagesize = 20;
 
-                var data = await this._IAuthScopeService.QueryPager(q, page.Value, pagesize);
+                var data = await this._IAuthScopeService.QueryPagerAsync(q, page.Value, pagesize);
 
                 ViewData["list"] = data.DataList;
                 ViewData["pager"] = data.GetPagerHtml(this.RouteData.ActionUrl(), nameof(page), page.Value, pagesize, this.X.context);
@@ -218,18 +218,37 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == uid);
+                if (ValidateHelper.IsPlumpString(uid) && uid.ToLower() != "new")
+                {
+                    var model = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == uid);
 
-                ViewData["model"] = model;
+                    ViewData["m"] = model;
+                }
                 return View();
             });
         }
 
         [ApiAuth(Permission = manage_auth)]
         [RequestLog]
-        public Task<ActionResult> SaveScopeAction()
+        public async Task<ActionResult> SaveScopeAction(AuthScope model)
         {
-            throw new NotImplementedException();
+            return await RunActionAsync(async () => 
+            {
+                if (model == null)
+                {
+                    return GetJsonRes("参数错误");
+                }
+                if (ValidateHelper.IsPlumpString(model.UID))
+                {
+                    var res = await this._IAuthScopeService.UpdateScopeAsync(model);
+                    return GetJsonRes(res);
+                }
+                else
+                {
+                    var res = await this._IAuthScopeService.AddScopeAsync(model);
+                    return GetJsonRes(res);
+                }
+            });
         }
 
         [PageAuth(Permission = manage_auth)]

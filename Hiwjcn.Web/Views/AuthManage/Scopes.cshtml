@@ -4,6 +4,16 @@
     this.SetTitle("作用域");
 }
 
+<div class="row">
+    <div class="col-md-12">
+        <div class="pull-right">
+            <div class="box_con">
+                <a href="/AuthManage/EditScope/new" class="btn btn-info btn-sm" target="_self">新建</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="panel panel-default">
     <div class="panel-heading">Scope</div>
     <div class="panel-body">
@@ -17,8 +27,9 @@
                             <td>名称</td>
                             <td>展示名称</td>
                             <td>描述</td>
-                            <td>优先级</td>
+                            <td></td>
                             <td>修改时间</td>
+                            <td></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,6 +46,9 @@
                                     }
                                 </td>
                                 <td>@(m.UpdateTime.GetSimpleFriendlyDateTime())</td>
+                                <td>
+                                    <a href="/AuthManage/EditScope/@(m.UID)" class="btn btn-link btn-sm" target="_self">编辑</a>
+                                </td>
                             </tr>
                         }
                     </tbody>
