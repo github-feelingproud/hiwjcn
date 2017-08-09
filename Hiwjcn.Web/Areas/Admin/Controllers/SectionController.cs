@@ -33,8 +33,7 @@ namespace WebApp.Areas.Admin.Controllers
                 if (data != null)
                 {
                     ViewData["list"] = data.DataList;
-                    string url = "/admin/section/sectionlist/?";
-                    ViewData["pager"] = data.GetPagerHtml(url, "page", page.Value, pageSize);
+                    ViewData["pager"] = data.GetPagerHtml(this, "page", page.Value, pageSize);
                 }
                 return View();
             });

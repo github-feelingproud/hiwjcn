@@ -103,7 +103,7 @@ namespace Hiwjcn.Web.Controllers
                 return GetJson(new _() { success = true, data = data.data?.UID });
             });
         }
-        
+
         [PageAuth]
         [RequestLog]
         public async Task<ActionResult> MyClients(string q, int? page)
@@ -116,7 +116,7 @@ namespace Hiwjcn.Web.Controllers
                 var loginuser = await this.X.context.GetAuthUserAsync();
 
                 var data = await this._IAuthTokenService.GetMyAuthorizedClientsAsync(loginuser?.UserID, q, page.Value, pagesize);
-                ViewData["pager"] = data.GetPagerHtml($"Auth/{nameof(MyClients)}", "page", page.Value, pagesize);
+                ViewData["pager"] = data.GetPagerHtml(this, "page", page.Value, pagesize);
                 ViewData["list"] = data.DataList;
                 return View();
             });

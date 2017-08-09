@@ -99,7 +99,7 @@ namespace Hiwjcn.Web.Controllers
                 if (data != null)
                 {
                     ViewData["list"] = data.DataList;
-                    ViewData["pager"] = data.GetPagerHtml("/page/news/", "page", page.Value, pagesize);
+                    ViewData["pager"] = data.GetPagerHtml(this, "page", page.Value, pagesize);
                 }
 
                 return View();

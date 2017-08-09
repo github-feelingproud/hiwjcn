@@ -205,7 +205,7 @@ namespace Hiwjcn.Web.Controllers
                 var data = await this._IAuthScopeService.QueryPagerAsync(q, page.Value, pagesize);
 
                 ViewData["list"] = data.DataList;
-                ViewData["pager"] = data.GetPagerHtml(this.RouteData.ActionUrl(), nameof(page), page.Value, pagesize, this.X.context);
+                ViewData["pager"] = data.GetPagerHtml(this, nameof(page), page.Value, pagesize);
 
                 return View();
             });
@@ -232,7 +232,7 @@ namespace Hiwjcn.Web.Controllers
         [RequestLog]
         public async Task<ActionResult> SaveScopeAction(AuthScope model)
         {
-            return await RunActionAsync(async () => 
+            return await RunActionAsync(async () =>
             {
                 if (model == null)
                 {
@@ -263,7 +263,7 @@ namespace Hiwjcn.Web.Controllers
                 var data = await this._IAuthClientService.QueryListAsync(q: q, page: page.Value, pagesize: pagesize);
 
                 ViewData["list"] = data.DataList;
-                ViewData["pager"] = data.GetPagerHtml(this.RouteData.ActionUrl(), nameof(page), page.Value, pagesize, this.X.context);
+                ViewData["pager"] = data.GetPagerHtml(this, nameof(page), page.Value, pagesize);
 
                 return View();
             });

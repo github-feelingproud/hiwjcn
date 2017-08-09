@@ -80,7 +80,7 @@ namespace Lib.helper
         /// <summary>
         /// 获取分页
         /// </summary>
-        public string GetPagerHtml(Controller controller, string pageKey, int currentPage, int pageSize = 15)
+        public string GetPagerHtml(Controller controller, string pageKey, int currentPage, int pageSize)
         {
             var url = controller.RouteData.ActionUrl();
             return this.GetPagerHtml(url, pageKey, currentPage, pageSize, HttpContext.Current);
@@ -89,7 +89,7 @@ namespace Lib.helper
         /// <summary>
         /// 分页控件的html代码
         /// </summary>
-        public string GetPagerHtml(string base_url, string pageKey, int currentPage, int pageSize = 15, HttpContext _context = null)
+        public string GetPagerHtml(string base_url, string pageKey, int currentPage, int pageSize, HttpContext _context = null)
         {
             if (!ValidateHelper.IsPlumpDict(this.UrlParams))
             {
