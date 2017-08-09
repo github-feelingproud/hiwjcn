@@ -1,16 +1,94 @@
 ﻿using Lib.core;
 using Lib.helper;
+using Lib.extension;
 using System;
+using System.Linq;
 using System.Web;
 using System.Web.SessionState;
 
 namespace Lib.mvc.user
 {
     /// <summary>
+    /// 对token加密
+    /// </summary>
+    public interface CookieTokenEncryption
+    {
+        string Encrypt(string data);
+        string Decrypt(string data);
+    }
+
+    public class DefaultCookieTokenEncryption : CookieTokenEncryption
+    {
+        class EncryptEntry
+        {
+            public string Token { get; set; }
+            public string Salt { get; set; }
+            public string Result { get; set; }
+        }
+
+        private string CreateResult(string token, string salt)
+        {
+            return $"{token}={nameof(DefaultCookieTokenEncryption)}={salt}".ToMD5().ToLower();
+        }
+
+        private readonly int TrashLen = 2;
+
+        public string Decrypt(string data)
+        {
+            try
+            {
+                if (data.Length <= this.TrashLen)
+                {
+                    return null;
+                }
+                //->remove trash
+                data = data.Substring(0, data.Length - this.TrashLen);
+                //->reverse
+                data = string.Empty.Join_(data.ToCharArray().Reverse_());
+                //->entity
+                var entry = data.Base64ToString().JsonToEntity<EncryptEntry>();
+                if (entry.Result != this.CreateResult(entry.Token, entry.Salt))
+                {
+                    return null;
+                }
+                return entry.Token;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public string Encrypt(string data)
+        {
+            var ran = new Random((int)DateTime.Now.Ticks);
+            var chars = Com.Range((int)'a', (int)'z').Select(x => (char)x).ToList();
+
+            var salt = string.Empty.Join_(Com.Range(ran.RealNext(3, 6)).Select(x => ran.Choice(chars)));
+            var entry = new EncryptEntry()
+            {
+                Token = data,
+                Salt = salt,
+            };
+            entry.Result = this.CreateResult(entry.Token, entry.Salt);
+            //->base64
+            data = entry.ToJson().StringToBase64();
+            //->reverse
+            data = string.Empty.Join_(data.ToCharArray().Reverse_());
+            //->add trash
+            data = data + string.Empty.Join_(Com.Range(this.TrashLen).Select(x => ran.Choice(chars)));
+
+            return data;
+        }
+    }
+
+    /// <summary>
     /// 登录状态存取
     /// </summary>
     public class LoginStatus : IRequiresSessionState
     {
+        private readonly CookieTokenEncryption _CookieTokenEncryption;
+
         //COOKIE
         public string COOKIE_LOGIN_UID { get; private set; }
         //TOKEN
@@ -25,7 +103,8 @@ namespace Lib.mvc.user
         public LoginStatus() : this("USER_UID", "USER_TOKEN", "LOGIN_USER_SESSION", ConfigHelper.Instance.CookieDomain)
         { }
 
-        public LoginStatus(string uid, string token, string session, string domain)
+        public LoginStatus(string uid, string token, string session, string domain,
+            CookieTokenEncryption _CookieTokenEncryption = null)
         {
             this.COOKIE_DOMAIN = domain;
             var prefix = string.Empty;
@@ -42,6 +121,8 @@ namespace Lib.mvc.user
             }
 
             this.LOGIN_USER_SESSION = session;
+
+            this._CookieTokenEncryption = _CookieTokenEncryption ?? new DefaultCookieTokenEncryption();
         }
 
         /// <summary>
@@ -60,7 +141,13 @@ namespace Lib.mvc.user
         {
             context = GetContext(context);
 
-            return CookieHelper.GetCookie(context, COOKIE_LOGIN_TOKEN);
+            var data = CookieHelper.GetCookie(context, COOKIE_LOGIN_TOKEN);
+            if (!ValidateHelper.IsPlumpString(data))
+            {
+                return string.Empty;
+            }
+
+            return this._CookieTokenEncryption.Decrypt(data);
         }
 
         /// <summary>
@@ -87,14 +174,15 @@ namespace Lib.mvc.user
             //保存到session
             SessionHelper.SetSession(context.Session, LOGIN_USER_SESSION, loginuser);
             //保存到cookie
-            if (GetCookieUID() != loginuser.UserID)
+            if (this.GetCookieUID() != loginuser.UserID)
             {
                 CookieHelper.SetCookie(context, COOKIE_LOGIN_UID, loginuser.UserID, domain: COOKIE_DOMAIN,
                         expires_minutes: CookieExpiresMinutes);
             }
-            if (GetCookieToken() != loginuser.LoginToken)
+            if (this.GetCookieToken() != loginuser.LoginToken)
             {
-                CookieHelper.SetCookie(context, COOKIE_LOGIN_TOKEN, loginuser.LoginToken, domain: COOKIE_DOMAIN,
+                var data = this._CookieTokenEncryption.Encrypt(loginuser.LoginToken);
+                CookieHelper.SetCookie(context, COOKIE_LOGIN_TOKEN, data, domain: COOKIE_DOMAIN,
                     expires_minutes: CookieExpiresMinutes);
             }
         }

@@ -173,3 +173,12 @@ $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 
 });
+
+try
+{
+    console.warn('请注意敏感信息保密')
+}
+catch(e)
+{
+    //
+}

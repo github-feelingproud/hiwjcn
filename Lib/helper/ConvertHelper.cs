@@ -78,29 +78,23 @@ namespace Lib.helper
         /// <summary>
         /// 获取base64字符串
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
         public static string GetBase64String(string str, Encoding encoding = null)
         {
             if (encoding == null) { encoding = Encoding.Default; }
             return GetBase64String(encoding.GetBytes(str));
         }
+
         /// <summary>
         /// 获取base64字符串
         /// </summary>
-        /// <param name="bs"></param>
-        /// <returns></returns>
         public static string GetBase64String(byte[] bs)
         {
             return Convert.ToBase64String(bs);
         }
+
         /// <summary>
         /// base64字符串转为普通字符串
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
         public static string GetStringFromBase64String(string str, Encoding encoding = null)
         {
             var bs = GetBytesFromBase64String(str);
