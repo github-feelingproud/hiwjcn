@@ -10,6 +10,11 @@ namespace Lib.mvc
     /// </summary>
     public static class CookieHelper
     {
+        public static void RemoveCookie(HttpContext context, string name, string domain = null)
+        {
+            RemoveCookie(context, new string[] { name }, domain: domain);
+        }
+
         /// <summary>
         /// 删除cookie
         /// </summary>

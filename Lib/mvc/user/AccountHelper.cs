@@ -88,17 +88,16 @@ namespace Lib.mvc.user
     public class LoginStatus : IRequiresSessionState
     {
         private readonly CookieTokenEncryption _CookieTokenEncryption;
-
         //COOKIE
-        public string COOKIE_LOGIN_UID { get; private set; }
+        private readonly string COOKIE_LOGIN_UID;
         //TOKEN
-        public string COOKIE_LOGIN_TOKEN { get; private set; }
+        private readonly string COOKIE_LOGIN_TOKEN;
         //SESSION
-        public string LOGIN_USER_SESSION { get; private set; }
+        private readonly string LOGIN_USER_SESSION;
         //DOMAIN
-        public string COOKIE_DOMAIN { get; private set; }
+        private readonly string COOKIE_DOMAIN;
         //cookie过期的时间
-        public int CookieExpiresMinutes { get; private set; }
+        private readonly int CookieExpiresMinutes;
 
         public LoginStatus() : this("USER_UID", "USER_TOKEN", "LOGIN_USER_SESSION", ConfigHelper.Instance.CookieDomain)
         { }
@@ -125,23 +124,23 @@ namespace Lib.mvc.user
             this._CookieTokenEncryption = _CookieTokenEncryption ?? new DefaultCookieTokenEncryption();
         }
 
-        /// <summary>
-        /// 获取用户cookie的登陆账号和密码
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
         public string GetCookieUID(HttpContext context = null)
         {
-            context = GetContext(context);
+            context = this.GetContext(context);
 
-            return CookieHelper.GetCookie(context, COOKIE_LOGIN_UID);
+            return CookieHelper.GetCookie(context, this.COOKIE_LOGIN_UID);
+        }
+
+        public string GetCookieTokenRaw(HttpContext context = null)
+        {
+            context = this.GetContext(context);
+
+            return CookieHelper.GetCookie(context, this.COOKIE_LOGIN_TOKEN);
         }
 
         public string GetCookieToken(HttpContext context = null)
         {
-            context = GetContext(context);
-
-            var data = CookieHelper.GetCookie(context, COOKIE_LOGIN_TOKEN);
+            var data = this.GetCookieTokenRaw(context);
             if (!ValidateHelper.IsPlumpString(data))
             {
                 return string.Empty;
@@ -150,77 +149,65 @@ namespace Lib.mvc.user
             return this._CookieTokenEncryption.Decrypt(data);
         }
 
-        /// <summary>
-        /// 登陆信息保存到session和cookie
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="loginuser"></param>
-        /// <returns></returns>
         public void SetUserLogin(HttpContext context = null, LoginUserInfo loginuser = null)
         {
-            context = GetContext(context);
+            context = this.GetContext(context);
             if (loginuser == null) { throw new Exception("登陆状态为空"); }
-            if (CookieExpiresMinutes <= 0) { throw new Exception("cookie过期时间必须大于0，请修改配置"); }
+            if (this.CookieExpiresMinutes <= 0) { throw new Exception("cookie过期时间必须大于0，请修改配置"); }
 
             if (!ValidateHelper.IsPlumpString(loginuser.UserID))
             {
-                throw new Exception("记录登录状态失败，缺少userid");
+                throw new Exception($"记录登录状态失败，缺少{nameof(loginuser.UserID)}");
             }
             if (!ValidateHelper.IsPlumpString(loginuser.LoginToken))
             {
-                throw new Exception("记录登录状态失败，缺少token");
+                throw new Exception($"记录登录状态失败，缺少{nameof(loginuser.LoginToken)}");
             }
 
             //保存到session
-            SessionHelper.SetSession(context.Session, LOGIN_USER_SESSION, loginuser);
+            SessionHelper.SetSession(context.Session, this.LOGIN_USER_SESSION, loginuser);
             //保存到cookie
             if (this.GetCookieUID() != loginuser.UserID)
             {
-                CookieHelper.SetCookie(context, COOKIE_LOGIN_UID, loginuser.UserID, domain: COOKIE_DOMAIN,
-                        expires_minutes: CookieExpiresMinutes);
+                CookieHelper.SetCookie(context, this.COOKIE_LOGIN_UID, loginuser.UserID,
+                    domain: this.COOKIE_DOMAIN,
+                    expires_minutes: this.CookieExpiresMinutes);
             }
             if (this.GetCookieToken() != loginuser.LoginToken)
             {
                 var data = this._CookieTokenEncryption.Encrypt(loginuser.LoginToken);
-                CookieHelper.SetCookie(context, COOKIE_LOGIN_TOKEN, data, domain: COOKIE_DOMAIN,
-                    expires_minutes: CookieExpiresMinutes);
+
+                CookieHelper.SetCookie(context, this.COOKIE_LOGIN_TOKEN, data,
+                    domain: this.COOKIE_DOMAIN,
+                    expires_minutes: this.CookieExpiresMinutes);
             }
         }
 
-        /// <summary>
-        /// 退出登录
-        /// </summary>
-        /// <param name="context"></param>
         public void SetUserLogout(HttpContext context = null)
         {
-            context = GetContext(context);
+            context = this.GetContext(context);
 
-            SessionHelper.RemoveSession(context.Session, LOGIN_USER_SESSION);
+            SessionHelper.RemoveSession(context.Session, this.LOGIN_USER_SESSION);
             //清空其他cookie操作
             //CookieHelper.RemoveResponseCookies(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN });
-            if (ValidateHelper.IsPlumpString(this.GetCookieToken()))
+            if (ValidateHelper.IsPlumpString(this.GetCookieTokenRaw()))
             {
-                CookieHelper.RemoveCookie(context, new string[] { this.COOKIE_LOGIN_TOKEN }, domain: this.COOKIE_DOMAIN);
+                CookieHelper.RemoveCookie(context, this.COOKIE_LOGIN_TOKEN, domain: this.COOKIE_DOMAIN);
             }
             if (ValidateHelper.IsPlumpString(this.GetCookieUID()))
             {
-                CookieHelper.RemoveCookie(context, new string[] { this.COOKIE_LOGIN_UID }, domain: this.COOKIE_DOMAIN);
+                CookieHelper.RemoveCookie(context, this.COOKIE_LOGIN_UID, domain: this.COOKIE_DOMAIN);
             }
         }
 
-        /// <summary>
-        /// 获取用户登录实例
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
         [Obsolete("即将失效")]
         public LoginUserInfo GetLoginUser(HttpContext context = null)
         {
-            context = GetContext(context);
+            context = this.GetContext(context);
 
             var model = SessionHelper.GetSession<LoginUserInfo>(context.Session, LOGIN_USER_SESSION);
-            var cookie_uid = GetCookieUID(context);
-            var cookie_token = GetCookieToken(context);
+            var cookie_uid = this.GetCookieUID(context);
+            var cookie_token = this.GetCookieToken(context);
 
             if (model != null && model.UserID == cookie_uid && model.LoginToken == cookie_token)
             {
@@ -229,12 +216,11 @@ namespace Lib.mvc.user
             return null;
         }
 
-        /// <summary>
-        /// 获取上下文
-        /// </summary>
-        /// <returns></returns>
         private HttpContext GetContext(HttpContext _context) => Com.TryGetContext(_context);
     }
+
+    public static class LoginStatusExtension
+    { }
 
     /// <summary>
     /// 登录状态存取工厂

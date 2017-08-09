@@ -25,7 +25,7 @@ namespace WebCore.MvcLib.Controller
         {
             //自动登录还有问题
             //AutoLoginSSO();
-            AutoLogin();
+            //AutoLogin();
 
             //加载数据库option
             LoadSettings();
