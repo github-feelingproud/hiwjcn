@@ -14,6 +14,9 @@ using Autofac;
 
 namespace Lib.data
 {
+    public static class EFHelper
+    { }
+
     /// <summary>
     /// EF的帮助类
     /// </summary>

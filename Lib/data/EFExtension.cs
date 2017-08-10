@@ -112,7 +112,19 @@ namespace Lib.data
         /// <returns></returns>
         public static IQueryable<T> AsNoTrackingQueryable<T>(this DbSet<T> set) where T : class
         {
-            return set.AsNoTracking().AsQueryable();
+            return set.AsQueryableTrackingOrNot(false);
+        }
+
+        public static IQueryable<T> AsQueryableTrackingOrNot<T>(this DbSet<T> set, bool tracking) where T : class
+        {
+            if (tracking)
+            {
+                return set.AsQueryable();
+            }
+            else
+            {
+                return set.AsNoTracking().AsQueryable();
+            }
         }
 
         /// <summary>
