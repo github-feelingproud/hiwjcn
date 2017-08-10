@@ -128,7 +128,8 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(loginuser.msg);
                 }
-                var scopeslist = scope?.JsonToEntity<List<string>>();
+                var scopeslist = ConvertHelper.NotNullList(scope?.JsonToEntity<List<string>>());
+                scopeslist = scopeslist.Where(x => ValidateHelper.IsPlumpString(x)).ToList();
                 if (!ValidateHelper.IsPlumpList(scopeslist))
                 {
                     scopeslist = (await this._AuthScopeRepository.GetListAsync(null)).Select(x => x.Name).ToList();
@@ -154,7 +155,8 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(loginuser.msg);
                 }
-                var scopeslist = scope?.JsonToEntity<List<string>>();
+                var scopeslist = ConvertHelper.NotNullList(scope?.JsonToEntity<List<string>>());
+                scopeslist = scopeslist.Where(x => ValidateHelper.IsPlumpString(x)).ToList();
                 if (!ValidateHelper.IsPlumpList(scopeslist))
                 {
                     scopeslist = (await this._AuthScopeRepository.GetListAsync(null)).Select(x => x.Name).ToList();

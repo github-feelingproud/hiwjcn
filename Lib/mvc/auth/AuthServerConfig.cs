@@ -36,6 +36,11 @@ namespace Lib.mvc.auth
         /// <summary>
         /// 获取code
         /// </summary>
+        public string CreateAuthCodeByPassword() => this.ApiPath("Auth", "AuthCodeByPassword");
+
+        /// <summary>
+        /// 获取code
+        /// </summary>
         public string CreateCodeByOneTimeCode() => this.ApiPath("Auth", "AuthCodeByOneTimeCode");
 
         /// <summary>

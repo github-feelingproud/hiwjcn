@@ -23,6 +23,30 @@ namespace Lib.mvc.auth
             this._server = _server;
         }
 
+        public async Task<_<string>> CreateAuthCodeByPassword(string client_id, List<string> scope, string username, string password)
+        {
+            var data = new _<string>();
+            var response = await client.PostAsJsonAsync(this._server.CreateAuthCodeByPassword(), new
+            {
+                client_id = client_id,
+                scope = scope?.ToJson(),
+                username = username,
+                password = password
+            });
+            using (response)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var code = json.JsonToEntity<_<string>>();
+                if (!code.success || !ValidateHelper.IsPlumpString(code.data))
+                {
+                    data.SetErrorMsg(code.msg);
+                    return data;
+                }
+                data.SetSuccessData(code.data);
+            }
+            return data;
+        }
+
         public async Task<_<string>> CreateAuthCodeByOneTimeCode(string client_id, List<string> scope, string phone, string sms)
         {
             var data = new _<string>();
