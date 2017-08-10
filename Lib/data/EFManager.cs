@@ -72,25 +72,7 @@ namespace Lib.data
                     }
                     else
                     {
-                        var sql = db.GetCreateTableScript();
-
-                        using (db.Database.Connection)
-                        {
-                            db.Database.Connection.OpenIfClosedWithRetry();
-                            using (var t = db.Database.Connection.StartTransaction())
-                            {
-                                try
-                                {
-                                    db.Database.Connection.Execute(sql, transaction: t);
-                                    t.Commit();
-                                }
-                                catch (Exception e)
-                                {
-                                    t.Rollback();
-                                    e.AddErrorLog("创建数据表失败，可能已经存在");
-                                }
-                            }
-                        }
+                        db.TryCreateTable();
                     }
                 }
                 return true;

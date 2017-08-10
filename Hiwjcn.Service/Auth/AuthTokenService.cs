@@ -14,6 +14,7 @@ using System.Data.Entity;
 using Lib.events;
 using System.Configuration;
 using Lib.mvc;
+using Lib.cache;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -28,6 +29,7 @@ namespace Hiwjcn.Bll.Auth
         private readonly IRepository<AuthScope> _AuthScopeRepository;
         private readonly IRepository<AuthCode> _AuthCodeRepository;
         private readonly IRepository<AuthClient> _AuthClientRepository;
+        private readonly ICacheProvider _cache;
 
         private readonly IEventPublisher _publisher;
 
@@ -37,9 +39,11 @@ namespace Hiwjcn.Bll.Auth
             IRepository<AuthTokenScope> _AuthTokenScopeRepository,
             IRepository<AuthScope> _AuthScopeRepository,
             IRepository<AuthCode> _AuthCodeRepository,
-            IRepository<AuthClient> _AuthClientRepository)
+            IRepository<AuthClient> _AuthClientRepository,
+            ICacheProvider _cache)
         {
             this._publisher = _publisher;
+            this._cache = _cache;
 
             this._AuthTokenRepository = _AuthTokenRepository;
             this._AuthTokenScopeRepository = _AuthTokenScopeRepository;
@@ -226,17 +230,28 @@ namespace Hiwjcn.Bll.Auth
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
             {
                 var token_query = db.Set<AuthToken>();
+                var token_to_delete = await token_query.Where(x => x.ClientUID == client_uid && x.UserUID == user_uid).ToListAsync();
+                if (!ValidateHelper.IsPlumpList(token_to_delete))
+                {
+                    return true;
+                }
+                var token_list = token_to_delete.Select(x => x.UID).ToList();
 
-                var token_to_delete = token_query.Where(x => x.ClientUID == client_uid && x.UserUID == user_uid);
                 token_query.RemoveRange(token_to_delete);
 
                 var scope_map_query = db.Set<AuthTokenScope>();
-                scope_map_query.RemoveRange(scope_map_query.Where(x => token_to_delete.Select(m => m.UID).Contains(x.TokenUID)));
+                scope_map_query.RemoveRange(scope_map_query.Where(x => token_list.Contains(x.TokenUID)));
 
                 if (await db.SaveChangesAsync() <= 0)
                 {
                     msg = "删除token失败";
                 }
+
+                foreach (var token in token_list)
+                {
+                    this._cache.Remove(AuthCacheKeyManager.TokenKey(token));
+                }
+
                 return true;
             });
             return msg;

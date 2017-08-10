@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Lib.extension;
 using System.Data.Entity.Infrastructure;
+using Dapper;
 
 namespace Lib.data
 {
@@ -27,14 +28,38 @@ namespace Lib.data
         /// <summary>
         /// 如果数据库不存在就创建
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="context"></param>
         public static void CreateDatabaseIfNotExist<T>(this T context) where T : DbContext
         {
             var c = ((IObjectContextAdapter)context).ObjectContext;
             if (!c.DatabaseExists())
             {
                 c.CreateDatabase();
+            }
+        }
+
+        /// <summary>
+        /// 创建表
+        /// </summary>
+        public static void TryCreateTable<T>(this T context) where T : DbContext
+        {
+            var sql = context.GetCreateTableScript();
+
+            using (context.Database.Connection)
+            {
+                context.Database.Connection.OpenIfClosedWithRetry();
+                using (var t = context.Database.Connection.StartTransaction())
+                {
+                    try
+                    {
+                        context.Database.Connection.Execute(sql, transaction: t);
+                        t.Commit();
+                    }
+                    catch (Exception e)
+                    {
+                        t.Rollback();
+                        e.AddErrorLog("创建数据表失败，可能已经存在");
+                    }
+                }
             }
         }
 
