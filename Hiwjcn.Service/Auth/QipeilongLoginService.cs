@@ -62,6 +62,28 @@ namespace Hiwjcn.Bll.Auth
             return loginuser;
         }
 
+        private bool CheckUser(UserInfo model, out string msg)
+        {
+            if (model == null)
+            {
+                msg = "用户不存在";
+                return false;
+            }
+            if (model.IsActive <= 0)
+            {
+                msg = "用户未激活";
+                return false;
+            }
+            if (model.IsRemove > 0)
+            {
+                msg = "用户被删除";
+                return false;
+            }
+
+            msg = string.Empty;
+            return true;
+        }
+
         public async Task<LoginUserInfo> LoadPermissions(LoginUserInfo model)
         {
             if (model == null)
@@ -110,9 +132,9 @@ namespace Hiwjcn.Bll.Auth
                     return data;
                 }
                 var user = await db.UserInfo.Where(x => x.UserName == phoneOrEmail).FirstOrDefaultAsync();
-                if (user == null)
+                if (!this.CheckUser(user, out var msg))
                 {
-                    data.SetErrorMsg("用户不存在");
+                    data.SetErrorMsg(msg);
                     return data;
                 }
                 var loginuser = await this.LoadPermissions(this.Parse(user));
@@ -170,7 +192,12 @@ namespace Hiwjcn.Bll.Auth
             using (var db = new QipeilongDbContext())
             {
                 var model = await db.UserInfo.Where(x => x.UserName == user_name).FirstOrDefaultAsync();
-                if (model == null || !sys_users.Contains(model.UserName) || password != "123")
+                if (!this.CheckUser(model, out var msg))
+                {
+                    data.SetErrorMsg(msg);
+                    return data;
+                }
+                if (!(sys_users.Contains(model.UserName) && password == "123"))
                 {
                     data.SetErrorMsg("账号密码错误");
                     return data;
@@ -193,10 +220,14 @@ namespace Hiwjcn.Bll.Auth
         private static string appSecret = TuhuApiHelper.appSecret;
         private static string appId = TuhuApiHelper.appId;
         private static string appUrl = TuhuApiHelper.appUrl;
-
-
+        
         public async Task<_<LoginUserInfo>> TuhuDMUserLogin(string username, string password)
         {
+            if (!ValidateHelper.IsAllPlumpString(appSecret, appId, appUrl))
+            {
+                throw new Exception("请配置tuhu api访问密钥");
+            }
+
             var data = new _<LoginUserInfo>();
 
             string url = appUrl + "/shop/GetQplUserInfoAsync";
