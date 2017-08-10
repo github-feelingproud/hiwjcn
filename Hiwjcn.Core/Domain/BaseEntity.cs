@@ -43,15 +43,18 @@ namespace Model
         [Column(nameof(IID))]
         public virtual long IID { get; set; }
 
-        [Required]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "UID必填")]
+        [Required]
         [Index(IsUnique = true), Column(nameof(UID))]
         public virtual string UID { get; set; }
 
+        [Index(IsUnique = false)]
         public virtual int IsRemove { get; set; }
 
+        [Index(IsUnique = false)]
         public virtual DateTime CreateTime { get; set; }
 
+        [Index(IsUnique = false)]
         public virtual DateTime UpdateTime { get; set; }
 
         /// <summary>

@@ -4,6 +4,11 @@
     this.SetTitle("编辑Scope");
 }
 
+<div class="alert alert-info">
+    <span class="fa fa-info-circle"></span>
+    <span>name无法修改</span>
+</div>
+
 <div class="panel panel-default">
     <div class="panel-heading">编辑Scope</div>
     <div class="panel-body">
@@ -68,6 +73,11 @@
                                 </select>
                                 <span class="input-group-addon">是否是默认权限</span>
                                 <select class="form-control" name="IsDefault" data-value="@(m.IsDefault)">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                                <span class="input-group-addon">禁用</span>
+                                <select class="form-control" name="IsRemove" data-value="@(m.IsRemove)">
                                     <option value="1">是</option>
                                     <option value="0">否</option>
                                 </select>

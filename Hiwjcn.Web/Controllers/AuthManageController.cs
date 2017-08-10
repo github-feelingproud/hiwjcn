@@ -298,118 +298,20 @@ namespace Hiwjcn.Web.Controllers
 
                 if (!await this._AuthScopeRepository.ExistAsync(null))
                 {
-                    var list = new List<AuthScope>()
+                    var model = new AuthScope()
                     {
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="order",
-                            DisplayName="订单",
-                            Description="订单",
-                            Important=(int)YesOrNoEnum.是,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="product",
-                            DisplayName="商品",
-                            Description="商品",
-                            Important=(int)YesOrNoEnum.否,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="user",
-                            DisplayName="个人信息",
-                            Description="个人信息",
-                            Important=(int)YesOrNoEnum.否,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="auth",
-                            DisplayName="auth",
-                            Description="auth",
-                            Important=(int)YesOrNoEnum.是,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthScope()
-                        {
-                            UID=Com.GetUUID(),
-                            Name="inquiry",
-                            DisplayName="询价单",
-                            Description="询价单",
-                            Important=(int)YesOrNoEnum.否,
-                            Sort=0,
-                            IsDefault=(int)YesOrNoEnum.是,
-                            ImageUrl="http://www.baidu.com/logo.png",
-                            FontIcon="",
-                            CreateTime=now,
-                            UpdateTime=now
-                        }
+                        Name = "all",
+                        DisplayName = "全部权限",
+                        Description = "全部权限",
+                        Important = (int)YesOrNoEnum.是,
+                        Sort = 0,
+                        IsDefault = (int)YesOrNoEnum.是,
+                        ImageUrl = "http://images.qipeilong.cn/ico/logo.png?t=111",
+                        FontIcon = "fa fa-star"
                     };
+                    model.Init();
 
-                    await this._AuthScopeRepository.AddAsync(list.ToArray());
-                }
-
-                if (!await this._AuthClientRepository.ExistAsync(null))
-                {
-                    var list = new List<AuthClient>()
-                    {
-                        new AuthClient()
-                        {
-                            UID=Com.GetUUID(),
-                            ClientName="汽配龙IOS客户端",
-                            Description="汽配龙IOS客户端",
-                            ClientUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
-                            LogoUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
-                            UserUID="http://www.baidu.com/",
-                            ClientSecretUID=Com.GetUUID(),
-                            IsRemove=(int)YesOrNoEnum.否,
-                            IsActive=(int)YesOrNoEnum.是,
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                        new AuthClient()
-                        {
-                            UID=Com.GetUUID(),
-                            ClientName="汽配龙Android客户端",
-                            Description="汽配龙Android客户端",
-                            ClientUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
-                            LogoUrl="http://images.qipeilong.cn/ico/logo.png?t=111",
-                            UserUID="http://www.baidu.com/",
-                            ClientSecretUID=Com.GetUUID(),
-                            IsRemove=(int)YesOrNoEnum.否,
-                            IsActive=(int)YesOrNoEnum.是,
-                            CreateTime=now,
-                            UpdateTime=now
-                        },
-                    };
-
-                    await this._AuthClientRepository.AddAsync(list.ToArray());
+                    await this._AuthScopeRepository.AddAsync(model);
                 }
 
                 var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
@@ -437,6 +339,7 @@ namespace Hiwjcn.Web.Controllers
                         CreateTime = now,
                         UpdateTime = now
                     };
+                    
                     await this._AuthClientRepository.AddAsync(official);
                 }
 
