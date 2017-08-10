@@ -115,6 +115,9 @@ namespace Lib.data
             return set.AsQueryableTrackingOrNot(false);
         }
 
+        /// <summary>
+        /// 获取追踪或者不追踪的查询对象
+        /// </summary>
         public static IQueryable<T> AsQueryableTrackingOrNot<T>(this DbSet<T> set, bool tracking) where T : class
         {
             if (tracking)

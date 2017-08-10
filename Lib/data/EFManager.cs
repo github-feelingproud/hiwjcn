@@ -180,15 +180,7 @@ namespace Lib.data
                 //NopCommerce:
                 //Gets a table with "no tracking" enabled (EF feature) 
                 //Use it only when you load record(s) only for read-only operations
-                IQueryable<T> query = null;
-                if (track)
-                {
-                    query = session.Set<T>().AsQueryable();
-                }
-                else
-                {
-                    query = session.Set<T>().AsNoTrackingQueryable();
-                }
+                var query = session.Set<T>().AsQueryableTrackingOrNot(track);
                 return callback.Invoke(query);
             });
         }
@@ -202,15 +194,7 @@ namespace Lib.data
                 //NopCommerce:
                 //Gets a table with "no tracking" enabled (EF feature) 
                 //Use it only when you load record(s) only for read-only operations
-                IQueryable<T> query = null;
-                if (track)
-                {
-                    query = session.Set<T>().AsQueryable();
-                }
-                else
-                {
-                    query = session.Set<T>().AsNoTracking();
-                }
+                var query = session.Set<T>().AsQueryableTrackingOrNot(track);
                 return await callback.Invoke(query);
             });
         }
