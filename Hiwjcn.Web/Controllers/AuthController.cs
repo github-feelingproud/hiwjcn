@@ -142,5 +142,31 @@ namespace Hiwjcn.Web.Controllers
                 return GetJson(new _() { success = true, data = code.data?.UID });
             });
         }
+
+        [HttpPost]
+        [RequestLog]
+        public async Task<ActionResult> AuthCodeByPassword(string client_id, string scope, string username, string password)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var loginuser = await this._IAuthLoginService.LoginByPassword(username, password);
+                if (ValidateHelper.IsPlumpString(loginuser.msg))
+                {
+                    return GetJsonRes(loginuser.msg);
+                }
+                var scopeslist = scope?.JsonToEntity<List<string>>();
+                if (!ValidateHelper.IsPlumpList(scopeslist))
+                {
+                    scopeslist = (await this._AuthScopeRepository.GetListAsync(null)).Select(x => x.Name).ToList();
+                }
+
+                var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
+                if (ValidateHelper.IsPlumpString(code.msg))
+                {
+                    return GetJsonRes(code.msg);
+                }
+                return GetJson(new _() { success = true, data = code.data?.UID });
+            });
+        }
     }
 }

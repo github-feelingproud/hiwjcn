@@ -77,6 +77,12 @@ namespace Hiwjcn.Web
                     //加速首次启动EF
                     //EFManager.SelectDB(null).FastStart();
                     EFManager.FastStart<EntityDB>();
+
+                    {
+                        //汽配龙数据库
+                        EFManager.FastStart<Core.Data.QipeilongDbContext>();
+                    }
+
                     EFManager.TryInstallDatabase();
 
                     start_up_task = Task.Run(() =>

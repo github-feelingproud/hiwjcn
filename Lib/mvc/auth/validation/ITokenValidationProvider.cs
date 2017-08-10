@@ -80,7 +80,7 @@ namespace Lib.mvc.auth.validation
                     $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
                     return null;
                 }
-                return data.data ?? throw new Exception("服务器返回数据为空-769876");
+                return data.data;
             }
             catch (Exception e)
             {

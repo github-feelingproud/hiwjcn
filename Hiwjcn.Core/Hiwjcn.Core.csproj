@@ -96,6 +96,7 @@
     <Compile Include="Data\Common\UpFileDal.cs" />
     <Compile Include="Data\EntityDB.cs" />
     <Compile Include="Data\Page\SectionDal.cs" />
+    <Compile Include="Data\QPLEntityDB.cs" />
     <Compile Include="Data\Tag\TagDal.cs" />
     <Compile Include="Data\Tag\TagMapDal.cs" />
     <Compile Include="Data\User\IUserDal.cs" />

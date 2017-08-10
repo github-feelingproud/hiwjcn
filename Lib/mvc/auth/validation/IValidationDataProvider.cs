@@ -8,9 +8,19 @@ using Lib.mvc.auth;
 using Lib.mvc.user;
 using System.Configuration;
 using Lib.extension;
+using Lib.helper;
 
 namespace Lib.mvc.auth.validation
 {
+    public static class WebClientConfig
+    {
+        private static readonly Lazy<string> id = new Lazy<string>(() => ConfigurationManager.AppSettings["auth.client_id"]?.ToMD5()?.ToLower());
+        private static readonly Lazy<string> security = new Lazy<string>(() => ConfigurationManager.AppSettings["auth.client_security"]?.ToMD5()?.ToLower());
+
+        public static string ClientID() => id.Value;
+        public static string ClientSecurity() => security.Value;
+    }
+
     /// <summary>
     /// 获取token和client 信息的渠道
     /// </summary>
@@ -56,21 +66,53 @@ namespace Lib.mvc.auth.validation
             this._LoginStatus = _LoginStatus;
         }
 
-        public string GetClientID(HttpContext context)
-        {
-            var data = ConfigurationManager.AppSettings["auth.client_id"];
-            return data?.ToMD5();
-        }
+        public string GetClientID(HttpContext context) => WebClientConfig.ClientID();
 
-        public string GetClientSecurity(HttpContext context)
-        {
-            var data = ConfigurationManager.AppSettings["auth.client_security"];
-            return data?.ToMD5();
-        }
+        public string GetClientSecurity(HttpContext context) => WebClientConfig.ClientSecurity();
 
         public string GetToken(HttpContext context)
         {
             return this._LoginStatus.GetCookieToken();
+        }
+    }
+
+    public class AppOrWebTokenProvider : IValidationDataProvider
+    {
+        public readonly LoginStatus _loginstatus;
+
+        public AppOrWebTokenProvider(LoginStatus _loginstatus)
+        {
+            this._loginstatus = _loginstatus;
+        }
+
+        public string GetClientID(HttpContext context)
+        {
+            var client_id = context.GetAuthClientID();
+            if (!ValidateHelper.IsPlumpString(client_id))
+            {
+                client_id = WebClientConfig.ClientID();
+            }
+            return client_id;
+        }
+
+        public string GetClientSecurity(HttpContext context)
+        {
+            var client_security = context.GetAuthClientSecurity();
+            if (!ValidateHelper.IsPlumpString(client_security))
+            {
+                client_security = WebClientConfig.ClientSecurity();
+            }
+            return client_security;
+        }
+
+        public string GetToken(HttpContext context)
+        {
+            var token = context.GetAuthToken();
+            if (!ValidateHelper.IsPlumpString(token))
+            {
+                token = this._loginstatus.GetCookieToken(context);
+            }
+            return token;
         }
     }
 }
