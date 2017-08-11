@@ -31,6 +31,18 @@ namespace Lib.mvc.user
         public string Scope { get; set; }
 
         /// <summary>
+        /// 获取登录用户
+        /// </summary>
+        protected virtual LoginUserInfo GetLoginUser(ActionExecutingContext filterContext)
+        {
+            var context = HttpContext.Current;
+
+            var loginuser = context.GetAuthUser();
+
+            return loginuser;
+        }
+
+        /// <summary>
         /// 没有登录的时候调用
         /// </summary>
         /// <param name="filterContext"></param>
@@ -48,9 +60,7 @@ namespace Lib.mvc.user
         /// <param name="filterContext"></param>
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var context = HttpContext.Current;
-
-            var loginuser = context.GetAuthUser();
+            var loginuser = this.GetLoginUser(filterContext);
 
             //检查登录
             if (loginuser == null)

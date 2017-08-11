@@ -11,11 +11,6 @@ using System.Threading.Tasks;
 
 namespace Lib.data
 {
-    /// <summary>
-    /// 标准sql中使用groupby需要有聚合函数（mysql除外），所以没有封装。
-    /// 如果使用groupby查询请手写session或者iqueryable查询
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
     public partial class EFRepository<T> : EFRepositoryBase<T> where T : class, IDBTable
     {
         public EFManager _EFManager { get; private set; }
@@ -92,6 +87,45 @@ namespace Lib.data
         public override async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
         {
             using (var db = this.GetContext.Invoke())
+            {
+                await callback.Invoke(db);
+            }
+        }
+    }
+
+    public class EFRepositoryFromContext<T, Context> : EFRepositoryBase<T>
+        where T : class, IDBTable
+        where Context : DbContext, new()
+    {
+        public override void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
+        {
+            using (var db = new Context())
+            {
+                var query = db.Set<T>().AsQueryableTrackingOrNot(track);
+                callback.Invoke(query);
+            }
+        }
+
+        public override async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
+        {
+            using (var db = new Context())
+            {
+                var query = db.Set<T>().AsQueryableTrackingOrNot(track);
+                await callback.Invoke(query);
+            }
+        }
+
+        public override void PrepareSession(Func<DbContext, bool> callback)
+        {
+            using (var db = new Context())
+            {
+                callback.Invoke(db);
+            }
+        }
+
+        public override async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        {
+            using (var db = new Context())
             {
                 await callback.Invoke(db);
             }
