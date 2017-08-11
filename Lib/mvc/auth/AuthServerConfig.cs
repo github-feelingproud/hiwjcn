@@ -21,7 +21,7 @@ namespace Lib.mvc.auth
             this.ServerUrl = ConvertHelper.GetString(host);
             if (!ValidateHelper.IsPlumpString(this.ServerUrl))
             {
-                throw new Exception("请配置auth服务器");
+                throw new Exception("auth服务器地址不能为空");
             }
 
             var cp = this.ServerUrl.ToLower();
