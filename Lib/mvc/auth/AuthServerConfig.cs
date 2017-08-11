@@ -14,7 +14,7 @@ namespace Lib.mvc.auth
 {
     public class AuthServerConfig
     {
-        public string ServerUrl { get; private set; }
+        public readonly string ServerUrl;
 
         public AuthServerConfig(string host)
         {
