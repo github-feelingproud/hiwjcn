@@ -14,91 +14,15 @@ using Autofac;
 
 namespace Lib.data
 {
-    public static class EFHelper
-    { }
-
     /// <summary>
     /// EF的帮助类
     /// </summary>
-    public class EFManager
+    public partial class EFManager
     {
+        private readonly string db_name;
         public EFManager(string name)
         {
             this.db_name = name;
-        }
-        private string db_name { get; set; } = "db";
-        public static EFManager SelectDB(string name = null)
-        {
-            return new EFManager(name);
-        }
-
-        #region 静态方法
-        /// <summary>
-        /// 取消EF首次访问数据库的System.Data.Entity.CreateDatabaseIfNotExists策略
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="db"></param>
-        public static void SetNoInitializer<T>(T db) where T : DbContext
-        {
-            SetNoInitializer<T>();
-        }
-        public static void SetNoInitializer<T>() where T : DbContext
-        {
-            var type = typeof(T);
-            Database.SetInitializer<T>(new NullDatabaseInitializer<T>());
-        }
-
-        public static void FastStart<T>() where T : DbContext, new()
-        {
-            SetNoInitializer<T>();
-            using (var db = new T())
-            {
-                var objectContext = ((IObjectContextAdapter)db).ObjectContext;
-                var mappingCollection = (StorageMappingItemCollection)objectContext.MetadataWorkspace.GetItemCollection(DataSpace.CSSpace);
-                mappingCollection.GenerateViews(new List<EdmSchemaError>());
-            }
-        }
-
-        /// <summary>
-        /// 尝试创建数据表
-        /// </summary>
-        public static void TryInstallDatabase()
-        {
-            AppContext.Scope(x =>
-            {
-                using (var db = EFManager.SelectDB("db").GetDbContext(x))
-                {
-                    var switcher = false;
-                    if (switcher)
-                    {
-                        db.CreateDatabaseIfNotExist();
-                    }
-                    else
-                    {
-                        db.TryCreateTable();
-                    }
-                }
-                return true;
-            });
-        }
-        #endregion
-
-        /// <summary>
-        /// 加速首次启动 
-        /// </summary>
-        [Obsolete("不要用")]
-        public void FastStart()
-        {
-            //Database.SetInitializer<EntityDB>(null);
-            PrepareSession(db =>
-            {
-                SetNoInitializer(db);
-
-                var objectContext = ((IObjectContextAdapter)db).ObjectContext;
-                var mappingCollection = (StorageMappingItemCollection)objectContext.MetadataWorkspace.GetItemCollection(DataSpace.CSSpace);
-                mappingCollection.GenerateViews(new List<EdmSchemaError>());
-                return true;
-            });
         }
 
         /// <summary>
@@ -199,5 +123,52 @@ namespace Lib.data
             });
         }
 
+    }
+
+    partial class EFManager
+    {
+        /// <summary>
+        /// 取消EF首次访问数据库的System.Data.Entity.CreateDatabaseIfNotExists策略
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="db"></param>
+        public static void SetNoInitializer<T>(T db) where T : DbContext, new()
+        {
+            SetNoInitializer<T>();
+        }
+        public static void SetNoInitializer<T>() where T : DbContext, new()
+        {
+            Database.SetInitializer<T>(new NullDatabaseInitializer<T>());
+        }
+
+        public static void FastStart<T>() where T : DbContext, new()
+        {
+            SetNoInitializer<T>();
+            using (var db = new T())
+            {
+                var objectContext = ((IObjectContextAdapter)db).ObjectContext;
+                var mappingCollection = (StorageMappingItemCollection)objectContext.MetadataWorkspace.GetItemCollection(DataSpace.CSSpace);
+                mappingCollection.GenerateViews(new List<EdmSchemaError>());
+            }
+        }
+
+        /// <summary>
+        /// 尝试创建数据表
+        /// </summary>
+        public static void TryInstallDatabase<T>() where T : DbContext, new()
+        {
+            using (var db = new T())
+            {
+                var switcher = false;
+                if (switcher)
+                {
+                    db.CreateDatabaseIfNotExist();
+                }
+                else
+                {
+                    db.TryCreateTable();
+                }
+            }
+        }
     }
 }

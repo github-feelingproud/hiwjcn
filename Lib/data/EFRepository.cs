@@ -23,7 +23,7 @@ namespace Lib.data
         public EFRepository() : this("db") { }
         public EFRepository(string db_name)
         {
-            this._EFManager = EFManager.SelectDB(db_name);
+            this._EFManager = new EFManager(db_name);
         }
 
         #region 获取查询上下文
@@ -48,7 +48,7 @@ namespace Lib.data
 
         #endregion
     }
-    
+
     partial class EFRepository<T>
     {
         public void TODO_PLACE_ASYNC_METHOD_IN_THIS_PARTIAL_CLASS() { }

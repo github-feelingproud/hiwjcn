@@ -56,6 +56,7 @@ namespace Lib.mvc.auth
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
+        [Obsolete("请优先使用异步方法！！！")]
         public static LoginUserInfo GetAuthUser(this HttpContext context)
         {
             var data = context.CacheInHttpContext(AuthedUserKey, () =>

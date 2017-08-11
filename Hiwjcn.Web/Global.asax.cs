@@ -83,7 +83,7 @@ namespace Hiwjcn.Web
                         EFManager.FastStart<Core.Data.QipeilongDbContext>();
                     }
 
-                    EFManager.TryInstallDatabase();
+                    EFManager.TryInstallDatabase<EntityDB>();
 
                     start_up_task = Task.Run(() =>
                     {
