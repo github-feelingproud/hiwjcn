@@ -48,20 +48,17 @@ namespace Lib.data
 
         #endregion
     }
-
-    /// <summary>
-    /// TODO 准备把异步方法放到这个里面
-    /// </summary>
+    
     partial class EFRepository<T>
     {
-        public void TODO_PLACE_ASYNC_METHOD_TO_THIS_PARTIAL_CLASS() { }
+        public void TODO_PLACE_ASYNC_METHOD_IN_THIS_PARTIAL_CLASS() { }
     }
 
-    public class EFRepositoryX<T> : EFRepositoryBase<T> where T : class, IDBTable
+    public class EFRepositoryFromSource<T> : EFRepositoryBase<T> where T : class, IDBTable
     {
         private readonly Func<DbContext> GetContext;
 
-        public EFRepositoryX(Func<DbContext> GetContext)
+        public EFRepositoryFromSource(Func<DbContext> GetContext)
         {
             this.GetContext = GetContext ?? throw new ArgumentNullException(nameof(GetContext));
         }

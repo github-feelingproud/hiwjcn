@@ -399,11 +399,13 @@ namespace Lib.data
         {
             if (!ValidateHelper.IsPlumpList(keys)) { throw new Exception("参数为空"); }
             T model = default(T);
+
             PrepareSession(db =>
             {
                 model = db.Set<T>().Find(keys);
                 return true;
             });
+
             return model;
         }
 
@@ -535,20 +537,12 @@ namespace Lib.data
         public T GetFirst(Expression<Func<T, bool>> where)
         {
             var list = GetList(where: where, count: 1);
-            if (ValidateHelper.IsPlumpList(list))
-            {
-                return list[0];
-            }
-            return default(T);
+            return list.FirstOrDefault();
         }
         public async Task<T> GetFirstAsync(Expression<Func<T, bool>> where)
         {
             var list = await GetListAsync(where: where, count: 1);
-            if (ValidateHelper.IsPlumpList(list))
-            {
-                return list[0];
-            }
-            return default(T);
+            return list.FirstOrDefault();
         }
 
         /// <summary>
@@ -617,7 +611,7 @@ namespace Lib.data
 
         public abstract void PrepareSession(Func<DbContext, bool> callback);
         public abstract Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback);
-        
+
         #endregion
     }
 }
