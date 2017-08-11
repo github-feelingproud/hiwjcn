@@ -19,6 +19,10 @@ namespace Lib.mvc.auth
         public AuthServerConfig(string host)
         {
             this.ServerUrl = ConvertHelper.GetString(host);
+            if (!ValidateHelper.IsPlumpString(this.ServerUrl))
+            {
+                throw new Exception("请配置auth服务器");
+            }
 
             var cp = this.ServerUrl.ToLower();
             if (!(cp.StartsWith("http://") || cp.StartsWith("https://")))
