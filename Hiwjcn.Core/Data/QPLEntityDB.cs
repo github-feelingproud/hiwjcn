@@ -27,7 +27,8 @@ namespace Hiwjcn.Core.Data
     [DbConfigurationType(typeof(QPLSqlServerConfiguration))]
     public class QipeilongDbContext : BaseEFContext
     {
-        public QipeilongDbContext() : base(ConfigurationManager.ConnectionStrings["db_parties"]?.ConnectionString)
+        public QipeilongDbContext() : base(ConfigurationManager.ConnectionStrings["db_parties"]?.ConnectionString
+            ?? throw new Exception("请配置parties数据库链接字符串"))
         {
             this.Configuration.LazyLoadingEnabled = false;
             this.Configuration.ValidateOnSaveEnabled = false;

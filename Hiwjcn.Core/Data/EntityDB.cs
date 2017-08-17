@@ -20,6 +20,7 @@ using Hiwjcn.Core.Domain.Auth;
 using System.Data.Entity.SqlServer;
 using System.Configuration;
 using System.Reflection;
+using System;
 
 namespace Hiwjcn.Dal
 {
@@ -142,7 +143,8 @@ namespace Hiwjcn.Dal
 #endif
     public class EntityDB : BaseEFContext
     {
-        public EntityDB() : base(ConfigurationManager.ConnectionStrings["db"]?.ConnectionString)
+        public EntityDB() : base(ConfigurationManager.ConnectionStrings["db"]?.ConnectionString
+            ?? throw new Exception("请配置db数据库链接字符串"))
         {
             this.Configuration.LazyLoadingEnabled = false;
             this.Configuration.ValidateOnSaveEnabled = false;
