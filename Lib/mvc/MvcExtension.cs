@@ -180,9 +180,10 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="controller"></param>
         /// <returns></returns>
-        public static List<string> ScanAllAssignedPermissionOnThisAssembly(this Controller controller)
+        public static (List<string> permissions, List<string> scopes) ScanAllAssignedPermissionOnThisAssembly(this Controller controller)
         {
-            var list = new List<string>();
+            var permission_list = new List<string>();
+            var scope_list = new List<string>();
             var tps = controller.GetType().Assembly.GetTypes();
             tps = tps.Where(x => x.IsNormalClass() && x.IsAssignableTo_<Controller>()).ToArray();
             foreach (var t in tps)
@@ -195,11 +196,19 @@ namespace Lib.mvc
                     var pers = attr.Permission?.Split(',').ToList();
                     if (ValidateHelper.IsPlumpList(pers))
                     {
-                        list.AddRange(pers);
+                        permission_list.AddRange(pers);
+                    }
+                    var scopes = attr.Scope?.Split(',').ToList();
+                    if (ValidateHelper.IsPlumpList(scopes))
+                    {
+                        scope_list.AddRange(scopes);
                     }
                 }
             }
-            return list.Distinct().Where(x => ValidateHelper.IsPlumpString(x)).ToList();
+            permission_list = permission_list.Distinct().Where(x => ValidateHelper.IsPlumpString(x)).ToList();
+            scope_list = scope_list.Distinct().Where(x => ValidateHelper.IsPlumpString(x)).ToList();
+
+            return (permission_list, scope_list);
         }
     }
 }

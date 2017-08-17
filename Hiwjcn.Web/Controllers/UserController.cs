@@ -52,8 +52,8 @@ namespace Hiwjcn.Web.Controllers
 
         public ActionResult AllPers()
         {
-            var pers = this.ScanAllAssignedPermissionOnThisAssembly();
-            return GetJson(pers);
+            var data = this.ScanAllAssignedPermissionOnThisAssembly();
+            return GetJson(new { permissions = data.permissions, scopes = data.scopes });
         }
 
         /// <summary>
