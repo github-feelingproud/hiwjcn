@@ -47,7 +47,7 @@ namespace Hiwjcn.Bll.Auth
                 UserName = model.UserName,
                 NickName = model.ShopName,
                 HeadImgUrl = model.Images,
-                IsActive = model.IsActive ?? 0,
+                IsActive = model.IsActive ?? (int)YesOrNoEnum.否,
                 IsValid = true,
                 LoginToken = "please load auth token"
             };
@@ -165,11 +165,11 @@ namespace Hiwjcn.Bll.Auth
 
                 db.Sms.Add(model);
 
-                if (await db.SaveChangesAsync() <= 0)
+                if (await db.SaveChangesAsync() > 0)
                 {
-                    return "发送验证码失败";
+                    return string.Empty;
                 }
-                return string.Empty;
+                throw new Exception("保存验证码失败");
             }
         }
 
@@ -220,7 +220,7 @@ namespace Hiwjcn.Bll.Auth
         private static string appSecret = TuhuApiHelper.appSecret;
         private static string appId = TuhuApiHelper.appId;
         private static string appUrl = TuhuApiHelper.appUrl;
-        
+
         public async Task<_<LoginUserInfo>> TuhuDMUserLogin(string username, string password)
         {
             if (!ValidateHelper.IsAllPlumpString(appSecret, appId, appUrl))
@@ -469,6 +469,7 @@ namespace Hiwjcn.Bll.Auth
 
     }
 
+    [Serializable]
     public class QplUserInfoModel
     {
         public string Address { get; set; }
