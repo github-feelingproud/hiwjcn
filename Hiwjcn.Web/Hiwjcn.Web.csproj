@@ -285,6 +285,7 @@
     <Content Include="Static\image\moren.png" />
     <Content Include="Static\image\no_data.png" />
     <Content Include="Static\image\weixin_qr.jpg" />
+    <Content Include="Static\vue.html" />
     <Content Include="ui\boot-theme\flatly\bootstrap.css" />
     <Content Include="ui\boot-theme\flatly\bootstrap.min.css" />
     <Content Include="ui\bootstrap\css\bootstrap-theme.min.css" />
