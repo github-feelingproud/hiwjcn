@@ -10,9 +10,11 @@ namespace WebLogic.Model.User
     public class LoginErrorLogModel : BaseEntity
     {
         public virtual string LoginKey { get; set; }
-        
+
         public virtual string LoginPwd { get; set; }
-        
+
         public virtual string LoginIP { get; set; }
+
+        public virtual string ErrorMsg { get; set; }
     }
 }

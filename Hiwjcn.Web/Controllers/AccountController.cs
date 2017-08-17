@@ -72,6 +72,7 @@ namespace Hiwjcn.Web.Controllers
                     LoginKey = user_name,
                     LoginPwd = password,
                     LoginIP = this.X.IP,
+                    ErrorMsg = res
                 };
                 var logres = await this._LoginErrorLogBll.AddLoginErrorLog(errinfo);
                 if (ValidateHelper.IsPlumpString(logres))
