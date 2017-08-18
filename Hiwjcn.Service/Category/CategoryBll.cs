@@ -5,6 +5,7 @@ using Model.Category;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lib.extension;
 
 namespace Bll.Category
 {
@@ -166,6 +167,55 @@ namespace Bll.Category
                 SuccessIDSList = SuccessIDSList.Distinct().ToList();
             }
             return success;
+        }
+
+        private bool NodeCanFindRoot(List<CategoryModel> list, ref List<string> SuccessIDSList)
+        {
+            foreach (var node in list)
+            {
+                //临时存放id
+                var CurrentNodeID = node.UID;
+                int CurrentLevel = node.CategoryLevel;
+                var CurrentParent = node.CategoryParent;
+                var CurrentNode = default(CategoryModel);
+                //历遍过的ID
+                var handleredIDS = new List<string>();
+                //从这个节点一直向上到，直到找到第一级
+                while ((CurrentNode = list.Where(x => x.UID == CurrentNodeID).FirstOrDefault()) != null)
+                {
+                    //标记已经处理过的节点
+                    if (handleredIDS.Contains(CurrentNode.UID))
+                    {
+                        $"树存在死循环,type:{CurrentNode.CategoryType}".AddErrorLog("树存在死循环");
+                        return false;
+                    }
+
+                    //获取层级
+                    CurrentLevel = CurrentNode.CategoryLevel;
+                    //获取父级
+                    CurrentParent = CurrentNode.CategoryParent;
+
+                    //如果这个节点已经处理过说明死循环了，立即退出
+                    handleredIDS.Add(CurrentNode.UID);
+
+                    //下一个循环
+                    CurrentNodeID = CurrentNode.CategoryParent;
+                }
+                //如果最后一个节点是第一层并且父级是默认就表示节点无错误
+                bool success = CurrentLevel == CategoryBll.FIRST_LEVEL && CurrentParent == CategoryBll.FIRST_PARENT;
+                //如果是正确的树结构就添加到成功列表
+                if (success)
+                {
+                    SuccessIDSList.AddRange(handleredIDS);
+                }
+                else
+                {
+                    $"树不完整,type:{CurrentNode.CategoryType}".AddErrorLog("树不完整");
+                    return false;
+                }
+            }
+            SuccessIDSList = SuccessIDSList.Distinct().ToList();
+            return true;
         }
 
         /// <summary>
