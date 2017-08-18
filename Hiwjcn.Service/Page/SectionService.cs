@@ -25,35 +25,6 @@ namespace WebLogic.Bll.Page
             this._PageRepository = page;
         }
 
-        public override string CheckModel(SectionModel model)
-        {
-            if (model == null)
-            {
-                return "对象为空";
-            }
-            if (!ValidateHelper.IsPlumpString(model.SectionName))
-            {
-                return "内容块名称不能为空";
-            }
-            if (!ValidateHelper.IsPlumpString(model.SectionTitle))
-            {
-                return "标题不能为空";
-            }
-            if (!ValidateHelper.IsPlumpString(model.SectionDescription))
-            {
-                return "描述不能为空";
-            }
-            if (!ValidateHelper.IsPlumpString(model.SectionContent))
-            {
-                return "内容不能为空";
-            }
-            if (!ValidateHelper.IsPlumpString(model.SectionType))
-            {
-                return "内容类型不能为空";
-            }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 获取内容块
         /// </summary>
@@ -113,7 +84,11 @@ namespace WebLogic.Bll.Page
             {
                 return "标识存在重复值";
             }
-            return _SectionDal.Add(model) > 0 ? SUCCESS : "添加失败";
+            if (_SectionDal.Add(model) > 0)
+            {
+                return this.SUCCESS;
+            }
+            throw new Exception("添加失败");
         }
 
         /// <summary>

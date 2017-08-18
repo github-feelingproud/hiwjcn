@@ -10,11 +10,12 @@ namespace Lib.infrastructure
     {
         string SUCCESS { get; }
 
-
         string CheckModel(T model);
 
         bool CheckModel(T model, out string msg);
 
         List<string> CheckEntity(T model);
+
+        void CustomCheckModel(ref T model, ref List<string> errors);
     }
 }

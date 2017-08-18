@@ -23,33 +23,6 @@ namespace Hiwjcn.Bll.Sys
             //
         }
 
-        public override string CheckModel(CommentModel model)
-        {
-            if (model == null) { return "评论对象为空"; }
-
-            if (!ValidateHelper.IsPlumpString(model.ThreadID))
-            {
-                return "主题ID为空";
-            }
-
-            if (!ValidateHelper.IsPlumpString(model.CommentContent))
-            {
-                return "评论内容为空";
-            }
-
-            if (model.CommentContent.Length > 1000)
-            {
-                return "超过允许的评论字符数";
-            }
-
-            if (model.UpdateTime == null)
-            {
-                model.UpdateTime = DateTime.Now;
-            }
-
-            return string.Empty;
-        }
-
         public CommentModel GetCommentByID(string id)
         {
             var _commentDal = new CommentDal();

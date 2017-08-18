@@ -42,15 +42,6 @@ namespace Hiwjcn.Bll.Auth
             throw new Exception("保存client异常");
         }
 
-        public override string CheckModel(AuthClient model)
-        {
-            if (model == null)
-            {
-                return "对象为空";
-            }
-            return base.CheckModel(model);
-        }
-
         public async Task<string> DeleteClientAsync(string client_uid, string user_uid)
         {
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);

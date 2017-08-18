@@ -24,12 +24,6 @@ namespace WebLogic.Bll.User
             this._UserRoleDal = new UserRoleDal();
         }
 
-        public override string CheckModel(UserRoleModel model)
-        {
-            if (model == null) { return "用户角色关联对象为空"; }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 添加用户角色关联
         /// </summary>

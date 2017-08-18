@@ -52,15 +52,6 @@ namespace Hiwjcn.Bll.Auth
             this._AuthClientRepository = _AuthClientRepository;
         }
 
-        public override string CheckModel(AuthToken model)
-        {
-            if (model == null)
-            {
-                return "对象为空";
-            }
-            return base.CheckModel(model);
-        }
-
         private async Task ClearOldCode(string user_uid)
         {
             var expire = DateTime.Now.AddMinutes(-CodeExpireMinutes);

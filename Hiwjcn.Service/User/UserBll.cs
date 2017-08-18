@@ -40,18 +40,7 @@ namespace Bll.User
             this._RoleDal = new RoleDal();
             this._RolePermissionDal = new RolePermissionDal();
         }
-
-        public override string CheckModel(UserModel model)
-        {
-            if (model == null) { return "对象为空"; }
-            if (!ValidateHelper.IsPlumpString(model.NickName)) { return "用户昵称不能为空"; }
-            if (!(model.Email?.IsEmail() ?? false)) { return "用户邮箱不正确"; }
-            if (!ValidateHelper.IsPlumpString(model.PassWord)) { return "用户密码为空"; }
-            if (model.Money < 0) { return "账户余额不能小于0"; }
-
-            return string.Empty;
-        }
-
+        
         /// <summary>
         /// 搜索
         /// </summary>

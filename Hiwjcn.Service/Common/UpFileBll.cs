@@ -24,14 +24,7 @@ namespace Hiwjcn.Bll.Sys
         {
             //
         }
-
-        public override string CheckModel(UpFileModel model)
-        {
-            if (model == null) { return "文件对象为空"; }
-            if (!ValidateHelper.IsPlumpString(model.FileMD5)) { return "文件唯一标识为空"; }
-            return string.Empty;
-        }
-
+        
         /// <summary>
         /// 添加文件记录
         /// </summary>

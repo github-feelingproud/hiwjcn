@@ -28,13 +28,6 @@ namespace WebLogic.Bll.User
             this._RolePermissionDal = new RolePermissionDal();
         }
 
-        public override string CheckModel(RoleModel model)
-        {
-            if (model == null) { return "角色对象为空"; }
-            if (!ValidateHelper.IsPlumpString(model.RoleName)) { return "角色名称为空"; }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 添加角色
         /// </summary>

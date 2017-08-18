@@ -24,13 +24,6 @@ namespace WebLogic.Bll.User
             this._RolePermissionDal = new RolePermissionDal();
         }
 
-        public override string CheckModel(RolePermissionModel model)
-        {
-            if (model == null) { return "角色权限关联对象为空"; }
-            if (!ValidateHelper.IsInt(model.PermissionID)) { return "权限ID为空"; }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 添加角色权限关联
         /// </summary>

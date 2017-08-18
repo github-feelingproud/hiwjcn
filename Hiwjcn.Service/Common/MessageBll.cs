@@ -17,20 +17,6 @@ namespace Bll.Sys
             //
         }
 
-        public override string CheckModel(MessageModel model)
-        {
-            if (model == null) { return "消息对象为空"; }
-            if (!ValidateHelper.IsPlumpString(model.MsgContent))
-            {
-                return "消息内容为空";
-            }
-            if (model.SenderUserID == model.ReceiverUserID)
-            {
-                return "无法给自己发送消息";
-            }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 发送消息
         /// </summary>

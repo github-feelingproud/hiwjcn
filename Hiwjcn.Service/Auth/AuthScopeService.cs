@@ -105,15 +105,6 @@ namespace Hiwjcn.Bll.Auth
             throw new MsgException("更新scope失败");
         }
 
-        public override string CheckModel(AuthScope model)
-        {
-            if (model == null)
-            {
-                return "对象为空";
-            }
-            return base.CheckModel(model);
-        }
-
         public async Task<PagerData<AuthScope>> QueryPagerAsync(string q = null, int page = 1, int pagesize = 10)
         {
             var data = new PagerData<AuthScope>();

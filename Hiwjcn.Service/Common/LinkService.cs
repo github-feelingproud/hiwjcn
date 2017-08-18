@@ -23,28 +23,6 @@ namespace Bll.Sys
             this._LinkDal = new LinkDal();
         }
 
-        public override string CheckModel(LinkModel model)
-        {
-            if (model == null) { return "对象为空"; }
-            if (!ValidateHelper.IsPlumpString(model.Name))
-            {
-                return "锚文本不能为空";
-            }
-            if (!ValidateHelper.IsPlumpString(model.Url))
-            {
-                return "链接地址不能为空";
-            }
-            if (!ValidateHelper.IsPlumpString(model.Target))
-            {
-                return "Target不能为空";
-            }
-            if (!ValidateHelper.IsPlumpString(model.LinkType))
-            {
-                return "连接类型不能为空";
-            }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 根据ID获取连接
         /// </summary>

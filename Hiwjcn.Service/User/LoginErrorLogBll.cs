@@ -17,11 +17,6 @@ namespace WebLogic.Bll.User
             this._LoginErrorLogDal = new LoginErrorLogDal();
         }
 
-        public override string CheckModel(LoginErrorLogModel model)
-        {
-            return base.CheckModel(model);
-        }
-
         /// <summary>
         /// 添加登录错误
         /// </summary>

@@ -25,11 +25,6 @@ namespace WebLogic.Bll.Sys
             //
         }
 
-        public override string CheckModel(AreaModel model)
-        {
-            return base.CheckModel(model);
-        }
-
         /// <summary>
         /// 通过父级获取子集
         /// </summary>

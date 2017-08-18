@@ -37,6 +37,8 @@ namespace WebLogic.Model.Page
         /// 描述
         /// </summary>
         [Column("section_description")]
+        [StringLength(100, ErrorMessage = "描述内容过长")]
+        [Required(ErrorMessage = "描述不能为空")]
         public virtual string SectionDescription { get; set; }
 
         /// <summary>

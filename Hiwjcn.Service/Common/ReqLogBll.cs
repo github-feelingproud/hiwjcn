@@ -19,13 +19,6 @@ namespace Hiwjcn.Bll.Sys
             //
         }
 
-        public override string CheckModel(ReqLogModel model)
-        {
-            if (model == null) { return "请求日志对象为空"; }
-            if (model.ReqTime < 0) { return "请求耗时参数错误"; }
-            return string.Empty;
-        }
-
         public string AddLog(ReqLogModel model)
         {
             var err = CheckModel(model);

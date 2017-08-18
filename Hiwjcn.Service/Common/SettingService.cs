@@ -19,16 +19,6 @@ namespace Bll.Sys
             this._OptionDal = new OptionDal();
         }
 
-        public override string CheckModel(OptionModel model)
-        {
-            if (model == null) { return "配置对象为空"; }
-            if (!ValidateHelper.IsPlumpString(model.Key))
-            {
-                return "配置key为空";
-            }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 保存配置对象
         /// </summary>

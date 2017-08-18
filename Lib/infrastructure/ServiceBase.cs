@@ -32,12 +32,12 @@ namespace Lib.infrastructure
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public virtual string CheckModel(T model)
+        public string CheckModel(T model)
         {
-            var errors = CheckEntity(model);
-            if (ValidateHelper.IsPlumpList(errors))
+            var msg = this.CheckEntity(model).FirstOrDefault();
+            if (ValidateHelper.IsPlumpString(msg))
             {
-                return errors[0];
+                return msg;
             }
             return SUCCESS;
         }
@@ -50,7 +50,7 @@ namespace Lib.infrastructure
         /// <returns></returns>
         public bool CheckModel(T model, out string msg)
         {
-            msg = CheckModel(model);
+            msg = this.CheckEntity(model).FirstOrDefault();
             return !ValidateHelper.IsPlumpString(msg);
         }
 
@@ -61,7 +61,21 @@ namespace Lib.infrastructure
         /// <returns></returns>
         public List<string> CheckEntity(T model)
         {
-            return ValidateHelper.CheckEntity_(model);
+            var list = ValidateHelper.CheckEntity_(model);
+            if (!ValidateHelper.IsPlumpList(list))
+            {
+                this.CustomCheckModel(ref model, ref list);
+            }
+            return list.Where(x => ValidateHelper.IsPlumpString(x)).ToList();
+        }
+
+        /// <summary>
+        /// 自定义验证
+        /// </summary>
+        public virtual void CustomCheckModel(ref T model, ref List<string> errors)
+        {
+            //do nothing
+            //let user override
         }
     }
 }

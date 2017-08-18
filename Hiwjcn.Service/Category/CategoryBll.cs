@@ -29,23 +29,12 @@ namespace Bll.Category
             this._CategoryDal = new CategoryDal();
         }
 
-        public override string CheckModel(CategoryModel model)
+        public override void CustomCheckModel(ref CategoryModel model, ref List<string> errors)
         {
-            if (model == null) { return "对象为空"; }
-            if (!ValidateHelper.IsPlumpString(model.CategoryName))
-            {
-                return "节点名称不能为空";
-            }
-            if (model.CategoryName.Length > 100) { return "名称最大长度为100"; }
-            if (!ValidateHelper.IsPlumpString(model.CategoryType))
-            {
-                return "类目类型不能为空";
-            }
             if (model.CategoryLevel < FIRST_LEVEL)
             {
-                return "层级参数为空";
+                errors.Add("层级参数为空");
             }
-            return string.Empty;
         }
 
         /// <summary>

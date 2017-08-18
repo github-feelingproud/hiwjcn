@@ -19,14 +19,6 @@ namespace Hiwjcn.Bll.Tag
             //
         }
 
-        public override string CheckModel(TagModel model)
-        {
-            if (model == null) { return "对象为空"; }
-            if (!ValidateHelper.IsPlumpString(model.TagName)) { return "标签名为空"; }
-            if (!ValidateHelper.IsLenInRange(model.TagName, 1, 20)) { return "标签名长度为1~20"; }
-            return string.Empty;
-        }
-
         /// <summary>
         /// 通过id获取标签
         /// </summary>

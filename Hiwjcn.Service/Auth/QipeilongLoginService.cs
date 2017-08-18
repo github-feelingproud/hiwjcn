@@ -8,8 +8,6 @@ using Lib.mvc.user;
 using Lib.mvc;
 using Lib.net;
 using Dapper;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Lib.data;
 using Lib.helper;
 using Lib.extension;
@@ -20,9 +18,6 @@ using System.Data.SqlClient;
 using System.Configuration;
 using Hiwjcn.Core.Infrastructure.Auth;
 using System.Data.Entity;
-using System.Data.Entity.SqlServer;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.ModelConfiguration.Conventions;
 using Hiwjcn.Core.Data;
 using System.Security.Cryptography;
 using System.IO;
@@ -122,7 +117,7 @@ namespace Hiwjcn.Bll.Auth
             var data = new _<LoginUserInfo>();
             using (var db = new QipeilongDbContext())
             {
-                var time = DateTime.Now.AddSeconds(-300);
+                var time = DateTime.Now.AddMinutes(-5);
                 var sms = await db.Sms
                     .Where(x => x.Recipient == phoneOrEmail && x.CreatedDate >= time)
                     .OrderByDescending(x => x.CreatedDate).Take(1).FirstOrDefaultAsync();
@@ -255,45 +250,43 @@ namespace Hiwjcn.Bll.Auth
 
             using (response)
             {
-                if (response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                 {
-                    var jsonStr = await response.Content.ReadAsStringAsync();
-                    var json = JsonConvert.DeserializeObject<JToken>(jsonStr);
-                    var code = json.Value<JToken>("Code").ToString().ToInt();
-                    if (code == 0)
-                    {
-                        var tuhu_user = json.Value<JToken>("Body").ToObject<QplUserInfoModel>();
-                        try
-                        {
-                            await UpdateDMUserInfo(tuhu_user);
-                        }
-                        catch (Exception e)
-                        {
-                            e.AddErrorLog("途虎门店登录，更新本地信息失败");
-                        }
+                    data.SetErrorMsg("途虎登录查询信息验证失败");
+                    return data;
+                }
 
-                        using (var db = new QipeilongDbContext())
+                var jsonStr = await response.Content.ReadAsStringAsync();
+                var json = JsonConvert.DeserializeObject<JToken>(jsonStr);
+                var code = json.Value<JToken>("Code").ToString().ToInt();
+                if (code == 0)
+                {
+                    var tuhu_user = json.Value<JToken>("Body").ToObject<QplUserInfoModel>();
+                    try
+                    {
+                        await UpdateDMUserInfo(tuhu_user);
+                    }
+                    catch (Exception e)
+                    {
+                        e.AddErrorLog("途虎门店登录，更新本地信息失败");
+                    }
+
+                    using (var db = new QipeilongDbContext())
+                    {
+                        var user = await db.UserInfo.Where(x => x.UserName == tuhu_user.UserName).FirstOrDefaultAsync();
+                        if (user == null)
                         {
-                            var user = await db.UserInfo.Where(x => x.UserName == tuhu_user.UserName).FirstOrDefaultAsync();
-                            if (user == null)
-                            {
-                                data.SetErrorMsg("途虎用户未和汽配龙用户关联");
-                                return data;
-                            }
-                            var loginuser = await this.LoadPermissions(this.Parse(user));
-                            data.SetSuccessData(loginuser);
+                            data.SetErrorMsg("途虎用户未和汽配龙用户关联");
                             return data;
                         }
-                    }
-                    else
-                    {
-                        data.SetErrorMsg(json.Value<JToken>("Msg").ToString());
+                        var loginuser = await this.LoadPermissions(this.Parse(user));
+                        data.SetSuccessData(loginuser);
                         return data;
                     }
                 }
                 else
                 {
-                    data.SetErrorMsg("途虎登录查询信息验证失败");
+                    data.SetErrorMsg(json.Value<JToken>("Msg").ToString());
                     return data;
                 }
             }
@@ -320,10 +313,15 @@ namespace Hiwjcn.Bll.Auth
         public async Task UpdateDMUserInfo(QplUserInfoModel obj)
         {
             string CustomerType = "3";
-            if ((obj.ShopType & 512) == 512 || (obj.ShopType & 1024) == 1024 || (obj.ShopType & 2048) == 2048)
+
+            if (PermissionHelper.HasAnyPermission(obj.ShopType, 512, 1024, 2048))
+            {
                 CustomerType = "4";
+            }
             else
+            {
                 CustomerType = "3";
+            }
 
             using (var db = new QipeilongDbContext())
             {
@@ -454,7 +452,7 @@ namespace Hiwjcn.Bll.Auth
                     ";
                     #endregion
 
-                    await con.ExecuteAsync(sql, dp, null, null, CommandType.Text);
+                    await con.ExecuteAsync(sql, param: dp, commandType: CommandType.Text);
 
                 }
             }
