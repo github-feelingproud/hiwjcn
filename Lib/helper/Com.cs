@@ -189,7 +189,7 @@ namespace Lib.helper
             list.Add(e?.InnerException?.InnerException?.InnerException?.InnerException?.Message);
 
             list = list.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
-            
+
             return list;
         }
 
@@ -1105,11 +1105,36 @@ namespace Lib.helper
         /// <summary>
         /// 实现python中的range
         /// </summary>
-        public static IEnumerable<int> Range(int a, int? b = null)
+        public static IEnumerable<int> Range(int a, int? b = null, int step = 1)
         {
-            var start = b != null ? a : 0;
-            var stop = b ?? a;
-            for (var i = start; i < stop; ++i)
+            foreach (var i in RangeDouble(a, b, step))
+            {
+                yield return (int)i;
+            }
+        }
+
+        /// <summary>
+        /// 实现python中的range
+        /// </summary>
+        public static IEnumerable<double> RangeDouble(double a, double? b = null, double step = 1)
+        {
+            if (step == 0) { throw new Exception($"{nameof(step)}不可以为0"); }
+
+            var start = default(double);
+            var end = default(double);
+
+            if (b == null)
+            {
+                start = 0;
+                end = a;
+            }
+            else
+            {
+                start = a;
+                end = b.Value;
+            }
+
+            for (var i = start; i < end; i = i + step)
             {
                 yield return i;
             }
