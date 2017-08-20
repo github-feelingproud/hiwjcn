@@ -218,7 +218,11 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                if (ValidateHelper.IsPlumpString(uid) && uid.ToLower() != "new")
+                if (!ValidateHelper.IsPlumpString(uid))
+                {
+                    return Http404();
+                }
+                if (uid.ToLower() != "new")
                 {
                     var model = await this._AuthScopeRepository.GetFirstAsync(x => x.UID == uid);
 
@@ -339,7 +343,7 @@ namespace Hiwjcn.Web.Controllers
                         CreateTime = now,
                         UpdateTime = now
                     };
-                    
+
                     await this._AuthClientRepository.AddAsync(official);
                 }
 
