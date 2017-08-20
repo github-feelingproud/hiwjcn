@@ -294,6 +294,18 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
+        [PageAuth(Permission = manage_auth)]
+        [RequestLog]
+        public async Task<ActionResult> Users()
+        {
+            return await RunActionAsync(async () =>
+            {
+                await Task.FromResult(1);
+
+                return View();
+            });
+        }
+
         public async Task<ActionResult> InitData()
         {
             return await RunActionAsync(async () =>

@@ -25,6 +25,8 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net;
+using Polly;
+using Polly.CircuitBreaker;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -77,6 +79,34 @@ namespace Hiwjcn.Bll.Auth
 
             msg = string.Empty;
             return true;
+        }
+
+        public async Task<PagerData<LoginUserInfo>> SearchUser(string q = null, int page = 1, int pagesize = 10)
+        {
+            var data = new PagerData<LoginUserInfo>();
+            using (var db = new QipeilongDbContext())
+            {
+                var query = db.UserInfo.AsNoTrackingQueryable();
+
+                if (ValidateHelper.IsPlumpString(q))
+                {
+                    query = query.Where(x =>
+                    x.CompanyName.Contains(q) ||
+                    x.ShopName.Contains(q) ||
+                    x.UserName.Contains(q) ||
+                    x.Contact.Contains(q) ||
+                    x.Mobile.Contains(q) ||
+                    x.Notes.Contains(q) ||
+                    x.Phone.Contains(q) ||
+                    x.ShopNo.Contains(q) ||
+                    x.UID == q);
+                }
+
+                data.ItemCount = await query.CountAsync();
+                var list = await query.OrderByDescending(x => x.CreatedDate).QueryPage(page, pagesize).ToListAsync();
+                data.DataList = list.Select(x => this.Parse(x)).ToList();
+            }
+            return data;
         }
 
         public async Task<LoginUserInfo> LoadPermissions(LoginUserInfo model)
@@ -168,6 +198,12 @@ namespace Hiwjcn.Bll.Auth
             }
         }
 
+        /// <summary>
+        /// 熔断器
+        /// </summary>
+        private static readonly CircuitBreakerPolicy tuhu_login_breaker =
+            Policy.Handle<Exception>().CircuitBreakerAsync(50, TimeSpan.FromMinutes(1));
+
         public async Task<_<LoginUserInfo>> LoginByPassword(string user_name, string password)
         {
             var data = new _<LoginUserInfo>();
@@ -180,7 +216,13 @@ namespace Hiwjcn.Bll.Auth
             //途虎门店登录
             if (user_name.Trim().ToLower().StartsWith("dm"))
             {
-                return await this.TuhuDMUserLogin(user_name, password);
+                //熔断+重试
+                return await tuhu_login_breaker.ExecuteAsync(async () =>
+                {
+                    return await Policy.Handle<Exception>()
+                    .WaitAndRetryAsync(2, i => TimeSpan.FromMilliseconds(100 * i))
+                    .ExecuteAsync(async () => await this.TuhuDMUserLogin(user_name, password));
+                });
             }
 
             //汽配龙登录

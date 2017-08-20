@@ -27,6 +27,7 @@
     <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -846,6 +847,7 @@
     <Content Include="Views\AuthManage\Statics.cshtml" />
     <Content Include="Views\AuthManage\Tasks.cshtml" />
     <Content Include="Views\AuthManage\EditScope.cshtml" />
+    <Content Include="Views\AuthManage\Users.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
