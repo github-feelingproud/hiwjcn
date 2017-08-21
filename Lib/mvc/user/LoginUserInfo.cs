@@ -57,6 +57,29 @@ namespace Lib.mvc.user
 
     public static class LoginUserInfoExtension
     {
+        private static readonly IReadOnlyCollection<Type> map_type = new List<Type>()
+        {
+            typeof(string),typeof(DateTime),typeof(DateTime?),
+            typeof(int),typeof(double),typeof(float),typeof(decimal),typeof(long),
+            typeof(int?),typeof(double?),typeof(float?),typeof(decimal?),typeof(long?)
+        }.AsReadOnly();
+
+        public static void MapExtraData(this LoginUserInfo loginuser, object model)
+        {
+            if (model == null)
+            {
+                throw new Exception($"{nameof(model)}不能为空");
+            }
+            var props = model.GetType().GetProperties().ToList();
+            props = props.Where(x => x.CanRead && x.CanWrite && map_type.Contains(x.PropertyType)).ToList();
+
+            foreach (var p in props)
+            {
+                var value = ConvertHelper.GetString(p.GetValue(model));
+                loginuser.AddExtraData(p.Name, value);
+            }
+        }
+
         public static string UserNameOrNickName(this LoginUserInfo loginuser) => loginuser.NickName ?? loginuser.UserName;
 
         /// <summary>

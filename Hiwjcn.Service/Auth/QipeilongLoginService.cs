@@ -33,7 +33,7 @@ namespace Hiwjcn.Bll.Auth
     public class QipeilongLoginService : IAuthLoginService
     {
         private readonly string[] sys_users = new string[] { "13915280232", "18101795560" };
-
+        
         private LoginUserInfo Parse(UserInfo model)
         {
             var loginuser = new LoginUserInfo()
@@ -49,12 +49,16 @@ namespace Hiwjcn.Bll.Auth
                 LoginToken = "please load auth token"
             };
 
+            /*
             loginuser.AddExtraData(nameof(model.address), model.address);
             loginuser.AddExtraData(nameof(model.CompanyName), model.CompanyName);
             loginuser.AddExtraData(nameof(model.Contact), model.Contact);
             loginuser.AddExtraData(nameof(model.CustomerType), model.CustomerType);
             loginuser.AddExtraData(nameof(model.IsCheck), model.IsCheck.ToString());
             loginuser.AddExtraData(nameof(model.Phone), model.Phone);
+            */
+
+            loginuser.MapExtraData(model);
 
             return loginuser;
         }
