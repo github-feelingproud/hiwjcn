@@ -18,18 +18,21 @@ namespace WebLogic.Model.Sys
         /// 地区编号
         /// </summary>
         [Column("area_id")]
+        [MaxLength(100)]
         public virtual string AreaID { get; set; }
 
         /// <summary>
         /// 父级地区编号
         /// </summary>
         [Column("parent_id")]
+        [MaxLength(100)]
         public virtual string ParentID { get; set; }
 
         /// <summary>
         /// 地区名称
         /// </summary>
         [Column("area_name")]
+        [MaxLength(20)]
         public virtual string AreaName { get; set; }
 
         /// <summary>

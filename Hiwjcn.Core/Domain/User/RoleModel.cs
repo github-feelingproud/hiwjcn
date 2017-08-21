@@ -19,12 +19,15 @@ namespace WebLogic.Model.User
         /// 角色名
         /// </summary>
         [Column("role_name")]
+        [MaxLength(20)]
+        [Required]
         public virtual string RoleName { get; set; }
 
         /// <summary>
         /// 角色描述
         /// </summary>
         [Column("role_desc")]
+        [MaxLength(500)]
         public virtual string RoleDescription { get; set; }
 
         /// <summary>

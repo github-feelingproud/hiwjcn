@@ -6,6 +6,7 @@ using Model.Category;
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using Lib.extension;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -177,7 +178,7 @@ namespace WebApp.Areas.Admin.Controllers
                 model.LinkURL = link;
                 model.CategoryImage = img;
                 model.IconClass = icon;
-                model.OpenInNewWindow = target;
+                model.OpenInNewWindow = this.ParseBlankWindow(target);
                 model.OrderNum = order ?? 0;
                 model.CategoryType = type;
 
@@ -193,6 +194,9 @@ namespace WebApp.Areas.Admin.Controllers
                 return GetJsonRes(res);
             });
         }
+
+        [NonAction]
+        private int ParseBlankWindow(string target) => (ConvertHelper.GetString(target).Trim().ToLower() == "blank").ToString().ToBoolInt();
 
         /// <summary>
         /// 添加同级节点
@@ -210,7 +214,7 @@ namespace WebApp.Areas.Admin.Controllers
                 model.LinkURL = link;
                 model.CategoryImage = img;
                 model.IconClass = icon;
-                model.OpenInNewWindow = target;
+                model.OpenInNewWindow = this.ParseBlankWindow(target);
                 model.OrderNum = order ?? 0;
                 model.CategoryType = type;
 
@@ -243,7 +247,7 @@ namespace WebApp.Areas.Admin.Controllers
                 model.LinkURL = link;
                 model.CategoryImage = img;
                 model.IconClass = icon;
-                model.OpenInNewWindow = target;
+                model.OpenInNewWindow = this.ParseBlankWindow(target);
                 model.OrderNum = order ?? 0;
                 model.CategoryType = type;
 

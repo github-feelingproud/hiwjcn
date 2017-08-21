@@ -20,12 +20,14 @@ namespace Hiwjcn.Core.Model.Sys
         /// 评论内容
         /// </summary>
         [Column("comment_content")]
+        [DataType(DataType.Text)]
         public virtual string CommentContent { get; set; }
 
         /// <summary>
         /// 评论人
         /// </summary>
         [Column("user_id")]
+        [MaxLength(100)]
         public virtual string UserID { get; set; }
 
         /// <summary>
@@ -38,12 +40,14 @@ namespace Hiwjcn.Core.Model.Sys
         /// 评论对象ID
         /// </summary>
         [Column("thread_id")]
+        [MaxLength(100)]
         public virtual string ThreadID { get; set; }
 
         /// <summary>
         /// 回复对象id
         /// </summary>
         [Column("parent_comment_id")]
+        [MaxLength(100)]
         public virtual string ParentCommentID { get; set; }
 
         /// <summary>

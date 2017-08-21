@@ -58,6 +58,7 @@ namespace Hiwjcn.Core.Domain.Auth
     {
         public virtual int CheckStatus { get; set; }
 
+        [MaxLength(500)]
         public virtual string Msg { get; set; }
     }
 
@@ -168,10 +169,12 @@ namespace Hiwjcn.Core.Domain.Auth
         [Index(IsUnique = false)]
         public virtual string UserUID { get; set; }
 
+        [StringLength(100, MinimumLength = 20, ErrorMessage = "客户端UID 必填")]
         [Required(ErrorMessage = "客户端为空")]
         [Index(IsUnique = false)]
         public virtual string ClientUID { get; set; }
 
+        [DataType(DataType.Text)]
         [Required(ErrorMessage = "scopes为空")]
         public virtual string ScopesJson { get; set; }
     }

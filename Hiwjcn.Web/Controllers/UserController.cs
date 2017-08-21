@@ -225,7 +225,7 @@ namespace Hiwjcn.Web.Controllers
                 model.ReceiverUserID = to;
                 model.SenderUserID = loginuser.UserID;
                 model.UpdateTime = DateTime.Now;
-                model.IsNew = "true";
+                model.IsNew = (int)YesOrNoEnum.是;
 
                 return GetJsonRes(bll.SendMessage(model));
             });

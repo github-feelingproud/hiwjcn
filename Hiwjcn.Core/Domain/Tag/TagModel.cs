@@ -19,18 +19,21 @@ namespace WebLogic.Model.Tag
         /// 标签名
         /// </summary>
         [Column("tag_name")]
+        [MaxLength(20)]
         public virtual string TagName { get; set; }
 
         /// <summary>
         /// 标签描述
         /// </summary>
         [Column("tag_desc")]
+        [MaxLength(500)]
         public virtual string TagDesc { get; set; }
 
         /// <summary>
         /// 标签外链
         /// </summary>
         [Column("tag_link")]
+        [MaxLength(1000)]
         public virtual string TagLink { get; set; }
 
         /// <summary>

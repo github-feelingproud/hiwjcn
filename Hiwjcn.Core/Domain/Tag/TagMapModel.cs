@@ -13,12 +13,15 @@ namespace WebLogic.Model.Tag
     public class TagMapModel : BaseEntity
     {
         [Column("map_key")]
+        [MaxLength(100)]
         public virtual string MapKey { get; set; }
 
         [Column("tag_name")]
+        [MaxLength(50)]
         public virtual string TagName { get; set; }
 
         [Column("map_type")]
+        [MaxLength(20)]
         public virtual string MapType { get; set; }
     }
 }

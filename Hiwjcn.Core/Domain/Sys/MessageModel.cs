@@ -8,18 +8,24 @@ namespace Model.Sys
     public class MessageModel : BaseEntity
     {
         [Column("msg_title")]
+        [MaxLength(200)]
         public virtual string Title { get; set; }
 
         [Column("msg_content")]
+        [DataType(DataType.Text)]
         public virtual string MsgContent { get; set; }
         
         [Column("msg_sender")]
+        [MaxLength(100)]
+        [Required]
         public virtual string SenderUserID { get; set; }
 
         [Column("msg_receiver")]
+        [MaxLength(100)]
+        [Required]
         public virtual string ReceiverUserID { get; set; }
 
         [Column("msg_new")]
-        public virtual string IsNew { get; set; }
+        public virtual int IsNew { get; set; }
     }
 }

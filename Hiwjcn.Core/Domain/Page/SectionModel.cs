@@ -45,6 +45,7 @@ namespace WebLogic.Model.Page
         /// 内容
         /// </summary>
         [Column("section_content")]
+        [DataType(DataType.Html)]
         public virtual string SectionContent { get; set; }
 
         /// <summary>
@@ -58,6 +59,7 @@ namespace WebLogic.Model.Page
         /// 关联key
         /// </summary>
         [Column("rel_group")]
+        [MaxLength(20)]
         public virtual string RelGroup { get; set; }
     }
 }

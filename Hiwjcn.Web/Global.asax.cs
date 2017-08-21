@@ -74,15 +74,13 @@ namespace Hiwjcn.Web
                     //ControllerBuilder.Current.SetControllerFactory(typeof(AutoFacControllerFactory));
                     //使用autofac生成控制器
                     DependencyResolver.SetResolver(AppContext.Container.AutofacDependencyResolver());
+
                     //加速首次启动EF
                     //EFManager.SelectDB(null).FastStart();
                     EFManager.FastStart<EntityDB>();
-
-                    {
-                        //汽配龙数据库
-                        EFManager.FastStart<Core.Data.QipeilongDbContext>();
-                    }
-
+                    //汽配龙数据库
+                    EFManager.FastStart<Core.Data.QipeilongDbContext>();
+                    //尝试创建数据表
                     EFManager.TryInstallDatabase<EntityDB>();
 
                     start_up_task = Task.Run(() =>

@@ -12,24 +12,30 @@ namespace Hiwjcn.Core.Model.Sys
     public class UpFileModel : BaseEntity
     {
         [Column("UserID")]
+        [MaxLength(100)]
         public virtual string UserID { get; set; }
 
         [Column("FileName")]
+        [MaxLength(500)]
         public virtual string FileName { get; set; }
 
         [Column("FileSize")]
         public virtual int FileSize { get; set; }
 
         [Column("FileExt")]
+        [MaxLength(20)]
         public virtual string FileExt { get; set; }
 
         [Column("FilePath")]
+        [MaxLength(1000)]
         public virtual string FilePath { get; set; }
 
         [Column("FileUrl")]
+        [MaxLength(1000)]
         public virtual string FileUrl { get; set; }
 
         [Column("FileMD5")]
+        [MaxLength(100)]
         public virtual string FileMD5 { get; set; }
     }
 }

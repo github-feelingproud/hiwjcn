@@ -70,22 +70,31 @@ namespace Hiwjcn.Core.Model.Sys
     [Table("sys_reqlog")]
     public class ReqLogModel : TimeBaseEntity
     {
+        [MaxLength(100)]
         public virtual string ReqID { get; set; }
 
+        [MaxLength(1000)]
         public virtual string ReqRefURL { get; set; }
 
+        [MaxLength(1000)]
         public virtual string ReqURL { get; set; }
 
+        [MaxLength(50)]
         public virtual string AreaName { get; set; }
 
+        [MaxLength(50)]
         public virtual string ControllerName { get; set; }
 
+        [MaxLength(50)]
         public virtual string ActionName { get; set; }
 
+        [MaxLength(50)]
         public virtual string ReqMethod { get; set; }
 
+        [DataType(DataType.Text)]
         public virtual string PostParams { get; set; }
 
+        [MaxLength(1000)]
         public virtual string GetParams { get; set; }
 
         public virtual double? ReqTime { get; set; }

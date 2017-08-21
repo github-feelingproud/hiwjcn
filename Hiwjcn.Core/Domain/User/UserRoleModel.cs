@@ -19,12 +19,14 @@ namespace WebLogic.Model.User
         /// 用户ID
         /// </summary>
         [Column("user_id")]
+        [StringLength(100)]
         public virtual string UserID { get; set; }
 
         /// <summary>
         /// 角色ID
         /// </summary>
         [Column("role_id")]
+        [StringLength(100)]
         public virtual string RoleID { get; set; }
     }
 }

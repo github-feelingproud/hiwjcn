@@ -17,9 +17,9 @@ namespace Model.User
         [Required(ErrorMessage = "头像数据为空")]
         public virtual byte[] AvatarBytes { get; set; }
 
-        [Index]
-        [Required(ErrorMessage = "UserUID必填")]
         [StringLength(100, MinimumLength = 20, ErrorMessage = "UserUID长度错误")]
+        [Required(ErrorMessage = "UserUID必填")]
+        [Index]
         public virtual string UserUID { get; set; }
     }
 
@@ -30,9 +30,11 @@ namespace Model.User
     [Table("account_user_onetimecode")]
     public class UserOneTimeCode : BaseEntity
     {
+        [StringLength(100)]
         [Required]
         public virtual string Code { get; set; }
 
+        [StringLength(100)]
         [Required]
         public virtual string UserUID { get; set; }
 
@@ -70,12 +72,14 @@ namespace Model.User
         /// 电话
         /// </summary>
         [Column("user_phone")]
+        [StringLength(50)]
         public virtual string Phone { get; set; }
 
         /// <summary>
         /// 邮箱
         /// </summary>
         [Column("user_email")]
+        [StringLength(50)]
         [EmailAddress(ErrorMessage = "邮件格式错误")]
         public virtual string Email { get; set; }
 
@@ -83,12 +87,14 @@ namespace Model.User
         /// 用户介绍
         /// </summary>
         [Column("user_mark")]
+        [StringLength(500)]
         public virtual string Introduction { get; set; }
 
         /// <summary>
         /// qq
         /// </summary>
         [Column("user_qq")]
+        [StringLength(30)]
         public virtual string QQ { get; set; }
 
         /// <summary>
@@ -118,6 +124,7 @@ namespace Model.User
         /// 头像链接
         /// </summary>
         [Column("user_img")]
+        [StringLength(1000)]
         public virtual string UserImg { get; set; }
 
         /// <summary>
