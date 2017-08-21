@@ -84,6 +84,11 @@ namespace Lib.mvc
             }
             this.Layout = IncludePath(name);
         }
+        
+        /// <summary>
+        /// 从ViewData中拿到非空数据
+        /// </summary>
+        public DT GetNotNullViewData<DT>(string key) where DT : new() => Com.NewIfNull<DT>(ViewData[key]);
         #endregion
 
         protected List<LangModel> Language { get; set; }

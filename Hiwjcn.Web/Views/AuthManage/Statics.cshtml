@@ -48,7 +48,7 @@ else
             <div class="panel-heading">按照时间</div>
             <div class="panel-body">
                 @{
-                    var reqlog_groupbytime = Com.NewIfNull<List<ReqLogGroupModel>>(ViewData["reqlog_groupbytime"]);
+                    var reqlog_groupbytime = this.GetNotNullViewData<List<ReqLogGroupModel>>("reqlog_groupbytime");
                     if (ValidateHelper.IsPlumpList(reqlog_groupbytime))
                     {
                         reqlog_groupbytime = reqlog_groupbytime.OrderByDescending(x => x.Time).ToList();
@@ -81,7 +81,7 @@ else
             <div class="panel-heading">按照接口</div>
             <div class="panel-body">
                 @{
-                    var reqlog_groupbyaction = Com.NewIfNull<List<ReqLogGroupModel>>(ViewData["reqlog_groupbyaction"]);
+                    var reqlog_groupbyaction = this.GetNotNullViewData<List<ReqLogGroupModel>>("reqlog_groupbyaction");
                     if (ValidateHelper.IsPlumpList(reqlog_groupbyaction))
                     {
                         reqlog_groupbyaction = reqlog_groupbyaction.OrderByDescending(x => x.ReqTime).ToList();
@@ -120,7 +120,7 @@ else
             <div class="panel-heading">按照时间</div>
             <div class="panel-body">
                 @{
-                    var cachehit_groupbytime = Com.NewIfNull<List<CacheHitGroupModel>>(ViewData["cachehit_groupbytime"]);
+                    var cachehit_groupbytime = this.GetNotNullViewData<List<CacheHitGroupModel>>("cachehit_groupbytime");
                     if (ValidateHelper.IsPlumpList(cachehit_groupbytime))
                     {
                         cachehit_groupbytime = cachehit_groupbytime.OrderByDescending(x => x.Time).ToList();
@@ -153,7 +153,7 @@ else
             <div class="panel-heading">按照缓存Key</div>
             <div class="panel-body">
                 @{
-                    var cachehit_groupbykey = Com.NewIfNull<List<CacheHitGroupModel>>(ViewData["cachehit_groupbykey"]);
+                    var cachehit_groupbykey = this.GetNotNullViewData<List<CacheHitGroupModel>>("cachehit_groupbykey");
                     if (ValidateHelper.IsPlumpList(cachehit_groupbykey))
                     {
                         cachehit_groupbykey = cachehit_groupbykey.OrderByDescending(x => x.AllCount).ToList();
@@ -184,7 +184,7 @@ else
 </div>
 
 @{
-    var reqlog_groupbyhour = Com.NewIfNull<List<ReqLogGroupModel>>(ViewData["reqlog_groupbyhour"]);
+    var reqlog_groupbyhour = this.GetNotNullViewData<List<ReqLogGroupModel>>("reqlog_groupbyhour");
     if (ValidateHelper.IsPlumpList(reqlog_groupbyhour))
     {
         <script src="~/ui/echarts/echarts.min.js"></script>

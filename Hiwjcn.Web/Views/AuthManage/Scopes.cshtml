@@ -18,7 +18,7 @@
     <div class="panel-heading">Scope</div>
     <div class="panel-body">
         @{ 
-            var list = Com.NewIfNull<List<AuthScope>>(ViewData["list"]);
+            var list = this.GetNotNullViewData<List<AuthScope>>("list");
             if (ValidateHelper.IsPlumpList(list))
             {
                 <table class="table table-striped table-hover">

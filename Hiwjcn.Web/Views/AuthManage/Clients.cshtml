@@ -8,7 +8,7 @@
     <div class="panel-heading">Client</div>
     <div class="panel-body">
         @{
-            var list = Com.NewIfNull<List<AuthClient>>(ViewData["list"]);
+            var list = this.GetNotNullViewData<List<AuthClient>>("list");
             if (ValidateHelper.IsPlumpList(list))
             {
                 <table class="table table-striped table-hover">

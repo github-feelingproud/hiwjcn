@@ -57,6 +57,8 @@ namespace Lib.mvc.user
 
     public static class LoginUserInfoExtension
     {
+        public static string UserNameOrNickName(this LoginUserInfo loginuser) => loginuser.NickName ?? loginuser.UserName;
+
         /// <summary>
         /// 去除权限等敏感信息
         /// </summary>

@@ -35,6 +35,14 @@
     font-size: 15px;
 }
 
+.btn.btn-link {
+    text-decoration: none !important;
+}
+
+    .btn.btn-link:hover {
+        font-weight: bold;
+    }
+
 .btn.btn-x {
     background: none;
     background-color: transparent;

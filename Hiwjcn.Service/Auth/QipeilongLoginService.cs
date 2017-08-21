@@ -216,13 +216,23 @@ namespace Hiwjcn.Bll.Auth
             //途虎门店登录
             if (user_name.Trim().ToLower().StartsWith("dm"))
             {
-                //熔断+重试
-                return await tuhu_login_breaker.ExecuteAsync(async () =>
+                try
                 {
-                    return await Policy.Handle<Exception>()
-                    .WaitAndRetryAsync(2, i => TimeSpan.FromMilliseconds(100 * i))
-                    .ExecuteAsync(async () => await this.TuhuDMUserLogin(user_name, password));
-                });
+                    //熔断+重试
+                    return await tuhu_login_breaker.ExecuteAsync(async () =>
+                    {
+                        return await Policy.Handle<Exception>()
+                        .WaitAndRetryAsync(2, i => TimeSpan.FromMilliseconds(100 * i))
+                        .ExecuteAsync(async () => await this.TuhuDMUserLogin(user_name, password));
+                    });
+                }
+                catch (Exception e) when (e is BrokenCircuitException || e is IsolatedCircuitException)
+                {
+                    e.AddErrorLog("途虎门店登录接口被熔断");
+
+                    data.SetErrorMsg("汽配龙和途虎接口对接发生问题，请稍后再试");
+                    return data;
+                }
             }
 
             //汽配龙登录

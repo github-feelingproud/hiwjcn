@@ -13,7 +13,7 @@
     <div class="panel-heading">编辑Scope</div>
     <div class="panel-body">
         @{
-            var m = Com.NewIfNull<AuthScope>(ViewData["m"]);
+            var m = this.GetNotNullViewData<AuthScope>("m");
         }
         <form id="fm">
             <table class="table table-striped table-hover">

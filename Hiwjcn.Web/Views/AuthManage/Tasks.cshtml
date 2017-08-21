@@ -17,7 +17,7 @@
     <div class="panel-heading">定时任务</div>
     <div class="panel-body">
         @{
-            var list = Com.NewIfNull<List<ScheduleJobModel>>(ViewData["list"]);
+            var list = this.GetNotNullViewData<List<ScheduleJobModel>>("list");
             if (ValidateHelper.IsPlumpList(list))
             {
                 <table class="table table-striped table-hover">
