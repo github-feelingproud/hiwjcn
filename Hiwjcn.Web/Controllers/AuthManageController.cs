@@ -296,11 +296,17 @@ namespace Hiwjcn.Web.Controllers
 
         [PageAuth(Permission = manage_auth)]
         [RequestLog]
-        public async Task<ActionResult> Users()
+        public async Task<ActionResult> Users(string q, int? page)
         {
             return await RunActionAsync(async () =>
             {
-                await Task.FromResult(1);
+                page = CheckPage(page);
+                var pagesize = 20;
+
+                var data = await this._IAuthLoginService.SearchUser(q, page.Value, pagesize);
+                ViewData["list"] = data.DataList;
+                ViewData["pager"] = data.GetPagerHtml(this, nameof(page), page.Value, pagesize);
+                ViewData["q"] = q;
 
                 return View();
             });
