@@ -33,7 +33,7 @@ namespace Hiwjcn.Bll.Auth
     public class QipeilongLoginService : IAuthLoginService
     {
         private readonly string[] sys_users = new string[] { "13915280232", "18101795560" };
-        
+
         private LoginUserInfo Parse(UserInfo model)
         {
             var loginuser = new LoginUserInfo()
@@ -94,16 +94,23 @@ namespace Hiwjcn.Bll.Auth
 
                 if (ValidateHelper.IsPlumpString(q))
                 {
-                    query = query.Where(x =>
-                    x.CompanyName.Contains(q) ||
-                    x.ShopName.Contains(q) ||
-                    x.UserName.Contains(q) ||
-                    x.Contact.Contains(q) ||
-                    x.Mobile.Contains(q) ||
-                    x.Notes.Contains(q) ||
-                    x.Phone.Contains(q) ||
-                    x.ShopNo.Contains(q) ||
-                    x.UID == q);
+                    var qs = q.Split(new char[] { ' ', ',', '，' })
+                        .Select(x => x.Trim())
+                        .Where(x => ValidateHelper.IsPlumpString(x));
+                    foreach (var kwd in qs)
+                    {
+                        query = query.Where(x =>
+                        x.CompanyName.Contains(kwd) ||
+                        x.ShopName.Contains(kwd) ||
+                        x.UserName.Contains(kwd) ||
+                        x.Contact.Contains(kwd) ||
+                        x.Notes.Contains(kwd) ||
+                        x.address.Contains(kwd) ||
+                        x.Mobile == kwd ||
+                        x.Phone == kwd ||
+                        x.ShopNo == kwd ||
+                        x.UID == kwd);
+                    }
                 }
 
                 data.ItemCount = await query.CountAsync();

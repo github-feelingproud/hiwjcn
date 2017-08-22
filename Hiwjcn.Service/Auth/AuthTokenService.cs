@@ -215,37 +215,67 @@ namespace Hiwjcn.Bll.Auth
             }
         }
 
-        public async Task<string> DeleteClientAsync(string client_uid, string user_uid)
+        private async Task<string> DeleteTokensAsync(List<AuthToken> list)
         {
-            var msg = SUCCESS;
+            if (!ValidateHelper.IsPlumpList(list))
+            {
+                return this.SUCCESS;
+            }
+            var msg = this.SUCCESS;
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
             {
                 var token_query = db.Set<AuthToken>();
-                var token_to_delete = await token_query.Where(x => x.ClientUID == client_uid && x.UserUID == user_uid).ToListAsync();
-                if (!ValidateHelper.IsPlumpList(token_to_delete))
-                {
-                    return true;
-                }
-                var token_list = token_to_delete.Select(x => x.UID).ToList();
+                var scope_map_query = db.Set<AuthTokenScope>();
+
+                var token_uid_list = list.Select(x => x.UID).ToList();
+                var user_uid_list = list.Select(x => x.UserUID).ToList();
+
+                var token_to_delete = token_query.Where(x => token_uid_list.Contains(x.UID));
+                var map_to_delete = scope_map_query.Where(x => token_uid_list.Contains(x.TokenUID));
 
                 token_query.RemoveRange(token_to_delete);
-
-                var scope_map_query = db.Set<AuthTokenScope>();
-                scope_map_query.RemoveRange(scope_map_query.Where(x => token_list.Contains(x.TokenUID)));
+                scope_map_query.RemoveRange(map_to_delete);
 
                 if (await db.SaveChangesAsync() <= 0)
                 {
                     msg = "删除token失败";
                 }
 
-                foreach (var token in token_list)
+                foreach (var token in token_uid_list)
                 {
                     this._cache.Remove(AuthCacheKeyManager.TokenKey(token));
                 }
-
+                foreach (var user_uid in user_uid_list)
+                {
+                    this._cache.Remove(AuthCacheKeyManager.UserInfoKey(user_uid));
+                }
                 return true;
             });
             return msg;
+        }
+
+        public async Task<string> DeleteUserTokensAsync(string client_uid, string user_uid)
+        {
+            if (!ValidateHelper.IsPlumpString(user_uid))
+            {
+                return "用户ID为空";
+            }
+
+            var token_to_delete = await this._AuthTokenRepository.GetListAsync(x => x.ClientUID == client_uid && x.UserUID == user_uid);
+
+            return await this.DeleteTokensAsync(token_to_delete);
+        }
+
+        public async Task<string> DeleteUserTokensAsync(string user_uid)
+        {
+            if (!ValidateHelper.IsPlumpString(user_uid))
+            {
+                return "用户ID为空";
+            }
+
+            var token_to_delete = await this._AuthTokenRepository.GetListAsync(x => x.UserUID == user_uid);
+
+            return await this.DeleteTokensAsync(token_to_delete);
         }
 
         private async Task<bool> RefreshToken(AuthToken tk)

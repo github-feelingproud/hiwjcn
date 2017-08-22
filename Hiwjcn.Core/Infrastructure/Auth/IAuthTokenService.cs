@@ -18,7 +18,9 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 
         Task<AuthToken> FindTokenAsync(string client_uid, string token_uid);
 
-        Task<string> DeleteClientAsync(string client_uid, string user_uid);
+        Task<string> DeleteUserTokensAsync(string client_uid, string user_uid);
+
+        Task<string> DeleteUserTokensAsync(string user_uid);
 
         Task<PagerData<AuthClient>> GetMyAuthorizedClientsAsync(string user_id, string q, int page, int pagesize);
     }

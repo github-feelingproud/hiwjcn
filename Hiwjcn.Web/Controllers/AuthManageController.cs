@@ -312,6 +312,19 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
+        [HttpPost]
+        [ApiAuth(Permission = manage_auth)]
+        [RequestLog]
+        public async Task<ActionResult> DeleteUserTokens(string user_uid)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var res = await this._IAuthTokenService.DeleteUserTokensAsync(user_uid);
+
+                return GetJsonRes(res);
+            });
+        }
+
         public async Task<ActionResult> InitData()
         {
             return await RunActionAsync(async () =>
