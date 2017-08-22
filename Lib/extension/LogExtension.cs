@@ -199,7 +199,7 @@ namespace Lib.extension
                 var context = HttpContext.Current;
                 if (context == null)
                 {
-                    throw new Exception("非web环境");
+                    return new { msg = "非Web环境" };
                 }
 
                 var req_id = Com.GetRequestID();
@@ -224,9 +224,9 @@ namespace Lib.extension
                     RequestCookie = cookies
                 };
             }
-            catch
+            catch (Exception e)
             {
-                return new { msg = "非Web环境" };
+                return new { msg = e.Message };
             }
         }
     }

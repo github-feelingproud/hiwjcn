@@ -68,7 +68,7 @@ namespace Lib.mvc.user
         {
             if (model == null)
             {
-                throw new Exception($"{nameof(model)}不能为空");
+                throw new Exception($"{nameof(LoginUserInfoExtension)}.{nameof(MapExtraData)}.{nameof(model)}不能为空");
             }
             var props = model.GetType().GetProperties().ToList();
             props = props.Where(x => x.CanRead && x.CanWrite && map_type.Contains(x.PropertyType)).ToList();
