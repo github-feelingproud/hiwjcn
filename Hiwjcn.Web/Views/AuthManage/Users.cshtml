@@ -30,7 +30,7 @@
                     <thead>
                         <tr>
                             <td>用户名</td>
-                            <td width="300px">详细数据</td>
+                            <td>详细数据</td>
                             <td></td>
                         </tr>
                     </thead>
@@ -39,7 +39,7 @@
                         {
                             <tr>
                                 <td>@(m.UserNameOrNickName())</td>
-                                <td>
+                                <td style="width:400px;word-break:break-all;">
                                     @if (m.ExtraData != null)
                                     {
                                         <span>@(m.ExtraData.ToJson())</span>

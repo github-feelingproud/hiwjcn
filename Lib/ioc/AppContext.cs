@@ -174,18 +174,25 @@ namespace Lib.ioc
         /// <returns></returns>
         public static T Scope<T>(Func<ILifetimeScope, T> func)
         {
-            var scope_ok = false;
+            var catch_exception_and_create_scope = true;
             try
             {
                 //尝试使用httpscope
                 var context = HttpContext.Current;
-                var s = context.GetAutofacScope();
-                scope_ok = true;
-                return func.Invoke(s);
+                if (context != null)
+                {
+                    var s = context.GetAutofacScope();
+                    //已经成功创建scope，没有必要继续尝试创建
+                    catch_exception_and_create_scope = false;
+                    return func.Invoke(s);
+                }
             }
-            catch when (!scope_ok)
-            { }
+            catch when (catch_exception_and_create_scope)
+            {
+                //do nothing
+            }
 
+            //httpcontext中没有scope，创建一次性scope
             using (var scope = Scope())
             {
                 return func.Invoke(scope);
@@ -200,18 +207,25 @@ namespace Lib.ioc
         /// <returns></returns>
         public static async Task<T> ScopeAsync<T>(Func<ILifetimeScope, Task<T>> func)
         {
-            var scope_ok = false;
+            var catch_exception_and_create_scope = true;
             try
             {
                 //尝试使用httpscope
                 var context = HttpContext.Current;
-                var s = context.GetAutofacScope();
-                scope_ok = true;
-                return await func.Invoke(s);
+                if (context != null)
+                {
+                    var s = context.GetAutofacScope();
+                    //已经成功创建scope，没有必要继续尝试创建
+                    catch_exception_and_create_scope = false;
+                    return await func.Invoke(s);
+                }
             }
-            catch when (!scope_ok)
-            { }
+            catch when (catch_exception_and_create_scope)
+            {
+                //do nothing
+            }
 
+            //httpcontext中没有scope，创建一次性scope
             using (var scope = Scope())
             {
                 return await func.Invoke(scope);
