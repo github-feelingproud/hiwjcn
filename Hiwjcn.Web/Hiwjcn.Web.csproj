@@ -197,7 +197,6 @@
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
     <Folder Include="Views\Auth\" />
-    <Folder Include="Views\SSO\" />
     <Folder Include="Views\UserApi\" />
   </ItemGroup>
   <ItemGroup>
@@ -264,10 +263,6 @@
     <Compile Include="ui\ueditor\net\App_Code\UploadHandler.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="wcf\AuthApi.svc.cs">
-      <DependentUpon>AuthApi.svc</DependentUpon>
-    </Compile>
-    <Compile Include="wcf\IAuthApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\hiwjcn.sql" />
@@ -602,7 +597,6 @@
     <Content Include="ui\ui\img\cursor.ico" />
     <Content Include="ui\ui\ui.css" />
     <Content Include="ui\ui\ui.js" />
-    <Content Include="wcf\AuthApi.svc" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -850,6 +844,7 @@
     <Content Include="Views\AuthManage\Tasks.cshtml" />
     <Content Include="Views\AuthManage\EditScope.cshtml" />
     <Content Include="Views\AuthManage\Users.cshtml" />
+    <Content Include="Views\SSO\Login.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

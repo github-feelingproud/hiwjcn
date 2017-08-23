@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Hosting;
 using Lib.extension;
 using System.Threading.Tasks;
+using Lib.cache;
 
 namespace Lib.mvc
 {
@@ -26,9 +27,9 @@ namespace Lib.mvc
             if (context.Items.Contains(key))
             {
                 var obj = context.Items[key];
-                if (obj != null && obj is T data)
+                if (obj != null && obj is CacheResult<T> data)
                 {
-                    return data;
+                    return data.Result;
                 }
                 else
                 {
@@ -36,10 +37,7 @@ namespace Lib.mvc
                 }
             }
             var d = func.Invoke();
-            if (d != null)
-            {
-                context.Items[key] = d;
-            }
+            context.Items[key] = new CacheResult<T>() { Result = d, Success = true };
             return d;
         }
 
@@ -50,9 +48,9 @@ namespace Lib.mvc
             if (context.Items.Contains(key))
             {
                 var obj = context.Items[key];
-                if (obj != null && obj is T data)
+                if (obj != null && obj is CacheResult<T> data)
                 {
-                    return data;
+                    return data.Result;
                 }
                 else
                 {
@@ -62,7 +60,7 @@ namespace Lib.mvc
             var d = await func.Invoke();
             if (d != null)
             {
-                context.Items[key] = d;
+                context.Items[key] = new CacheResult<T>() { Result = d, Success = true };
             }
             return d;
         }

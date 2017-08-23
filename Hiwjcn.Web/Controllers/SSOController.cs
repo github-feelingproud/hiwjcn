@@ -22,6 +22,9 @@ using WebCore.MvcLib.Controller;
 using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.mvc.auth.validation;
 using Hiwjcn.Core.Data;
+using System.Collections.Generic;
+using System.Net;
+using System.Data.Entity;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -55,8 +58,26 @@ namespace Hiwjcn.Web.Controllers
                 }
                 //读取权限
                 key = $"sso.user.permissions.uid={uid}".WithCacheKeyPrefix();
-                var permissions = cache.GetOrSet(key, () => { }, TimeSpan.FromSeconds(60));
-                return new LoginUserInfo();
+                var permissions = cache.GetOrSet(key, () =>
+                {
+                    using (var db = new SSODB())
+                    {
+                        //这里只拿了角色关联的权限，部门关联的权限没有拿
+                        var roleslist = db.Auth_UserRole.Where(x => x.UserID == uid).Select(x => x.RoleID).ToList()
+                        .Select(x => $"role:{x}").ToList();
+
+                        return db.Auth_PermissionMap.Where(x => roleslist.Contains(x.MapKey))
+                        .Select(x => x.PermissionID).Distinct().ToList();
+                    }
+                }, TimeSpan.FromSeconds(60));
+                return new LoginUserInfo()
+                {
+                    IID = user.IID,
+                    UserID = user.UID,
+                    UserName = user.UserName,
+                    LoginToken = token,
+                    Permissions = permissions
+                };
             });
             return loginuser;
         }
@@ -64,37 +85,62 @@ namespace Hiwjcn.Web.Controllers
         public static LoginUserInfo GetLoginSSO()
         {
             var context = System.Web.HttpContext.Current;
-            var uid = loginStatus.GetCookieUID(context);
-            var token = loginStatus.GetCookieToken(context);
-            if (ValidateHelper.IsAllPlumpString(uid, token))
+
+            return context.CacheInHttpContext("sso.loginuser.entity", () =>
             {
-                var loginuser = ReadUser(uid, token);
-                if (loginuser != null)
+                var uid = loginStatus.GetCookieUID(context);
+                var token = loginStatus.GetCookieToken(context);
+                if (ValidateHelper.IsAllPlumpString(uid, token))
                 {
-                    return loginuser;
+                    var loginuser = ReadUser(uid, token);
+                    if (loginuser != null)
+                    {
+                        return loginuser;
+                    }
                 }
-            }
 
-            loginStatus.SetUserLogout(context);
-            return null;
-        }
-
-        [HttpPost]
-        [RequestLog]
-        public async Task<ActionResult> LoginAction(string uname, string pwd)
-        {
-            return await RunActionAsync(async () =>
-            {
-                await Task.FromResult(1);
+                loginStatus.SetUserLogout(context);
                 return null;
             });
         }
 
+        [HttpPost]
         [RequestLog]
-        public ActionResult Login(string url, string @continue, string next, string callback)
+        public async Task<ActionResult> LoginAction(string username, string password)
         {
+            return await RunActionAsync(async () =>
+            {
+                await Task.FromResult(1);
+                if (!ValidateHelper.IsAllPlumpString(username, password))
+                {
+                    return GetJsonRes("请输入账号密码");
+                }
 
-            return View();
+                using (var db = new SSODB())
+                {
+                    var md5 = password.ToMD5().ToUpper();
+                    var user = await db.T_UserInfo.Where(x => x.UserName == username && x.PassWord == md5).FirstOrDefaultAsync();
+                }
+
+                return GetJsonRes(string.Empty);
+            });
+        }
+
+        [RequestLog]
+        public async Task<ActionResult> Login(string url, string @continue, string next, string callback)
+        {
+            return await RunActionAsync(async () =>
+            {
+                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback, "/");
+                var loginuser = SSOController.GetLoginSSO();
+                if (loginuser != null)
+                {
+                    return Redirect(url);
+                }
+
+                await Task.FromResult(1);
+                return View();
+            });
         }
 
         [RequestLog]
@@ -110,6 +156,12 @@ namespace Hiwjcn.Web.Controllers
                 return Redirect(url);
             });
         }
+
+        [SSOPageValid]
+        public ActionResult test()
+        {
+            return GetJson(SSOController.GetLoginSSO());
+        }
     }
 
     public class SSOPageValidAttribute : ValidLoginBaseAttribute
@@ -121,12 +173,14 @@ namespace Hiwjcn.Web.Controllers
 
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {
-            throw new NotImplementedException();
+            filterContext.Result = new ViewResult() { ViewName = "~/Views/Shared/Limited.cshtml" };
         }
 
         public override void WhenNotLogin(ref ActionExecutingContext filterContext)
         {
-            throw new NotImplementedException();
+            var current_url = filterContext.HttpContext.Request.Url.ToString();
+            current_url = EncodingHelper.UrlEncode(current_url);
+            filterContext.Result = new RedirectResult($"/sso/login?continue={current_url}");
         }
     }
 
@@ -139,12 +193,12 @@ namespace Hiwjcn.Web.Controllers
 
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
         {
-            throw new NotImplementedException();
+            filterContext.Result = GetJson(new _() { success = false, msg = "没有权限", code = (-(int)HttpStatusCode.Unauthorized).ToString() });
         }
 
         public override void WhenNotLogin(ref ActionExecutingContext filterContext)
         {
-            throw new NotImplementedException();
+            filterContext.Result = GetJson(new _() { success = false, msg = "没有登录", code = (-999).ToString() });
         }
     }
 }
