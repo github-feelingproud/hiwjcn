@@ -26,6 +26,7 @@ using Hiwjcn.Framework.Provider;
 using Lib.mvc.auth.validation;
 using Hiwjcn.Bll.Auth;
 using Hiwjcn.Framework.Factory;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Web
 {
@@ -79,7 +80,9 @@ namespace Hiwjcn.Web
                     //EFManager.SelectDB(null).FastStart();
                     EFManager.FastStart<EntityDB>();
                     //汽配龙数据库
-                    EFManager.FastStart<Core.Data.QipeilongDbContext>();
+                    EFManager.FastStart<QipeilongDbContext>();
+                    //SSO数据库
+                    EFManager.FastStart<SSODB>();
                     //尝试创建数据表
                     EFManager.TryInstallDatabase<EntityDB>();
 

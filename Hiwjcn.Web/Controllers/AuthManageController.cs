@@ -23,6 +23,9 @@ using Lib.task;
 
 namespace Hiwjcn.Web.Controllers
 {
+    /// <summary>
+    /// 要用sso登录
+    /// </summary>
     public class AuthManageController : BaseController
     {
         public const string manage_auth = "manage.auth";

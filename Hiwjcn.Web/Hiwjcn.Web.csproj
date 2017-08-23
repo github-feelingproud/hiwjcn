@@ -197,6 +197,7 @@
     <Folder Include="App_Data\Log\" />
     <Folder Include="Static\upload\" />
     <Folder Include="Views\Auth\" />
+    <Folder Include="Views\SSO\" />
     <Folder Include="Views\UserApi\" />
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +222,7 @@
     <Compile Include="Controllers\ConnectController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\PageController.cs" />
+    <Compile Include="Controllers\SSOController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />

@@ -15,6 +15,7 @@ using Lib.events;
 using System.Configuration;
 using Lib.mvc;
 using Lib.cache;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -243,11 +244,11 @@ namespace Hiwjcn.Bll.Auth
 
                 foreach (var token in token_uid_list)
                 {
-                    this._cache.Remove(AuthCacheKeyManager.TokenKey(token));
+                    this._cache.Remove(CacheKeyManager.AuthTokenKey(token));
                 }
                 foreach (var user_uid in user_uid_list)
                 {
-                    this._cache.Remove(AuthCacheKeyManager.UserInfoKey(user_uid));
+                    this._cache.Remove(CacheKeyManager.AuthUserInfoKey(user_uid));
                 }
                 return true;
             });

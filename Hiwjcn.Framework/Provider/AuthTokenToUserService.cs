@@ -14,6 +14,7 @@ using Lib.events;
 using Hiwjcn.Framework.Actors;
 using Lib.mvc;
 using Akka.Actor;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -45,7 +46,7 @@ namespace Hiwjcn.Bll.Auth
             var hit_status = CacheHitStatusEnum.Hit;
             var cache_expire = TimeSpan.FromMinutes(5);
 
-            var cache_key = AuthCacheKeyManager.TokenKey(access_token);
+            var cache_key = CacheKeyManager.AuthTokenKey(access_token);
 
             //查找token
             var token = await this._cache.GetOrSetAsync(cache_key, async () =>
@@ -67,7 +68,7 @@ namespace Hiwjcn.Bll.Auth
             }
 
             hit_status = CacheHitStatusEnum.Hit;
-            cache_key = AuthCacheKeyManager.UserInfoKey(token.UserUID);
+            cache_key = CacheKeyManager.AuthUserInfoKey(token.UserUID);
             //查找用户
             var loginuser = await this._cache.GetOrSetAsync(cache_key, async () =>
             {
