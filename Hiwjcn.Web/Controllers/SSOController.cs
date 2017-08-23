@@ -156,6 +156,9 @@ namespace Hiwjcn.Web.Controllers
         }
     }
 
+    public static class SSOExtension
+    { }
+
     public class SSOPageValidAttribute : ValidLoginBaseAttribute
     {
 

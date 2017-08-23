@@ -20,7 +20,7 @@ namespace Lib.mvc.auth.validation
     /// </summary>
     public abstract class TokenValidationProviderBase
     {
-        public virtual string HttpItemKey() => "context.items.auth.user.entity";
+        public virtual string HttpContextItemKey() => "context.items.auth.user.entity";
 
         [Obsolete("不要直接调用，使用哪个有缓存的")]
         public abstract LoginUserInfo FindUser(HttpContext context);
@@ -48,7 +48,7 @@ namespace Lib.mvc.auth.validation
 
         public LoginUserInfo GetLoginUserInfo(HttpContext context)
         {
-            var data = context.CacheInHttpContext(this.HttpItemKey(), () =>
+            var data = context.CacheInHttpContext(this.HttpContextItemKey(), () =>
             {
                 var loginuser = this.FindUser(context);
                 if (loginuser == null)
@@ -67,7 +67,7 @@ namespace Lib.mvc.auth.validation
 
         public async Task<LoginUserInfo> GetLoginUserInfoAsync(HttpContext context)
         {
-            var data = await context.CacheInHttpContextAsync(this.HttpItemKey(), async () =>
+            var data = await context.CacheInHttpContextAsync(this.HttpContextItemKey(), async () =>
             {
                 var loginuser = await this.FindUserAsync(context);
                 if (loginuser == null)
@@ -93,16 +93,13 @@ namespace Lib.mvc.auth.validation
     {
         private readonly AuthServerConfig _server;
         private readonly IValidationDataProvider _dataProvider;
-        public readonly LoginStatus _loginstatus;
 
         public AuthServerValidationProvider(
             AuthServerConfig server,
-            IValidationDataProvider _dataProvider,
-            LoginStatus _loginstatus)
+            IValidationDataProvider _dataProvider)
         {
             this._server = server;
             this._dataProvider = _dataProvider;
-            this._loginstatus = _loginstatus;
         }
 
         public override LoginUserInfo FindUser(HttpContext context)
@@ -163,16 +160,6 @@ namespace Lib.mvc.auth.validation
                 e.AddErrorLog();
                 return null;
             }
-        }
-
-        public override void WhenUserNotLogin(HttpContext context)
-        {
-            this._loginstatus.SetUserLogout(context);
-        }
-
-        public override void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
-        {
-            this._loginstatus.SetUserLogin(context, loginuser);
         }
     }
 }

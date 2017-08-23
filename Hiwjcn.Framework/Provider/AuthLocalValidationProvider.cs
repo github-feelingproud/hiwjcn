@@ -35,16 +35,13 @@ namespace Hiwjcn.Framework.Provider
     {
         private readonly IAuthTokenToUserService _IAuthTokenToUserService;
         private readonly IValidationDataProvider _dataProvider;
-        private readonly LoginStatus _loginstatus;
 
         public AuthLocalValidationProvider(
             IAuthTokenToUserService _IAuthTokenToUserService,
-            IValidationDataProvider _dataProvider,
-            LoginStatus _loginstatus)
+            IValidationDataProvider _dataProvider)
         {
             this._IAuthTokenToUserService = _IAuthTokenToUserService;
             this._dataProvider = _dataProvider;
-            this._loginstatus = _loginstatus;
         }
 
         public override LoginUserInfo FindUser(HttpContext context)
@@ -75,16 +72,6 @@ namespace Hiwjcn.Framework.Provider
                 return null;
             }
         }
-
-        public override void WhenUserNotLogin(HttpContext context)
-        {
-            this._loginstatus.SetUserLogout(context);
-        }
-
-        public override void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
-        {
-            this._loginstatus.SetUserLogin(context, loginuser);
-        }
     }
 
     public class SSOValidationProvider : TokenValidationProviderBase
@@ -96,7 +83,7 @@ namespace Hiwjcn.Framework.Provider
             this.ls = AccountHelper.SSO;
         }
 
-        public override string HttpItemKey() => "httpcontext.item.sso.user.entity";
+        public override string HttpContextItemKey() => "httpcontext.item.sso.user.entity";
 
         public override LoginUserInfo FindUser(HttpContext context)
         {
