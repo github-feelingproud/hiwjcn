@@ -20,6 +20,7 @@ using Lib.cache;
 using WebCore.MvcLib.Controller;
 using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.mvc.auth.validation;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -32,6 +33,7 @@ namespace Hiwjcn.Web.Controllers
         private readonly IRepository<AuthScope> _AuthScopeRepository;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IValidationDataProvider _IValidationDataProvider;
+        private readonly ICacheProvider _cache;
 
         public AccountController(
             IAuthLoginService _IAuthLoginService,
@@ -40,7 +42,8 @@ namespace Hiwjcn.Web.Controllers
             LoginStatus logincontext,
             IRepository<AuthScope> _AuthScopeRepository,
             IAuthTokenService _IAuthTokenService,
-            IValidationDataProvider _IValidationDataProvider)
+            IValidationDataProvider _IValidationDataProvider,
+            ICacheProvider _cache)
         {
             this._IAuthLoginService = _IAuthLoginService;
             this._IUserService = user;
@@ -49,6 +52,7 @@ namespace Hiwjcn.Web.Controllers
             this._AuthScopeRepository = _AuthScopeRepository;
             this._IAuthTokenService = _IAuthTokenService;
             this._IValidationDataProvider = _IValidationDataProvider;
+            this._cache = _cache;
         }
 
         #region 登录
@@ -138,6 +142,7 @@ namespace Hiwjcn.Web.Controllers
                     {
                         return loginuser.msg;
                     }
+                    this._cache.Remove(CacheKeyManager.AuthUserInfoKey(loginuser.data.UserID));
                     this.X.context.CookieLogin(loginuser.data);
                     return string.Empty;
                 });
@@ -163,6 +168,7 @@ namespace Hiwjcn.Web.Controllers
                     {
                         return loginuser.msg;
                     }
+                    this._cache.Remove(CacheKeyManager.AuthUserInfoKey(loginuser.data.UserID));
                     this.X.context.CookieLogin(loginuser.data);
                     return string.Empty;
                 });
