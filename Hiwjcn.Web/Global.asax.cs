@@ -56,6 +56,10 @@ namespace Hiwjcn.Web
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
                     AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
                     {
+                        //sso
+                        //builder.Register(_ => new LoginStatus("auth_sso_uid", "auth_sso_token", "auth_sso_session", "")).Named<LoginStatus>("sso").SingleInstance();
+                        //builder.RegisterType<SSOValidationProvider>().Named<TokenValidationProviderBase>("sso").SingleInstance();
+
                         builder.RegisterType<QipeilongLoginService>().AsSelf().AsImplementedInterfaces().SingleInstance();
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
                         //new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")

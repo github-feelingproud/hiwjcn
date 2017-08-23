@@ -277,11 +277,18 @@ namespace Lib.ioc
         /// <summary>
         /// 没有注册就返回null
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="scope"></param>
-        /// <returns></returns>
-        public static T ResolveOrDefault<T>(this ILifetimeScope scope) where T : class => scope.ResolveOptional<T>();
-
+        public static T ResolveOptional_<T>(this ILifetimeScope scope, string name = null) where T : class
+        {
+            if (ValidateHelper.IsPlumpString(name))
+            {
+                return scope.ResolveOptionalNamed<T>(name);
+            }
+            else
+            {
+                return scope.ResolveOptional<T>();
+            }
+        }
+        
         /// <summary>
         /// 不自动dispose对象
         /// </summary>

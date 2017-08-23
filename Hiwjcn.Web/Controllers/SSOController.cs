@@ -72,7 +72,7 @@ namespace Hiwjcn.Web.Controllers
                         return cache.GetOrSet(key, () => GetUser(uid), TimeSpan.FromSeconds(60));
                     });
 
-                    if (user != null && user.Token() == token)
+                    if (user != null && user.CreateToken() == token)
                     {
                         var loginuser = user.LoginUserInfo();
                         loginStatus.SetUserLogin(context, loginuser);

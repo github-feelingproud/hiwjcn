@@ -20,6 +20,7 @@ using Hiwjcn.Core.Model.Sys;
 using Hiwjcn.Framework.Actors;
 using Lib.mvc.auth;
 using Hiwjcn.Framework;
+using Lib.ioc;
 using Lib.mvc.auth.validation;
 
 namespace Hiwjcn.Framework.Provider
@@ -62,6 +63,27 @@ namespace Hiwjcn.Framework.Provider
                 }
 
                 return loginuser.data;
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+                return null;
+            }
+        }
+    }
+
+    public class SSOValidationProvider : TokenValidationProviderBase
+    {
+        public override LoginUserInfo FindUser(HttpContext context)
+        {
+            return AsyncHelper.RunSync(() => FindUserAsync(context));
+        }
+
+        public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
+        {
+            try
+            {
+                return null;
             }
             catch (Exception e)
             {

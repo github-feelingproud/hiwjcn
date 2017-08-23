@@ -160,10 +160,7 @@ namespace Hiwjcn.Core.Data
     }
     public class T_UserInfo : IDBTable
     {
-        public string Token()
-        {
-            return $"{IID}-{UID}-{PassWord}".ToMD5().ToLower();
-        }
+        public string CreateToken() => $"{IID}-{UID}-{PassWord}".ToMD5().ToLower();
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -201,7 +198,7 @@ namespace Hiwjcn.Core.Data
                 UserID = this.UID,
                 UserName = this.UserName,
                 NickName = this.UserName,
-                LoginToken = this.Token(),
+                LoginToken = this.CreateToken(),
                 TokenExpire = DateTime.Now.AddDays(30),
                 Permissions = this.Permissions
             };

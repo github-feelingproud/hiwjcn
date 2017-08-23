@@ -25,17 +25,15 @@ namespace Lib.mvc.auth
         /// <summary>
         /// 获取当前登录用户
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public static async Task<LoginUserInfo> GetAuthUserAsync(this HttpContext context)
+        public static async Task<LoginUserInfo> GetAuthUserAsync(this HttpContext context, string name = null)
         {
             var data = await context.CacheInHttpContextAsync(AuthedUserKey, async () =>
             {
                 return await AppContext.ScopeAsync(async x =>
                 {
-                    var loginuser = await x.Resolve_<TokenValidationProviderBase>().FindUserAsync(context);
+                    var loginuser = await x.Resolve_<TokenValidationProviderBase>(name).FindUserAsync(context);
 
-                    var loginstatus = x.ResolveOptional<LoginStatus>();
+                    var loginstatus = x.ResolveOptional_<LoginStatus>(name);
                     if (loginuser == null)
                     {
                         loginstatus?.SetUserLogout(context);
@@ -54,18 +52,16 @@ namespace Lib.mvc.auth
         /// <summary>
         /// 获取当前登录用户
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
         [Obsolete("请优先使用异步方法！！！")]
-        public static LoginUserInfo GetAuthUser(this HttpContext context)
+        public static LoginUserInfo GetAuthUser(this HttpContext context, string name = null)
         {
             var data = context.CacheInHttpContext(AuthedUserKey, () =>
             {
                 return AppContext.Scope(x =>
                 {
-                    var loginuser = x.Resolve_<TokenValidationProviderBase>().FindUser(context);
+                    var loginuser = x.Resolve_<TokenValidationProviderBase>(name).FindUser(context);
 
-                    var loginstatus = x.ResolveOptional<LoginStatus>();
+                    var loginstatus = x.ResolveOptional_<LoginStatus>(name);
                     if (loginuser == null)
                     {
                         loginstatus?.SetUserLogout(context);
