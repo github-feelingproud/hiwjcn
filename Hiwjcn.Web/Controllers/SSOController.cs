@@ -25,13 +25,14 @@ using Hiwjcn.Core.Data;
 using System.Collections.Generic;
 using System.Net;
 using System.Data.Entity;
+using Hiwjcn.Framework.Provider;
 
 namespace Hiwjcn.Web.Controllers
 {
     public class SSOController : BaseController
     {
         public static LoginStatus loginStatus => AccountHelper.SSO;
-        
+
         private static T_UserInfo GetUser(string uid)
         {
             using (var db = new SSODB())
@@ -157,9 +158,12 @@ namespace Hiwjcn.Web.Controllers
 
     public class SSOPageValidAttribute : ValidLoginBaseAttribute
     {
+
+        private readonly TokenValidationProviderBase valid = new SSOValidationProvider();
+
         protected override LoginUserInfo GetLoginUser(ActionExecutingContext filterContext)
         {
-            return SSOController.GetLoginSSO();
+            return valid.GetLoginUserInfo(HttpContext.Current);
         }
 
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)
@@ -177,9 +181,11 @@ namespace Hiwjcn.Web.Controllers
 
     public class SSOApiValidAttribute : ValidLoginBaseAttribute
     {
+        private readonly TokenValidationProviderBase valid = new SSOValidationProvider();
+
         protected override LoginUserInfo GetLoginUser(ActionExecutingContext filterContext)
         {
-            return SSOController.GetLoginSSO();
+            return valid.GetLoginUserInfo(HttpContext.Current);
         }
 
         public override void WhenNoPermission(ref ActionExecutingContext filterContext)

@@ -22,6 +22,8 @@ using Lib.mvc.auth;
 using Hiwjcn.Framework;
 using Lib.ioc;
 using Lib.mvc.auth.validation;
+using Hiwjcn.Core.Data;
+using System.Data.Entity;
 
 namespace Hiwjcn.Framework.Provider
 {
@@ -33,13 +35,16 @@ namespace Hiwjcn.Framework.Provider
     {
         private readonly IAuthTokenToUserService _IAuthTokenToUserService;
         private readonly IValidationDataProvider _dataProvider;
+        private readonly LoginStatus _loginstatus;
 
         public AuthLocalValidationProvider(
             IAuthTokenToUserService _IAuthTokenToUserService,
-            IValidationDataProvider _dataProvider)
+            IValidationDataProvider _dataProvider,
+            LoginStatus _loginstatus)
         {
             this._IAuthTokenToUserService = _IAuthTokenToUserService;
             this._dataProvider = _dataProvider;
+            this._loginstatus = _loginstatus;
         }
 
         public override LoginUserInfo FindUser(HttpContext context)
@@ -70,26 +75,68 @@ namespace Hiwjcn.Framework.Provider
                 return null;
             }
         }
+
+        public override void WhenUserNotLogin(HttpContext context)
+        {
+            this._loginstatus.SetUserLogout(context);
+        }
+
+        public override void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
+        {
+            this._loginstatus.SetUserLogin(context, loginuser);
+        }
     }
 
     public class SSOValidationProvider : TokenValidationProviderBase
     {
-        public override LoginUserInfo FindUser(HttpContext context)
-        {
-            return AsyncHelper.RunSync(() => FindUserAsync(context));
-        }
+        public override string HttpItemKey() => "httpcontext.item.sso.user.entity";
 
-        public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
+        public override LoginUserInfo FindUser(HttpContext context)
         {
             try
             {
-                return null;
+                var ls = AccountHelper.SSO;
+                var uid = ls.GetCookieUID(context);
+                var token = ls.GetCookieToken(context);
+                if (!ValidateHelper.IsAllPlumpString(uid, token))
+                {
+                    return null;
+                }
+                using (var db = new SSODB())
+                {
+                    var model = db.T_UserInfo.Where(x => x.UID == uid).FirstOrDefault();
+                    if (model == null || model.CreateToken() != token)
+                    {
+                        return null;
+                    }
+                    //load permission
+                    //这里只拿了角色关联的权限，部门关联的权限没有拿
+                    var roleslist = db.Auth_UserRole.Where(x => x.UserID == uid)
+                        .Select(x => x.RoleID).ToList()
+                        .Select(x => $"role:{x}").ToList();
+
+                    model.Permissions = db.Auth_PermissionMap.Where(x => roleslist.Contains(x.MapKey))
+                        .Select(x => x.PermissionID).ToList()
+                        .Distinct().ToList();
+
+                    return model.LoginUserInfo();
+                }
             }
             catch (Exception e)
             {
                 e.AddErrorLog();
                 return null;
             }
+        }
+
+        public override void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
+        {
+            AccountHelper.SSO.SetUserLogin(context, loginuser);
+        }
+
+        public override void WhenUserNotLogin(HttpContext context)
+        {
+            AccountHelper.SSO.SetUserLogout(context);
         }
     }
 }

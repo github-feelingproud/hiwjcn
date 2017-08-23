@@ -20,27 +20,71 @@ namespace Lib.mvc.auth.validation
     /// </summary>
     public abstract class TokenValidationProviderBase
     {
+        public virtual string HttpItemKey() => "context.items.auth.user.entity";
+
+        [Obsolete("不要直接调用，使用哪个有缓存的")]
         public abstract LoginUserInfo FindUser(HttpContext context);
 
-        public virtual async Task<LoginUserInfo> FindUserAsync(HttpContext context) => await Task.FromResult(this.FindUser(context));
-    }
+        [Obsolete("不要直接调用，使用哪个有缓存的")]
+        public virtual async Task<LoginUserInfo> FindUserAsync(HttpContext context) =>
+            await Task.FromResult(this.FindUser(context));
 
-    /// <summary>
-    /// 直接使用login status
-    /// </summary>
-    public class CookieTokenValidationProvider : TokenValidationProviderBase
-    {
-        private readonly LoginStatus _LoginStatus;
-
-        public CookieTokenValidationProvider(LoginStatus _LoginStatus)
+        public virtual void WhenUserNotLogin(HttpContext context)
         {
-            this._LoginStatus = _LoginStatus;
+            AppContext.Scope(s =>
+            {
+                s.ResolveOptional_<LoginStatus>()?.SetUserLogout(context);
+                return true;
+            });
         }
 
-        public override LoginUserInfo FindUser(HttpContext context)
+        public virtual void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
         {
-            return this._LoginStatus.GetLoginUser(context);
+            AppContext.Scope(s =>
+            {
+                s.ResolveOptional_<LoginStatus>()?.SetUserLogin(context, loginuser);
+                return true;
+            });
         }
+
+        public LoginUserInfo GetLoginUserInfo(HttpContext context)
+        {
+            var data = context.CacheInHttpContext(this.HttpItemKey(), () =>
+            {
+                var loginuser = this.FindUser(context);
+                if (loginuser == null)
+                {
+                    this.WhenUserNotLogin(context);
+                }
+                else
+                {
+                    this.WhenUserLogin(context, loginuser);
+                }
+
+                return loginuser;
+            });
+            return data;
+        }
+
+        public async Task<LoginUserInfo> GetLoginUserInfoAsync(HttpContext context)
+        {
+            var data = await context.CacheInHttpContextAsync(this.HttpItemKey(), async () =>
+            {
+                var loginuser = await this.FindUserAsync(context);
+                if (loginuser == null)
+                {
+                    this.WhenUserNotLogin(context);
+                }
+                else
+                {
+                    this.WhenUserLogin(context, loginuser);
+                }
+
+                return loginuser;
+            });
+            return data;
+        }
+
     }
 
     /// <summary>
@@ -50,11 +94,16 @@ namespace Lib.mvc.auth.validation
     {
         private readonly AuthServerConfig _server;
         private readonly IValidationDataProvider _dataProvider;
+        public readonly LoginStatus _loginstatus;
 
-        public AuthServerValidationProvider(AuthServerConfig server, IValidationDataProvider _dataProvider)
+        public AuthServerValidationProvider(
+            AuthServerConfig server,
+            IValidationDataProvider _dataProvider,
+            LoginStatus _loginstatus)
         {
             this._server = server;
             this._dataProvider = _dataProvider;
+            this._loginstatus = _loginstatus;
         }
 
         public override LoginUserInfo FindUser(HttpContext context)
@@ -115,6 +164,16 @@ namespace Lib.mvc.auth.validation
                 e.AddErrorLog();
                 return null;
             }
+        }
+
+        public override void WhenUserNotLogin(HttpContext context)
+        {
+            this._loginstatus.SetUserLogout(context);
+        }
+
+        public override void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
+        {
+            this._loginstatus.SetUserLogin(context, loginuser);
         }
     }
 }

@@ -20,33 +20,17 @@ namespace Lib.mvc.auth
 {
     public static class AuthExtension
     {
-        public const string AuthedUserKey = "context.items.auth.user.entity";
-
         /// <summary>
         /// 获取当前登录用户
         /// </summary>
         public static async Task<LoginUserInfo> GetAuthUserAsync(this HttpContext context, string name = null)
         {
-            var data = await context.CacheInHttpContextAsync(AuthedUserKey, async () =>
+            return await AppContext.ScopeAsync(async x =>
             {
-                return await AppContext.ScopeAsync(async x =>
-                {
-                    var loginuser = await x.Resolve_<TokenValidationProviderBase>(name).FindUserAsync(context);
+                var loginuser = await x.Resolve_<TokenValidationProviderBase>(name).GetLoginUserInfoAsync(context);
 
-                    var loginstatus = x.ResolveOptional_<LoginStatus>(name);
-                    if (loginuser == null)
-                    {
-                        loginstatus?.SetUserLogout(context);
-                    }
-                    else
-                    {
-                        loginstatus?.SetUserLogin(context, loginuser);
-                    }
-
-                    return loginuser;
-                });
+                return loginuser;
             });
-            return data;
         }
 
         /// <summary>
@@ -55,26 +39,12 @@ namespace Lib.mvc.auth
         [Obsolete("请优先使用异步方法！！！")]
         public static LoginUserInfo GetAuthUser(this HttpContext context, string name = null)
         {
-            var data = context.CacheInHttpContext(AuthedUserKey, () =>
+            return AppContext.Scope(x =>
             {
-                return AppContext.Scope(x =>
-                {
-                    var loginuser = x.Resolve_<TokenValidationProviderBase>(name).FindUser(context);
+                var loginuser = x.Resolve_<TokenValidationProviderBase>(name).GetLoginUserInfo(context);
 
-                    var loginstatus = x.ResolveOptional_<LoginStatus>(name);
-                    if (loginuser == null)
-                    {
-                        loginstatus?.SetUserLogout(context);
-                    }
-                    else
-                    {
-                        loginstatus?.SetUserLogin(context, loginuser);
-                    }
-
-                    return loginuser;
-                });
+                return loginuser;
             });
-            return data;
         }
 
         /// <summary>
