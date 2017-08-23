@@ -89,13 +89,19 @@ namespace Hiwjcn.Framework.Provider
 
     public class SSOValidationProvider : TokenValidationProviderBase
     {
+        private readonly LoginStatus ls;
+
+        public SSOValidationProvider()
+        {
+            this.ls = AccountHelper.SSO;
+        }
+
         public override string HttpItemKey() => "httpcontext.item.sso.user.entity";
 
         public override LoginUserInfo FindUser(HttpContext context)
         {
             try
             {
-                var ls = AccountHelper.SSO;
                 var uid = ls.GetCookieUID(context);
                 var token = ls.GetCookieToken(context);
                 if (!ValidateHelper.IsAllPlumpString(uid, token))
@@ -129,14 +135,19 @@ namespace Hiwjcn.Framework.Provider
             }
         }
 
+        public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
+        {
+            return await Task.FromResult(this.FindUser(context));
+        }
+
         public override void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
         {
-            AccountHelper.SSO.SetUserLogin(context, loginuser);
+            ls.SetUserLogin(context, loginuser);
         }
 
         public override void WhenUserNotLogin(HttpContext context)
         {
-            AccountHelper.SSO.SetUserLogout(context);
+            ls.SetUserLogout(context);
         }
     }
 }

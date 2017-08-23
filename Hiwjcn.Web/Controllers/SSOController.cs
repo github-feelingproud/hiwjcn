@@ -181,7 +181,7 @@ namespace Hiwjcn.Web.Controllers
 
     public class SSOApiValidAttribute : ValidLoginBaseAttribute
     {
-        private readonly TokenValidationProviderBase valid = new SSOValidationProvider();
+        private readonly SSOValidationProvider valid = new SSOValidationProvider();
 
         protected override LoginUserInfo GetLoginUser(ActionExecutingContext filterContext)
         {

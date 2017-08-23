@@ -26,8 +26,7 @@ namespace Lib.mvc.auth.validation
         public abstract LoginUserInfo FindUser(HttpContext context);
 
         [Obsolete("不要直接调用，使用哪个有缓存的")]
-        public virtual async Task<LoginUserInfo> FindUserAsync(HttpContext context) =>
-            await Task.FromResult(this.FindUser(context));
+        public abstract Task<LoginUserInfo> FindUserAsync(HttpContext context);
 
         public virtual void WhenUserNotLogin(HttpContext context)
         {
