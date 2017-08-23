@@ -65,7 +65,7 @@ namespace Hiwjcn.Web.Controllers
             this._cache = _cache;
         }
 
-        [PageAuth(Permission = manage_auth)]
+        [SSOPageValid(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> Statics()
         {
@@ -196,7 +196,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [PageAuth(Permission = manage_auth)]
+        [SSOPageValid(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> Scopes(string q, int? page)
         {
@@ -214,7 +214,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [PageAuth(Permission = manage_auth)]
+        [SSOPageValid(Permission = manage_auth)]
         [RequestLog]
         [Route("AuthManage/EditScope/{uid}")]
         public async Task<ActionResult> EditScope(string uid)
@@ -235,7 +235,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [ApiAuth(Permission = manage_auth)]
+        [SSOApiValid(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> SaveScopeAction(AuthScope model)
         {
@@ -258,7 +258,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [PageAuth(Permission = manage_auth)]
+        [SSOPageValid(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> Clients(string q, int? page)
         {
@@ -276,7 +276,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [PageAuth(Permission = manage_auth)]
+        [SSOPageValid(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> Tasks()
         {
@@ -297,7 +297,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [PageAuth(Permission = manage_auth)]
+        [SSOPageValid(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> Users(string q, int? page)
         {
@@ -316,7 +316,7 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        [ApiAuth(Permission = manage_auth)]
+        [SSOApiValid(Permission = manage_auth)]
         [RequestLog]
         public async Task<ActionResult> DeleteUserTokens(string user_uid)
         {

@@ -30,56 +30,29 @@ namespace Hiwjcn.Web.Controllers
 {
     public class SSOController : BaseController
     {
-        public static readonly LoginStatus loginStatus = new LoginStatus();
-
-        private static LoginUserInfo ReadUser(string uid, string token)
+        public static LoginStatus loginStatus => AccountHelper.SSO;
+        
+        private static T_UserInfo GetUser(string uid)
         {
-            var loginuser = AppContext.Scope(s =>
+            using (var db = new SSODB())
             {
-                var cache = s.Resolve_<ICacheProvider>();
-                var key = $"sso.user.uid={uid}".WithCacheKeyPrefix();
-                //读取用户
-                var user = cache.GetOrSet(key, () =>
+                var model = db.T_UserInfo.Where(x => x.UID == uid).FirstOrDefault();
+                if (model == null)
                 {
-                    using (var db = new SSODB())
-                    {
-                        return db.T_UserInfo.Where(x => x.UID == uid).FirstOrDefault();
-                    }
-                }, TimeSpan.FromSeconds(60));
-                if (user == null)
-                {
-                    $"sso用户不存在,uid={uid}".AddBusinessInfoLog();
                     return null;
                 }
-                if (user.Token() != token)
-                {
-                    $"sso用户token不正确，uid={uid},token={token}".AddBusinessInfoLog();
-                    return null;
-                }
-                //读取权限
-                key = $"sso.user.permissions.uid={uid}".WithCacheKeyPrefix();
-                var permissions = cache.GetOrSet(key, () =>
-                {
-                    using (var db = new SSODB())
-                    {
-                        //这里只拿了角色关联的权限，部门关联的权限没有拿
-                        var roleslist = db.Auth_UserRole.Where(x => x.UserID == uid).Select(x => x.RoleID).ToList()
-                        .Select(x => $"role:{x}").ToList();
 
-                        return db.Auth_PermissionMap.Where(x => roleslist.Contains(x.MapKey))
-                        .Select(x => x.PermissionID).Distinct().ToList();
-                    }
-                }, TimeSpan.FromSeconds(60));
-                return new LoginUserInfo()
-                {
-                    IID = user.IID,
-                    UserID = user.UID,
-                    UserName = user.UserName,
-                    LoginToken = token,
-                    Permissions = permissions
-                };
-            });
-            return loginuser;
+                //这里只拿了角色关联的权限，部门关联的权限没有拿
+                var roleslist = db.Auth_UserRole.Where(x => x.UserID == uid)
+                    .Select(x => x.RoleID).ToList()
+                    .Select(x => $"role:{x}").ToList();
+
+                model.Permissions = db.Auth_PermissionMap.Where(x => roleslist.Contains(x.MapKey))
+                    .Select(x => x.PermissionID).ToList()
+                    .Distinct().ToList();
+
+                return model;
+            }
         }
 
         public static LoginUserInfo GetLoginSSO()
@@ -92,9 +65,18 @@ namespace Hiwjcn.Web.Controllers
                 var token = loginStatus.GetCookieToken(context);
                 if (ValidateHelper.IsAllPlumpString(uid, token))
                 {
-                    var loginuser = ReadUser(uid, token);
-                    if (loginuser != null)
+                    var user = AppContext.Scope(s =>
                     {
+                        var cache = s.Resolve_<ICacheProvider>();
+                        var key = $"sso.user.uid={uid}".WithCacheKeyPrefix();
+                        return cache.GetOrSet(key, () => GetUser(uid), TimeSpan.FromSeconds(60));
+                    });
+
+                    if (user != null && user.Token() == token)
+                    {
+                        var loginuser = user.LoginUserInfo();
+                        loginStatus.SetUserLogin(context, loginuser);
+
                         return loginuser;
                     }
                 }
@@ -110,7 +92,6 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                await Task.FromResult(1);
                 if (!ValidateHelper.IsAllPlumpString(username, password))
                 {
                     return GetJsonRes("请输入账号密码");
@@ -119,10 +100,20 @@ namespace Hiwjcn.Web.Controllers
                 using (var db = new SSODB())
                 {
                     var md5 = password.ToMD5().ToUpper();
-                    var user = await db.T_UserInfo.Where(x => x.UserName == username && x.PassWord == md5).FirstOrDefaultAsync();
+                    var model = await db.T_UserInfo.Where(x => x.UserName == username && x.PassWord == md5).FirstOrDefaultAsync();
+                    if (model == null)
+                    {
+                        return GetJsonRes("账户密码错误");
+                    }
+                    var user = GetUser(model.UID);
+                    if (user == null)
+                    {
+                        return GetJsonRes("读取用户信息异常");
+                    }
+                    var loginuser = user.LoginUserInfo();
+                    loginStatus.SetUserLogin(this.X.context, loginuser);
+                    return GetJsonRes(string.Empty);
                 }
-
-                return GetJsonRes(string.Empty);
             });
         }
 

@@ -11,6 +11,7 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.Entity.SqlServer;
 using System.Linq;
 using Lib.extension;
+using Lib.mvc.user;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -188,6 +189,23 @@ namespace Hiwjcn.Core.Data
 
         [NotMapped]
         public virtual Auth_Department Department { get; set; }
+
+        [NotMapped]
+        public virtual List<string> Permissions { get; set; }
+
+        public virtual LoginUserInfo LoginUserInfo()
+        {
+            return new LoginUserInfo()
+            {
+                IID = this.IID,
+                UserID = this.UID,
+                UserName = this.UserName,
+                NickName = this.UserName,
+                LoginToken = this.Token(),
+                TokenExpire = DateTime.Now.AddDays(30),
+                Permissions = this.Permissions
+            };
+        }
     }
     public class T_UserToken : IDBTable
     {
