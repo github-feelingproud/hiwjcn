@@ -37,8 +37,8 @@ namespace Hiwjcn.Framework.Tasks
                 //早上2.30清理数据库
                 //return TriggerDaily(2, 30);
 
-                //just for test
-                return TriggerInterval(60);
+                //2小时执行一次
+                return TriggerInterval(60 * 60 * 2);
             }
         }
 
@@ -55,16 +55,19 @@ namespace Hiwjcn.Framework.Tasks
                     AppContext.Scope(s =>
                     {
                         var worker = s.Resolve_<IClearDataBaseService>();
+                        /* 这里不要清理，这里关联的用户是usermodel，开启会删除重要数据！！！
                         worker.ClearCacheHitLog();
                         worker.ClearClient();
+                        worker.ClearScope();
+                        worker.ClearToken();
+
                         worker.ClearLoginLog();
                         worker.ClearPage();
                         worker.ClearRequestLog();
                         worker.ClearRole();
-                        worker.ClearScope();
+                        worker.ClearPermission();
                         worker.ClearTag();
-                        worker.ClearToken();
-                        worker.ClearUser();
+                        worker.ClearUser();*/
                         return true;
                     });
                 }

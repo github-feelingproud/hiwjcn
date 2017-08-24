@@ -10,6 +10,8 @@ using Hiwjcn.Core.Domain;
 using Hiwjcn.Core.Model.Sys;
 using WebLogic.Model.User;
 using Model.User;
+using Lib.extension;
+using WebLogic.Model.Tag;
 
 namespace Hiwjcn.Bll
 {
@@ -81,7 +83,27 @@ namespace Hiwjcn.Bll
 
         public void ClearPage()
         {
-            //
+            "页面的数据不会被清理".AddBusinessInfoLog();
+        }
+
+        public void ClearPermission()
+        {
+            this._LoginErrorLogModelRepo.PrepareSession(db =>
+            {
+                var role_set = db.Set<RoleModel>();
+                var permission_set = db.Set<PermissionModel>();
+                var permission_map = db.Set<RolePermissionModel>();
+
+                var role_uids = role_set.Select(x => x.UID);
+                var permission_uids = permission_set.Select(x => x.UID);
+                var range = permission_map.Where(x => !role_uids.Contains(x.RoleID) || !permission_uids.Contains(x.PermissionID));
+
+                permission_map.RemoveRange(range);
+
+                db.SaveChanges();
+
+                return true;
+            });
         }
 
         public void ClearRequestLog()
@@ -129,7 +151,13 @@ namespace Hiwjcn.Bll
 
         public void ClearTag()
         {
-            //
+            this._ReqLogModelRepo.PrepareSession(db =>
+            {
+                var tag_set = db.Set<TagModel>();
+                var tag_map = db.Set<TagMapModel>();
+
+                return true;
+            });
         }
 
         public void ClearToken()
@@ -154,7 +182,7 @@ namespace Hiwjcn.Bll
 
         public void ClearUser()
         {
-            //
+            "用户信息不会被清理".AddBusinessInfoLog();
         }
     }
 }

@@ -7,6 +7,7 @@ using Lib.ioc;
 
 namespace Hiwjcn.Core.Infrastructure
 {
+    [Obsolete("清理数据是危险操作，请不要随意开启！！！")]
     public interface IClearDataBaseService : IAutoRegistered
     {
         void ClearScope();
@@ -26,6 +27,8 @@ namespace Hiwjcn.Core.Infrastructure
         void ClearTag();
 
         void ClearRole();
+
+        void ClearPermission();
 
         void ClearLoginLog();
     }

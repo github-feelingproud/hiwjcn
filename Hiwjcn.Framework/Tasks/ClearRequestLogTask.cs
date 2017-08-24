@@ -26,7 +26,12 @@ namespace Hiwjcn.Framework.Tasks
             try
             {
                 var expire = DateTime.Now.AddDays(-30);
-                AppContext.Scope(s => s.Resolve_<IRepository<ReqLogModel>>().DeleteWhere(x => x.CreateTime < expire));
+                AppContext.Scope(s =>
+                {
+                    s.Resolve_<IRepository<ReqLogModel>>().DeleteWhere(x => x.CreateTime < expire);
+                    s.Resolve_<IRepository<CacheHitLog>>().DeleteWhere(x => x.CreateTime < expire);
+                    return true;
+                });
             }
             catch (Exception e)
             {
