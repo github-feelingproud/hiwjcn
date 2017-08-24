@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Hiwjcn.Core
 {
+    /// <summary>
+    /// 缓存key的统一管理
+    /// </summary>
     public static class CacheKeyManager
     {
         public static string AuthTokenKey(string token_uid) => $"auth.token.uid={token_uid}".WithCacheKeyPrefix();
@@ -19,6 +22,8 @@ namespace Hiwjcn.Core
 
         public static string AuthUserInfoKey(string user_uid) => $"auth.user.uid={user_uid}".WithCacheKeyPrefix();
 
+        public static string AuthSSOUserInfoKey(string user_uid) => $"auth.sso.user.uid={user_uid}".WithCacheKeyPrefix();
+
         public static string SysPageKey(string page_name) => $"sys.page.name={page_name}".WithCacheKeyPrefix();
 
         public static string SysCategoryListKey(string category_type) =>
@@ -28,6 +33,6 @@ namespace Hiwjcn.Core
             $"sys.link.list.type={link_type}".WithCacheKeyPrefix();
 
         public static string SysOptionListKey() => $"sys.option.list.all".WithCacheKeyPrefix();
-        
+
     }
 }

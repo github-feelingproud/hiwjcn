@@ -20,6 +20,7 @@ using System.Data.Entity;
 using Hiwjcn.Framework;
 using Lib.cache;
 using Lib.task;
+using Hiwjcn.Framework.Provider;
 
 namespace Hiwjcn.Web.Controllers
 {

@@ -31,61 +31,7 @@ namespace Hiwjcn.Web.Controllers
 {
     public class SSOController : BaseController
     {
-        public static LoginStatus loginStatus => AccountHelper.SSO;
-
-        private static T_UserInfo GetUser(string uid)
-        {
-            using (var db = new SSODB())
-            {
-                var model = db.T_UserInfo.Where(x => x.UID == uid).FirstOrDefault();
-                if (model == null)
-                {
-                    return null;
-                }
-
-                //这里只拿了角色关联的权限，部门关联的权限没有拿
-                var roleslist = db.Auth_UserRole.Where(x => x.UserID == uid)
-                    .Select(x => x.RoleID).ToList()
-                    .Select(x => $"role:{x}").ToList();
-
-                model.Permissions = db.Auth_PermissionMap.Where(x => roleslist.Contains(x.MapKey))
-                    .Select(x => x.PermissionID).ToList()
-                    .Distinct().ToList();
-
-                return model;
-            }
-        }
-
-        public static LoginUserInfo GetLoginSSO()
-        {
-            var context = System.Web.HttpContext.Current;
-
-            return context.CacheInHttpContext("sso.loginuser.entity", () =>
-            {
-                var uid = loginStatus.GetCookieUID(context);
-                var token = loginStatus.GetCookieToken(context);
-                if (ValidateHelper.IsAllPlumpString(uid, token))
-                {
-                    var user = AppContext.Scope(s =>
-                    {
-                        var cache = s.Resolve_<ICacheProvider>();
-                        var key = $"sso.user.uid={uid}".WithCacheKeyPrefix();
-                        return cache.GetOrSet(key, () => GetUser(uid), TimeSpan.FromSeconds(60));
-                    });
-
-                    if (user != null && user.CreateToken() == token)
-                    {
-                        var loginuser = user.LoginUserInfo();
-                        loginStatus.SetUserLogin(context, loginuser);
-
-                        return loginuser;
-                    }
-                }
-
-                loginStatus.SetUserLogout(context);
-                return null;
-            });
-        }
+        private LoginStatus loginStatus => AccountHelper.SSO;
 
         [HttpPost]
         [RequestLog]
@@ -106,12 +52,11 @@ namespace Hiwjcn.Web.Controllers
                     {
                         return GetJsonRes("账户密码错误");
                     }
-                    var user = GetUser(model.UID);
-                    if (user == null)
+                    if (model.IsActive <= 0 || model.IsRemove > 0)
                     {
-                        return GetJsonRes("读取用户信息异常");
+                        return GetJsonRes("用户被删除，或者被禁用");
                     }
-                    var loginuser = user.LoginUserInfo();
+                    var loginuser = model.LoginUserInfo();
                     loginStatus.SetUserLogin(this.X.context, loginuser);
                     return GetJsonRes(string.Empty);
                 }
@@ -124,7 +69,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 url = Com.FirstPlumpStrOrNot(url, @continue, next, callback, "/");
-                var loginuser = SSOController.GetLoginSSO();
+                var loginuser = await this.X.context.GetSSOLoginUserAsync();
                 if (loginuser != null)
                 {
                     return Redirect(url);
@@ -152,53 +97,7 @@ namespace Hiwjcn.Web.Controllers
         [SSOPageValid]
         public ActionResult test()
         {
-            return GetJson(SSOController.GetLoginSSO());
-        }
-    }
-
-    public static class SSOExtension
-    { }
-
-    public class SSOPageValidAttribute : ValidLoginBaseAttribute
-    {
-
-        private readonly TokenValidationProviderBase valid = new SSOValidationProvider();
-
-        protected override LoginUserInfo GetLoginUser(ActionExecutingContext filterContext)
-        {
-            return valid.GetLoginUserInfo(HttpContext.Current);
-        }
-
-        public override void WhenNoPermission(ref ActionExecutingContext filterContext)
-        {
-            filterContext.Result = new ViewResult() { ViewName = "~/Views/Shared/Limited.cshtml" };
-        }
-
-        public override void WhenNotLogin(ref ActionExecutingContext filterContext)
-        {
-            var current_url = filterContext.HttpContext.Request.Url.ToString();
-            current_url = EncodingHelper.UrlEncode(current_url);
-            filterContext.Result = new RedirectResult($"/sso/login?continue={current_url}");
-        }
-    }
-
-    public class SSOApiValidAttribute : ValidLoginBaseAttribute
-    {
-        private readonly SSOValidationProvider valid = new SSOValidationProvider();
-
-        protected override LoginUserInfo GetLoginUser(ActionExecutingContext filterContext)
-        {
-            return valid.GetLoginUserInfo(HttpContext.Current);
-        }
-
-        public override void WhenNoPermission(ref ActionExecutingContext filterContext)
-        {
-            filterContext.Result = GetJson(new _() { success = false, msg = "没有权限", code = (-(int)HttpStatusCode.Unauthorized).ToString() });
-        }
-
-        public override void WhenNotLogin(ref ActionExecutingContext filterContext)
-        {
-            filterContext.Result = GetJson(new _() { success = false, msg = "没有登录", code = (-999).ToString() });
+            return GetJson(this.X.context.GetSSOLoginUser());
         }
     }
 }

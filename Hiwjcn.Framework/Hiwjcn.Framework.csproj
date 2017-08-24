@@ -135,6 +135,7 @@
     <Compile Include="Provider\AuthLocalValidationProvider.cs" />
     <Compile Include="Provider\AuthTokenToUserService.cs" />
     <Compile Include="Provider\IAuthTokenToUserService.cs" />
+    <Compile Include="Provider\SSOLoginValidationProvider.cs" />
     <Compile Include="Tasks\CleanDatabaseTask.cs" />
     <Compile Include="Tasks\ClearRequestLogTask.cs" />
     <Compile Include="Tasks\ConcurrentTestTask.cs" />

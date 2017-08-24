@@ -189,20 +189,6 @@ namespace Hiwjcn.Core.Data
 
         [NotMapped]
         public virtual List<string> Permissions { get; set; }
-
-        public virtual LoginUserInfo LoginUserInfo()
-        {
-            return new LoginUserInfo()
-            {
-                IID = this.IID,
-                UserID = this.UID,
-                UserName = this.UserName,
-                NickName = this.UserName,
-                LoginToken = this.CreateToken(),
-                TokenExpire = DateTime.Now.AddDays(30),
-                Permissions = this.Permissions
-            };
-        }
     }
     public class T_UserToken : IDBTable
     {

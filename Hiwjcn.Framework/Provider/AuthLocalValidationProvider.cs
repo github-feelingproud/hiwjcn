@@ -21,13 +21,13 @@ using Hiwjcn.Framework.Actors;
 using Lib.mvc.auth;
 using Hiwjcn.Framework;
 using Lib.ioc;
+using Hiwjcn.Core;
 using Lib.mvc.auth.validation;
 using Hiwjcn.Core.Data;
 using System.Data.Entity;
 
 namespace Hiwjcn.Framework.Provider
 {
-
     /// <summary>
     /// 查询本地库
     /// </summary>
@@ -74,67 +74,4 @@ namespace Hiwjcn.Framework.Provider
         }
     }
 
-    public class SSOValidationProvider : TokenValidationProviderBase
-    {
-        private readonly LoginStatus ls;
-
-        public SSOValidationProvider()
-        {
-            this.ls = AccountHelper.SSO;
-        }
-
-        public override string HttpContextItemKey() => "httpcontext.item.sso.user.entity";
-
-        public override LoginUserInfo FindUser(HttpContext context)
-        {
-            try
-            {
-                var uid = ls.GetCookieUID(context);
-                var token = ls.GetCookieToken(context);
-                if (!ValidateHelper.IsAllPlumpString(uid, token))
-                {
-                    return null;
-                }
-                using (var db = new SSODB())
-                {
-                    var model = db.T_UserInfo.Where(x => x.UID == uid).FirstOrDefault();
-                    if (model == null || model.CreateToken() != token)
-                    {
-                        return null;
-                    }
-                    //load permission
-                    //这里只拿了角色关联的权限，部门关联的权限没有拿
-                    var roleslist = db.Auth_UserRole.Where(x => x.UserID == uid)
-                        .Select(x => x.RoleID).ToList()
-                        .Select(x => $"role:{x}").ToList();
-
-                    model.Permissions = db.Auth_PermissionMap.Where(x => roleslist.Contains(x.MapKey))
-                        .Select(x => x.PermissionID).ToList()
-                        .Distinct().ToList();
-
-                    return model.LoginUserInfo();
-                }
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-                return null;
-            }
-        }
-
-        public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
-        {
-            return await Task.FromResult(this.FindUser(context));
-        }
-
-        public override void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
-        {
-            ls.SetUserLogin(context, loginuser);
-        }
-
-        public override void WhenUserNotLogin(HttpContext context)
-        {
-            ls.SetUserLogout(context);
-        }
-    }
 }
