@@ -43,9 +43,10 @@ namespace Hiwjcn.Bll.Auth
                 return data;
             }
 
-            var hit_status = CacheHitStatusEnum.Hit;
             var cache_expire = TimeSpan.FromMinutes(5);
+            var Actor = ActorsManager<CacheHitLogActor>.Instance.DefaultClient;
 
+            var hit_status = CacheHitStatusEnum.Hit;
             var cache_key = CacheKeyManager.AuthTokenKey(access_token);
 
             //查找token
@@ -55,8 +56,6 @@ namespace Hiwjcn.Bll.Auth
 
                 return await this._IAuthTokenService.FindTokenAsync(client_id, access_token);
             }, cache_expire);
-
-            var Actor = ActorsManager<CacheHitLogActor>.Instance.DefaultClient;
 
             //统计缓存命中
             Actor?.Tell(new CacheHitLog(cache_key, hit_status));
@@ -74,8 +73,7 @@ namespace Hiwjcn.Bll.Auth
             {
                 hit_status = CacheHitStatusEnum.NotHit;
 
-                var user = await this._IAuthLoginService.GetUserInfoByUID(token.UserUID);
-                return user;
+                return await this._IAuthLoginService.GetUserInfoByUID(token.UserUID);
             }, cache_expire);
 
             //统计缓存命中

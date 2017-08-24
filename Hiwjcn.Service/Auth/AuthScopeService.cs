@@ -43,19 +43,14 @@ namespace Hiwjcn.Bll.Auth
             return await this._AuthScopeRepository.GetListAsync(x => names.Contains(x.Name));
         }
 
-        public async Task<List<AuthScope>> AllScopesAsync()
-        {
-            return (await this._AuthScopeRepository.GetListAsync(x => x.IsRemove <= 0)).OrderByDescending(x => x.Important).OrderBy(x => x.Name).ToList();
-        }
-
         public async Task<string> AddScopeAsync(AuthScope scope)
         {
             scope.Init("scope");
+            scope.Name = scope.Name?.ToLower();
             if (!this.CheckModel(scope, out var msg))
             {
                 return msg;
             }
-            scope.Name = scope.Name?.ToLower();
 
             if (await this._AuthScopeRepository.ExistAsync(x => x.Name == scope.Name))
             {
@@ -96,6 +91,11 @@ namespace Hiwjcn.Bll.Auth
             scope.ImageUrl = updatemodel.ImageUrl;
             scope.FontIcon = updatemodel.FontIcon;
             scope.UpdateTime = DateTime.Now;
+
+            if (!this.CheckModel(scope, out var msg))
+            {
+                return msg;
+            }
 
             if (await this._AuthScopeRepository.UpdateAsync(scope) > 0)
             {

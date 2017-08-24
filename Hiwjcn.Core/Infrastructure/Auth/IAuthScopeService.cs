@@ -11,8 +11,6 @@ namespace Hiwjcn.Core.Infrastructure.Auth
 {
     public interface IAuthScopeService : IServiceBase<AuthScope>
     {
-        Task<List<AuthScope>> AllScopesAsync();
-
         Task<List<AuthScope>> GetScopesOrDefaultAsync(params string[] names);
 
         Task<string> AddScopeAsync(AuthScope scope);

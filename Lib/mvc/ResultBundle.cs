@@ -120,6 +120,7 @@ namespace Lib.mvc
 
         public void SetErrorMsg(string msg)
         {
+            if (!ValidateHelper.IsPlumpString(msg)) { throw new Exception("错误信息不能为空"); }
             this.ErrorMsg = msg;
             this.Success = false;
         }

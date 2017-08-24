@@ -72,7 +72,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var data = await this._IAuthTokenService.CreateTokenAsync(client_id, client_secret, code);
-                if (ValidateHelper.IsPlumpString(data.msg))
+                if (!data.success)
                 {
                     return GetJsonRes(data.msg);
                 }
@@ -124,7 +124,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var loginuser = await this._IAuthLoginService.LoginByCode(phone, sms);
-                if (ValidateHelper.IsPlumpString(loginuser.msg))
+                if (!loginuser.success)
                 {
                     return GetJsonRes(loginuser.msg);
                 }
@@ -136,7 +136,7 @@ namespace Hiwjcn.Web.Controllers
                 }
 
                 var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
-                if (ValidateHelper.IsPlumpString(code.msg))
+                if (!code.success)
                 {
                     return GetJsonRes(code.msg);
                 }
@@ -151,7 +151,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var loginuser = await this._IAuthLoginService.LoginByPassword(username, password);
-                if (ValidateHelper.IsPlumpString(loginuser.msg))
+                if (!loginuser.success)
                 {
                     return GetJsonRes(loginuser.msg);
                 }
@@ -163,7 +163,7 @@ namespace Hiwjcn.Web.Controllers
                 }
 
                 var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
-                if (ValidateHelper.IsPlumpString(code.msg))
+                if (!code.success)
                 {
                     return GetJsonRes(code.msg);
                 }

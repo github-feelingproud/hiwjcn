@@ -133,12 +133,12 @@ namespace Hiwjcn.Web.Controllers
                 var res = await this.LogLoginErrorInfo(username, password, async () =>
                 {
                     var data = await this._IAuthLoginService.LoginByPassword(username, password);
-                    if (ValidateHelper.IsPlumpString(data.msg))
+                    if (!data.success)
                     {
                         return data.msg;
                     }
                     var loginuser = await this.CreateAuthToken(data.data);
-                    if (ValidateHelper.IsPlumpString(loginuser.msg))
+                    if (!loginuser.success)
                     {
                         return loginuser.msg;
                     }
@@ -159,12 +159,12 @@ namespace Hiwjcn.Web.Controllers
                 var res = await this.LogLoginErrorInfo(phone, code, async () =>
                 {
                     var data = await this._IAuthLoginService.LoginByCode(phone, code);
-                    if (ValidateHelper.IsPlumpString(data.msg))
+                    if (!data.success)
                     {
                         return data.msg;
                     }
                     var loginuser = await this.CreateAuthToken(data.data);
-                    if (ValidateHelper.IsPlumpString(loginuser.msg))
+                    if (!data.success)
                     {
                         return loginuser.msg;
                     }

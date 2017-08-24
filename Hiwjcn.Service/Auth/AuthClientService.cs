@@ -34,21 +34,20 @@ namespace Hiwjcn.Bll.Auth
             {
                 return msg;
             }
-            var ok = await this._AuthClientRepository.AddAsync(client) > 0;
-            if (ok)
+            if (await this._AuthClientRepository.AddAsync(client) > 0)
             {
                 return SUCCESS;
             }
             throw new Exception("保存client异常");
         }
 
+        [Obsolete("逻辑有问题")]
         public async Task<string> DeleteClientAsync(string client_uid, string user_uid)
         {
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);
-            Com.Assert(client, x => x != null, $"找不到client[client_uid={client_uid},user_uid={user_uid}]");
-            var ok = await this._AuthClientRepository.DeleteAsync(client) > 0;
+            Com.AssertNotNull(client, $"找不到client[client_uid={client_uid},user_uid={user_uid}]");
 
-            if (ok)
+            if (await this._AuthClientRepository.DeleteAsync(client) > 0)
             {
                 await this._AuthClientRepository.PrepareSessionAsync(async db =>
                 {
@@ -57,12 +56,12 @@ namespace Hiwjcn.Bll.Auth
                     var scope_set = db.Set<AuthTokenScope>();
 
                     var token_to_delete = token_set.Where(x => x.ClientUID == client_uid);
-                    token_set.RemoveRange(token_to_delete);
-
                     var code_to_delete = code_set.Where(x => x.ClientUID == client_uid);
-                    code_set.RemoveRange(code_to_delete);
+                    var token_uids = token_to_delete.Select(m => m.UID).ToList();
+                    var scope_to_delete = scope_set.Where(x => token_uids.Contains(x.TokenUID));
 
-                    var scope_to_delete = scope_set.Where(x => token_to_delete.Select(m => m.UID).Contains(x.TokenUID));
+                    token_set.RemoveRange(token_to_delete);
+                    code_set.RemoveRange(code_to_delete);
                     scope_set.RemoveRange(scope_to_delete);
 
                     await db.SaveChangesAsync();
@@ -76,7 +75,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<string> EnableOrDisableClientAsync(string client_uid, string user_uid)
         {
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);
-            client = client ?? throw new Exception($"找不到client[client_uid={client_uid},user_uid={user_uid}]");
+            Com.AssertNotNull(client, $"找不到client[client_uid={client_uid},user_uid={user_uid}]");
             client.IsRemove = (!client.IsRemove.ToString().ToBool()).ToString().ToBoolInt();
             client.UpdateTime = DateTime.Now;
 
@@ -84,9 +83,8 @@ namespace Hiwjcn.Bll.Auth
             {
                 return msg;
             }
-
-            var ok = await this._AuthClientRepository.UpdateAsync(client) > 0;
-            if (ok)
+;
+            if (await this._AuthClientRepository.UpdateAsync(client) > 0)
             {
                 return SUCCESS;
             }
@@ -116,7 +114,10 @@ namespace Hiwjcn.Bll.Auth
                 log.Init("clientchecklog");
                 log.CheckStatus = model.IsActive;
                 log.Msg = reason ?? "no reason";
-                await this._AuthClientCheckLogRepository.AddAsync(log);
+                if (await this._AuthClientCheckLogRepository.AddAsync(log) <= 0)
+                {
+                    $"{model.ToJson()}保存操作日志失败{log.ToJson()}".AddBusinessInfoLog();
+                }
 
                 return SUCCESS;
             }
@@ -176,7 +177,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<string> UpdateClientAsync(AuthClient updatemodel)
         {
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == updatemodel.UID && x.UserUID == updatemodel.UserUID);
-            Com.Assert(client, x => x != null, $"client不存在:{updatemodel.ToJson()}");
+            Com.AssertNotNull(client, $"client不存在:{updatemodel.ToJson()}");
 
             client.ClientName = updatemodel.ClientName;
             client.ClientUrl = updatemodel.ClientUrl;
@@ -188,8 +189,7 @@ namespace Hiwjcn.Bll.Auth
                 return msg;
             }
 
-            var ok = await this._AuthClientRepository.UpdateAsync(client) > 0;
-            if (ok)
+            if (await this._AuthClientRepository.UpdateAsync(client) > 0)
             {
                 return SUCCESS;
             }
