@@ -188,4 +188,87 @@ namespace Hiwjcn.Core.Model.Sys
 
         public virtual int NotHit { get; set; }
     }
+
+    [Serializable]
+    [Table("sys_user_activity")]
+    public class UserActivity : TimeBaseEntity
+    {
+        [MaxLength(100)]
+        public virtual string ReqID { get; set; }
+
+        [MaxLength(1000)]
+        public virtual string ReqRefURL { get; set; }
+
+        [MaxLength(1000)]
+        public virtual string ReqURL { get; set; }
+
+        [MaxLength(50)]
+        public virtual string AreaName { get; set; }
+
+        [MaxLength(50)]
+        public virtual string ControllerName { get; set; }
+
+        [MaxLength(50)]
+        public virtual string ActionName { get; set; }
+
+        [MaxLength(50)]
+        public virtual string ReqMethod { get; set; }
+
+        [DataType(DataType.Text)]
+        public virtual string PostParams { get; set; }
+
+        [StringLength(5000)]
+        public virtual string GetParams { get; set; }
+
+        [StringLength(5000)]
+        public virtual string Cookies { get; set; }
+
+        [StringLength(5000)]
+        public virtual string Headers { get; set; }
+
+        public virtual double? ReqTime { get; set; }
+
+        [StringLength(200)]
+        public virtual string UserUID { get; set; }
+
+        [StringLength(200)]
+        public virtual string UserIdentity { get; set; }
+
+        [StringLength(500)]
+        public virtual string AppPage { get; set; }
+
+        [StringLength(100)]
+        [Required]
+        public virtual string EventType { get; set; }
+
+        [StringLength(100)]
+        public virtual string UserIP { get; set; }
+
+        [StringLength(100)]
+        public virtual string ClientPlatform { get; set; }
+
+        [StringLength(100)]
+        public virtual string ClientBrand { get; set; }
+
+        [StringLength(100)]
+        public virtual string AppVersion { get; set; }
+
+        [DataType(DataType.Text)]
+        public virtual string DataXml { get; set; }
+
+        [DataType(DataType.Text)]
+        public virtual string DataJson { get; set; }
+    }
+
+    public static class UserEventTypeManager
+    {
+        public static readonly string Login = "login";
+        public static readonly string Logout = "logout";
+        public static readonly string DeleteToken = "delete_token";
+    }
+
+    public class UserCreateOrderEventData
+    {
+        public string OrderUID { get; set; }
+    }
 }
