@@ -113,8 +113,7 @@ namespace Hiwjcn.Bll.Auth
         private async Task ClearOldToken(string user_uid)
         {
             var now = DateTime.Now;
-            var tokens = await this._AuthTokenRepository.GetListAsync(x => x.UserUID == user_uid && x.ExpiryTime < now);
-            await this.DeleteTokensAsync(tokens);
+            await this._AuthTokenRepository.DeleteWhereAsync(x => x.UserUID == user_uid && x.ExpiryTime < now);
         }
 
         public virtual async Task<_<AuthToken>> CreateTokenAsync(
@@ -213,17 +212,16 @@ namespace Hiwjcn.Bll.Auth
             await this._AuthTokenRepository.PrepareSessionAsync(async db =>
             {
                 var token_query = db.Set<AuthToken>();
-                var scope_map_query = db.Set<AuthTokenScope>();
 
                 var token_uid_list = list.Select(x => x.UID).ToList();
                 var user_uid_list = list.Select(x => x.UserUID).ToList();
 
                 token_query.RemoveRange(token_query.Where(x => token_uid_list.Contains(x.UID)));
-                scope_map_query.RemoveRange(scope_map_query.Where(x => token_uid_list.Contains(x.TokenUID)));
 
                 if (await db.SaveChangesAsync() <= 0)
                 {
                     msg = "删除token失败";
+                    return false;
                 }
 
                 foreach (var token in token_uid_list)
@@ -245,10 +243,23 @@ namespace Hiwjcn.Bll.Auth
             {
                 return "用户ID为空";
             }
+            var max_count = 500;
 
-            var token_to_delete = await this._AuthTokenRepository.GetListAsync(x => x.ClientUID == client_uid && x.UserUID == user_uid);
+            var token_to_delete = await this._AuthTokenRepository.GetListAsync(x => x.ClientUID == client_uid && x.UserUID == user_uid, count: max_count);
 
-            return await this.DeleteTokensAsync(token_to_delete);
+            var errors = await this.DeleteTokensAsync(token_to_delete);
+            if (ValidateHelper.IsPlumpString(errors))
+            {
+                return errors;
+            }
+            else
+            {
+                if (max_count == token_to_delete.Count)
+                {
+                    return "要删除的记录数比较多，请多试几次，直到完全删除";
+                }
+                return this.SUCCESS;
+            }
         }
 
         public async Task<string> DeleteUserTokensAsync(string user_uid)
@@ -258,9 +269,23 @@ namespace Hiwjcn.Bll.Auth
                 return "用户ID为空";
             }
 
-            var token_to_delete = await this._AuthTokenRepository.GetListAsync(x => x.UserUID == user_uid);
+            var max_count = 500;
 
-            return await this.DeleteTokensAsync(token_to_delete);
+            var token_to_delete = await this._AuthTokenRepository.GetListAsync(x => x.UserUID == user_uid, count: max_count);
+
+            var errors = await this.DeleteTokensAsync(token_to_delete);
+            if (ValidateHelper.IsPlumpString(errors))
+            {
+                return errors;
+            }
+            else
+            {
+                if (max_count == token_to_delete.Count)
+                {
+                    return "要删除的记录数比较多，请多试几次，直到完全删除";
+                }
+                return this.SUCCESS;
+            }
         }
 
         private async Task<bool> RefreshToken(AuthToken tk)
