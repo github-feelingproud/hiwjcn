@@ -133,6 +133,7 @@
     <Compile Include="Infrastructure\Common\ILinkService.cs" />
     <Compile Include="Infrastructure\Common\ISettingService.cs" />
     <Compile Include="Infrastructure\Common\IUpFileService.cs" />
+    <Compile Include="Infrastructure\IClearDataBaseService.cs" />
     <Compile Include="Infrastructure\Page\IPageService.cs" />
     <Compile Include="Infrastructure\User\ILoginLogService.cs" />
     <Compile Include="Infrastructure\User\IRoleService.cs" />

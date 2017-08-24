@@ -18,14 +18,13 @@ namespace Hiwjcn.Bll.Auth
     public class AuthScopeService : ServiceBase<AuthScope>, IAuthScopeService
     {
         private readonly IEventPublisher _publisher;
-
         private readonly IRepository<AuthScope> _AuthScopeRepository;
+
         public AuthScopeService(
             IEventPublisher _publisher,
             IRepository<AuthScope> _AuthScopeRepository)
         {
             this._publisher = _publisher;
-
             this._AuthScopeRepository = _AuthScopeRepository;
         }
 

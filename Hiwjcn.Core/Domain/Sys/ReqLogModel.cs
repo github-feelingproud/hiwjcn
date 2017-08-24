@@ -159,6 +159,11 @@ namespace Hiwjcn.Core.Model.Sys
     [Table("sys_cachehitlog")]
     public class CacheHitLog : TimeBaseEntity
     {
+        /// <summary>
+        /// 没有无参构造函数autofac会报错
+        /// </summary>
+        public CacheHitLog() { }
+
         public CacheHitLog(string cacheKey, CacheHitStatusEnum hit)
         {
             this.CacheKey = cacheKey;

@@ -40,8 +40,7 @@ namespace Hiwjcn.Bll.Auth
             }
             throw new Exception("保存client异常");
         }
-
-        [Obsolete("逻辑有问题")]
+        
         public async Task<string> DeleteClientAsync(string client_uid, string user_uid)
         {
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);
@@ -49,24 +48,6 @@ namespace Hiwjcn.Bll.Auth
 
             if (await this._AuthClientRepository.DeleteAsync(client) > 0)
             {
-                await this._AuthClientRepository.PrepareSessionAsync(async db =>
-                {
-                    var token_set = db.Set<AuthToken>();
-                    var code_set = db.Set<AuthCode>();
-                    var scope_set = db.Set<AuthTokenScope>();
-
-                    var token_to_delete = token_set.Where(x => x.ClientUID == client_uid);
-                    var code_to_delete = code_set.Where(x => x.ClientUID == client_uid);
-                    var token_uids = token_to_delete.Select(m => m.UID).ToList();
-                    var scope_to_delete = scope_set.Where(x => token_uids.Contains(x.TokenUID));
-
-                    token_set.RemoveRange(token_to_delete);
-                    code_set.RemoveRange(code_to_delete);
-                    scope_set.RemoveRange(scope_to_delete);
-
-                    await db.SaveChangesAsync();
-                    return true;
-                });
                 return SUCCESS;
             }
             throw new Exception("删除client异常");

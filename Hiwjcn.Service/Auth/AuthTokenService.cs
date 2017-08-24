@@ -113,23 +113,8 @@ namespace Hiwjcn.Bll.Auth
         private async Task ClearOldToken(string user_uid)
         {
             var now = DateTime.Now;
-            await this._AuthTokenRepository.PrepareSessionAsync(async db =>
-            {
-                var set = db.Set<AuthToken>();
-                var map = db.Set<AuthTokenScope>();
-
-                //old token
-                var old_tokens = set.Where(x => x.UserUID == user_uid && x.ExpiryTime < now);
-
-                //remove map
-                map.RemoveRange(map.Where(x => old_tokens.Select(m => m.UID).Contains(x.TokenUID)));
-                await db.SaveChangesAsync();
-
-                //remove token
-                set.RemoveRange(old_tokens);
-                await db.SaveChangesAsync();
-                return true;
-            });
+            var tokens = await this._AuthTokenRepository.GetListAsync(x => x.UserUID == user_uid && x.ExpiryTime < now);
+            await this.DeleteTokensAsync(tokens);
         }
 
         public virtual async Task<_<AuthToken>> CreateTokenAsync(
@@ -233,11 +218,8 @@ namespace Hiwjcn.Bll.Auth
                 var token_uid_list = list.Select(x => x.UID).ToList();
                 var user_uid_list = list.Select(x => x.UserUID).ToList();
 
-                var token_to_delete = token_query.Where(x => token_uid_list.Contains(x.UID));
-                var map_to_delete = scope_map_query.Where(x => token_uid_list.Contains(x.TokenUID));
-
-                token_query.RemoveRange(token_to_delete);
-                scope_map_query.RemoveRange(map_to_delete);
+                token_query.RemoveRange(token_query.Where(x => token_uid_list.Contains(x.UID)));
+                scope_map_query.RemoveRange(scope_map_query.Where(x => token_uid_list.Contains(x.TokenUID)));
 
                 if (await db.SaveChangesAsync() <= 0)
                 {
