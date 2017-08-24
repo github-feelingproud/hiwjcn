@@ -32,8 +32,6 @@ namespace Hiwjcn.Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        private static Task start_up_task = null;
-
         #region Application
         protected void Application_Start()
         {
@@ -90,12 +88,8 @@ namespace Hiwjcn.Web
                     //尝试创建数据表
                     EFManager.TryInstallDatabase<EntityDB>();
 
-                    start_up_task = Task.Run(() =>
-                    {
-                        //启动后台服务
-                        TaskManager.StartAllTasks(new Assembly[] { typeof(CleanDatabaseTask).Assembly });
-                        //do something else
-                    });
+                    //启动后台服务
+                    TaskManager.StartAllTasks(new Assembly[] { typeof(CleanDatabaseTask).Assembly });
                 }
             }
             catch (Exception e)
@@ -145,12 +139,14 @@ namespace Hiwjcn.Web
                     Response.TrySkipIisCustomErrors = true;
                     string ActionName = string.Empty;
 
+                    var controller = new Hiwjcn.Web.Controllers.ErrorController();
+
                     switch (httpcode)
                     {
-                        case 404: ActionName = "Http404"; break;
-                        case 403: ActionName = "Http403"; break;
-                        case 500: ActionName = "Http500"; break;
-                        default: ActionName = "Http404"; break;
+                        case 404: ActionName = nameof(controller.Http404); break;
+                        case 403: ActionName = nameof(controller.Http403); break;
+                        case 500: ActionName = nameof(controller.Http500); break;
+                        default: ActionName = nameof(controller.Http404); break;
                     }
 
                     var routingData = new RouteData();
@@ -159,7 +155,7 @@ namespace Hiwjcn.Web
                     routingData.Values["controller"] = "Error";
                     routingData.Values["action"] = ActionName;
 
-                    IController c = new Hiwjcn.Web.Controllers.ErrorController();
+                    IController c = controller;
                     c.Execute(new RequestContext(new HttpContextWrapper(Context), routingData));
                 }
             }
