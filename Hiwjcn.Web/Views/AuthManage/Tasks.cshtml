@@ -14,7 +14,10 @@
 </div>
 
 <div class="panel panel-default">
-    <div class="panel-heading">定时任务</div>
+    <div class="panel-heading">
+        <span class="fa fa-tasks"></span>
+        <span>定时任务</span>
+    </div>
     <div class="panel-body">
         @{
             var list = this.GetNotNullViewData<List<ScheduleJobModel>>("list");
@@ -27,7 +30,7 @@
                             <td>分组</td>
                             <td>状态</td>
                             <td>触发器</td>
-                            <td>开始</td>
+                            <td>创建</td>
                             <td>上次执行</td>
                             <td>下次执行</td>
                             <td></td>

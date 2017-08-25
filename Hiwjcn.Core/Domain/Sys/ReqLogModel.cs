@@ -10,6 +10,7 @@ using Lib.cache;
 using Lib.core;
 using Lib.helper;
 using Lib.extension;
+using Newtonsoft.Json;
 
 namespace Hiwjcn.Core.Model.Sys
 {
@@ -258,6 +259,16 @@ namespace Hiwjcn.Core.Model.Sys
 
         [DataType(DataType.Text)]
         public virtual string DataJson { get; set; }
+
+        public void SetData(object data)
+        {
+            data = data ?? throw new Exception("数据为空");
+            var json = data.ToJson();
+            var xml = JsonHelper.ObjectToXml(data);
+
+            this.DataJson = json;
+            this.DataXml = xml;
+        }
     }
 
     public static class UserEventTypeManager

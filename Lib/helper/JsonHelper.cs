@@ -27,12 +27,21 @@ namespace Lib.helper
         /// <summary>
         /// model转json
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
         public static string ObjectToJson(object obj)
         {
             //if (obj == null) { throw new Exception("null不能被转为json"); }
             return JsonConvert.SerializeObject(obj, TimeFormat());
+        }
+
+        /// <summary>
+        /// model转xml
+        /// </summary>
+        public static string ObjectToXml(object obj, string root_name = "root")
+        {
+            var json = ObjectToJson(obj);
+            var xml_json = "{\"" + root_name + "\":" + json + "}";
+            var xml = JsonConvert.DeserializeXmlNode(xml_json).OuterXml;
+            return xml;
         }
 
         /// <summary>

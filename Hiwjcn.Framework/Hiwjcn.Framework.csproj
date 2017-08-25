@@ -137,6 +137,7 @@
     <Compile Include="Provider\IAuthTokenToUserService.cs" />
     <Compile Include="Provider\SSOLoginValidationProvider.cs" />
     <Compile Include="Tasks\CleanDatabaseTask.cs" />
+    <Compile Include="Tasks\ClearExpiredTokenTask.cs" />
     <Compile Include="Tasks\ClearRequestLogTask.cs" />
     <Compile Include="Tasks\ConcurrentTestTask.cs" />
     <Compile Include="Tasks\DataReportTask.cs" />

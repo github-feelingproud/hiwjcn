@@ -20,7 +20,10 @@
 </div>
 
 <div class="panel panel-default">
-    <div class="panel-heading">用户</div>
+    <div class="panel-heading">
+        <span class="fa fa-user"></span>
+        <span>用户</span>
+    </div>
     <div class="panel-body">
         @{
             var list = this.GetNotNullViewData<List<LoginUserInfo>>("list");

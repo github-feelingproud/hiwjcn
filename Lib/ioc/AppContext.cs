@@ -233,8 +233,27 @@ namespace Lib.ioc
         }
     }
 
+    /// <summary>
+    /// 不注册IOC
+    /// </summary>
+    public class NotRegIocAttribute : Attribute
+    { }
+
     public static class AppContextExtension
     {
+        /// <summary>
+        /// 配置不注册IOC
+        /// </summary>
+        public static bool NotRegIoc(this Type t)
+        {
+            return t.GetCustomAttributes<NotRegIocAttribute>().Any();
+        }
+
+        /// <summary>
+        /// 配置可以注册IOC
+        /// </summary>
+        public static bool CanRegIoc(this Type t) => !t.NotRegIoc();
+
         /// <summary>
         /// 给mvc提供依赖注入功能
         /// </summary>
@@ -288,7 +307,7 @@ namespace Lib.ioc
                 return scope.ResolveOptional<T>();
             }
         }
-        
+
         /// <summary>
         /// 不自动dispose对象
         /// </summary>
