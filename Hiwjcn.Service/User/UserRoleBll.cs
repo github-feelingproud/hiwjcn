@@ -31,10 +31,16 @@ namespace WebLogic.Bll.User
         /// <returns></returns>
         public string AddUserRole(UserRoleModel model)
         {
-            string errinfo = CheckModel(model);
-            if (ValidateHelper.IsPlumpString(errinfo)) { return errinfo; }
+            if (!this.CheckModel(model, out var msg))
+            {
+                return msg;
+            }
 
-            return _UserRoleDal.Add(model) > 0 ? SUCCESS : "添加用户角色关联失败";
+            if (_UserRoleDal.Add(model) > 0)
+            {
+                return this.SUCCESS;
+            }
+            throw new MsgException("添加用户角色关联失败");
         }
 
         /// <summary>
@@ -45,9 +51,8 @@ namespace WebLogic.Bll.User
         /// <returns></returns>
         public string DeleteUserRole(string user_id, string role_id)
         {
-            var list = _UserRoleDal.GetList(x => x.UserID == user_id && x.RoleID == role_id);
-            if (!ValidateHelper.IsPlumpList(list)) { return "您要删除的数据不存在"; }
-            return _UserRoleDal.Delete(list.ToArray()) > 0 ? SUCCESS : "删除用户角色关联失败";
+            _UserRoleDal.DeleteWhere(x => x.UserID == user_id && x.RoleID == role_id);
+            return this.SUCCESS;
         }
 
         /// <summary>
@@ -57,12 +62,8 @@ namespace WebLogic.Bll.User
         /// <returns></returns>
         public List<string> GetRolesByUserID(string uid)
         {
-            var list = _UserRoleDal.GetList(x => x.UserID == uid);
-            if (ValidateHelper.IsPlumpList(list))
-            {
-                return list.Select(x => x.UID).Distinct().ToList();
-            }
-            return null;
+            var list = _UserRoleDal.GetList(x => x.UserID == uid).Select(x => x.UID).Distinct().ToList();
+            return list;
         }
 
     }

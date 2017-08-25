@@ -128,6 +128,7 @@
     <Compile Include="Actors\LogRequestActor.cs" />
     <Compile Include="Actors\SendMailActor.cs" />
     <Compile Include="Actors\UpdateEsIndexActor.cs" />
+    <Compile Include="Actors\UserActivityLogActor.cs" />
     <Compile Include="AttributeBundle.cs" />
     <Compile Include="CommonDependencyRegister.cs" />
     <Compile Include="DataBaseInitData.cs" />

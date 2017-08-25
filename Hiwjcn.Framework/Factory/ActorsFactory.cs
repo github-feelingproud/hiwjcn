@@ -14,12 +14,6 @@ namespace Hiwjcn.Framework.Factory
 {
     public static class ActorsFactory
     {
-        private static readonly IActorRef CacheHitLogActor = ActorsManager<CacheHitLogActor>.Instance.DefaultClient;
-        private static readonly IActorRef ClearCacheActor = ActorsManager<ClearCacheActor>.Instance.DefaultClient;
-        private static readonly IActorRef LogRequestActor = ActorsManager<LogRequestActor>.Instance.DefaultClient;
-        private static readonly IActorRef SendMailActor = ActorsManager<SendMailActor>.Instance.DefaultClient;
-        private static readonly IActorRef UpdateEsIndexActor = ActorsManager<UpdateEsIndexActor>.Instance.DefaultClient;
-
         public static void Dispose()
         {
             try
@@ -57,6 +51,14 @@ namespace Hiwjcn.Framework.Factory
             try
             {
                 ActorsManager<UpdateEsIndexActor>.Instance.Dispose();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+            try
+            {
+                ActorsManager<UserActivityLogActor>.Instance.Dispose();
             }
             catch (Exception e)
             {

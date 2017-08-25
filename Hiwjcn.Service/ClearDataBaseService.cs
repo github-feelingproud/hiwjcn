@@ -122,7 +122,7 @@ namespace Hiwjcn.Bll
 
                 var user_uids = user_set.Select(x => x.UID);
                 var role_uids = role_set.Select(x => x.UID);
-                var range = role_map_set.Where(x => (!user_uids.Contains(x.UserID)) || (!role_uids.Contains(x.RoleID)));
+                var range = role_map_set.Where(x => !user_uids.Contains(x.UserID) || !role_uids.Contains(x.RoleID));
                 role_map_set.RemoveRange(range);
 
                 db.SaveChanges();
@@ -162,7 +162,7 @@ namespace Hiwjcn.Bll
 
         public void ClearToken()
         {
-            var expire = DateTime.Now.AddMonths(-3);
+            var now = DateTime.Now;
             this._AuthTokenRepo.PrepareSession(db =>
             {
                 var user_set = db.Set<UserModel>();
@@ -171,7 +171,7 @@ namespace Hiwjcn.Bll
 
                 var user_uids = user_set.Select(x => x.UID);
                 var client_uids = client_set.Select(x => x.UID);
-                var range = token_set.Where(x => x.CreateTime < expire || (!user_uids.Contains(x.UserUID)) || (!client_uids.Contains(x.ClientUID)));
+                var range = token_set.Where(x => x.ExpiryTime < now || (!user_uids.Contains(x.UserUID)) || (!client_uids.Contains(x.ClientUID)));
                 token_set.RemoveRange(range);
 
                 db.SaveChanges();

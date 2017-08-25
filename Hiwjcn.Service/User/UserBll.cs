@@ -40,7 +40,7 @@ namespace Bll.User
             this._RoleDal = new RoleDal();
             this._RolePermissionDal = new RolePermissionDal();
         }
-        
+
         /// <summary>
         /// 搜索
         /// </summary>
@@ -230,10 +230,9 @@ namespace Bll.User
             if (model == null) { return "用户不存在"; }
             model.PassWord = UserPassWordEncrypt(new_pass);
 
-            string errinfo = CheckModel(model);
-            if (ValidateHelper.IsPlumpString(errinfo))
+            if (!this.CheckModel(model, out var msg))
             {
-                return errinfo;
+                return msg;
             }
 
             return _UserDal.Update(model) > 0 ? SUCCESS : "修改密码失败";
@@ -246,7 +245,7 @@ namespace Bll.User
         /// <returns></returns>
         private string UserPassWordEncrypt(string originalPWD)
         {
-            return SecureHelper.GetMD5(originalPWD);
+            return originalPWD.ToMD5().ToLower();
         }
 
         /// <summary>
@@ -259,6 +258,7 @@ namespace Bll.User
         {
             return Com.GetPassKey($"{model.IID}/{model.UID}/{model.PassWord}");
         }
+
         private UserModel FindValidLoginUser(string email, ref string msg)
         {
             var loginemail = ConvertHelper.GetString(email).Trim().ToLower();

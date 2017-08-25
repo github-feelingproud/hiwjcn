@@ -121,10 +121,10 @@
       <publishTime>07/10/2017 14:16:12</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>08/24/2017 10:21:52</publishTime>
+      <publishTime>08/25/2017 10:13:52</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>08/24/2017 10:21:52</publishTime>
+      <publishTime>08/25/2017 10:13:52</publishTime>
     </File>
     <File Include="bin/Autofac.dll">
       <publishTime>08/12/2014 13:20:26</publishTime>
@@ -169,40 +169,40 @@
       <publishTime>03/02/2015 09:32:26</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.dll">
-      <publishTime>08/24/2017 10:10:16</publishTime>
+      <publishTime>08/25/2017 10:13:24</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.dll.config">
       <publishTime>08/20/2017 17:24:55</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.pdb">
-      <publishTime>08/24/2017 10:10:16</publishTime>
+      <publishTime>08/25/2017 10:13:24</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.dll">
-      <publishTime>08/24/2017 10:10:14</publishTime>
+      <publishTime>08/25/2017 10:13:22</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.dll.config">
       <publishTime>07/28/2017 13:05:35</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.pdb">
-      <publishTime>08/24/2017 10:10:14</publishTime>
+      <publishTime>08/25/2017 10:13:22</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Dal.dll">
       <publishTime>02/22/2017 14:16:09</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.dll">
-      <publishTime>08/24/2017 10:10:18</publishTime>
+      <publishTime>08/25/2017 10:13:26</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.dll.config">
       <publishTime>08/20/2017 17:24:55</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.pdb">
-      <publishTime>08/24/2017 10:10:18</publishTime>
+      <publishTime>08/25/2017 10:13:26</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Web.dll">
-      <publishTime>08/24/2017 10:10:28</publishTime>
+      <publishTime>08/25/2017 10:13:35</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Web.pdb">
-      <publishTime>08/24/2017 10:10:28</publishTime>
+      <publishTime>08/25/2017 10:13:35</publishTime>
     </File>
     <File Include="bin/HtmlAgilityPack.dll">
       <publishTime>07/14/2016 11:01:16</publishTime>
@@ -217,13 +217,13 @@
       <publishTime>01/29/2017 23:35:42</publishTime>
     </File>
     <File Include="bin/Lib.dll">
-      <publishTime>08/24/2017 09:16:24</publishTime>
+      <publishTime>08/25/2017 10:13:21</publishTime>
     </File>
     <File Include="bin/Lib.dll.config">
       <publishTime>07/28/2017 13:05:34</publishTime>
     </File>
     <File Include="bin/Lib.pdb">
-      <publishTime>08/24/2017 09:16:24</publishTime>
+      <publishTime>08/25/2017 10:13:21</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>01/02/2017 06:32:48</publishTime>
@@ -391,7 +391,7 @@
       <publishTime>08/09/2017 11:53:43</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>08/24/2017 10:21:45</publishTime>
+      <publishTime>08/25/2017 10:13:43</publishTime>
     </File>
     <File Include="Static/epc_web/css/bootstrap.min.css">
       <publishTime>05/21/2016 23:15:59</publishTime>
@@ -2128,13 +2128,13 @@
       <publishTime>08/21/2017 14:02:29</publishTime>
     </File>
     <File Include="Views/AuthManage/Statics.cshtml">
-      <publishTime>08/21/2017 14:04:15</publishTime>
+      <publishTime>08/25/2017 10:11:04</publishTime>
     </File>
     <File Include="Views/AuthManage/Tasks.cshtml">
-      <publishTime>08/21/2017 14:04:46</publishTime>
+      <publishTime>08/25/2017 10:07:02</publishTime>
     </File>
     <File Include="Views/AuthManage/Users.cshtml">
-      <publishTime>08/22/2017 14:28:21</publishTime>
+      <publishTime>08/25/2017 10:03:00</publishTime>
     </File>
     <File Include="Views/Comment/Comment.cshtml">
       <publishTime>03/05/2017 00:19:27</publishTime>

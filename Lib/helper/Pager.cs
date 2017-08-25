@@ -26,6 +26,7 @@ namespace Lib.helper
     [DataContract]
     public class PagerData<T, EXT>
     {
+        [Obsolete("不建议手动维护")]
         public readonly Dictionary<string, string> UrlParams = new Dictionary<string, string>();
 
         /// <summary>
