@@ -57,6 +57,10 @@ namespace Model
         [Index(IsUnique = false)]
         public virtual DateTime UpdateTime { get; set; }
 
+        [Obsolete("用一个uuid来标识此次数据更新，以后ES就可以用这个字段判断数据是否是最新的")]
+        [NotMapped]
+        public virtual string UpdateFlag { get; set; }
+
         /// <summary>
         /// 第一次写库初始化
         /// </summary>
@@ -79,7 +83,18 @@ namespace Model
             this.UID = prefix + Com.GetUUID();
             this.IsRemove = (int)YesOrNoEnum.否;
             this.CreateTime = now;
+
+            this.Update();
+        }
+
+        /// <summary>
+        /// 更新时间等信息
+        /// </summary>
+        public virtual void Update()
+        {
+            var now = DateTime.Now;
             this.UpdateTime = now;
+            this.UpdateFlag = Com.GetUUID();
         }
 
         /// <summary>
