@@ -259,7 +259,7 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static AutofacDependencyResolver AutofacDependencyResolver(this IContainer context) =>
+        public static AutofacDependencyResolver AutofacDependencyResolver_(this IContainer context) =>
             new AutofacDependencyResolver(context);
 
         /// <summary>
@@ -337,6 +337,13 @@ namespace Lib.ioc
             }
             throw new Exception("请求中没有缓存autofac scope");
         }
+
+        /// <summary>
+        /// 请求上下文的autofac scope
+        /// 可以直接拿来resolve
+        /// </summary>
+        public static ILifetimeScope MvcAutofacCurrent(this HttpContext context) => 
+            AutofacDependencyResolver.Current.RequestLifetimeScope;
     }
 
     public class RequestScopeModule : IHttpModule

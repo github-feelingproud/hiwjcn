@@ -76,7 +76,7 @@ namespace Hiwjcn.Web
                     //用AutoFac接管控制器生成，从而实现依赖注入
                     //ControllerBuilder.Current.SetControllerFactory(typeof(AutoFacControllerFactory));
                     //使用autofac生成控制器
-                    DependencyResolver.SetResolver(AppContext.Container.AutofacDependencyResolver());
+                    DependencyResolver.SetResolver(AppContext.Container.AutofacDependencyResolver_());
 
                     //加速首次启动EF
                     //EFManager.SelectDB(null).FastStart();
