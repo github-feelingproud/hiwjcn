@@ -97,4 +97,14 @@ namespace Lib.task
             BuildTrigger(t => t.StartAt(DateTimeOffset.Now.Add(start - DateTime.Now)).WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever()).Build());
         }
     }
+
+    public abstract class QuartzJobBase_ : QuartzJobBase
+    {
+        public override void Execute(IJobExecutionContext context)
+        {
+            this.ExecuteJob(context);
+        }
+
+        public abstract void ExecuteJob(IJobExecutionContext context);
+    }
 }
