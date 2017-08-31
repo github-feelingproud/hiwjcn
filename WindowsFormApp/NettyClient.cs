@@ -42,7 +42,7 @@ namespace WindowsFormApp
                     line.AddLast(new ChatClientHandler(this));
                 }));
 
-            this.channel = await bootstrap.ConnectAsync(IPAddress.Parse("127.0.0.1"), 9900);
+            this.channel = await bootstrap.ConnectAsync(IPAddress.Parse("127.0.0.1"), 8080);
         }
 
         private async Task CloseAll()
@@ -67,6 +67,12 @@ namespace WindowsFormApp
         private async void button1_Click(object sender, EventArgs e)
         {
             var msg = Com.GetUUID() + "\n";
+            await this.channel.WriteAndFlushAsync(msg);
+
+            msg = DateTime.Now.ToString() + "\n";
+            await this.channel.WriteAndFlushAsync(msg);
+
+            msg = "=========\n";
             await this.channel.WriteAndFlushAsync(msg);
         }
     }
