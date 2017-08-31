@@ -34,18 +34,20 @@ namespace Lib.mvc
         public string Url { get; private set; }
 
         #region 登录信息
-        private LoginUserInfo _user;
-        public LoginUserInfo User
+        private LoginUserInfo _auth_user;
+        public LoginUserInfo AuthUser
         {
             get
             {
-                if (this._user == null)
+                if (this._auth_user == null)
                 {
-                    this._user = this.context.GetAuthUser();
+                    this._auth_user = this.context.GetAuthUser();
                 }
-                return this._user;
+                return this._auth_user;
             }
         }
+
+        public LoginUserInfo User { get; private set; }
 
         public LoginUserInfo SSOUser { get; private set; }
 
@@ -80,12 +82,13 @@ namespace Lib.mvc
 
         public void LoadLoginUser()
         {
-            this._user = null;
-            this.SSOUser = AccountHelper.SSO.GetLoginUser(context);
-            this.LoginUser = AccountHelper.User.GetLoginUser(context);
-            this.LoginTrader = AccountHelper.Trader.GetLoginUser(context);
-            this.LoginSeller = AccountHelper.Seller.GetLoginUser(context);
-            this.LoginAdmin = AccountHelper.Admin.GetLoginUser(context);
+            this._auth_user = null;
+            this.User = AppContext.Scope(s => s.Resolve_<LoginStatus>().GetLoginUser(this.context));
+            this.SSOUser = AccountHelper.SSO.GetLoginUser(this.context);
+            this.LoginUser = AccountHelper.User.GetLoginUser(this.context);
+            this.LoginTrader = AccountHelper.Trader.GetLoginUser(this.context);
+            this.LoginSeller = AccountHelper.Seller.GetLoginUser(this.context);
+            this.LoginAdmin = AccountHelper.Admin.GetLoginUser(this.context);
         }
 
         public void Dispose()
