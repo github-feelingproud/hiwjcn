@@ -87,13 +87,6 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        public ActionResult es_log()
-        {
-            new Exception($"es保存错误日志{Com.GetRandomNumString()}").AddErrorLog("es_error");
-            new Exception($"es保存错误日志{Com.GetRandomNumString()}").AddLog("ES日志");
-            return Content("ok");
-        }
-
         public async Task<ActionResult> es_log_list(string q)
         {
             return await RunActionAsync(async () =>
