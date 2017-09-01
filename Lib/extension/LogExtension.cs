@@ -141,18 +141,20 @@ namespace Lib.extension
                     }
                     return JsonHelper.ObjectToJson(e);
                 }
-                catch
+                catch (Exception err)
                 {
-                    return "无法把整个Exception对象转为json";
+                    return $"无法把整个{nameof(Exception)}对象转为json，原因：{err.Message}";
                 }
             }
 
             var json = new
             {
                 error_msg = e.GetInnerExceptionAsList(),
+                exception_type = $"异常类型：{e.GetType()?.FullName}",
                 full_exception = ExceptionJson(),
                 req_data = ReqData(),
-                extra_data = extra_data
+                extra_data = extra_data,
+                tips = new string[] { "建议使用json格式化工具：http://json.cn/" }
             }.ToJson();
 
             json.AddErrorLog(LoggerName);
