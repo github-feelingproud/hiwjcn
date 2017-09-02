@@ -23,7 +23,7 @@ using Hiwjcn.Framework;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class AuthController : BaseController
+    public class AuthController : BaseController, IAuthApi
     {
         private readonly IAuthLoginService _IAuthLoginService;
 
@@ -71,19 +71,28 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var data = await this._IAuthTokenService.CreateTokenAsync(client_id, client_secret, code);
-                if (!data.success)
-                {
-                    return GetJsonRes(data.msg);
-                }
-                var token_data = new TokenModel()
-                {
-                    Token = data.data.UID,
-                    RefreshToken = data.data.RefreshToken,
-                    Expire = data.data.ExpiryTime
-                };
-                return GetJson(new _() { success = true, data = token_data });
+                return GetJson(await this.GetAccessToken(client_id, client_secret, code, grant_type));
             });
+        }
+
+        [NonAction]
+        public async Task<_<TokenModel>> GetAccessToken(string client_id, string client_secret, string code, string grant_type)
+        {
+            var res = new _<TokenModel>();
+            var data = await this._IAuthTokenService.CreateTokenAsync(client_id, client_secret, code);
+            if (!data.success)
+            {
+                res.SetErrorMsg(data.msg);
+                return res;
+            }
+            var token_data = new TokenModel()
+            {
+                Token = data.data.UID,
+                RefreshToken = data.data.RefreshToken,
+                Expire = data.data.ExpiryTime
+            };
+            res.SetSuccessData(token_data);
+            return res;
         }
 
         /// <summary>
