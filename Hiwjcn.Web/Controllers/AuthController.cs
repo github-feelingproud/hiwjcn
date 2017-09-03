@@ -23,37 +23,13 @@ using Hiwjcn.Framework;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class AuthController : BaseController, IAuthApi
+    public class AuthController : BaseController
     {
-        private readonly IAuthLoginService _IAuthLoginService;
+        private readonly IAuthApi api;
 
-        private readonly IAuthTokenService _IAuthTokenService;
-        private readonly IAuthScopeService _IAuthScopeService;
-        private readonly ICacheProvider _cache;
-
-        private readonly IRepository<AuthScope> _AuthScopeRepository;
-        private readonly IRepository<AuthClient> _AuthClientRepository;
-
-        private readonly IAuthTokenToUserService _IAuthTokenToUserService;
-
-        public AuthController(
-            IAuthLoginService _IAuthLoginService,
-            ICacheProvider _cache,
-            IAuthTokenService _IAuthTokenService,
-            IAuthScopeService _IAuthScopeService,
-            IRepository<AuthScope> _AuthScopeRepository,
-            IRepository<AuthClient> _AuthClientRepository,
-            IAuthTokenToUserService _IAuthTokenToUserService)
+        public AuthController(IAuthApi api)
         {
-            this._IAuthLoginService = _IAuthLoginService;
-            this._cache = _cache;
-
-            this._IAuthTokenService = _IAuthTokenService;
-            this._IAuthScopeService = _IAuthScopeService;
-
-            this._AuthScopeRepository = _AuthScopeRepository;
-            this._AuthClientRepository = _AuthClientRepository;
-            this._IAuthTokenToUserService = _IAuthTokenToUserService;
+            this.api = api;
         }
 
         /// <summary>
@@ -71,28 +47,8 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                return GetJson(await this.GetAccessToken(client_id, client_secret, code, grant_type));
+                return GetJson(await this.api.GetAccessTokenAsync(client_id, client_secret, code, grant_type));
             });
-        }
-
-        [NonAction]
-        public async Task<_<TokenModel>> GetAccessToken(string client_id, string client_secret, string code, string grant_type)
-        {
-            var res = new _<TokenModel>();
-            var data = await this._IAuthTokenService.CreateTokenAsync(client_id, client_secret, code);
-            if (!data.success)
-            {
-                res.SetErrorMsg(data.msg);
-                return res;
-            }
-            var token_data = new TokenModel()
-            {
-                Token = data.data.UID,
-                RefreshToken = data.data.RefreshToken,
-                Expire = data.data.ExpiryTime
-            };
-            res.SetSuccessData(token_data);
-            return res;
         }
 
         /// <summary>
@@ -107,14 +63,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var loginuser = await this._IAuthTokenToUserService.FindUserByTokenAsync(access_token, client_id);
-
-                if (!loginuser.success)
-                {
-                    return GetJsonRes(loginuser.msg);
-                }
-
-                return GetJson(new _() { success = true, data = loginuser.data });
+                return GetJson(await this.api.GetLoginUserInfoByTokenAsync(client_id, access_token));
             });
         }
 
@@ -132,24 +81,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var loginuser = await this._IAuthLoginService.LoginByCode(phone, sms);
-                if (!loginuser.success)
-                {
-                    return GetJsonRes(loginuser.msg);
-                }
-                var scopeslist = ConvertHelper.NotNullList(scope?.JsonToEntity<List<string>>());
-                scopeslist = scopeslist.Where(x => ValidateHelper.IsPlumpString(x)).ToList();
-                if (!ValidateHelper.IsPlumpList(scopeslist))
-                {
-                    scopeslist = (await this._AuthScopeRepository.GetListAsync(null)).Select(x => x.Name).ToList();
-                }
-
-                var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
-                if (!code.success)
-                {
-                    return GetJsonRes(code.msg);
-                }
-                return GetJson(new _() { success = true, data = code.data?.UID });
+                return GetJson(await this.api.GetAuthCodeByOneTimeCodeAsync(client_id, scope, phone, sms));
             });
         }
 
@@ -159,24 +91,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var loginuser = await this._IAuthLoginService.LoginByPassword(username, password);
-                if (!loginuser.success)
-                {
-                    return GetJsonRes(loginuser.msg);
-                }
-                var scopeslist = ConvertHelper.NotNullList(scope?.JsonToEntity<List<string>>());
-                scopeslist = scopeslist.Where(x => ValidateHelper.IsPlumpString(x)).ToList();
-                if (!ValidateHelper.IsPlumpList(scopeslist))
-                {
-                    scopeslist = (await this._AuthScopeRepository.GetListAsync(null)).Select(x => x.Name).ToList();
-                }
-
-                var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
-                if (!code.success)
-                {
-                    return GetJsonRes(code.msg);
-                }
-                return GetJson(new _() { success = true, data = code.data?.UID });
+                return GetJson(await this.api.GetAuthCodeByPasswordAsync(client_id, scope, username, password));
             });
         }
     }

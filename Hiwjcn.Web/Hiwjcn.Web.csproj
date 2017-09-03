@@ -245,6 +245,10 @@
     <Compile Include="Models\User\MeViewModel.cs" />
     <Compile Include="Models\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\AuthApiService.svc.cs">
+      <DependentUpon>AuthApiService.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Service\IAuthApiService.cs" />
     <Compile Include="ui\ueditor\net\App_Code\Config.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
@@ -276,6 +280,7 @@
     <Content Include="Areas\Admin\Views\Section\SectionEdit.cshtml" />
     <Content Include="Areas\Admin\Views\Link\LinkEdit.cshtml" />
     <Content Include="Areas\Admin\Views\Permission\RoleEdit.cshtml" />
+    <Content Include="Service\AuthApiService.svc" />
     <Content Include="Static\image\holder.png" />
     <Content Include="Static\image\img_404.png" />
     <Content Include="Static\image\logo\favicon.ico" />

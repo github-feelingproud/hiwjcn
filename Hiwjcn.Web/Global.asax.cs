@@ -94,7 +94,7 @@ namespace Hiwjcn.Web
             }
             catch (Exception e)
             {
-                e.AddLog("网站启动异常");
+                e.AddErrorLog("网站启动异常");
                 throw e;
             }
         }
