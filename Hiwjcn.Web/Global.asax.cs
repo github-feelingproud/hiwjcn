@@ -27,6 +27,8 @@ using Lib.mvc.auth.validation;
 using Hiwjcn.Bll.Auth;
 using Hiwjcn.Framework.Factory;
 using Hiwjcn.Core.Data;
+using Polly;
+using Polly.Timeout;
 
 namespace Hiwjcn.Web
 {
@@ -78,13 +80,26 @@ namespace Hiwjcn.Web
                     //使用autofac生成控制器
                     DependencyResolver.SetResolver(AppContext.Container.AutofacDependencyResolver_());
 
-                    //加速首次启动EF
-                    //EFManager.SelectDB(null).FastStart();
-                    EFManager.FastStart<EntityDB>();
-                    //汽配龙数据库
-                    EFManager.FastStart<QipeilongDbContext>();
-                    //SSO数据库
-                    EFManager.FastStart<SSODB>();
+                    try
+                    {
+                        //断网的情况下这里不会抛异常，会长时间等待
+                        Policy.Timeout(TimeSpan.FromSeconds(3), TimeoutStrategy.Pessimistic).Execute(() =>
+                        {
+                            //加速首次启动EF
+                            //EFManager.SelectDB(null).FastStart();
+                            EFManager.FastStart<EntityDB>();
+                            //汽配龙数据库
+                            EFManager.FastStart<QipeilongDbContext>();
+                            //SSO数据库
+                            EFManager.FastStart<SSODB>();
+                        });
+                    }
+                    catch (Exception err)
+                    {
+                        err.AddErrorLog("设置EF快速启动失败");
+                        throw err;
+                    }
+
                     //尝试创建数据表
                     EFManager.TryInstallDatabase<EntityDB>();
 
@@ -161,7 +176,7 @@ namespace Hiwjcn.Web
             }
             else
             {
-                ex.AddLog(this.GetType());
+                ex.AddErrorLog($"{nameof(Application_Error123)}捕捉到错误");
             }
         }
         #endregion
