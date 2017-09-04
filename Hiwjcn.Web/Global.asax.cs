@@ -41,7 +41,7 @@ namespace Hiwjcn.Web
             {
                 Action<long, string> logger = (ms, name) =>
                 {
-                    $"Application_Start|耗时：{ms}毫秒".AddInfoLog(this.GetType());
+                    $"{nameof(Application_Start)}|耗时：{ms}毫秒".AddBusinessInfoLog();
                 };
                 using (var timer = new CpuTimeLogger(logger))
                 {
@@ -96,8 +96,7 @@ namespace Hiwjcn.Web
                     }
                     catch (Exception err)
                     {
-                        err.AddErrorLog("设置EF快速启动失败");
-                        throw err;
+                        throw new Exception("设置EF快速启动失败", err);
                     }
 
                     //尝试创建数据表
@@ -124,11 +123,11 @@ namespace Hiwjcn.Web
                 LibReleaseHelper.DisposeAll();
 
                 //记录程序关闭
-                "Application_End".AddInfoLog(this.GetType());
+                nameof(Application_End).AddBusinessInfoLog();
             }
             catch (Exception ex)
             {
-                ex.AddLog("网站关闭异常");
+                ex.AddErrorLog("网站关闭异常");
                 throw ex;
             }
         }
