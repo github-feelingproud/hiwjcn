@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.helper;
 using Lib.extension;
+using System.ServiceModel.Channels;
 
 namespace Lib.rpc
 {
@@ -53,6 +54,22 @@ namespace Lib.rpc
     /// <typeparam name="T"></typeparam>
     public class ServiceClient<T> : ClientBase<T>, IDisposable where T : class
     {
+        public ServiceClient()
+        {
+            //
+        }
+
+        public ServiceClient(Binding binding, EndpointAddress endpoint) : base(binding, endpoint)
+        {
+            //
+        }
+
+        public ServiceClient(string url, bool http = true) :
+            this(http ? new BasicHttpBinding() : throw new Exception("暂不支持"), new EndpointAddress(url))
+        {
+            //
+        }
+
         /// <summary>
         /// 接口实例
         /// </summary>
@@ -65,22 +82,7 @@ namespace Lib.rpc
         /// </summary>
         public void Dispose()
         {
-            try
-            {
-                this.Close();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-                try
-                {
-                    this.Abort();
-                }
-                catch (Exception err)
-                {
-                    err.AddErrorLog();
-                }
-            }
+            this.SafeClose_();
         }
     }
 
@@ -89,6 +91,26 @@ namespace Lib.rpc
     /// </summary>
     public static class ServiceClientExtension
     {
+        public static void SafeClose_<T>(this ClientBase<T> client) where T : class
+        {
+            try
+            {
+                client.Close();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+                try
+                {
+                    client.Abort();
+                }
+                catch (Exception err)
+                {
+                    err.AddErrorLog();
+                }
+            }
+        }
+
         /// <summary>
         /// 执行
         /// </summary>

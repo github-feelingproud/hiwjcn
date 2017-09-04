@@ -12,6 +12,7 @@ using Lib.ioc;
 using Lib.extension;
 using Lib.data;
 using Hiwjcn.Core.Domain.Auth;
+using Lib.rpc;
 
 namespace WindowsFormApp
 {
@@ -26,14 +27,7 @@ namespace WindowsFormApp
         {
             public void Dispose()
             {
-                try
-                {
-                    this.Close();
-                }
-                catch (Exception e)
-                {
-                    e.AddErrorLog();
-                }
+                this.SafeClose_();
             }
         }
 
@@ -50,6 +44,23 @@ namespace WindowsFormApp
                         MessageBox.Show("client is null");
                         return;
                     }
+                    using (var api = new ServiceClient<IAuthApiService>("http://auth.qipeilong.net/Service/AuthApiService.svc"))
+                    {
+                        var code = await api.Instance.GetAuthCodeByPasswordAsync(client.UID, new List<string>().ToJson(), "", "");
+                        if (!code.success)
+                        {
+                            MessageBox.Show(code.msg);
+                            return;
+                        }
+                        var token = await api.Instance.GetAccessTokenAsync(client.UID, client.ClientSecretUID, code.data, string.Empty);
+                        if (!token.success)
+                        {
+                            MessageBox.Show(token.msg);
+                            return;
+                        }
+                        MessageBox.Show(token.data.Token);
+                    }
+
                     using (var api = new AuthApiClient())
                     {
                         var code = await api.GetAuthCodeByPasswordAsync(client.UID, new List<string>().ToJson(), "", "");
