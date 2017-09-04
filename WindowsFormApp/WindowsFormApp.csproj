@@ -42,6 +42,9 @@
       <HintPath>..\packages\AngleSharp.0.9.8.1\lib\net45\AngleSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="AutoMapper, Version=3.3.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.dll</HintPath>
       <Private>True</Private>
@@ -119,6 +122,8 @@
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -137,6 +142,17 @@
     </Compile>
     <Compile Include="AsyncAndSync.Designer.cs">
       <DependentUpon>AsyncAndSync.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AuthServiceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AuthServiceForm.Designer.cs">
+      <DependentUpon>AuthServiceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\AuthWebService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -197,6 +213,9 @@
     <EmbeddedResource Include="AsyncAndSync.resx">
       <DependentUpon>AsyncAndSync.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AuthServiceForm.resx">
+      <DependentUpon>AuthServiceForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -233,7 +252,28 @@
     <EmbeddedResource Include="Spider.resx">
       <DependentUpon>Spider.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="Connected Services\AuthWebService\AuthApiService.wsdl" />
+    <None Include="Connected Services\AuthWebService\AuthApiService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\AuthWebService\AuthApiService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\AuthWebService\AuthApiService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\AuthWebService\AuthApiService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\AuthWebService\AuthApiService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\AuthWebService\AuthApiService5.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\Lib.mvc.auth.TokenModel.datasource" />
+    <None Include="Properties\DataSources\Lib.mvc.user.LoginUserInfo.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -248,10 +288,39 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Hiwjcn.Core\Hiwjcn.Core.csproj">
+      <Project>{35BCB473-B95C-4B87-A9E6-7A538719C3D9}</Project>
+      <Name>Hiwjcn.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hiwjcn.Framework\Hiwjcn.Framework.csproj">
+      <Project>{F6EA1C4A-821E-417B-B02E-05B492874E40}</Project>
+      <Name>Hiwjcn.Framework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Lib\Lib.csproj">
       <Project>{5f8bd505-423d-400c-84c4-f9638f84cc41}</Project>
       <Name>Lib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\AuthWebService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\AuthWebService\AuthApiService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\AuthWebService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\AuthWebService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\AuthWebService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

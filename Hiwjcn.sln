@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormApp", "WindowsFormApp\WindowsFormApp.csproj", "{F03A180A-7442-42F1-859D-FC4A8E419139}"
+	ProjectSection(ProjectDependencies) = postProject
+		{603505CE-BB98-4301-8010-55E2C2CE7CEC} = {603505CE-BB98-4301-8010-55E2C2CE7CEC}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{2E8EC16B-49AD-4DE0-91E4-CE2AB753A92A}"
 EndProject
@@ -112,5 +115,8 @@ Global
 		{F952D419-445A-4EDE-B5BD-F99DFBFEA82A} = {ED26FFC6-7AFC-47B4-B9B4-541AC0B802B7}
 		{D30617E2-FC7F-495D-B9F1-8E693AD47F9F} = {705BA746-2F3E-4CA7-99E4-41AD6CD403B3}
 		{B6C90066-E9AA-4538-884C-E077E4074CE9} = {ED26FFC6-7AFC-47B4-B9B4-541AC0B802B7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0A932999-AB3C-46DB-8D8B-F25CB7BB6D61}
 	EndGlobalSection
 EndGlobal
