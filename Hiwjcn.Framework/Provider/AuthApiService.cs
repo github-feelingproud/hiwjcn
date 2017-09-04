@@ -20,29 +20,20 @@ namespace Hiwjcn.Bll.Auth
     {
         private readonly IAuthLoginService _IAuthLoginService;
         private readonly IAuthTokenService _IAuthTokenService;
-        private readonly IAuthScopeService _IAuthScopeService;
-        private readonly ICacheProvider _cache;
         private readonly IRepository<AuthScope> _AuthScopeRepository;
-        private readonly IRepository<AuthClient> _AuthClientRepository;
         private readonly IAuthTokenToUserService _IAuthTokenToUserService;
 
         public AuthApiService(
             IAuthLoginService _IAuthLoginService,
-            ICacheProvider _cache,
             IAuthTokenService _IAuthTokenService,
-            IAuthScopeService _IAuthScopeService,
             IRepository<AuthScope> _AuthScopeRepository,
-            IRepository<AuthClient> _AuthClientRepository,
             IAuthTokenToUserService _IAuthTokenToUserService)
         {
             this._IAuthLoginService = _IAuthLoginService;
-            this._cache = _cache;
 
             this._IAuthTokenService = _IAuthTokenService;
-            this._IAuthScopeService = _IAuthScopeService;
 
             this._AuthScopeRepository = _AuthScopeRepository;
-            this._AuthClientRepository = _AuthClientRepository;
             this._IAuthTokenToUserService = _IAuthTokenToUserService;
         }
 
@@ -55,11 +46,12 @@ namespace Hiwjcn.Bll.Auth
                 res.SetErrorMsg(data.msg);
                 return res;
             }
+            var token = data.data;
             var token_data = new TokenModel()
             {
-                Token = data.data.UID,
-                RefreshToken = data.data.RefreshToken,
-                Expire = data.data.ExpiryTime
+                Token = token.UID,
+                RefreshToken = token.RefreshToken,
+                Expire = token.ExpiryTime
             };
             res.SetSuccessData(token_data);
             return res;
