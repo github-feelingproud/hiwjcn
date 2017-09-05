@@ -66,10 +66,9 @@ namespace Hiwjcn.Web
                         //builder.AuthClientUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
 
                         builder.AuthUseLoginStatus(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_session", ""));
-                        builder.AuthUseValidationDataProvider<WebValidationDataProvider>();
-                        builder.AuthClientUseCustomValidation<AuthLocalValidationProvider>();
-
-                        //对外提供的api
+                        builder.AuthUseValidationDataProvider<AppOrWebTokenProvider>();
+                        builder.AuthClientUseCustomValidation<AuthBasicValidationProvider>();
+                        //auth 功能逻辑
                         builder.RegisterType<AuthApiServiceFromDB>().AsSelf().As<IAuthApi>();
                     };
 

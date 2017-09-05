@@ -13,6 +13,12 @@ using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.cache;
 using Lib.data;
 using Hiwjcn.Core.Domain.Auth;
+using Hiwjcn.Core.Model.Sys;
+using Hiwjcn.Core;
+using Lib.events;
+using Hiwjcn.Framework.Actors;
+using Akka;
+using Akka.Actor;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -24,18 +30,18 @@ namespace Hiwjcn.Bll.Auth
         private readonly IAuthLoginService _IAuthLoginService;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IRepository<AuthScope> _AuthScopeRepository;
-        private readonly IAuthTokenToUserService _IAuthTokenToUserService;
+        private readonly ICacheProvider _cache;
 
         public AuthApiServiceFromDB(
             IAuthLoginService _IAuthLoginService,
             IAuthTokenService _IAuthTokenService,
             IRepository<AuthScope> _AuthScopeRepository,
-            IAuthTokenToUserService _IAuthTokenToUserService)
+            ICacheProvider _cache)
         {
             this._IAuthLoginService = _IAuthLoginService;
             this._IAuthTokenService = _IAuthTokenService;
             this._AuthScopeRepository = _AuthScopeRepository;
-            this._IAuthTokenToUserService = _IAuthTokenToUserService;
+            this._cache = _cache;
         }
 
         public async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
@@ -62,14 +68,61 @@ namespace Hiwjcn.Bll.Auth
         {
             var data = new _<LoginUserInfo>();
 
-            var loginuser = await this._IAuthTokenToUserService.FindUserByTokenAsync(access_token, client_id);
-
-            if (!loginuser.success)
+            if (!ValidateHelper.IsAllPlumpString(access_token, client_id))
             {
-                data.SetErrorMsg(loginuser.msg);
+                data.SetErrorMsg("参数为空");
                 return data;
             }
-            data.SetSuccessData(loginuser.data);
+
+            var cache_expire = TimeSpan.FromMinutes(5);
+            var Actor = ActorsManager<CacheHitLogActor>.Instance.DefaultClient;
+
+            var hit_status = CacheHitStatusEnum.Hit;
+            var cache_key = CacheKeyManager.AuthTokenKey(access_token);
+
+            //查找token
+            var token = await this._cache.GetOrSetAsync(cache_key, async () =>
+            {
+                hit_status = CacheHitStatusEnum.NotHit;
+
+                return await this._IAuthTokenService.FindTokenAsync(client_id, access_token);
+            }, cache_expire);
+
+            //统计缓存命中
+            Actor?.Tell(new CacheHitLog(cache_key, hit_status));
+
+            if (token == null)
+            {
+                data.SetErrorMsg("token不存在");
+                return data;
+            }
+
+            hit_status = CacheHitStatusEnum.Hit;
+            cache_key = CacheKeyManager.AuthUserInfoKey(token.UserUID);
+            //查找用户
+            var loginuser = await this._cache.GetOrSetAsync(cache_key, async () =>
+            {
+                hit_status = CacheHitStatusEnum.NotHit;
+
+                return await this._IAuthLoginService.GetUserInfoByUID(token.UserUID);
+            }, cache_expire);
+
+            //统计缓存命中
+            Actor?.Tell(new CacheHitLog(cache_key, hit_status));
+
+            if (loginuser == null)
+            {
+                data.SetErrorMsg("用户不存在");
+                return data;
+            }
+
+            loginuser.LoginToken = token.UID;
+            loginuser.RefreshToken = token.RefreshToken;
+            loginuser.TokenExpire = token.ExpiryTime;
+            loginuser.Scopes = token.Scopes?.Select(x => x.Name).ToList();
+
+            data.SetSuccessData(loginuser);
+
             return data;
         }
 

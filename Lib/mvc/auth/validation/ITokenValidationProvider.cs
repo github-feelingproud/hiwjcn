@@ -87,14 +87,14 @@ namespace Lib.mvc.auth.validation
     }
 
     /// <summary>
-    /// 请求auth server验证
+    /// 使用了auth api来验证
     /// </summary>
-    public class AuthServerValidationProvider : TokenValidationProviderBase
+    public class AuthBasicValidationProvider : TokenValidationProviderBase
     {
         private readonly IValidationDataProvider _dataProvider;
         private readonly IAuthApi api;
 
-        public AuthServerValidationProvider(
+        public AuthBasicValidationProvider(
             IValidationDataProvider _dataProvider,
             IAuthApi api)
         {
@@ -104,36 +104,25 @@ namespace Lib.mvc.auth.validation
 
         public override LoginUserInfo FindUser(HttpContext context)
         {
-            try
-            {
-                return AsyncHelper_.RunSync(() => this.FindUserAsync(context));
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-                return null;
-            }
+            return AsyncHelper.RunSync(() => FindUserAsync(context));
         }
 
         public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
         {
             try
             {
-                var token = this._dataProvider.GetToken(context);
+                var access_token = this._dataProvider.GetToken(context);
                 var client_id = this._dataProvider.GetClientID(context);
-                if (!ValidateHelper.IsAllPlumpString(token, client_id))
+
+                var loginuser = await this.api.GetLoginUserInfoByTokenAsync(client_id, access_token);
+
+                if (!loginuser.success)
                 {
-                    $"token和client_id为空:{token}-{client_id}".AddBusinessInfoLog();
+                    loginuser.msg?.AddBusinessInfoLog();
                     return null;
                 }
 
-                var data = await this.api.GetLoginUserInfoByTokenAsync(client_id, token);
-                if (!data.success)
-                {
-                    $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
-                    return null;
-                }
-                return data.data;
+                return loginuser.data;
             }
             catch (Exception e)
             {
