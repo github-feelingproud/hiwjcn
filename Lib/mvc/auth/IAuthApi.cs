@@ -11,6 +11,8 @@ using Lib.rpc;
 using Lib.mvc;
 using Lib.ioc;
 using System.ServiceModel;
+using System.Net.Http;
+using Lib.net;
 
 namespace Lib.mvc.auth
 {
@@ -54,15 +56,9 @@ namespace Lib.mvc.auth
     public class AuthApiFromWcf : IAuthApi
     {
         private readonly string url;
-        public AuthApiFromWcf(string url)
+        public AuthApiFromWcf(AuthServerConfig _server)
         {
-            this.url = ConvertHelper.GetString(url).Trim();
-
-            var start_ok = this.url.ToLower().StartsWith("http://") || this.url.ToLower().StartsWith("https://");
-            if (!start_ok || !this.url.ToLower().EndsWith(".svc"))
-            {
-                throw new Exception("非有效的wcf服务地址");
-            }
+            this.url = _server.WcfUrl;
         }
 
         public async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
@@ -95,6 +91,114 @@ namespace Lib.mvc.auth
             {
                 return await client.Instance.GetLoginUserInfoByToken(client_id, access_token);
             }
+        }
+    }
+
+    /// <summary>
+    /// 基于web api远程调用的auth api实现
+    /// </summary>
+    public class AuthApiFromWebApi : IAuthApi
+    {
+        private static readonly HttpClient client = HttpClientManager.Instance.DefaultClient;
+
+        private readonly AuthServerConfig _server;
+        public AuthApiFromWebApi(AuthServerConfig _server)
+        {
+            this._server = _server;
+        }
+
+        public async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
+        {
+            var data = new _<TokenModel>();
+            var response = await client.PostAsJsonAsync(this._server.CreateToken(), new
+            {
+                client_id = client_id,
+                client_secret = client_secret,
+                code = code,
+                grant_type = grant_type
+            });
+            using (response)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var token = json.JsonToEntity<_<TokenModel>>();
+                if (!token.success)
+                {
+                    data.SetErrorMsg(token.msg);
+                    return data;
+                }
+                data.SetSuccessData(token.data);
+            }
+            return data;
+        }
+
+        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, string scopeJson, string phone, string sms)
+        {
+            var data = new _<string>();
+            var response = await client.PostAsJsonAsync(this._server.CreateCodeByOneTimeCode(), new
+            {
+                client_id = client_id,
+                scope = scopeJson,
+                phone = phone,
+                sms = sms
+            });
+            using (response)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var code = json.JsonToEntity<_<string>>();
+                if (!code.success || !ValidateHelper.IsPlumpString(code.data))
+                {
+                    data.SetErrorMsg(code.msg);
+                    return data;
+                }
+                data.SetSuccessData(code.data);
+            }
+            return data;
+        }
+
+        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, string scopeJson, string username, string password)
+        {
+            var data = new _<string>();
+            var response = await client.PostAsJsonAsync(this._server.CreateAuthCodeByPassword(), new
+            {
+                client_id = client_id,
+                scope = scopeJson,
+                username = username,
+                password = password
+            });
+            using (response)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var code = json.JsonToEntity<_<string>>();
+                if (!code.success || !ValidateHelper.IsPlumpString(code.data))
+                {
+                    data.SetErrorMsg(code.msg);
+                    return data;
+                }
+                data.SetSuccessData(code.data);
+            }
+            return data;
+        }
+
+        public async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string client_id, string access_token)
+        {
+            var data = new _<LoginUserInfo>();
+            var response = await client.PostAsJsonAsync(this._server.CheckToken(), new
+            {
+                client_id = client_id,
+                access_token = access_token
+            });
+            using (response)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var loginuser = json.JsonToEntity<_<LoginUserInfo>>();
+                if (!loginuser.success)
+                {
+                    data.SetErrorMsg(loginuser.msg);
+                    return data;
+                }
+                data.SetSuccessData(loginuser.data);
+            }
+            return data;
         }
     }
 }

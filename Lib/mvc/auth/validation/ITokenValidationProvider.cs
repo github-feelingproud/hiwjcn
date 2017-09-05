@@ -91,41 +91,22 @@ namespace Lib.mvc.auth.validation
     /// </summary>
     public class AuthServerValidationProvider : TokenValidationProviderBase
     {
-        private readonly AuthServerConfig _server;
         private readonly IValidationDataProvider _dataProvider;
+        private readonly IAuthApi api;
 
         public AuthServerValidationProvider(
-            AuthServerConfig server,
-            IValidationDataProvider _dataProvider)
+            IValidationDataProvider _dataProvider,
+            IAuthApi api)
         {
-            this._server = server;
             this._dataProvider = _dataProvider;
+            this.api = api;
         }
 
         public override LoginUserInfo FindUser(HttpContext context)
         {
             try
             {
-                var token = this._dataProvider.GetToken(context);
-                var client_id = this._dataProvider.GetClientID(context);
-                if (!ValidateHelper.IsAllPlumpString(token, client_id))
-                {
-                    $"token和client_id为空:{token}-{client_id}".AddBusinessInfoLog();
-                    return null;
-                }
-
-                var json = HttpClientHelper.PostJson(this._server.CheckToken(), new
-                {
-                    client_id = client_id,
-                    access_token = token
-                });
-                var data = json.JsonToEntity<_<LoginUserInfo>>();
-                if (!data.success)
-                {
-                    $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();
-                    return null;
-                }
-                return data.data;
+                return AsyncHelper_.RunSync(() => this.FindUserAsync(context));
             }
             catch (Exception e)
             {
@@ -146,8 +127,7 @@ namespace Lib.mvc.auth.validation
                     return null;
                 }
 
-                var caller = new AuthServerApiCaller(this._server);
-                var data = await caller.CheckToken(client_id, token);
+                var data = await this.api.GetLoginUserInfoByTokenAsync(client_id, token);
                 if (!data.success)
                 {
                     $"check token返回数据:{data.ToJson()}".AddBusinessInfoLog();

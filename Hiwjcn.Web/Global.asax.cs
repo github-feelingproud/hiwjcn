@@ -68,6 +68,9 @@ namespace Hiwjcn.Web
                         builder.AuthUseLoginStatus(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_session", ""));
                         builder.AuthUseValidationDataProvider<WebValidationDataProvider>();
                         builder.AuthClientUseCustomValidation<AuthLocalValidationProvider>();
+
+                        //对外提供的api
+                        builder.RegisterType<AuthApiServiceFromDB>().AsSelf().As<IAuthApi>();
                     };
 
                     //disable "X-AspNetMvc-Version" header name
@@ -83,7 +86,7 @@ namespace Hiwjcn.Web
                     try
                     {
                         //断网的情况下这里不会抛异常，会长时间等待
-                        Policy.Timeout(TimeSpan.FromSeconds(3), TimeoutStrategy.Pessimistic).Execute(() =>
+                        Policy.Timeout(TimeSpan.FromSeconds(5), TimeoutStrategy.Pessimistic).Execute(() =>
                         {
                             //加速首次启动EF
                             //EFManager.SelectDB(null).FastStart();

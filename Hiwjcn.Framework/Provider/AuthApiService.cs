@@ -33,9 +33,7 @@ namespace Hiwjcn.Bll.Auth
             IAuthTokenToUserService _IAuthTokenToUserService)
         {
             this._IAuthLoginService = _IAuthLoginService;
-
             this._IAuthTokenService = _IAuthTokenService;
-
             this._AuthScopeRepository = _AuthScopeRepository;
             this._IAuthTokenToUserService = _IAuthTokenToUserService;
         }

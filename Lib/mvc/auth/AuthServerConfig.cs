@@ -15,19 +15,39 @@ namespace Lib.mvc.auth
     public class AuthServerConfig
     {
         public readonly string ServerUrl;
+        public readonly string WcfUrl;
 
-        public AuthServerConfig(string host)
+        public AuthServerConfig(string host) :
+            this(host, $"{host?.EnsureTrailingSlash()}Service/AuthApiService.svc")
         {
-            this.ServerUrl = ConvertHelper.GetString(host);
-            if (!ValidateHelper.IsPlumpString(this.ServerUrl))
+            //
+        }
+
+        public AuthServerConfig(string host, string wcf_path)
+        {
+            void CheckUrl(string url)
             {
-                throw new Exception("auth服务器地址不能为空");
+                if (!ValidateHelper.IsPlumpString(url))
+                {
+                    throw new Exception("auth服务器地址不能为空");
+                }
+                var cp = url.ToLower();
+                if (!(cp.StartsWith("http://") || cp.StartsWith("https://")))
+                {
+                    throw new Exception("服务器地址必须以http或者https开头");
+                }
             }
 
-            var cp = this.ServerUrl.ToLower();
-            if (!(cp.StartsWith("http://") || cp.StartsWith("https://")))
+            //server root
+            this.ServerUrl = ConvertHelper.GetString(host);
+            CheckUrl(this.ServerUrl);
+
+            //server wcf url
+            this.WcfUrl = wcf_path;
+            CheckUrl(this.WcfUrl);
+            if (!this.WcfUrl.ToLower().EndsWith(".svc"))
             {
-                throw new Exception("auth服务器地址必须以http或者https开头");
+                throw new Exception("auth wcf地址必须以.svc结尾");
             }
         }
 

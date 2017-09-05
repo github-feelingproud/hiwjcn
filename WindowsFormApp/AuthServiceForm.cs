@@ -26,8 +26,10 @@ namespace WindowsFormApp
 
         private async void button2_Click(object sender, EventArgs e)
         {
+            var btn = (Button)sender;
             try
             {
+                btn.Enabled = false;
                 using (var scope = AppContext.Scope())
                 {
                     var repo = scope.Resolve_<IRepository<AuthClient>>();
@@ -37,7 +39,7 @@ namespace WindowsFormApp
                         MessageBox.Show("client is null");
                         return;
                     }
-                    var api = new AuthApiFromWcf("http://localhost:59840/Service/AuthApiService.svc");
+                    var api = new AuthApiFromWcf(new AuthServerConfig("http://localhost:59840/"));
 
                     var code = await api.GetAuthCodeByPasswordAsync(client.UID, new List<string>().ToJson(), "32", "53");
                     if (!code.success)
@@ -57,6 +59,10 @@ namespace WindowsFormApp
             catch (Exception err)
             {
                 MessageBox.Show(err.Message);
+            }
+            finally
+            {
+                btn.Enabled = true;
             }
         }
     }
