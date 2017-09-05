@@ -48,7 +48,7 @@ namespace Hiwjcn.Bll.Auth
         {
             var res = new _<TokenModel>();
             var data = await this._IAuthTokenService.CreateTokenAsync(client_id, client_secret, code);
-            if (!data.success)
+            if (data.error)
             {
                 res.SetErrorMsg(data.msg);
                 return res;
@@ -138,7 +138,7 @@ namespace Hiwjcn.Bll.Auth
             var data = new _<string>();
 
             var loginuser = await this._IAuthLoginService.LoginByCode(phone, sms);
-            if (!loginuser.success)
+            if (loginuser.error)
             {
                 data.SetErrorMsg(loginuser.msg);
                 return data;
@@ -150,7 +150,7 @@ namespace Hiwjcn.Bll.Auth
             }
 
             var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
-            if (!code.success)
+            if (code.error)
             {
                 data.SetErrorMsg(code.msg);
                 return data;
@@ -165,7 +165,7 @@ namespace Hiwjcn.Bll.Auth
             var data = new _<string>();
 
             var loginuser = await this._IAuthLoginService.LoginByPassword(username, password);
-            if (!loginuser.success)
+            if (loginuser.error)
             {
                 data.SetErrorMsg(loginuser.msg);
                 return data;
@@ -177,7 +177,7 @@ namespace Hiwjcn.Bll.Auth
             }
 
             var code = await this._IAuthTokenService.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
-            if (!code.success)
+            if (code.error)
             {
                 data.SetErrorMsg(code.msg);
                 return data;

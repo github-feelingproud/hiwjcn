@@ -65,10 +65,17 @@ namespace Lib.mvc
     public class ResJson<T> : ResultMsg<T>
     {
         [DataMember]
+        public virtual bool error
+        {
+            get => !this.success;
+            set => this.success = !value;
+        }
+
+        [DataMember]
         public virtual bool success
         {
-            get { return this.Success; }
-            set { this.Success = value; }
+            get => this.Success;
+            set => this.Success = value;
         }
 
         [DataMember]
