@@ -16,14 +16,17 @@ using Hiwjcn.Core.Domain.Auth;
 
 namespace Hiwjcn.Bll.Auth
 {
-    public class AuthApiService : IAuthApi
+    /// <summary>
+    /// 读取数据库实现auth相关api
+    /// </summary>
+    public class AuthApiServiceFromDB : IAuthApi
     {
         private readonly IAuthLoginService _IAuthLoginService;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IRepository<AuthScope> _AuthScopeRepository;
         private readonly IAuthTokenToUserService _IAuthTokenToUserService;
 
-        public AuthApiService(
+        public AuthApiServiceFromDB(
             IAuthLoginService _IAuthLoginService,
             IAuthTokenService _IAuthTokenService,
             IRepository<AuthScope> _AuthScopeRepository,

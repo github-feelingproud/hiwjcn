@@ -13,6 +13,7 @@ using Lib.extension;
 using Lib.data;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.rpc;
+using Lib.mvc.auth;
 
 namespace WindowsFormApp
 {
@@ -21,14 +22,6 @@ namespace WindowsFormApp
         public AuthServiceForm()
         {
             InitializeComponent();
-        }
-
-        class AuthApiClient : AuthApiServiceClient, IDisposable
-        {
-            public void Dispose()
-            {
-                this.SafeClose_();
-            }
         }
 
         private async void button2_Click(object sender, EventArgs e)
@@ -44,39 +37,21 @@ namespace WindowsFormApp
                         MessageBox.Show("client is null");
                         return;
                     }
-                    using (var api = new ServiceClient<IAuthApiService>("http://auth.qipeilong.net/Service/AuthApiService.svc"))
-                    {
-                        var code = await api.Instance.GetAuthCodeByPasswordAsync(client.UID, new List<string>().ToJson(), "", "");
-                        if (!code.success)
-                        {
-                            MessageBox.Show(code.msg);
-                            return;
-                        }
-                        var token = await api.Instance.GetAccessTokenAsync(client.UID, client.ClientSecretUID, code.data, string.Empty);
-                        if (!token.success)
-                        {
-                            MessageBox.Show(token.msg);
-                            return;
-                        }
-                        MessageBox.Show(token.data.Token);
-                    }
+                    var api = new AuthApiFromWcf("http://localhost:59840/Service/AuthApiService.svc");
 
-                    using (var api = new AuthApiClient())
+                    var code = await api.GetAuthCodeByPasswordAsync(client.UID, new List<string>().ToJson(), "32", "53");
+                    if (!code.success)
                     {
-                        var code = await api.GetAuthCodeByPasswordAsync(client.UID, new List<string>().ToJson(), "", "");
-                        if (!code.success)
-                        {
-                            MessageBox.Show(code.msg);
-                            return;
-                        }
-                        var token = await api.GetAccessTokenAsync(client.UID, client.ClientSecretUID, code.data, string.Empty);
-                        if (!token.success)
-                        {
-                            MessageBox.Show(token.msg);
-                            return;
-                        }
-                        MessageBox.Show(token.data.Token);
+                        MessageBox.Show(code.msg);
+                        return;
                     }
+                    var token = await api.GetAccessTokenAsync(client.UID, client.ClientSecretUID, code.data, string.Empty);
+                    if (!token.success)
+                    {
+                        MessageBox.Show(token.msg);
+                        return;
+                    }
+                    MessageBox.Show(token.data.Token);
                 }
             }
             catch (Exception err)

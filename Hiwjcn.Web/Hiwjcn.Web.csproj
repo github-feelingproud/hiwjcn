@@ -248,7 +248,6 @@
     <Compile Include="Service\AuthApiService.svc.cs">
       <DependentUpon>AuthApiService.svc</DependentUpon>
     </Compile>
-    <Compile Include="Service\IAuthApiService.cs" />
     <Compile Include="ui\ueditor\net\App_Code\Config.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>

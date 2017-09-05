@@ -68,10 +68,11 @@ namespace Hiwjcn.Web.Controllers
 
         [SSOPageValid(Permission = manage_auth)]
         [RequestLog]
-        public async Task<ActionResult> Statics()
+        public async Task<ActionResult> Statics(string refresh)
         {
             return await RunActionAsync(async () =>
             {
+                var clear_cache = ValidateHelper.IsPlumpString(refresh);
                 var now = DateTime.Now;
                 var count = 10;
                 var start = now.AddDays(-count);
