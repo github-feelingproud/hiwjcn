@@ -4,11 +4,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Lib.extension
 {
     public static class CommonExtension
     {
+        /// <summary>
+        /// 获取过期的方法
+        /// </summary>
+        public static List<string> FindObsoleteFunctions(this Assembly ass)
+        {
+            var list = new List<string>();
+            foreach (var tp in ass.GetTypes())
+            {
+                foreach (var func in tp.GetMethods())
+                {
+                    if (func.GetCustomAttributes<ObsoleteAttribute>().Any())
+                    {
+                        list.Add($"{tp.FullName}.{func.Name},{ass.FullName}");
+                    }
+                }
+            }
+            return list.Distinct().OrderBy(x => x).ToList();
+        }
+
         /// <summary>
         /// 克隆一个对象
         /// </summary>
