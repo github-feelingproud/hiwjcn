@@ -196,18 +196,14 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback);
+                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback, "/");
                 //url = url ?? @continue ?? next ?? callback;
 
                 var auth_user = await this.X.context.GetAuthUserAsync();
                 if (auth_user != null)
                 {
                     this._LoginStatus.SetUserLogin(this.X.context, auth_user);
-                    if (ValidateHelper.IsPlumpString(url))
-                    {
-                        return Redirect(url);
-                    }
-                    return GoHome();
+                    return Redirect(url);
                 }
 
                 return View();
@@ -225,14 +221,10 @@ namespace Hiwjcn.Web.Controllers
             {
                 _LoginStatus.SetUserLogout();
 
-                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback);
+                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback, "/");
 
-                if (ValidateHelper.IsPlumpString(url))
-                {
-                    return Redirect(url);
-                }
+                return Redirect(url);
 
-                return GoHome();
             });
         }
 

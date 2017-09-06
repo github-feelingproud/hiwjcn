@@ -12,6 +12,14 @@ namespace Lib.extension
     public static class ValidateExtension
     {
         /// <summary>
+        /// 判断是否都是非空字符串
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <returns></returns>
+        public static bool IsAllPlumpString(this IEnumerable<string> arr) => 
+            ValidateHelper.IsAllPlumpString(arr.ToArray());
+
+        /// <summary>
         /// 判断是否满足数据库约束
         /// </summary>
         /// <typeparam name="T"></typeparam>
