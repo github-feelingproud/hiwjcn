@@ -29,11 +29,14 @@ using Hiwjcn.Framework.Factory;
 using Hiwjcn.Core.Data;
 using Polly;
 using Polly.Timeout;
+using System.IO;
 
 namespace Hiwjcn.Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        private readonly ISettings settting = ConfigHelper.Instance;
+
         #region Application
         protected void Application_Start()
         {
@@ -85,7 +88,7 @@ namespace Hiwjcn.Web
                     try
                     {
                         //断网的情况下这里不会抛异常，会长时间等待
-                        Policy.Timeout(TimeSpan.FromSeconds(5), TimeoutStrategy.Pessimistic).Execute(() =>
+                        Policy.Timeout(TimeSpan.FromSeconds(6), TimeoutStrategy.Pessimistic).Execute(() =>
                         {
                             //加速首次启动EF
                             //EFManager.SelectDB(null).FastStart();
@@ -101,8 +104,8 @@ namespace Hiwjcn.Web
                         throw new Exception("设置EF快速启动失败", err);
                     }
 
-                    //尝试创建数据表
-                    EFManager.TryInstallDatabase<EntityDB>();
+                    //安装数据库
+                    this.InstallDatabase();
 
                     //启动后台服务
                     TaskManager.StartAllTasks(new Assembly[] { typeof(CleanDatabaseTask).Assembly });
@@ -112,6 +115,31 @@ namespace Hiwjcn.Web
             {
                 e.AddErrorLog("网站启动异常");
                 throw e;
+            }
+        }
+
+        /// <summary>
+        /// 安装数据库
+        /// </summary>
+        private void InstallDatabase()
+        {
+            try
+            {
+                var app_data = Server.AppDataPath();
+                new DirectoryInfo(app_data).CreateIfNotExist();
+                var lock_file = Path.Combine(app_data, "database_installed.txt");
+
+                if (!File.Exists(lock_file))
+                {
+                    //尝试创建数据表
+                    EFManager.TryInstallDatabase<EntityDB>();
+                    //写文件
+                    File.WriteAllText(lock_file, "数据库已经安装，要重新安装请删除这个文件并重启系统", settting.SystemEncoding);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("尝试安装数据库失败", e);
             }
         }
 

@@ -22,6 +22,8 @@ namespace Lib.mvc
             ResponseHelper.AllowCrossDomainAjax(context);
         }
 
+        public static string AppDataPath(this HttpServerUtility server) => server.MapPath("~/App_Data");
+
         /// <summary>
         /// 获取Area Controller Action
         /// </summary>
