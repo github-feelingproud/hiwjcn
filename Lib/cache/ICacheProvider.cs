@@ -9,10 +9,10 @@ namespace Lib.cache
     /// <summary>
     /// 带是否成功标志位的结果
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    [Serializable]
     public class CacheResult<T>
     {
-        public virtual bool Success { get; set; }
+        public virtual bool Success { get; set; } = false;
         public virtual T Result { get; set; }
     }
 
