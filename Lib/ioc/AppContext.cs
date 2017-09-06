@@ -11,6 +11,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using Lib.extension;
+using System.Data;
+using System.Data.Entity;
 
 namespace Lib.ioc
 {
@@ -242,6 +244,40 @@ namespace Lib.ioc
     public static class AppContextExtension
     {
         /// <summary>
+        /// 使用EF
+        /// </summary>
+        public static void UseEF<T>(this ContainerBuilder builder, string name = null)
+            where T : DbContext
+        {
+            var context = builder.RegisterType<T>().AsSelf().As<DbContext>();
+            if (ValidateHelper.IsPlumpString(name))
+            {
+                context = context.Named<DbContext>(name);
+            }
+        }
+
+        /// <summary>
+        /// 使用配置
+        /// </summary>
+        public static void UseSystemConfig<T>(this ContainerBuilder builder)
+            where T : class, ISettings =>
+            builder.RegisterType<T>().AsSelf().As<ISettings>().SingleInstance();
+
+        /// <summary>
+        /// 使用数据库
+        /// </summary>
+        public static void UseAdoConnection<T>(this ContainerBuilder builder)
+            where T : class, IDbConnection =>
+            builder.RegisterType<T>().AsSelf().As<IDbConnection>();
+
+        /// <summary>
+        /// 使用缓存
+        /// </summary>
+        public static void UseCacheProvider<T>(this ContainerBuilder builder)
+            where T : class, ICacheProvider =>
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<ICacheProvider>().SingleInstance();
+
+        /// <summary>
         /// 配置不注册IOC
         /// </summary>
         public static bool NotRegIoc(this Type t)
@@ -257,18 +293,12 @@ namespace Lib.ioc
         /// <summary>
         /// 给mvc提供依赖注入功能
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
         public static AutofacDependencyResolver AutofacDependencyResolver_(this IContainer context) =>
             new AutofacDependencyResolver(context);
 
         /// <summary>
         /// 找出所有实例
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="scope"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public static T[] ResolveAll<T>(this ILifetimeScope scope, string name = null)
         {
             return scope.Resolve_<IEnumerable<T>>().ToArray();
@@ -277,10 +307,6 @@ namespace Lib.ioc
         /// <summary>
         /// 创建实例
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="scope"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public static T Resolve_<T>(this ILifetimeScope scope, string name = null)
         {
             if (ValidateHelper.IsPlumpString(name))
@@ -311,11 +337,6 @@ namespace Lib.ioc
         /// <summary>
         /// 不自动dispose对象
         /// </summary>
-        /// <typeparam name="TLimit"></typeparam>
-        /// <typeparam name="TActivatorData"></typeparam>
-        /// <typeparam name="TRegistrationStyle"></typeparam>
-        /// <param name="builder"></param>
-        /// <returns></returns>
         public static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> DisableAutoDispose<TLimit, TActivatorData, TRegistrationStyle>(this IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder) => builder.ExternallyOwned();
 
         public static void UseDbConnection<T>()
@@ -342,7 +363,7 @@ namespace Lib.ioc
         /// 请求上下文的autofac scope
         /// 可以直接拿来resolve
         /// </summary>
-        public static ILifetimeScope MvcAutofacCurrent(this HttpContext context) => 
+        public static ILifetimeScope MvcAutofacCurrent(this HttpContext context) =>
             AutofacDependencyResolver.Current.RequestLifetimeScope;
     }
 

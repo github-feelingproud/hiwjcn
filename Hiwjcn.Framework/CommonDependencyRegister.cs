@@ -35,18 +35,18 @@ namespace Hiwjcn.Framework
             //缓存
             if (ValidateHelper.IsPlumpString(ConfigHelper.Instance.RedisConnectionString))
             {
-                builder.RegisterType<RedisCacheProvider>().As<ICacheProvider>().SingleInstance();
+                builder.UseCacheProvider<RedisCacheProvider>();
             }
             else
             {
-                builder.RegisterType<MemoryCacheProvider>().As<ICacheProvider>().SingleInstance();
+                builder.UseCacheProvider<MemoryCacheProvider>();
             }
-            builder.RegisterType<BasicConfigProvider>().As<ISettings>().SingleInstance();
-            builder.RegisterType<EntityDB>().AsSelf().As<DbContext>().Named<DbContext>("db");
-            builder.RegisterType<MySqlConnection>().As<IDbConnection>();
+            builder.UseSystemConfig<BasicConfigProvider>();
+            builder.UseEF<EntityDB>("db");
+            builder.UseAdoConnection<MySqlConnection>();
             //builder.RegisterInstance(new LoginStatus()).As<LoginStatus>().SingleInstance();
             //builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().As<ILoginStatus>().SingleInstance();
-            
+
             #region 自动注册
             AutoRegistered(ref builder, tps.core.Assembly, tps.service.Assembly, tps.framework.Assembly);
             #endregion
