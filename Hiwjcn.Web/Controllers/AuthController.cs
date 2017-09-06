@@ -23,10 +23,10 @@ using Hiwjcn.Framework;
 
 namespace Hiwjcn.Web.Controllers
 {
+    [RoutePrefix(AuthApiControllerConfig.ControllerName)]
     public class AuthController : BaseController
     {
         private readonly IAuthApi api;
-
         public AuthController(IAuthApi api)
         {
             this.api = api;
@@ -42,12 +42,14 @@ namespace Hiwjcn.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [RequestLog]
+        [ActionName(AuthApiControllerConfig.Action_AccessToken)]
         public async Task<ActionResult> AccessToken(
             string client_id, string client_secret, string code, string grant_type)
         {
             return await RunActionAsync(async () =>
             {
-                return GetJson(await this.api.GetAccessTokenAsync(client_id, client_secret, code, grant_type));
+                var data = await this.api.GetAccessTokenAsync(client_id, client_secret, code, grant_type);
+                return GetJson(data);
             });
         }
 
@@ -59,11 +61,13 @@ namespace Hiwjcn.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [RequestLog]
+        [ActionName(AuthApiControllerConfig.Action_CheckToken)]
         public async Task<ActionResult> CheckToken(string client_id, string access_token)
         {
             return await RunActionAsync(async () =>
             {
-                return GetJson(await this.api.GetLoginUserInfoByTokenAsync(client_id, access_token));
+                var data = await this.api.GetLoginUserInfoByTokenAsync(client_id, access_token);
+                return GetJson(data);
             });
         }
 
@@ -77,21 +81,25 @@ namespace Hiwjcn.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [RequestLog]
+        [ActionName(AuthApiControllerConfig.Action_AuthCodeByOneTimeCode)]
         public async Task<ActionResult> AuthCodeByOneTimeCode(string client_id, string scope, string phone, string sms)
         {
             return await RunActionAsync(async () =>
             {
-                return GetJson(await this.api.GetAuthCodeByOneTimeCodeAsync(client_id, scope, phone, sms));
+                var data = await this.api.GetAuthCodeByOneTimeCodeAsync(client_id, scope, phone, sms);
+                return GetJson(data);
             });
         }
 
         [HttpPost]
         [RequestLog]
+        [ActionName(AuthApiControllerConfig.Action_AuthCodeByPassword)]
         public async Task<ActionResult> AuthCodeByPassword(string client_id, string scope, string username, string password)
         {
             return await RunActionAsync(async () =>
             {
-                return GetJson(await this.api.GetAuthCodeByPasswordAsync(client_id, scope, username, password));
+                var data = await this.api.GetAuthCodeByPasswordAsync(client_id, scope, username, password);
+                return GetJson(data);
             });
         }
     }

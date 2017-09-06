@@ -12,6 +12,15 @@ using Lib.mvc;
 
 namespace Lib.mvc.auth
 {
+    public static class AuthApiControllerConfig
+    {
+        public const string ControllerName = "Auth";
+        public const string Action_AuthCodeByPassword = "AuthCodeByPassword";
+        public const string Action_AuthCodeByOneTimeCode = "AuthCodeByOneTimeCode";
+        public const string Action_AccessToken = "AccessToken";
+        public const string Action_CheckToken = "CheckToken";
+    }
+
     public class AuthServerConfig
     {
         public readonly string ServerUrl;
@@ -57,25 +66,27 @@ namespace Lib.mvc.auth
             return ServerUrl.EnsureTrailingSlash() + path;
         }
 
-        /// <summary>
-        /// 获取code
-        /// </summary>
-        public string CreateAuthCodeByPassword() => this.ApiPath("Auth", "AuthCodeByPassword");
+        public string AuthApiPath(string action) => this.ApiPath(new string[] { AuthApiControllerConfig.ControllerName, action });
 
         /// <summary>
         /// 获取code
         /// </summary>
-        public string CreateCodeByOneTimeCode() => this.ApiPath("Auth", "AuthCodeByOneTimeCode");
+        public string CreateAuthCodeByPassword() => this.AuthApiPath(AuthApiControllerConfig.Action_AuthCodeByPassword);
+
+        /// <summary>
+        /// 获取code
+        /// </summary>
+        public string CreateCodeByOneTimeCode() => this.AuthApiPath(AuthApiControllerConfig.Action_AuthCodeByOneTimeCode);
 
         /// <summary>
         /// 获取token
         /// </summary>
-        public string CreateToken() => this.ApiPath("Auth", "AccessToken");
+        public string CreateToken() => this.AuthApiPath(AuthApiControllerConfig.Action_AccessToken);
 
         /// <summary>
         /// token换用户信息
         /// </summary>
-        public string CheckToken() => this.ApiPath("Auth", "CheckToken");
+        public string CheckToken() => this.AuthApiPath(AuthApiControllerConfig.Action_CheckToken);
 
     }
 

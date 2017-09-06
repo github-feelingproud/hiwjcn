@@ -99,7 +99,14 @@ namespace Lib.helper
             {
                 throw new Exception("json为空");
             }
-            return JsonConvert.DeserializeObject<T>(json);
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"不能将json转为{typeof(T).FullName}。json数据：{json}", e);
+            }
         }
 
         /// <summary>

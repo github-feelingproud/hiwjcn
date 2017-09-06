@@ -39,7 +39,7 @@ namespace WindowsFormApp
                         MessageBox.Show("client is null");
                         return;
                     }
-                    var api = new AuthApiFromWcf(new AuthServerConfig("http://localhost:59840/"));
+                    var api = new AuthApiFromWebApi(new AuthServerConfig("http://localhost:59840/"));
 
                     var code = await api.GetAuthCodeByPasswordAsync(client.UID, new List<string>().ToJson(), "32", "53");
                     if (!code.success)

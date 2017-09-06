@@ -21,12 +21,24 @@ namespace Lib.mvc.auth
     /// </summary>
     public interface IAuthApi
     {
+        /// <summary>
+        /// 用code换token
+        /// </summary>
         Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type);
 
+        /// <summary>
+        /// 用token换取登录信息
+        /// </summary>
         Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string client_id, string access_token);
 
+        /// <summary>
+        /// 用验证码登录换取code
+        /// </summary>
         Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, string scopeJson, string phone, string sms);
 
+        /// <summary>
+        /// 用密码登录换取code
+        /// </summary>
         Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, string scopeJson, string username, string password);
     }
 
@@ -109,7 +121,6 @@ namespace Lib.mvc.auth
 
         public async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
         {
-            var data = new _<TokenModel>();
             var response = await client.PostAsJsonAsync(this._server.CreateToken(), new
             {
                 client_id = client_id,
@@ -121,19 +132,12 @@ namespace Lib.mvc.auth
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var token = json.JsonToEntity<_<TokenModel>>();
-                if (!token.success)
-                {
-                    data.SetErrorMsg(token.msg);
-                    return data;
-                }
-                data.SetSuccessData(token.data);
+                return token;
             }
-            return data;
         }
 
         public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, string scopeJson, string phone, string sms)
         {
-            var data = new _<string>();
             var response = await client.PostAsJsonAsync(this._server.CreateCodeByOneTimeCode(), new
             {
                 client_id = client_id,
@@ -145,19 +149,12 @@ namespace Lib.mvc.auth
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var code = json.JsonToEntity<_<string>>();
-                if (!code.success || !ValidateHelper.IsPlumpString(code.data))
-                {
-                    data.SetErrorMsg(code.msg);
-                    return data;
-                }
-                data.SetSuccessData(code.data);
+                return code;
             }
-            return data;
         }
 
         public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, string scopeJson, string username, string password)
         {
-            var data = new _<string>();
             var response = await client.PostAsJsonAsync(this._server.CreateAuthCodeByPassword(), new
             {
                 client_id = client_id,
@@ -169,19 +166,12 @@ namespace Lib.mvc.auth
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var code = json.JsonToEntity<_<string>>();
-                if (!code.success || !ValidateHelper.IsPlumpString(code.data))
-                {
-                    data.SetErrorMsg(code.msg);
-                    return data;
-                }
-                data.SetSuccessData(code.data);
+                return code;
             }
-            return data;
         }
 
         public async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string client_id, string access_token)
         {
-            var data = new _<LoginUserInfo>();
             var response = await client.PostAsJsonAsync(this._server.CheckToken(), new
             {
                 client_id = client_id,
@@ -191,14 +181,8 @@ namespace Lib.mvc.auth
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var loginuser = json.JsonToEntity<_<LoginUserInfo>>();
-                if (!loginuser.success)
-                {
-                    data.SetErrorMsg(loginuser.msg);
-                    return data;
-                }
-                data.SetSuccessData(loginuser.data);
+                return loginuser;
             }
-            return data;
         }
     }
 }
