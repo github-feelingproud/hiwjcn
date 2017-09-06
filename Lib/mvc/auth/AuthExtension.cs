@@ -140,6 +140,14 @@ namespace Lib.mvc.auth
         }
 
         /// <summary>
+        /// 访问服务的方式，wcf，webapi，db
+        /// </summary>
+        public static void AuthUseServerApiAccessService<T>(this ContainerBuilder builder) where T : IAuthApi
+        {
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces();
+        }
+
+        /// <summary>
         /// 自定义验证
         /// </summary>
         public static void AuthClientUseCustomValidation<T>(this ContainerBuilder builder)

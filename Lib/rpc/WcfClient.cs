@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Lib.helper;
 using Lib.extension;
 using System.ServiceModel.Channels;
+using System.IO;
+using System.Web;
+using System.Reflection;
 
 namespace Lib.rpc
 {
@@ -91,6 +94,31 @@ namespace Lib.rpc
     /// </summary>
     public static class ServiceClientExtension
     {
+        public static void FindSvc(this Assembly ass)
+        {
+            var tps = ass.GetTypes();
+            var contracts = tps.Where(x => x.IsInterface && x.GetCustomAttributes<IsWcfContractAttribute>().Any()).ToList();
+
+            var svcTypes = new List<Type>();
+            foreach (var con in contracts)
+            {
+                var impls = tps.Where(x => x.IsNormalClass() && x.IsAssignableTo_(con)).ToList();
+                if (impls.Count <= 0) { continue; }
+                if (impls.Count > 1) { throw new Exception("一个wcf contracts只能有一个实现"); }
+                svcTypes.Add(impls.First());
+            }
+            var names = svcTypes.Select(x => $"{x.Name.ToLower()}.svc");
+            var path = HttpContext.Current.Server.MapPath("~/");
+            //从磁盘上找到svc文件
+            Com.FindFiles(path, f =>
+            {
+                if (names.Contains(f.Name.ToLower()))
+                {
+                    //parse path
+                }
+            });
+        }
+
         public static void SafeClose_<T>(this ClientBase<T> client) where T : class
         {
             try
@@ -223,4 +251,7 @@ namespace Lib.rpc
             }
         }
     }
+
+    public class IsWcfContractAttribute : Attribute
+    { }
 }

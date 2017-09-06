@@ -863,10 +863,7 @@ namespace Lib.helper
         /// <summary>
         /// 使用栈找文件
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="func"></param>
-        /// <param name="stack_count_func"></param>
-        public static void FindFiles(string path, VoidFunc<FileInfo> func, VoidFunc<int> stack_count_func)
+        public static void FindFiles(string path, VoidFunc<FileInfo> func, VoidFunc<int> stack_count_func = null)
         {
             var root = new DirectoryInfo(path);
             if (!root.Exists) { throw new Exception("目录不存在"); }
@@ -898,8 +895,6 @@ namespace Lib.helper
         /// <summary>
         /// 使用递归找文件目录
         /// </summary>
-        /// <param name="dir"></param>
-        /// <param name="func"></param>
         public static void FindFilesBad(DirectoryInfo dir, VoidFunc<FileInfo> func)
         {
             if (dir == null || !dir.Exists) { return; }
