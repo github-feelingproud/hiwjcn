@@ -9,22 +9,41 @@ using Lib.ioc;
 namespace Lib.mvc.user
 {
     /// <summary>
+    /// 为汽配龙业务提供的数据
+    /// </summary>
+    [Serializable]
+    public class QPLData
+    {
+        public virtual string TraderName { get; set; }
+
+        public virtual int IsCheck { get; set; }
+
+        public virtual string CustomerType { get; set; }
+
+        public virtual int IsHaveInquiry { get; set; }
+
+        public virtual string LocationId { get; set; }
+
+        public virtual int IsSelf { get; set; }
+    }
+
+    /// <summary>
     /// 记录登陆信息，可以序列化
     /// </summary>
     [Serializable]
-    public class LoginUserInfo
+    public class LoginUserInfo : QPLData
     {
         public LoginUserInfo() { }
 
-        public virtual int IID { get; set; }
+        public virtual long IID { get; set; }
 
         public virtual string UserID { get; set; }
 
         [Obsolete("等同于UserID")]
         public virtual string UserUID
         {
-            get { return this.UserID; }
-            set { this.UserID = value; }
+            get => this.UserID;
+            set => this.UserID = value;
         }
 
         public virtual string UserName { get; set; }

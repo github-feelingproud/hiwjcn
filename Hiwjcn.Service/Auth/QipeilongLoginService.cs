@@ -46,6 +46,11 @@ namespace Hiwjcn.Bll.Auth
                 HeadImgUrl = model.Images,
                 IsActive = model.IsActive ?? (int)YesOrNoEnum.否,
                 IsValid = true,
+
+                IsCheck = model.IsCheck ?? (int)YesOrNoEnum.否,
+                CustomerType = model.CustomerType,
+                LocationId = model.CityId,
+
                 LoginToken = "please load auth token"
             };
 
