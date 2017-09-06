@@ -14,6 +14,9 @@ using Autofac;
 
 namespace Lib.data
 {
+    /// <summary>
+    /// 数据库类型
+    /// </summary>
     public enum DBTypeEnum : int
     {
         None = -1,
@@ -24,11 +27,16 @@ namespace Lib.data
         PostgreSQL = 5,
         Sqlite = 6
     }
+
+    /// <summary>
+    /// 获取数据库链接
+    /// </summary>
     public static class DBHelper
     {
         private static readonly string ConStr =
             ConfigurationManager.ConnectionStrings["db"]?.ToString() ??
-            ConfigurationManager.AppSettings["db"];
+            ConfigurationManager.AppSettings["db"] ??
+            throw new Exception("请在connectionstring或者appsetting中配置节点为db的通用链接字符串");
 
         /// <summary>
         /// 使用ioc中注册的数据库
@@ -36,10 +44,6 @@ namespace Lib.data
         /// <returns></returns>
         public static IDbConnection GetConnectionProvider(ILifetimeScope scope)
         {
-            if (!ValidateHelper.IsPlumpString(ConStr))
-            {
-                throw new Exception("请在connectionstring或者appsetting中配置节点为db的通用链接字符串");
-            }
             var con = scope.Resolve_<IDbConnection>();
             con.ConnectionString = ConStr;
             //打开链接，重试两次
