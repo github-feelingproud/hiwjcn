@@ -127,14 +127,19 @@ namespace Hiwjcn.Web
             {
                 var app_data = Server.AppDataPath();
                 new DirectoryInfo(app_data).CreateIfNotExist();
-                var lock_file = Path.Combine(app_data, "database_installed.txt");
+                var lock_file = Path.Combine(app_data, "database_installed.json");
 
                 if (!File.Exists(lock_file))
                 {
                     //尝试创建数据表
                     EFManager.TryInstallDatabase<EntityDB>();
                     //写文件
-                    File.WriteAllText(lock_file, "数据库已经安装，要重新安装请删除这个文件并重启系统", settting.SystemEncoding);
+                    var data = new
+                    {
+                        msg = "数据库已经安装，要重新安装请删除这个文件并重启系统",
+                        time = DateTime.Now
+                    }.ToJson();
+                    File.WriteAllText(lock_file, data, settting.SystemEncoding);
                 }
             }
             catch (Exception e)
