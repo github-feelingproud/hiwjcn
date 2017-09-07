@@ -20,12 +20,32 @@ using System.Collections.Generic;
 using Hiwjcn.Framework;
 using Lib.ioc;
 using Autofac;
+using Lib.distributed;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest6
     {
+        [TestMethod]
+        public void jlkjkfzk()
+        {
+            try
+            {
+                var client = new ZooKeeperClient("lib_zookeeper");
+
+                client.Set("/qpl", "fasdfasd");
+
+                var data = client.Get<string>("/qpl");
+
+                client.Dispose();
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        }
+
         class mmmm : IDisposable
         {
             public void Dispose()

@@ -187,7 +187,7 @@ namespace Hiwjcn.Bll.Auth
             var data = new _<string>();
 
             var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAuthCodeByPasswordAsync)}";
-            var p = new { client_id = client_id, scope = scope, username, password }.ToJson();
+            var p = new { client_id = client_id, scope = scope, username = username, password = password }.ToJson();
 
             var loginuser = await this._IAuthLoginService.LoginByPassword(username, password);
             if (loginuser.error)
