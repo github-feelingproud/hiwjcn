@@ -10,6 +10,9 @@ using Lib.helper;
 using System.Linq;
 using Polly;
 using Polly.CircuitBreaker;
+using Akka;
+using Akka.Actor;
+using Lib.events;
 
 namespace Lib.log
 {
@@ -21,6 +24,8 @@ namespace Lib.log
     {
         private static readonly CircuitBreakerPolicy p =
             Policy.Handle<Exception>().CircuitBreaker(50, TimeSpan.FromMinutes(1));
+
+        private readonly IActorRef WriterActor = AkkaHelper<SendLogActor>.GetActor();
 
         public ESLogAppender()
         {
@@ -48,6 +53,7 @@ namespace Lib.log
         {
             try
             {
+                this.WriterActor.Tell(events);
                 p.Execute(() =>
                 {
                     Policy.Handle<Exception>().WaitAndRetry(3, i => TimeSpan.FromMilliseconds(i * 100)).Execute(() =>
@@ -62,6 +68,17 @@ namespace Lib.log
             {
                 Debug.WriteLine(e.GetInnerExceptionAsJson());
             }
+        }
+    }
+
+    public class SendLogActor : ReceiveActor
+    {
+        public SendLogActor()
+        {
+            this.Receive<ESLogLine[]>(x =>
+            {
+                //write line
+            });
         }
     }
 }
