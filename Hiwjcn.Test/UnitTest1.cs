@@ -74,6 +74,48 @@ namespace Hiwjcn.Test
 
             var data_1 = await ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.GetOrders());
             var data_3 = await ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.ThrowOrders());
+
+
+
+
+
+            var steps = new List<string>();
+
+            try
+            {
+                steps.Add("方法开始");
+                //...
+                steps.Add("获取用户");
+                //...
+                steps.Add("获取订单");
+                //...
+                steps.Add("获取商品");
+                //...
+                steps.Add("获取xx");
+                //...
+                steps.Add("方法结束");
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+                throw e;
+            }
+            finally
+            {
+                //方法开始=>获取用户=>获取订单=>获取商品=>获取xx=>方法结束
+                steps.AsSteps().AddBusinessInfoLog();
+            }
+
+
+
+
+
+
+
+
+
+
+
         }
 
         /// <summary>
