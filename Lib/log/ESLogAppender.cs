@@ -45,17 +45,18 @@ namespace Lib.log
             {
                 if (!ValidateHelper.IsPlumpList(events)) { return; }
 
-                //缓冲设置的越小，阻塞的几率越大
-                if (this.BufferSize < this.ThreadHold)
+                //缓冲设置的越小，阻塞的几率越大==========暂时不开启
+                if (this.BufferSize < this.ThreadHold && false)
                 {
                     //等待的概率
-                    var AskProbability = (this.ThreadHold - (double)this.BufferSize) / this.ThreadHold;
+                    var AskProbability = 1 - ((double)this.BufferSize) / this.ThreadHold;
 
                     var r = ran.RealNext(this.ThreadHold);
                     if (r < AskProbability * this.ThreadHold)
                     {
                         //等待结束
-                        this.WriterActor.Ask(events);
+                        var task = this.WriterActor.Ask<bool>(events);
+                        AsyncHelper_.RunSync(() => task);
                         return;
                     }
                 }
@@ -99,7 +100,7 @@ namespace Lib.log
                 {
                     Debug.WriteLine(e.GetInnerExceptionAsJson());
                 }
-                return true;
+                this.Sender.Tell(true);
             });
         }
     }
