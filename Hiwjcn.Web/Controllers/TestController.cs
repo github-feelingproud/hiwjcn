@@ -40,6 +40,17 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        public ActionResult es_log()
+        {
+            foreach (var i in Com.Range(50))
+            {
+                $"业务日志{i}".AddBusinessInfoLog();
+                $"警告日志{i}".AddBusinessWarnLog();
+                //new Exception().AddErrorLog();
+            }
+            return Content("ok");
+        }
+
         [ValidateSign]
         public ActionResult sign()
         {

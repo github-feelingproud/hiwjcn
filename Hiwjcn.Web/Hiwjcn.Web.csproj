@@ -769,6 +769,7 @@
     <Content Include="App_Data\Lang\zh-cn.json" />
     <Content Include="App_Data\Config\log4net.config" />
     <Content Include="App_Data\Config\sentry.config" />
+    <Content Include="App_Data\Config\elk_sentry.config" />
     <None Include="Properties\PublishProfiles\iis.pubxml" />
     <None Include="Properties\PublishProfiles\xx.pubxml" />
     <Content Include="Views\Shared\tag_input.cshtml" />
