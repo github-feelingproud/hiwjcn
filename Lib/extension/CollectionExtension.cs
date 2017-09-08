@@ -25,6 +25,14 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 变成a=>b=>c=>d
+        /// </summary>
+        public static string AsSteps(this IEnumerable<string> list, string sp = "=>")
+        {
+            return (sp ?? throw new Exception(nameof(sp))).Join_(list);
+        }
+
+        /// <summary>
         /// 解决ilist没有foreach的问题
         /// </summary>
         public static void ForEach_<T>(this IEnumerable<T> list, Action<int, T> action)
