@@ -34,12 +34,12 @@ namespace Lib.mvc.auth
         /// <summary>
         /// 用验证码登录换取code
         /// </summary>
-        Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, string scopeJson, string phone, string sms);
+        Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms);
 
         /// <summary>
         /// 用密码登录换取code
         /// </summary>
-        Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, string scopeJson, string username, string password);
+        Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password);
     }
 
     /// <summary>
@@ -56,10 +56,10 @@ namespace Lib.mvc.auth
         Task<_<LoginUserInfo>> GetLoginUserInfoByToken(string client_id, string access_token);
 
         [OperationContract]
-        Task<_<string>> GetAuthCodeByOneTimeCode(string client_id, string scopeJson, string phone, string sms);
+        Task<_<string>> GetAuthCodeByOneTimeCode(string client_id, List<string> scopes, string phone, string sms);
 
         [OperationContract]
-        Task<_<string>> GetAuthCodeByPassword(string client_id, string scopeJson, string username, string password);
+        Task<_<string>> GetAuthCodeByPassword(string client_id, List<string> scopes, string username, string password);
     }
 
     /// <summary>
@@ -81,19 +81,19 @@ namespace Lib.mvc.auth
             }
         }
 
-        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, string scopeJson, string phone, string sms)
+        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
         {
             using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
             {
-                return await client.Instance.GetAuthCodeByOneTimeCode(client_id, scopeJson, phone, sms);
+                return await client.Instance.GetAuthCodeByOneTimeCode(client_id, scopes, phone, sms);
             }
         }
 
-        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, string scopeJson, string username, string password)
+        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password)
         {
             using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
             {
-                return await client.Instance.GetAuthCodeByPassword(client_id, scopeJson, username, password);
+                return await client.Instance.GetAuthCodeByPassword(client_id, scopes, username, password);
             }
         }
 
@@ -136,12 +136,12 @@ namespace Lib.mvc.auth
             }
         }
 
-        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, string scopeJson, string phone, string sms)
+        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
         {
             var response = await client.PostAsJsonAsync(this._server.CreateCodeByOneTimeCode(), new
             {
                 client_id = client_id,
-                scope = scopeJson,
+                scope = (scopes ?? new List<string>() { }).ToJson(),
                 phone = phone,
                 sms = sms
             });
@@ -153,12 +153,12 @@ namespace Lib.mvc.auth
             }
         }
 
-        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, string scopeJson, string username, string password)
+        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password)
         {
             var response = await client.PostAsJsonAsync(this._server.CreateAuthCodeByPassword(), new
             {
                 client_id = client_id,
-                scope = scopeJson,
+                scope = (scopes ?? new List<string>() { }).ToJson(),
                 username = username,
                 password = password
             });

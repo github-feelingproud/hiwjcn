@@ -140,20 +140,13 @@ namespace Hiwjcn.Bll.Auth
 
             return data;
         }
-
-        private List<string> ParseScopes(string scope)
-        {
-            var scopeslist = ConvertHelper.NotNullList(scope?.JsonToEntity<List<string>>());
-            scopeslist = scopeslist.Select(x => x?.Trim()).Where(x => ValidateHelper.IsPlumpString(x)).ToList();
-            return scopeslist;
-        }
-
-        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, string scope, string phone, string sms)
+        
+        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
         {
             var data = new _<string>();
 
             var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAuthCodeByOneTimeCodeAsync)}";
-            var p = new { client_id = client_id, scope = scope, phone = phone, sms = sms }.ToJson();
+            var p = new { client_id = client_id, scope = scopes, phone = phone, sms = sms }.ToJson();
 
             var loginuser = await this._IAuthLoginService.LoginByCode(phone, sms);
             if (loginuser.error)
@@ -163,7 +156,7 @@ namespace Hiwjcn.Bll.Auth
                 data.SetErrorMsg(loginuser.msg);
                 return data;
             }
-            var scopeslist = this.ParseScopes(scope);
+            var scopeslist = AuthHelper.ParseScopes(scopes);
             if (!ValidateHelper.IsPlumpList(scopeslist))
             {
                 scopeslist = (await this._AuthScopeRepository.GetListAsync(null)).Select(x => x.Name).ToList();
@@ -182,12 +175,12 @@ namespace Hiwjcn.Bll.Auth
             return data;
         }
 
-        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, string scope, string username, string password)
+        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password)
         {
             var data = new _<string>();
 
             var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAuthCodeByPasswordAsync)}";
-            var p = new { client_id = client_id, scope = scope, username = username, password = password }.ToJson();
+            var p = new { client_id = client_id, scope = scopes, username = username, password = password }.ToJson();
 
             var loginuser = await this._IAuthLoginService.LoginByPassword(username, password);
             if (loginuser.error)
@@ -197,7 +190,7 @@ namespace Hiwjcn.Bll.Auth
                 data.SetErrorMsg(loginuser.msg);
                 return data;
             }
-            var scopeslist = this.ParseScopes(scope);
+            var scopeslist = AuthHelper.ParseScopes(scopes);
             if (!ValidateHelper.IsPlumpList(scopeslist))
             {
                 scopeslist = (await this._AuthScopeRepository.GetListAsync(null)).Select(x => x.Name).ToList();

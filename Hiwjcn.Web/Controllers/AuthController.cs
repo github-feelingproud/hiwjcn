@@ -86,7 +86,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var data = await this.api.GetAuthCodeByOneTimeCodeAsync(client_id, scope, phone, sms);
+                var data = await this.api.GetAuthCodeByOneTimeCodeAsync(client_id, AuthHelper.ParseScopes(scope), phone, sms);
                 return GetJson(data);
             });
         }
@@ -98,7 +98,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var data = await this.api.GetAuthCodeByPasswordAsync(client_id, scope, username, password);
+                var data = await this.api.GetAuthCodeByPasswordAsync(client_id, AuthHelper.ParseScopes(scope), username, password);
                 return GetJson(data);
             });
         }

@@ -27,14 +27,14 @@ namespace Hiwjcn.Web.Service
             return await this.X(async s => await s.GetAccessTokenAsync(client_id, client_secret, code, grant_type));
         }
 
-        public async Task<_<string>> GetAuthCodeByOneTimeCode(string client_id, string scopeJson, string phone, string sms)
+        public async Task<_<string>> GetAuthCodeByOneTimeCode(string client_id, List<string> scopes, string phone, string sms)
         {
-            return await this.X(async s => await s.GetAuthCodeByOneTimeCodeAsync(client_id, scopeJson, phone, sms));
+            return await this.X(async s => await s.GetAuthCodeByOneTimeCodeAsync(client_id, scopes, phone, sms));
         }
 
-        public async Task<_<string>> GetAuthCodeByPassword(string client_id, string scopeJson, string username, string password)
+        public async Task<_<string>> GetAuthCodeByPassword(string client_id, List<string> scopes, string username, string password)
         {
-            return await this.X(async s => await s.GetAuthCodeByPasswordAsync(client_id, scopeJson, username, password));
+            return await this.X(async s => await s.GetAuthCodeByPasswordAsync(client_id, scopes, username, password));
         }
 
         public async Task<_<LoginUserInfo>> GetLoginUserInfoByToken(string client_id, string access_token)
