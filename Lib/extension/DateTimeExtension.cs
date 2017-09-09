@@ -10,10 +10,19 @@ namespace Lib.extension
     public static class DateTimeExtension
     {
         /// <summary>
+        /// 计算当月的总天数
+        /// </summary>
+        public static int DaysOfThisMonth(this DateTime time)
+        {
+            var start = time.Date;
+            var end = start.AddMonths(1);
+            var days = (end - start).TotalDays;
+            return (int)Math.Ceiling(days);
+        }
+
+        /// <summary>
         /// 明天凌晨
         /// </summary>
-        /// <param name="time"></param>
-        /// <returns></returns>
         public static DateTime ToTomorrowMorning(this DateTime time)
         {
             return time.Date.AddDays(1);
