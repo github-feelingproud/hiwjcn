@@ -40,7 +40,7 @@ namespace Hiwjcn.Bll.Auth
             }
             throw new Exception("保存client异常");
         }
-        
+
         public async Task<string> DeleteClientAsync(string client_uid, string user_uid)
         {
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);
@@ -57,7 +57,7 @@ namespace Hiwjcn.Bll.Auth
         {
             var client = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid && x.UserUID == user_uid);
             Com.AssertNotNull(client, $"找不到client[client_uid={client_uid},user_uid={user_uid}]");
-            client.IsRemove = (!client.IsRemove.ToString().ToBool()).ToString().ToBoolInt();
+            client.IsRemove = (!client.IsRemove.ToBool()).ToBoolInt();
             client.UpdateTime = DateTime.Now;
 
             if (!this.CheckModel(client, out var msg))

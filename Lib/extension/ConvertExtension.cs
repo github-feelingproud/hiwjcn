@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using Lib.helper;
@@ -68,34 +70,32 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 大于0是true，否则false
+        /// </summary>
+        public static bool ToBool(this int data) => data > 0;
+
+        /// <summary>
+        /// true是1，false是0
+        /// </summary>
+        public static int ToBoolInt(this bool data) => data ? 1 : 0;
+
+        private static readonly IReadOnlyCollection<string> bool_string_list =
+            new List<string>() { "1", "true", "yes", "on", "success", "ok", true.ToString().ToLower() }.AsReadOnly();
+
+        /// <summary>
         /// 转换为布尔值
         /// </summary>
-        /// <param name="data">数据</param>
-        public static bool ToBool(this string data)
-        {
-            var list = new string[] { "1", "true", "yes", "on", "success", true.ToString() };
-            return list.Contains(data.ToString().ToLower().Trim());
-        }
+        public static bool ToBool(this string data) => bool_string_list.Contains(data.ToLower());
 
         /// <summary>
         /// true为1，false为0
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static int ToBoolInt(this string data)
-        {
-            return data.ToBool() ? 1 : 0;
-        }
+        public static int ToBoolInt(this string data) => data.ToBool().ToBoolInt();
 
         /// <summary>
         /// 转为json 
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static string ToJson(this object data)
-        {
-            return JsonHelper.ObjectToJson(data);
-        }
+        public static string ToJson(this object data) => JsonHelper.ObjectToJson(data);
 
         /// <summary>
         /// json转为实体
@@ -115,10 +115,7 @@ namespace Lib.extension
         /// <summary>
         /// 映射
         /// </summary>
-        public static T MapTo<T>(this object data)
-        {
-            return MapperHelper.GetMappedEntity<T>(data);
-        }
+        public static T MapTo<T>(this object data) => MapperHelper.GetMappedEntity<T>(data);
 
         /// <summary>
         /// 映射
@@ -131,10 +128,7 @@ namespace Lib.extension
         /// <summary>
         /// 格式化数字，获取xxx xxxk xxxw
         /// </summary>
-        public static string SimpleNumber(this Int64 num)
-        {
-            return Com.SimpleNumber(num);
-        }
+        public static string SimpleNumber(this Int64 num) => Com.SimpleNumber(num);
 
     }
 }

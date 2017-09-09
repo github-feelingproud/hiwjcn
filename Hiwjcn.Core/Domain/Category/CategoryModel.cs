@@ -71,7 +71,7 @@ namespace Model.Category
         /// <returns></returns>
         public virtual string OpenTarget()
         {
-            return OpenInNewWindow.ToString().ToBool() ? "_blank" : "_self";
+            return OpenInNewWindow.ToBool() ? "_blank" : "_self";
         }
 
         /// <summary>
