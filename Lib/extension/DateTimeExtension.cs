@@ -14,7 +14,7 @@ namespace Lib.extension
         /// </summary>
         public static int DaysOfThisMonth(this DateTime time)
         {
-            var start = time.Date;
+            var start = new DateTime(time.Year, time.Month, 1);
             var end = start.AddMonths(1);
             var days = (end - start).TotalDays;
             return (int)Math.Ceiling(days);

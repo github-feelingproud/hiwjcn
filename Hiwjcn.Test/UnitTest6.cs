@@ -28,6 +28,12 @@ namespace Hiwjcn.Test
     public class UnitTest6
     {
         [TestMethod]
+        public void fasdf()
+        {
+            var date = DateTime.Now.DaysOfThisMonth();
+        }
+
+        [TestMethod]
         public void jlkjkfzk()
         {
             try
