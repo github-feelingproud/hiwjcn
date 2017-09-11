@@ -34,5 +34,15 @@ namespace Hiwjcn.Core
 
         public static string SysOptionListKey() => $"sys.option.list.all".WithCacheKeyPrefix();
 
+        public static string AuthStaticsReqLogGroupByHours() => "auth.statics.reqlog_groupbyhour".WithCacheKeyPrefix();
+
+        public static string AuthStaticsReqLogGroupByDate() => "auth.statics.reqlog_groupbydate".WithCacheKeyPrefix();
+
+        public static string AuthStaticsReqLogGroupByAction() => "auth.statics.reqlog_groupbyaction".WithCacheKeyPrefix();
+
+        public static string AuthStaticsCacheHitGroupByTime() => "auth.statics.cachehit_groupbytime".WithCacheKeyPrefix();
+
+        public static string AuthStaticsCacheHitGroupByKeys() => "auth.statics.cachehit_groupbykeys".WithCacheKeyPrefix();
+
     }
 }

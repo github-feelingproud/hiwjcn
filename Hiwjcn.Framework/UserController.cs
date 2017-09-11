@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System;
+using Hiwjcn.Core;
 using Lib.cache;
 
 namespace WebCore.MvcLib.Controller
@@ -77,7 +78,7 @@ namespace WebCore.MvcLib.Controller
                 var cache = x.Resolve_<ICacheProvider>();
 
                 this.Settings = cache.GetOrSet(
-                    "sys.setting.cache".WithCacheKeyPrefix(),
+                    CacheKeyManager.SysOptionListKey(),
                     () => setting.GetAllOptions(),
                     TimeSpan.FromMinutes(3));
 

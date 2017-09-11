@@ -9,6 +9,7 @@ using Lib.mvc.user;
 using Lib.helper;
 using Lib.core;
 using Lib.extension;
+using Hiwjcn.Core;
 using Lib.net;
 using System.Threading.Tasks;
 using Hiwjcn.Core.Infrastructure.Auth;
@@ -86,7 +87,7 @@ namespace Hiwjcn.Web.Controllers
                     #region 今天请求频次
                     var border = now.GetDateBorder();
                     var reqlog_groupbyhour = await this._cache.GetOrSetAsync(
-                        "auth.statics.reqlog_groupbyhour".WithCacheKeyPrefix(), async () =>
+                        CacheKeyManager.AuthStaticsReqLogGroupByHours(), async () =>
                         {
                             return await reqlog_query
                             .Where(x => x.CreateTime >= border.start && x.CreateTime < border.end && x.IsRemove <= 0)
@@ -121,7 +122,7 @@ namespace Hiwjcn.Web.Controllers
                     #region 请求日志
                     //请求日志按照时间分组
                     var reqlog_groupbytime = await this._cache.GetOrSetAsync(
-                        "auth.statics.reqlog_groupbytime".WithCacheKeyPrefix(), async () =>
+                        CacheKeyManager.AuthStaticsReqLogGroupByDate(), async () =>
                      {
                          return await reqlog_query
                          .Where(x => x.CreateTime >= start && x.IsRemove <= 0)
@@ -139,7 +140,7 @@ namespace Hiwjcn.Web.Controllers
                     ViewData[nameof(reqlog_groupbytime)] = reqlog_groupbytime;
                     //请求日志按照控制器分组
                     var reqlog_groupbyaction = await this._cache.GetOrSetAsync(
-                        "auth.statics.reqlog_groupbyaction".WithCacheKeyPrefix(), async () =>
+                        CacheKeyManager.AuthStaticsReqLogGroupByAction(), async () =>
                      {
                          return await reqlog_query
                          .Where(x => x.CreateTime >= start && x.IsRemove <= 0)
@@ -160,7 +161,7 @@ namespace Hiwjcn.Web.Controllers
                     #region 缓存命中
                     //缓存命中按照时间分组
                     var cachehit_groupbytime = await this._cache.GetOrSetAsync(
-                        "auth.statics.cachehit_groupbytime".WithCacheKeyPrefix(), async () =>
+                        CacheKeyManager.AuthStaticsCacheHitGroupByTime(), async () =>
                      {
                          return await cachehit_query
                          .Where(x => x.CreateTime >= start && x.IsRemove <= 0)
@@ -178,7 +179,7 @@ namespace Hiwjcn.Web.Controllers
                     ViewData[nameof(cachehit_groupbytime)] = cachehit_groupbytime;
                     //缓存命中按照key分组
                     var cachehit_groupbykey = await this._cache.GetOrSetAsync(
-                        "auth.statics.cachehit_groupbykey".WithCacheKeyPrefix(), async () =>
+                        CacheKeyManager.AuthStaticsCacheHitGroupByKeys(), async () =>
                     {
                         return await cachehit_query
                         .Where(x => x.CreateTime >= start && x.IsRemove <= 0)
