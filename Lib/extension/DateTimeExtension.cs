@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Lib.extension
 {
@@ -14,9 +15,9 @@ namespace Lib.extension
         /// </summary>
         public static int DaysOfThisMonth(this DateTime time)
         {
-            var start = new DateTime(time.Year, time.Month, 1);
-            var end = start.AddMonths(1);
-            var days = (end - start).TotalDays;
+            var border = time.GetMonthBorder();
+            var days = (border.end - border.start).TotalDays;
+            Debug.Assert((int)days == days, "每月的天数应该是整数");
             return (int)Math.Ceiling(days);
         }
 
@@ -116,6 +117,26 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 获取每年开始结束
+        /// </summary>
+        public static (DateTime start, DateTime end) GetYearBorder(this DateTime time)
+        {
+            var start = new DateTime(time.Year, 1, 1).Date;
+
+            return (start, start.AddYears(1));
+        }
+
+        /// <summary>
+        /// 获取每月开始结束
+        /// </summary>
+        public static (DateTime start, DateTime end) GetMonthBorder(this DateTime time)
+        {
+            var start = new DateTime(time.Year, time.Month, 1).Date;
+
+            return (start, start.AddMonths(1));
+        }
+
+        /// <summary>
         /// 获取当前周的开始结束
         /// </summary>
         public static (DateTime start, DateTime end) GetWeekBorder(this DateTime time,
@@ -130,7 +151,7 @@ namespace Lib.extension
                 }
                 date = date.AddDays(-1);
             }
-            return (date, date.AddDays(7).AddDays(1));
+            return (date, date.AddDays(7));
         }
 
         /// <summary>
