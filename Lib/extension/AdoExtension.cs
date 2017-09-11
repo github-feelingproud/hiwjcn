@@ -407,6 +407,12 @@ namespace Lib.extension
     public static class AdoExtension
     {
         /// <summary>
+        /// 复制参数
+        /// </summary>
+        public static T[] CloneParams<T>(IEnumerable<T> list) where T : DbParameter
+            => Com.CloneParams(list.ToList());
+
+        /// <summary>
         /// 转为json
         /// </summary>
         public static string DataTableToJson(this DataTable tb)
