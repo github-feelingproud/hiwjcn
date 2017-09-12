@@ -26,7 +26,7 @@ namespace Lib.mvc
 
         public BaseController()
         {
-            X = new WebWorkContext();
+            this.X = new WebWorkContext();
         }
 
         [NonAction]

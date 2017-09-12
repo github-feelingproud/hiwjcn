@@ -12,7 +12,6 @@ namespace Lib.mvc
     /// </summary>
     public class WebWorkContext : IDisposable
     {
-
         public HttpContext context { get; private set; }
 
         public bool IsPost { get; private set; }
@@ -21,10 +20,7 @@ namespace Lib.mvc
 
         public bool IsPostAjax
         {
-            get
-            {
-                return IsPost && IsAjax;
-            }
+            get => this.IsPost && this.IsAjax;
         }
 
         public string IP { get; private set; }
@@ -65,11 +61,7 @@ namespace Lib.mvc
 
         public WebWorkContext(System.Web.HttpContext context)
         {
-            if (context == null)
-            {
-                throw new Exception("上下文不能为空");
-            }
-            this.context = context;
+            this.context = context ?? throw new Exception("上下文不能为空");
 
             this.IsPost = context.Request.IsPost();
             this.IsAjax = context.Request.IsAjax();
