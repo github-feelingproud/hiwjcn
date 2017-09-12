@@ -104,8 +104,10 @@ namespace Hiwjcn.Web
                         throw new Exception("设置EF快速启动失败", err);
                     }
 
+#if DEBUG
                     //安装数据库
                     this.InstallDatabase();
+#endif
 
                     //启动后台服务
                     TaskManager.StartAllTasks(new Assembly[] { typeof(CleanDatabaseTask).Assembly });
