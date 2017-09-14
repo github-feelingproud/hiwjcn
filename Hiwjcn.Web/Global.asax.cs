@@ -223,7 +223,7 @@ namespace Hiwjcn.Web
             //设置请求的唯一ID
             Com.SetNewRequestID();
             //开启跨域
-            ResponseHelper.AllowCrossDomainAjax(System.Web.HttpContext.Current);
+            HttpContext.Current.AllowCrossDomainAjax();
         }
         #endregion
 
