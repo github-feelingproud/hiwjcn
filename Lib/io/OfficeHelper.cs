@@ -21,6 +21,8 @@ namespace Lib.io
     /// </summary>
     public static class ExcelHelper
     {
+        public static readonly string ContentType = "application/ms-excel";
+
         public static ICellStyle GetStyle(XSSFWorkbook workbook,
             short background,
             short color,
@@ -89,7 +91,7 @@ namespace Lib.io
                 var sheet = workbook.CreateSheet(ValidateHelper.IsPlumpString(tb.TableName) ? tb.TableName : "sheet");
 
                 var style = GetStyle(workbook,
-                    NPOI.HSSF.Util.HSSFColor.Red.Index, NPOI.HSSF.Util.HSSFColor.White.Index);
+                    NPOI.HSSF.Util.HSSFColor.White.Index, NPOI.HSSF.Util.HSSFColor.Black.Index);
 
                 for (int i = 0; i < tb.Rows.Count; ++i)
                 {

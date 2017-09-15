@@ -20,6 +20,8 @@ using Lib.mvc.attr;
 using Lib.log;
 using Lib.storage;
 using WebCore.MvcLib.Controller;
+using Hiwjcn.Core.Data;
+using System.Text;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -38,6 +40,20 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher = pub;
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
+        }
+
+        public ActionResult excel()
+        {
+            return RunAction(() =>
+            {
+                using (var db = new QipeilongDbContext())
+                {
+                    var list = db.UserInfo.Take(1000).ToList();
+                    var data = Lib.io.ExcelHelper.ObjectToExcel(list, "用户列表");
+
+                    return File(data, Lib.io.ExcelHelper.ContentType, $"用户列表导出-{DateTime.Now.ToDateTimeString()}.xls");
+                }
+            });
         }
 
         public ActionResult es_log()
