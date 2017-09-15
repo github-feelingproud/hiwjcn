@@ -135,7 +135,10 @@ namespace Lib.extension
         /// <returns></returns>
         public static T GetItem<T>(this IList<T> list, int index, T deft = default(T))
         {
-            if (index > list.Count() - 1) { return deft; }
+            if (index < 0 || index > list.Count - 1)
+            {
+                return deft;
+            }
             return list[index];
         }
 

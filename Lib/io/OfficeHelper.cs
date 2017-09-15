@@ -19,21 +19,14 @@ namespace Lib.io
     /// <summary>
     ///Excel 的摘要说明
     /// </summary>
-    public class ExcelHelper
+    public static class ExcelHelper
     {
-        public ExcelHelper()
-        {
-            //
-            //TODO: 在此处添加构造函数逻辑
-            //
-        }
-
         public static ICellStyle GetStyle(XSSFWorkbook workbook,
             short background,
             short color,
             bool BoldFont = false)
         {
-            ICellStyle style = workbook.CreateCellStyle();
+            var style = workbook.CreateCellStyle();
             style.Alignment = HorizontalAlignment.Center;
             style.VerticalAlignment = VerticalAlignment.Center;
             style.FillPattern = FillPattern.SolidForeground;
@@ -47,7 +40,7 @@ namespace Lib.io
             style.BottomBorderColor = NPOI.HSSF.Util.HSSFColor.Black.Index;
             style.FillForegroundColor = background;
 
-            IFont font = workbook.CreateFont();
+            var font = workbook.CreateFont();
             font.FontHeightInPoints = 14;
             if (BoldFont)
             {
@@ -61,24 +54,22 @@ namespace Lib.io
         /// <summary>
         /// return File(bs, "application/vnd.ms-excel");
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static byte[] ObjectToExcel<T>(List<T> list)
+        public static byte[] ObjectToExcel<T>(List<T> list, string sheet_name = "sheet")
         {
-            if (!ValidateHelper.IsPlumpList(list)) { return null; }
+            list = list ?? throw new Exception("参数为空");
 
             var table = new DataTable();
+            table.TableName = sheet_name ?? throw new Exception($"{nameof(sheet_name)}不能为空");
             var props = typeof(T).GetProperties();
-            props.ToList().ForEach(p =>
+            foreach (var p in props)
             {
                 table.Columns.Add(p.Name, typeof(string));
-            });
-            list.ForEach(x =>
+            }
+            foreach (var x in list)
             {
                 var data = props.Select(m => ConvertHelper.GetString(m.GetValue(x))).ToArray();
                 table.Rows.Add(data);
-            });
+            }
 
             return DataTableToExcel(table);
         }
@@ -90,7 +81,7 @@ namespace Lib.io
         /// <returns></returns>
         public static byte[] DataTableToExcel(DataTable tb)
         {
-            if (tb == null) { return null; }
+            tb = tb ?? throw new Exception($"无法把空{nameof(DataTable)}转成Excel");
 
             using (var ms = new MemoryStream())
             {
@@ -100,16 +91,14 @@ namespace Lib.io
                 var style = GetStyle(workbook,
                     NPOI.HSSF.Util.HSSFColor.Red.Index, NPOI.HSSF.Util.HSSFColor.White.Index);
 
-                NPOI.SS.UserModel.IRow row = null;
-                NPOI.SS.UserModel.ICell cell = null;
-
                 for (int i = 0; i < tb.Rows.Count; ++i)
                 {
-                    row = sheet.CreateRow(i);
+                    var row = sheet.CreateRow(i);
                     for (int j = 0; j < tb.Columns.Count; ++j)
                     {
-                        cell = row.CreateCell(j);
-                        cell.SetCellValue(ConvertHelper.GetString(tb.Rows[i][j]));
+                        var cell = row.CreateCell(j);
+                        var data = tb.Rows[i][j];
+                        cell.SetCellValue(ConvertHelper.GetString(data));
                         cell.CellStyle = style;
                     }
                 }
@@ -142,31 +131,42 @@ namespace Lib.io
                 }
                 return value;
             }
-            catch
+            catch (Exception e)
             {
-                return string.Empty;
+                return $"获取cell数据异常：{e.Message}";
             }
         }
 
-        public static List<List<string>> ExcelToList(string path)
+        private static List<List<string>> SheetToList(ISheet sheet)
         {
+            sheet = sheet ?? throw new ArgumentNullException(nameof(sheet));
+
             var list = new List<List<string>>();
-            if (!IOHelper.FileHelper.Exists(path)) { return list; }
+            for (int i = 0; i < sheet.LastRowNum; ++i)
+            {
+                var row = sheet.GetRow(i);
+                if (row == null) { continue; }
+                var rowlist = new List<string>();
+                for (int j = 0; j < row.LastCellNum; ++j)
+                {
+                    rowlist.Add(GetCellValue(row.GetCell(j)));
+                }
+                list.Add(rowlist);
+            }
+            return list;
+        }
+
+        public static List<List<List<string>>> ExcelToList(string path)
+        {
+            var list = new List<List<List<string>>>();
+            if (!IOHelper.FileHelper.Exists(path)) { throw new ArgumentNullException(nameof(path)); }
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 var workbook = new XSSFWorkbook(stream);
-                var sheet = workbook.GetSheetAt(0);
-                IRow row = null;
-                if (sheet == null) { return list; }
-                for (int i = 0; i < sheet.LastRowNum; ++i)
+                for (var i = 0; i < workbook.NumberOfSheets; ++i)
                 {
-                    if ((row = sheet.GetRow(i)) == null) { continue; }
-                    var rowlist = new List<string>();
-                    for (int j = 0; j < row.LastCellNum; ++j)
-                    {
-                        rowlist.Add(GetCellValue(row.GetCell(j)));
-                    }
-                    list.Add(rowlist);
+                    var sheet = workbook.GetSheetAt(i);
+                    list.Add(SheetToList(sheet));
                 }
             }
             return list;
@@ -174,7 +174,7 @@ namespace Lib.io
 
         public static List<List<string>> ExcelToDataTable(string path)
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 
@@ -183,23 +183,27 @@ namespace Lib.io
         public static byte[] CreateWord(Dictionary<string, string> paragraphs)
         {
             var doc = new XWPFDocument();
-            //创建段落对象
-            if (!ValidateHelper.IsPlumpDict(paragraphs))
-            {
-                return null;
+            try
+            {            //创建段落对象
+                paragraphs = paragraphs ?? new Dictionary<string, string>() { };
+                paragraphs.Keys.ToList().ForEach(key =>
+                {
+                    XWPFParagraph paragraph = doc.CreateParagraph();
+                    XWPFRun run = paragraph.CreateRun();
+                    run.IsBold = true;
+                    run.SetText(ConvertHelper.GetString(key));
+                    run.SetText(ConvertHelper.GetString(paragraphs[key]));
+                });
+                using (var stream = new MemoryStream())
+                {
+                    doc.Write(stream);
+                    var bs = stream.ToArray();
+                    return bs;
+                }
             }
-            paragraphs.Keys.ToList().ForEach(key =>
+            finally
             {
-                XWPFParagraph paragraph = doc.CreateParagraph();
-                XWPFRun run = paragraph.CreateRun();
-                run.IsBold = true;
-                run.SetText(ConvertHelper.GetString(key));
-                run.SetText(ConvertHelper.GetString(paragraphs[key]));
-            });
-            using (var stream = new MemoryStream())
-            {
-                doc.Write(stream);
-                return ConvertHelper.MemoryStreamToBytes(stream);
+                doc.Close();
             }
         }
     }
