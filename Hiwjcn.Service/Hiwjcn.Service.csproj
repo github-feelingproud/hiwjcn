@@ -142,6 +142,7 @@
     <Compile Include="Auth\AuthClientService.cs" />
     <Compile Include="Auth\AuthScopeService.cs" />
     <Compile Include="Auth\AuthTokenService.cs" />
+    <Compile Include="Auth\QPLSalesLoginService.cs" />
     <Compile Include="Auth\TokenEventHandler.cs" />
     <Compile Include="ClearDataBaseService.cs" />
     <Compile Include="MyService.cs" />
@@ -156,7 +157,7 @@
     <Compile Include="Common\SettingService.cs" />
     <Compile Include="Common\ReqLogBll.cs" />
     <Compile Include="Common\UpFileBll.cs" />
-    <Compile Include="Auth\QipeilongLoginService.cs" />
+    <Compile Include="Auth\QPLUserLoginService.cs" />
     <Compile Include="Tag\TagBll.cs" />
     <Compile Include="Tag\TagMapBll.cs" />
     <Compile Include="User\FunctionPermission.cs" />

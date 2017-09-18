@@ -63,7 +63,7 @@ namespace Hiwjcn.Web
                         //builder.Register(_ => new LoginStatus("auth_sso_uid", "auth_sso_token", "auth_sso_session", "")).Named<LoginStatus>("sso").SingleInstance();
                         //builder.RegisterType<SSOValidationProvider>().Named<TokenValidationProviderBase>("sso").SingleInstance();
 
-                        builder.RegisterType<QipeilongLoginService>().AsSelf().AsImplementedInterfaces().SingleInstance();
+                        builder.RegisterType<QPLUserLoginService>().AsSelf().AsImplementedInterfaces().SingleInstance();
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
                         //new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")
                         //builder.AuthClientUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
@@ -94,7 +94,7 @@ namespace Hiwjcn.Web
                             //EFManager.SelectDB(null).FastStart();
                             EFManager.FastStart<EntityDB>();
                             //汽配龙数据库
-                            EFManager.FastStart<QipeilongDbContext>();
+                            EFManager.FastStart<QPLEntityDB>();
                             //SSO数据库
                             EFManager.FastStart<SSODB>();
                         });

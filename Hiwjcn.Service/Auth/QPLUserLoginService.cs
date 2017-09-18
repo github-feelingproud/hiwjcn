@@ -30,7 +30,7 @@ using Polly.CircuitBreaker;
 
 namespace Hiwjcn.Bll.Auth
 {
-    public class QipeilongLoginService : IAuthLoginService
+    public class QPLUserLoginService : IAuthLoginService
     {
         private readonly string[] sys_users = new string[] { "13915280232", "18101795560" };
 
@@ -93,7 +93,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<PagerData<LoginUserInfo>> SearchUser(string q = null, int page = 1, int pagesize = 10)
         {
             var data = new PagerData<LoginUserInfo>();
-            using (var db = new QipeilongDbContext())
+            using (var db = new QPLEntityDB())
             {
                 var query = db.UserInfo.AsNoTrackingQueryable();
 
@@ -147,7 +147,7 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<LoginUserInfo> GetUserInfoByUID(string uid)
         {
-            using (var db = new QipeilongDbContext())
+            using (var db = new QPLEntityDB())
             {
                 var userinfo = await db.UserInfo.Where(x => x.UID == uid).FirstOrDefaultAsync();
                 if (userinfo != null)
@@ -161,7 +161,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<_<LoginUserInfo>> LoginByCode(string phoneOrEmail, string code)
         {
             var data = new _<LoginUserInfo>();
-            using (var db = new QipeilongDbContext())
+            using (var db = new QPLEntityDB())
             {
                 var time = DateTime.Now.AddMinutes(-5);
                 var sms = await db.Sms
@@ -186,7 +186,7 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<string> SendOneTimeCode(string phoneOrEmail)
         {
-            using (var db = new QipeilongDbContext())
+            using (var db = new QPLEntityDB())
             {
                 var now = DateTime.Now;
                 var ran = new Random((int)now.Ticks);
@@ -252,7 +252,7 @@ namespace Hiwjcn.Bll.Auth
             }
 
             //汽配龙登录
-            using (var db = new QipeilongDbContext())
+            using (var db = new QPLEntityDB())
             {
                 var model = await db.UserInfo.Where(x => x.UserName == user_name).FirstOrDefaultAsync();
                 if (!this.CheckUser(model, out var msg))
@@ -339,7 +339,7 @@ namespace Hiwjcn.Bll.Auth
                         e.AddErrorLog("途虎门店登录，更新本地信息失败");
                     }
 
-                    using (var db = new QipeilongDbContext())
+                    using (var db = new QPLEntityDB())
                     {
                         var user = await db.UserInfo.Where(x => x.UserName == tuhu_user.UserName).FirstOrDefaultAsync();
                         if (user == null)
@@ -391,7 +391,7 @@ namespace Hiwjcn.Bll.Auth
                 CustomerType = "3";
             }
 
-            using (var db = new QipeilongDbContext())
+            using (var db = new QPLEntityDB())
             {
                 using (var con = db.Database.Connection)
                 {

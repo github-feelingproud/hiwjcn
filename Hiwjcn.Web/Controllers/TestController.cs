@@ -46,7 +46,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return RunAction(() =>
             {
-                using (var db = new QipeilongDbContext())
+                using (var db = new QPLEntityDB())
                 {
                     var list = db.UserInfo.Take(1000).ToList();
                     var data = Lib.io.ExcelHelper.ObjectToExcel(list, "用户列表");

@@ -25,24 +25,19 @@ namespace Hiwjcn.Core.Data
     }
 
     [DbConfigurationType(typeof(QPLSqlServerConfiguration))]
-    public class QipeilongDbContext : BaseEFContext
+    public class QPLEntityDB : BaseEFContext
     {
-        public QipeilongDbContext() : base(ConfigurationManager.ConnectionStrings["db_parties"]?.ConnectionString
-            ?? throw new Exception("请配置parties数据库链接字符串"))
+        public QPLEntityDB() : base(
+            ConfigurationManager.ConnectionStrings["db_parties"]?.ConnectionString ??
+            throw new Exception("请配置parties数据库链接字符串"))
         {
-            this.Configuration.LazyLoadingEnabled = false;
-            this.Configuration.ValidateOnSaveEnabled = false;
-
-            this.Database.CommandTimeout = 3;
-            this.Database.Log = (log) =>
-            {
-                //if (!ValidateHelper.IsPlumpString(log)) { return; }
-                //LogHelper.Error(typeof(EntityDB), "EF日志：\n" + log);
-            };
+            //
         }
 
         public virtual DbSet<UserInfo> UserInfo { get; set; }
         public virtual DbSet<Sms> Sms { get; set; }
+        public virtual DbSet<TraderInfo> TraderInfo { get; set; }
+        public virtual DbSet<T_SalesInfo> T_SalesInfo { get; set; }
     }
 
     [Serializable]
@@ -106,5 +101,82 @@ namespace Hiwjcn.Core.Data
         public Nullable<System.DateTime> UpdatedDate { get; set; }
         public int IsRead { get; set; }
         public Nullable<int> Status { get; set; }
+    }
+
+    [Serializable]
+    public class TraderInfo : Lib.data.IDBTable
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int IID { get; set; }
+        public string UID { get; set; }
+        public string UserName { get; set; }
+        public string PassWord { get; set; }
+        public string ShopName { get; set; }
+        public string TraderNo { get; set; }
+        public string CompanyName { get; set; }
+        public string AgentPhone { get; set; }
+        public string AgentManagerPhone { get; set; }
+        public string Contact { get; set; }
+        public Nullable<int> Sex { get; set; }
+        public string IDcard { get; set; }
+        public string Position { get; set; }
+        public string Images { get; set; }
+        public string Mobile { get; set; }
+        public string Phone { get; set; }
+        public string Fax { get; set; }
+        public string ProvinceId { get; set; }
+        public string CityId { get; set; }
+        public string TownId { get; set; }
+        public string StreetId { get; set; }
+        public string Email { get; set; }
+        public string address { get; set; }
+        public string Website { get; set; }
+        public string Notes { get; set; }
+        public Nullable<double> Lon { get; set; }
+        public string Lat { get; set; }
+        public string CustomerType { get; set; }
+        public int IsActive { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public Nullable<System.DateTime> UpdatedDate { get; set; }
+        public int IsRemove { get; set; }
+        public int IsCheck { get; set; }
+        public string BelongTraderId { get; set; }
+        public int IsVAT { get; set; }
+        public int SettlementIntervalx { get; set; }
+        public Nullable<int> WarningValue { get; set; }
+        public int IsSelf { get; set; }
+        public int FavoriteCount { get; set; }
+        public Nullable<int> IsCarParts { get; set; }
+        public Nullable<int> IsCommon { get; set; }
+        public Nullable<int> IsHaveInquiry { get; set; }
+
+        #region 扩展
+        [NotMapped]
+        public virtual string SiteID { get; set; }
+
+        [NotMapped]
+        public virtual string SellerID { get; set; }
+
+        [NotMapped]
+        public virtual string SettingID { get; set; }
+        #endregion
+    }
+
+    [Serializable]
+    public partial class T_SalesInfo : Lib.data.IDBTable
+    {
+        [Key]
+        public string UID { get; set; }
+        public string UserID { get; set; }
+        public string UserName { get; set; }
+        public string NickName { get; set; }
+        public string Pwd { get; set; }
+        public Nullable<int> WorkingStatus { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public Nullable<System.DateTime> UpdatedDate { get; set; }
+        public Nullable<int> IsRemove { get; set; }
+        public Nullable<int> IsActive { get; set; }
+        public Nullable<int> ServerOrderList { get; set; }
     }
 }
