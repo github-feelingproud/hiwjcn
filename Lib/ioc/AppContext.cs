@@ -362,8 +362,9 @@ namespace Lib.ioc
         /// <summary>
         /// 请求上下文的autofac scope
         /// 可以直接拿来resolve
+        /// AutofacDependencyResolver.Current.RequestLifetimeScope
         /// </summary>
-        public static ILifetimeScope MvcAutofacCurrent(this HttpContext context) =>
+        public static ILifetimeScope AutofacRequestLifetimeScope(this HttpContext context) =>
             AutofacDependencyResolver.Current.RequestLifetimeScope;
     }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Lib.extension;
 using Lib.ioc;
+using System.Web;
 
 namespace Lib.mvc.attr
 {
@@ -93,6 +94,7 @@ namespace Lib.mvc.attr
             //如果不是从缓存中读取的就添加到缓存
             if (!ReadFromCache)
             {
+                var context = HttpContext.Current;
                 //获取view的名称
                 string viewName = filterContext.RouteData.GetRequiredString("action");
                 viewName = ConvertHelper.GetString(viewName);
@@ -111,11 +113,9 @@ namespace Lib.mvc.attr
                     view.Render(vc, sw);
                     //获取渲染后的html
                     var html = sw.ToString();
-                    AppContext.Scope(s =>
-                    {
-                        s.Resolve_<ICacheProvider>().Set(URL, html, TimeSpan.FromMinutes(Minute));
-                        return true;
-                    });
+                    //设置缓存
+                    var cache = context.AutofacRequestLifetimeScope().Resolve_<ICacheProvider>();
+                    cache.Set(URL, html, TimeSpan.FromMinutes(Minute));
                 }
             }
 
