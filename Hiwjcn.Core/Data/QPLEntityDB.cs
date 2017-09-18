@@ -15,6 +15,12 @@ using System.Threading.Tasks;
 
 namespace Hiwjcn.Core.Data
 {
+    public enum AccountSystemEnum : int
+    {
+        UserInfo = 1,
+        SalesInfo = 2
+    }
+
     public class QPLSqlServerConfiguration : DbConfiguration
     {
         public QPLSqlServerConfiguration()
