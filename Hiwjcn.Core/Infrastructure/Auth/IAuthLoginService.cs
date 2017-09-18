@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Lib.mvc.user;
 using Lib.mvc;
 using Lib.helper;
+using Autofac;
 
 namespace Hiwjcn.Core.Infrastructure.Auth
 {
@@ -22,5 +23,13 @@ namespace Hiwjcn.Core.Infrastructure.Auth
         Task<string> SendOneTimeCode(string phoneOrEmail);
 
         Task<LoginUserInfo> GetUserInfoByUID(string uid);
+    }
+
+    public static class LoginAccountSystemExtension
+    {
+        public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : IAuthLoginService
+        {
+            builder.RegisterType<T>().AsSelf().As<IAuthLoginService>().SingleInstance();
+        }
     }
 }

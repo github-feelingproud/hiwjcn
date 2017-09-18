@@ -47,7 +47,7 @@ namespace Hiwjcn.Dal
             this.SetDefaultConnectionFactory(new LocalDbConnectionFactory("mssqllocaldb"));
         }
     }
-    
+
     /// <summary>
     /// EF容器上下文
     /// EF做映射的时候也可以数据库是int，代码里是string，
@@ -60,18 +60,11 @@ namespace Hiwjcn.Dal
 #endif
     public class EntityDB : BaseEFContext
     {
-        public EntityDB() : base(ConfigurationManager.ConnectionStrings["db"]?.ConnectionString
-            ?? throw new Exception("请配置db数据库链接字符串"))
+        public EntityDB() : base(
+            ConfigurationManager.ConnectionStrings["db"]?.ConnectionString ??
+            throw new Exception("请配置db数据库链接字符串"))
         {
-            this.Configuration.LazyLoadingEnabled = false;
-            this.Configuration.ValidateOnSaveEnabled = false;
-
-            this.Database.CommandTimeout = 3;
-            this.Database.Log = (log) =>
-            {
-                //if (!ValidateHelper.IsPlumpString(log)) { return; }
-                //LogHelper.Error(typeof(EntityDB), "EF日志：\n" + log);
-            };
+            //
         }
 
         #region model对应的实体

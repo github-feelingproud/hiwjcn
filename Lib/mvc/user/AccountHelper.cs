@@ -110,7 +110,8 @@ namespace Lib.mvc.user
         public LoginStatus() : this("USER_UID", "USER_TOKEN", "LOGIN_USER_SESSION", ConfigHelper.Instance.CookieDomain)
         { }
 
-        public LoginStatus(string uid, string token, string session, string domain,
+        public LoginStatus(string uid, string token, string session,
+            string domain = null,
             CookieTokenEncryption _CookieTokenEncryption = null)
         {
             this.COOKIE_DOMAIN = domain;
