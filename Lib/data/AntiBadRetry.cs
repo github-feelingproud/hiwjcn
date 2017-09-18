@@ -24,9 +24,7 @@ namespace Lib.data
             {
                 using (var cache = s.Resolve_<ICacheProvider>())
                 {
-                    var cachedata = cache.Get<List<DateTime>>(key);
-                    var list = cachedata.Success ? cachedata.Result : new List<DateTime>();
-                    list = ConvertHelper.NotNullList(list).Where(x => x > time).ToList();
+                    var list = cache.Get<List<DateTime>>(key).Result;
 
                     if (list.Count >= 3)
                     {

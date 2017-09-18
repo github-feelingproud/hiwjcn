@@ -19,7 +19,7 @@ namespace Lib.extension
         /// 如果有错误就抛出异常
         /// </summary>
         /// <param name="response"></param>
-        public static void ThrowIfException(this IResponse response)
+        public static T ThrowIfException<T>(this T response) where T : IResponse
         {
             if (!response.IsValid)
             {
@@ -33,6 +33,7 @@ namespace Lib.extension
                     throw response.OriginalException;
                 }
             }
+            return response;
         }
 
         /// <summary>
@@ -341,8 +342,7 @@ namespace Lib.extension
         public static bool DocExist_<T>(this IElasticClient client, string indexName, string uid) where T : class, IElasticSearchIndex
         {
             var response = client.DocumentExists(client.ID<T>(indexName, uid));
-            response.ThrowIfException();
-            return response.Exists;
+            return response.ThrowIfException().Exists;
         }
 
         /// <summary>
@@ -351,8 +351,7 @@ namespace Lib.extension
         public static async Task<bool> DocExistAsync_<T>(this IElasticClient client, string indexName, string uid) where T : class, IElasticSearchIndex
         {
             var response = await client.DocumentExistsAsync(client.ID<T>(indexName, uid));
-            response.ThrowIfException();
-            return response.Exists;
+            return response.ThrowIfException().Exists;
         }
 
         /// <summary>
