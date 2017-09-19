@@ -366,6 +366,9 @@ namespace Lib.ioc
         /// </summary>
         public static ILifetimeScope AutofacRequestLifetimeScope(this HttpContext context) =>
             AutofacDependencyResolver.Current.RequestLifetimeScope;
+
+        [Obsolete("改名字了：" + nameof(AutofacRequestLifetimeScope))]
+        public static ILifetimeScope MvcAutofacCurrent(this HttpContext context) => context.AutofacRequestLifetimeScope();
     }
 
     public class RequestScopeModule : IHttpModule
