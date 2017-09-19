@@ -15,8 +15,12 @@ using System.Reflection;
 
 namespace Lib.rpc
 {
+    /// <summary>
+    /// 操作返回值
+    /// </summary>
+    [Serializable]
     [DataContract]
-    public abstract class OperationResult
+    public class OperationResult<T>
     {
         [DataMember]
         public string ErrorCode { get; set; }
@@ -30,28 +34,23 @@ namespace Lib.rpc
         [DataMember]
         public Exception Ex { get; set; }
 
+        [DataMember]
+        public T Result { get; set; }
+
         /// <summary>
         /// 如果有异常就抛出
         /// </summary>
-        public void ThrowIfException()
+        public OperationResult<T> ThrowIfException()
         {
             if (this.Ex != null) { throw this.Ex; }
             if (ValidateHelper.IsPlumpString(this.ErrorMessage) || ValidateHelper.IsPlumpString(this.ErrorCode))
             {
                 throw new Exception($"服务异常，msg：{this.ErrorMessage}，code：{this.ErrorCode}");
             }
+            return this;
         }
     }
-    /// <summary>
-    /// 操作返回值
-    /// </summary>
-    /// <typeparam name="T">T</typeparam>
-    [DataContract]
-    public class OperationResult<T> : OperationResult
-    {
-        [DataMember]
-        public T Result { get; set; }
-    }
+
     /// <summary>
     /// wcf请求client，直接使用using就可以正确关闭链接
     /// </summary>
