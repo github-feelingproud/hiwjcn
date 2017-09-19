@@ -319,6 +319,13 @@ namespace Lib.ioc
             }
         }
 
+        public static T ResolveKeyed_<T>(this ILifetimeScope scope, object serviceKey) =>
+            scope.ResolveKeyed<T>(serviceKey);
+
+        public static T ResolveOptionalKeyed_<T>(this ILifetimeScope scope, object serviceKey)
+            where T : class =>
+            scope.ResolveOptionalKeyed<T>(serviceKey);
+
         /// <summary>
         /// 没有注册就返回null
         /// </summary>
@@ -339,9 +346,6 @@ namespace Lib.ioc
         /// </summary>
         public static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> DisableAutoDispose<TLimit, TActivatorData, TRegistrationStyle>(this IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder) => builder.ExternallyOwned();
 
-        public static void UseDbConnection<T>()
-        { }
-
         public const string HTTPCONTEXT_AUTOFAC_SCOPE_KEY = "ioc.autofac.scope.key";
 
         public static void SetAutofacScope(this HttpContext context, ILifetimeScope scope)
@@ -349,6 +353,9 @@ namespace Lib.ioc
             context.Items[HTTPCONTEXT_AUTOFAC_SCOPE_KEY] = scope ?? throw new ArgumentNullException(nameof(scope));
         }
 
+        /// <summary>
+        /// 获取httpcontext.item中的scope对象，需要配置httpmodule
+        /// </summary>
         public static ILifetimeScope GetAutofacScope(this HttpContext context)
         {
             var obj = context.Items[HTTPCONTEXT_AUTOFAC_SCOPE_KEY];
