@@ -21,6 +21,7 @@ using WebCore.MvcLib.Controller;
 using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.mvc.auth.validation;
 using Hiwjcn.Core;
+using System.Collections.Generic;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -56,6 +57,38 @@ namespace Hiwjcn.Web.Controllers
         }
 
         #region 登录
+        [NonAction]
+        private string retry_count_cache_key(string key) => $"login.retry.count.{key}".WithCacheKeyPrefix();
+
+        [NonAction]
+        private async Task<ActionResult> AntiRetry(string user_name, Func<Task<_>> func)
+        {
+            if (!ValidateHelper.IsPlumpString(user_name)) { throw new Exception("username为空"); }
+
+            var threadhold = 5;
+            var now = DateTime.Now;
+
+            var list = this._cache.Get<List<DateTime>>(this.retry_count_cache_key(user_name)).Result ?? new List<DateTime>() { };
+            list = list.Where(x => x > now.AddMinutes(-threadhold)).ToList();
+
+            try
+            {
+                if (list.Count > threadhold)
+                {
+                    return GetJson(new _() { success = false, msg = "错误尝试过多", code = "retry" });
+                }
+                var data = await func.Invoke();
+                if (!data.success)
+                {
+                    list.Add(now);
+                }
+                return GetJson(data);
+            }
+            finally
+            {
+                this._cache.Set(this.retry_count_cache_key(user_name), list, TimeSpan.FromMinutes(threadhold));
+            }
+        }
 
         [NonAction]
         private async Task<string> LogLoginErrorInfo(string user_name, string password, Func<Task<string>> func)
