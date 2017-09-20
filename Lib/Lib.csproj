@@ -217,6 +217,7 @@
     <Compile Include="core\MyStringComparer.cs" />
     <Compile Include="core\LibReleaseHelper.cs" />
     <Compile Include="core\ResultBase.cs" />
+    <Compile Include="core\StepLog.cs" />
     <Compile Include="core\StoreInstanceDict.cs" />
     <Compile Include="core\ThreadWrapper.cs" />
     <Compile Include="data\AntiBadRetry.cs" />
