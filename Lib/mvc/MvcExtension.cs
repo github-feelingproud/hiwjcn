@@ -54,11 +54,18 @@ namespace Lib.mvc
         /// <summary>
         /// 获取IP
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
+        [Obsolete("用context扩展")]
         public static string Ip(this HttpRequest req)
         {
             return RequestHelper.GetCurrentIpAddress(req);
+        }
+
+        /// <summary>
+        /// 获取IP
+        /// </summary>
+        public static string Ip(this HttpContext context)
+        {
+            return RequestHelper.GetCurrentIpAddress(context.Request);
         }
 
         /// <summary>
@@ -127,12 +134,14 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> PostAndGet(this HttpContext context)
-        {
+        public static Dictionary<string, string> PostAndGet(this HttpContext context) =>
+            context.QueryStringToDict().AddDict(context.PostToDict());
+
+        /*
             var dict = context.Request.Form.ToDict();
             dict = dict.AddDict(context.Request.QueryString.ToDict());
             return dict;
-        }
+             */
 
         /// <summary>
         /// get数据
@@ -141,6 +150,14 @@ namespace Lib.mvc
         /// <returns></returns>
         public static Dictionary<string, string> QueryStringToDict(this HttpContext context) =>
             context.Request.QueryString.ToDict();
+
+        /// <summary>
+        /// post数据
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> PostToDict(this HttpContext context) =>
+            context.Request.Form.ToDict();
 
         /// <summary>
         /// 设置实体
