@@ -231,7 +231,7 @@ namespace Lib.data
                     set.Add(m);
                 }
                 count = db.SaveChanges();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -252,7 +252,7 @@ namespace Lib.data
                     set.Add(m);
                 }
                 count = await db.SaveChangesAsync();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -277,7 +277,7 @@ namespace Lib.data
                     //session.Set<T>().Remove(m);
                 }
                 count = db.SaveChanges();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -299,7 +299,7 @@ namespace Lib.data
                     //session.Set<T>().Remove(m);
                 }
                 count = await db.SaveChangesAsync();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -318,7 +318,7 @@ namespace Lib.data
 
                 set.RemoveRange(q);
                 count = db.SaveChanges();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -335,7 +335,7 @@ namespace Lib.data
 
                 set.RemoveRange(q);
                 count = await db.SaveChangesAsync();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -360,7 +360,7 @@ namespace Lib.data
                     db.Entry(m).State = EntityState.Modified;
                 }
                 count = db.SaveChanges();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -382,7 +382,7 @@ namespace Lib.data
                     db.Entry(m).State = EntityState.Modified;
                 }
                 count = await db.SaveChangesAsync();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -403,7 +403,7 @@ namespace Lib.data
             PrepareSession(db =>
             {
                 model = db.Set<T>().Find(keys);
-                return true;
+                //return true;
             });
 
             return model;
@@ -422,7 +422,7 @@ namespace Lib.data
             await PrepareSessionAsync(async db =>
             {
                 model = await db.Set<T>().FindAsync(keys);
-                return true;
+                //return true;
             });
 
             return model;
@@ -471,7 +471,7 @@ namespace Lib.data
                     query = query.Take(count.Value);
                 }
                 list = query.ToList();
-                return true;
+                //return true;
             });
             return ConvertHelper.NotNullList(list);
         }
@@ -509,7 +509,7 @@ namespace Lib.data
                     query = query.Take(count.Value);
                 }
                 list = await query.ToListAsync();
-                return true;
+                //return true;
             });
             return ConvertHelper.NotNullList(list);
         }
@@ -557,7 +557,7 @@ namespace Lib.data
             {
                 query = query.WhereIfNotNull(where);
                 count = query.Count();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -568,7 +568,7 @@ namespace Lib.data
             {
                 query = query.WhereIfNotNull(where);
                 count = await query.CountAsync();
-                return true;
+                //return true;
             });
             return count;
         }
@@ -585,7 +585,7 @@ namespace Lib.data
             {
                 query = query.WhereIfNotNull(where);
                 ret = query.Any();
-                return true;
+                //return true;
             });
             if (ret == null) { throw new Exception("Exist查询失败"); }
             return ret.Value;
@@ -597,7 +597,7 @@ namespace Lib.data
             {
                 query = query.WhereIfNotNull(where);
                 ret = await query.AnyAsync();
-                return true;
+                //return true;
             });
             if (ret == null) { throw new Exception("Exist查询失败"); }
             return ret.Value;
@@ -606,11 +606,29 @@ namespace Lib.data
 
         #region 获取查询上下文
 
-        public abstract void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false);
-        public abstract Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false);
+        public const bool DEFAULT_TRACK = false;
+
+        public abstract void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = DEFAULT_TRACK);
+        public abstract Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = DEFAULT_TRACK);
 
         public abstract void PrepareSession(Func<DbContext, bool> callback);
         public abstract Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback);
+
+        #endregion
+
+        #region 不用返回true的查询上下文
+
+        public void PrepareIQueryable(Action<IQueryable<T>> callback, bool track = DEFAULT_TRACK) =>
+            this.PrepareIQueryable(query => { callback.Invoke(query); return true; }, track: track);
+
+        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback, bool track = DEFAULT_TRACK) =>
+            await this.PrepareIQueryableAsync(async query => { await callback.Invoke(query); return true; }, track: track);
+
+        public void PrepareSession(Action<DbContext> callback) =>
+            this.PrepareSession(db => { callback.Invoke(db); return true; });
+
+        public async Task PrepareSessionAsync(Func<DbContext, Task> callback) =>
+            await this.PrepareSessionAsync(async db => { await callback.Invoke(db); return true; });
 
         #endregion
     }
