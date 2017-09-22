@@ -124,10 +124,10 @@
       <publishTime>07/10/2017 14:16:12</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>09/11/2017 11:08:35</publishTime>
+      <publishTime>09/21/2017 17:12:11</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>09/11/2017 11:08:35</publishTime>
+      <publishTime>09/21/2017 17:12:11</publishTime>
     </File>
     <File Include="bin/Autofac.dll">
       <publishTime>08/12/2014 13:20:26</publishTime>
@@ -172,40 +172,40 @@
       <publishTime>03/02/2015 09:32:26</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.dll">
-      <publishTime>09/11/2017 11:07:46</publishTime>
+      <publishTime>09/21/2017 17:11:36</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.dll.config">
       <publishTime>09/11/2017 11:05:37</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.pdb">
-      <publishTime>09/11/2017 11:07:46</publishTime>
+      <publishTime>09/21/2017 17:11:36</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.dll">
-      <publishTime>09/11/2017 11:07:43</publishTime>
+      <publishTime>09/21/2017 17:11:33</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.dll.config">
       <publishTime>09/11/2017 11:05:37</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.pdb">
-      <publishTime>09/11/2017 11:07:43</publishTime>
+      <publishTime>09/21/2017 17:11:33</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Dal.dll">
       <publishTime>02/22/2017 14:16:09</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.dll">
-      <publishTime>09/11/2017 11:07:50</publishTime>
+      <publishTime>09/21/2017 17:11:39</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.dll.config">
       <publishTime>09/11/2017 11:05:43</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.pdb">
-      <publishTime>09/11/2017 11:07:50</publishTime>
+      <publishTime>09/21/2017 17:11:39</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Web.dll">
-      <publishTime>09/11/2017 11:08:08</publishTime>
+      <publishTime>09/21/2017 17:11:52</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Web.pdb">
-      <publishTime>09/11/2017 11:08:08</publishTime>
+      <publishTime>09/21/2017 17:11:52</publishTime>
     </File>
     <File Include="bin/HtmlAgilityPack.dll">
       <publishTime>07/14/2016 11:01:16</publishTime>
@@ -220,13 +220,13 @@
       <publishTime>01/29/2017 23:35:42</publishTime>
     </File>
     <File Include="bin/Lib.dll">
-      <publishTime>09/11/2017 11:07:39</publishTime>
+      <publishTime>09/21/2017 17:11:30</publishTime>
     </File>
     <File Include="bin/Lib.dll.config">
       <publishTime>09/11/2017 11:05:22</publishTime>
     </File>
     <File Include="bin/Lib.pdb">
-      <publishTime>09/11/2017 11:07:39</publishTime>
+      <publishTime>09/21/2017 17:11:30</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>01/02/2017 06:32:48</publishTime>
@@ -394,7 +394,7 @@
       <publishTime>09/11/2017 11:03:24</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>09/11/2017 11:08:21</publishTime>
+      <publishTime>09/21/2017 17:12:03</publishTime>
     </File>
     <File Include="Service/AuthApiService.svc">
       <publishTime>09/03/2017 21:25:33</publishTime>
@@ -2464,7 +2464,7 @@
       <publishTime>07/29/2017 12:44:51</publishTime>
     </File>
     <File Include="Views/Web.config">
-      <publishTime>07/31/2017 09:55:14</publishTime>
+      <publishTime>09/13/2017 10:54:59</publishTime>
     </File>
     <File Include="Views/Widget/Nav.cshtml">
       <publishTime>07/27/2017 17:09:46</publishTime>
@@ -2476,7 +2476,7 @@
       <publishTime>07/23/2017 22:06:10</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>09/11/2017 11:08:18</publishTime>
+      <publishTime>09/21/2017 17:11:59</publishTime>
     </File>
   </ItemGroup>
 </Project>
