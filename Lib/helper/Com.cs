@@ -1056,18 +1056,15 @@ namespace Lib.helper
         /// 询价单有效期为30分钟，17.30到第二天早上9点停止报价，如果下午17.20发布询价单，其实是第二天早上才过期
         /// 从开始时间当天开始，计算每天能消耗的时间，不断迭代消耗，直到时间被消耗完
         /// </summary>
-        /// <param name="createTime"></param>
-        /// <param name="DurationSeconds"></param>
-        /// <returns></returns>
-        public static DateTime GetExpireTime(DateTime createTime, double DurationSeconds)
+        public static DateTime GetExpireTime(DateTime createTime, double DurationSeconds, double day_start_hours = 9, double day_end_hours = 17)
         {
             //当天开始消耗时间的开始位置
             var time = createTime;
             var secondsLeft = DurationSeconds;
             while (true)
             {
-                var start = time.Date.AddHours(9);
-                var end = time.Date.AddHours(17 + 0.5);
+                var start = time.Date.AddHours(day_start_hours);
+                var end = time.Date.AddHours(day_end_hours);
                 //今天实际开始计时的开始时间
                 var jishikaishi = default(DateTime);
                 if (time < start)
@@ -1093,7 +1090,7 @@ namespace Lib.helper
                 //减去消耗时间
                 secondsLeft -= xiaohaoshijian;
                 //今天没能消耗所有时间，计算下一天
-                time = time.Date.AddDays(1).AddHours(9);
+                time = time.Date.AddDays(1).AddHours(day_start_hours);
             }
         }
 
