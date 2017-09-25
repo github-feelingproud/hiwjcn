@@ -21,12 +21,51 @@ using Hiwjcn.Framework;
 using Lib.ioc;
 using Autofac;
 using Lib.distributed;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using MongoDB.Driver.Linq;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest6
     {
+        class Users
+        {
+            public ObjectId _id { get; set; }
+
+            public string Name { get; set; }
+        }
+
+        [TestMethod]
+        public void fsadfashjjhgafsd()
+        {
+            try
+            {
+                var mongo = new MongoClient("mongodb://127.0.0.1:27017");
+                var db = mongo.GetDatabase("hiwjcn");
+                var users = db.GetCollection<Users>("users");
+
+                var delete = users.DeleteMany(x => true);
+
+                users.InsertMany(Com.Range(5000).Select(x => new Users() { Name = $"user:{x}" }));
+
+                var query = users.AsQueryable();
+                var list = query.Take(500).ToList();
+
+                list = query.Where(x => x.Name.Contains("1")).ToList();
+            }
+            catch (Exception e)
+            {
+                e.DebugInfo();
+            }
+        }
+
+
+
+
+
+
         [TestMethod]
         public void fasdf()
         {
