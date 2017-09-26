@@ -126,6 +126,7 @@
     <Compile Include="Domain\User\RolePermissionModel.cs" />
     <Compile Include="Domain\User\UserModel.cs" />
     <Compile Include="Domain\User\UserRoleModel.cs" />
+    <Compile Include="Domain\WCF\WcfMap.cs" />
     <Compile Include="EnumsBundle.cs" />
     <Compile Include="Infrastructure\Auth\IAuthClientService.cs" />
     <Compile Include="Infrastructure\Auth\IAuthLoginService.cs" />
