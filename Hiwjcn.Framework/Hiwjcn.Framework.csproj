@@ -72,6 +72,9 @@
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
+    </Reference>
     <Reference Include="Quartz, Version=2.5.0.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
       <HintPath>..\packages\Quartz.2.5.0\lib\net40\Quartz.dll</HintPath>
       <Private>True</Private>
@@ -143,6 +146,7 @@
     <Compile Include="Tasks\ConcurrentTestTask.cs" />
     <Compile Include="Tasks\DataReportTask.cs" />
     <Compile Include="Tasks\UpdateEsIndexTask.cs" />
+    <Compile Include="Tasks\WcfHeartBeatTask.cs" />
     <Compile Include="UserController.cs" />
     <Compile Include="Simple_CRUD.cs" />
     <Compile Include="Tasks\WakeWebSiteTask.cs" />
