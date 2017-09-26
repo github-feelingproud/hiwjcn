@@ -21,6 +21,7 @@ using System.Data.Entity.SqlServer;
 using System.Configuration;
 using System.Reflection;
 using System;
+using Hiwjcn.Core.Domain.WCF;
 
 namespace Hiwjcn.Dal
 {
@@ -68,6 +69,8 @@ namespace Hiwjcn.Dal
         }
 
         #region model对应的实体
+
+        public virtual DbSet<WcfMap> WcfMap { get; set; }
 
         public virtual DbSet<AuthClient> AuthClient { get; set; }
         public virtual DbSet<AuthScope> AuthScope { get; set; }
