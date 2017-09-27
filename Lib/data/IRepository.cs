@@ -208,6 +208,76 @@ namespace Lib.data
         /// <returns></returns>
         Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback);
         #endregion
+
+        #region 不用返回true的查询上下文
+
+        /// <summary>
+        /// 不用return true
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
+        void PrepareIQueryable(Action<IQueryable<T>> callback, bool track = false);
+
+        /// <summary>
+        /// 不用return true
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
+        Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback, bool track = false);
+
+        /// <summary>
+        /// 不用return true
+        /// </summary>
+        /// <param name="callback"></param>
+        void PrepareSession(Action<DbContext> callback);
+
+        /// <summary>
+        /// 不用return true
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        Task PrepareSessionAsync(Func<DbContext, Task> callback);
+
+        #endregion
+
+        #region 可以直接返回查询结果
+
+        /// <summary>
+        /// 可以拿到返回值
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
+        R PrepareIQueryable_<R>(Func<IQueryable<T>, R> callback, bool track = false);
+
+        /// <summary>
+        /// 可以拿到返回值
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
+        Task<R> PrepareIQueryableAsync_<R>(Func<IQueryable<T>, Task<R>> callback, bool track = false);
+
+        /// <summary>
+        /// 可以拿到返回值
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        R PrepareSession_<R>(Func<DbContext, R> callback);
+
+        /// <summary>
+        /// 可以拿到返回值
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        Task<R> PrepareSessionAsync_<R>(Func<DbContext, Task<R>> callback);
+
+        #endregion
     }
 
     public abstract class EFRepositoryBase<T> : IRepository<T> where T : class, IDBTable
@@ -618,17 +688,95 @@ namespace Lib.data
 
         #region 不用返回true的查询上下文
 
+        /// <summary>
+        /// 不用return true
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
         public void PrepareIQueryable(Action<IQueryable<T>> callback, bool track = DEFAULT_TRACK) =>
             this.PrepareIQueryable(query => { callback.Invoke(query); return true; }, track: track);
 
+        /// <summary>
+        /// 不用return true
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
         public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback, bool track = DEFAULT_TRACK) =>
             await this.PrepareIQueryableAsync(async query => { await callback.Invoke(query); return true; }, track: track);
 
+        /// <summary>
+        /// 不用return true
+        /// </summary>
+        /// <param name="callback"></param>
         public void PrepareSession(Action<DbContext> callback) =>
             this.PrepareSession(db => { callback.Invoke(db); return true; });
 
+        /// <summary>
+        /// 不用return true
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns></returns>
         public async Task PrepareSessionAsync(Func<DbContext, Task> callback) =>
             await this.PrepareSessionAsync(async db => { await callback.Invoke(db); return true; });
+
+        #endregion
+
+        #region 可以直接返回查询结果
+
+        /// <summary>
+        /// 可以拿到返回值
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
+        public R PrepareIQueryable_<R>(Func<IQueryable<T>, R> callback, bool track = DEFAULT_TRACK)
+        {
+            var data = default(R);
+            this.PrepareIQueryable(query => { data = callback.Invoke(query); }, track: track);
+            return data;
+        }
+
+        /// <summary>
+        /// 可以拿到返回值
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="callback"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
+        public async Task<R> PrepareIQueryableAsync_<R>(Func<IQueryable<T>, Task<R>> callback, bool track = DEFAULT_TRACK)
+        {
+            var data = default(R);
+            await this.PrepareIQueryableAsync(async query => { data = await callback.Invoke(query); }, track: track);
+            return data;
+        }
+
+        /// <summary>
+        /// 可以拿到返回值
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public R PrepareSession_<R>(Func<DbContext, R> callback)
+        {
+            var data = default(R);
+            this.PrepareSession(db => { data = callback.Invoke(db); });
+            return data;
+        }
+
+        /// <summary>
+        /// 可以拿到返回值
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public async Task<R> PrepareSessionAsync_<R>(Func<DbContext, Task<R>> callback)
+        {
+            var data = default(R);
+            await this.PrepareSessionAsync(async db => { data = await callback.Invoke(db); });
+            return data;
+        }
 
         #endregion
     }
