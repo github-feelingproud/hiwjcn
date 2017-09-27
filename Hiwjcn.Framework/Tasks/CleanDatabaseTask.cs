@@ -38,7 +38,7 @@ namespace Hiwjcn.Framework.Tasks
                 //return TriggerDaily(2, 30);
 
                 //2小时执行一次
-                return TriggerInterval(60 * 60 * 2);
+                return this.TriggerIntervalInHours(2);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Hiwjcn.Framework.Tasks
             }
             catch (Exception e)
             {
-                e.AddErrorLog("清理数据库发生异常");
+                e.AddErrorLog($"{this.Name}:清理数据库发生异常");
             }
         }
     }

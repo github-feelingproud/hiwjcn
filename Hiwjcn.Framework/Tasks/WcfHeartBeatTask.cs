@@ -25,7 +25,7 @@ namespace Hiwjcn.Framework.Tasks
 
         public override bool AutoStart => true;
 
-        public override ITrigger Trigger => this.TriggerInterval(15);
+        public override ITrigger Trigger => this.TriggerIntervalInSeconds(15);
 
         private void PushToQueue(ref Queue queue)
         {
@@ -54,9 +54,9 @@ namespace Hiwjcn.Framework.Tasks
         {
             while (!stop.Invoke())
             {
+                var model = default(WcfMap);
                 try
                 {
-                    var model = default(WcfMap);
                     lock (queue)
                     {
                         if (queue.Count <= 0)
@@ -69,22 +69,44 @@ namespace Hiwjcn.Framework.Tasks
                     }
                     //request url and update last update time
 
-                    Policy.Handle<Exception>().WaitAndRetry(3, i => TimeSpan.FromMilliseconds(i * 100)).Execute(() =>
+                    var ok = false;
+                    try
                     {
-                        HttpClientHelper.Get(model.SvcUrl);
-                        using (var s = AppContext.Scope())
+                        Policy.Handle<Exception>()
+                            .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(i * 100))
+                            .Execute(() =>
                         {
-                            var repo = s.Resolve_<IRepository<WcfMap>>();
-                            var m = repo.GetFirst(x => x.IID == model.IID);
+                            HttpClientHelper.Send(model.SvcUrl,
+                                method: RequestMethodEnum.GET,
+                                ensure_http_code: new int[] { 200 });
+                        });
+                        ok = true;
+                    }
+                    catch (Exception e)
+                    {
+                        ok = false;
+                        e.AddErrorLog(this.Name);
+                    }
+                    using (var s = AppContext.Scope())
+                    {
+                        var repo = s.Resolve_<IRepository<WcfMap>>();
+                        var m = repo.GetFirst(x => x.IID == model.IID);
+                        if (ok)
+                        {
                             m.Update();
                             m.HeartBeatsTime = m.UpdateTime;
                             repo.Update(m);
                         }
-                    });
+                        else
+                        {
+
+                            repo.Delete(m);
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
-                    e.AddErrorLog();
+                    e.AddErrorLog($"{this.Name}:wcfmap对象：{model?.ToJson()}");
                     Thread.Sleep(200);
                 }
             }
@@ -117,7 +139,7 @@ namespace Hiwjcn.Framework.Tasks
                 }
                 catch (Exception e)
                 {
-                    e.AddErrorLog();
+                    e.AddErrorLog(this.Name);
                 }
                 finally
                 {

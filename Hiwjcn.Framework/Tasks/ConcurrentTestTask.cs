@@ -35,7 +35,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             get
             {
-                return TriggerInterval(1);
+                return this.TriggerIntervalInSeconds(1);
             }
         }
 
@@ -59,7 +59,7 @@ namespace Hiwjcn.Framework.Tasks
 
         public override bool AutoStart => true;
 
-        public override ITrigger Trigger => TriggerInterval(60);
+        public override ITrigger Trigger => this.TriggerIntervalInSeconds(60);
 
         public override void Execute(IJobExecutionContext context)
         {
@@ -69,7 +69,7 @@ namespace Hiwjcn.Framework.Tasks
             }
             catch (Exception e)
             {
-                e.AddErrorLog();
+                e.AddErrorLog(this.Name);
             }
         }
     }

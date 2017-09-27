@@ -336,14 +336,9 @@ namespace Lib.net
         /// <summary>
         /// send request
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="data"></param>
-        /// <param name="contentType"></param>
-        /// <param name="method"></param>
-        /// <param name="timeout_second"></param>
-        /// <returns></returns>
-        public static string Send(string url, byte[] data, string contentType,
-            RequestMethodEnum method = RequestMethodEnum.POST, int? timeout_second = 30)
+        public static string Send(string url, byte[] data = null, string contentType = null,
+            RequestMethodEnum method = RequestMethodEnum.POST, int? timeout_second = 30,
+            int[] ensure_http_code = null)
         {
             HttpWebRequest req = null;
             HttpWebResponse res = null;
@@ -371,15 +366,16 @@ namespace Lib.net
                 }
 
                 res = (HttpWebResponse)req.GetResponse();
+
+                if (ValidateHelper.IsPlumpList(ensure_http_code) && !ensure_http_code.Contains((int)res.StatusCode))
+                {
+                    throw new Exception($"{url}请求的返回码：{(int)res.StatusCode}不在允许的范围内：{",".Join_(ensure_http_code)}");
+                }
+
                 using (var s = res.GetResponseStream())
                 {
                     return ConvertHelper.StreamToString(s);
                 }
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-                throw e;
             }
             finally
             {
@@ -389,7 +385,7 @@ namespace Lib.net
                 }
                 catch (Exception e)
                 {
-                    e.AddLog(typeof(HttpClientHelper));
+                    e.AddErrorLog();
                 }
                 res?.Dispose();
             }

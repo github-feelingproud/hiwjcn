@@ -30,7 +30,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             get
             {
-                return TriggerInterval(30);
+                return this.TriggerIntervalInSeconds(30);
             }
         }
 
@@ -51,7 +51,7 @@ namespace Hiwjcn.Framework.Tasks
                 }
                 catch (Exception e)
                 {
-                    e.AddLog(this.GetType());
+                    e.AddErrorLog($"{this.Name}:{url}");
                 }
             }
         }

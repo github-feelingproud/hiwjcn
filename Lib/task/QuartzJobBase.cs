@@ -79,8 +79,30 @@ namespace Lib.task
         /// </summary>
         /// <param name="seconds"></param>
         /// <returns></returns>
-        protected ITrigger TriggerInterval(int seconds) =>
+        [Obsolete("实用替代方法：" + nameof(TriggerIntervalInSeconds))]
+        protected ITrigger TriggerInterval(int seconds) => this.TriggerIntervalInSeconds(seconds);
+
+        /// <summary>
+        /// 隔几秒
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <returns></returns>
+        protected ITrigger TriggerIntervalInSeconds(int seconds) =>
             BuildTrigger(t => t.StartNow().WithSimpleSchedule(x => x.WithIntervalInSeconds(seconds).RepeatForever()).Build());
+
+        /// <summary>
+        /// 隔几分钟
+        /// </summary>
+        /// <param name="minutes"></param>
+        /// <returns></returns>
+        protected ITrigger TriggerIntervalInMinutes(int minutes) => this.TriggerIntervalInSeconds(60 * minutes);
+
+        /// <summary>
+        /// 隔几小时
+        /// </summary>
+        /// <param name="hours"></param>
+        /// <returns></returns>
+        protected ITrigger TriggerIntervalInHours(int hours) => this.TriggerIntervalInMinutes(60 * hours);
 
         /// <summary>
         /// 创建trigger
