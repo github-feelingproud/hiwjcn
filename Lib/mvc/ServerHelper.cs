@@ -12,6 +12,8 @@ namespace Lib.mvc
 {
     public static class ServerHelper
     {
+        public static string AppDataPath(this HttpServerUtility server) => server.MapPath("~/App_Data");
+
         /// <summary>
         /// 在请求上下文中缓存对象,不能缓存null对象
         /// </summary>
@@ -20,10 +22,8 @@ namespace Lib.mvc
         /// <param name="func"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static T CacheInHttpContext<T>(string key, Func<T> func, HttpContext context = null)
+        public static T CacheInHttpContext<T>(this HttpContext context, string key, Func<T> func)
         {
-            context = context ?? HttpContext.Current ?? throw new Exception("当前非web环境");
-
             if (context.Items.Contains(key))
             {
                 var obj = context.Items[key];
@@ -41,10 +41,8 @@ namespace Lib.mvc
             return d;
         }
 
-        public static async Task<T> CacheInHttpContextAsync<T>(string key, Func<Task<T>> func, HttpContext context = null)
+        public static async Task<T> CacheInHttpContextAsync<T>(this HttpContext context, string key, Func<Task<T>> func)
         {
-            context = context ?? HttpContext.Current ?? throw new Exception("当前非web环境");
-
             if (context.Items.Contains(key))
             {
                 var obj = context.Items[key];
@@ -88,6 +86,7 @@ namespace Lib.mvc
                 return MapPath(path);
             }
         }
+
         /// <summary>
         /// 获取绝对路径
         /// </summary>
@@ -97,6 +96,7 @@ namespace Lib.mvc
         {
             return GetMapPath(HttpContext.Current, path);
         }
+
         /// <summary>
         /// 来自nopcommerce的方法Maps a virtual path to a physical disk path.
         /// </summary>
@@ -114,6 +114,7 @@ namespace Lib.mvc
             path = path.Replace("~/", "").TrimStart('/').Replace('/', '\\');
             return Path.Combine(baseDirectory, path);
         }
+
         /// <summary>
         /// 获得当前应用程序的信任级别
         /// </summary>

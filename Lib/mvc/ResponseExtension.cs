@@ -5,13 +5,13 @@ using System.Web;
 
 namespace Lib.mvc
 {
-    public static class ResponseHelper
+    public static class ResponseExtension
     {
         /// <summary>
         /// 设置不缓存
         /// </summary>
         /// <param name="response"></param>
-        public static void SetResponseNoCache(HttpResponse response)
+        public static void SetResponseNoCache(this HttpResponse response)
         {
             response.Buffer = false;
             response.ExpiresAbsolute = DateTime.Now.AddMilliseconds(0);
@@ -20,7 +20,7 @@ namespace Lib.mvc
             response.AppendHeader("Pragma", "No-Cache");
         }
 
-        public static void AllowCrossDomainAjax(HttpContext context)
+        public static void AllowCrossDomainAjax(this HttpContext context)
         {
             var Origin_Allow = ConvertHelper.GetString(ConfigurationManager.AppSettings["Origin_Allow"]).ToLower();
             if (!ValidateHelper.IsPlumpString(Origin_Allow)) { return; }

@@ -243,7 +243,8 @@ namespace Hiwjcn.Web.Controllers
                 byte[] bs = code.GetImageBytes();
                 if (!ValidateHelper.IsPlumpList(bs)) { return Content("没有数据"); }
 
-                ResponseHelper.SetResponseNoCache(this.X.context.Response);
+                this.X.context.Response.SetResponseNoCache();
+
                 this.X.context.Session.SetSession(key, code.Code);
                 return File(bs, "image/Png");
             });
@@ -269,7 +270,9 @@ namespace Hiwjcn.Web.Controllers
                 }
                 var b = qr.GetBitmapBytes(con, img_path: img);
                 if (!ValidateHelper.IsPlumpList(b)) { return Content("err"); }
-                ResponseHelper.SetResponseNoCache(this.X.context.Response);
+
+                this.X.context.Response.SetResponseNoCache();
+
                 return File(b, "image/Png");
             });
         }
@@ -295,7 +298,9 @@ namespace Hiwjcn.Web.Controllers
             {
                 var b = Lib.io.IOHelper.GetFileBytes(id);
                 if (!ValidateHelper.IsPlumpList<byte>(b)) { return Content("empty"); }
-                ResponseHelper.SetResponseNoCache(this.X.context.Response);
+
+                this.X.context.Response.SetResponseNoCache();
+
                 return File(b, "Image/Png");
             });
         }

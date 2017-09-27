@@ -242,10 +242,8 @@ namespace Lib.mvc.user
         /// <param name="key"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        private static LoginStatus CacheInstance(string key, Func<LoginStatus> func)
-        {
-            return ServerHelper.CacheInHttpContext(key, func);
-        }
+        private static LoginStatus CacheInstance(string key, Func<LoginStatus> func) => 
+            HttpContext.Current.CacheInHttpContext(key, func);
 
         private static readonly string domain = ConfigHelper.Instance.CookieDomain;
 

@@ -170,7 +170,9 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return Content("空数据");
                 }
-                ResponseHelper.SetResponseNoCache(this.X.context.Response);
+
+                this.X.context.Response.SetResponseNoCache();
+
                 return File(b, "Image/Png");
             });
         }

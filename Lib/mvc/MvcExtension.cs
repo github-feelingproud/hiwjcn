@@ -17,13 +17,6 @@ namespace Lib.mvc
 {
     public static class MvcExtension
     {
-        public static void AllowCrossDomainAjax(this HttpContext context)
-        {
-            ResponseHelper.AllowCrossDomainAjax(context);
-        }
-
-        public static string AppDataPath(this HttpServerUtility server) => server.MapPath("~/App_Data");
-
         /// <summary>
         /// 获取Area Controller Action
         /// </summary>
@@ -158,16 +151,6 @@ namespace Lib.mvc
         /// <returns></returns>
         public static Dictionary<string, string> PostToDict(this HttpContext context) =>
             context.Request.Form.ToDict();
-        
-        public static T CacheInHttpContext<T>(this HttpContext context, string key, Func<T> func)
-        {
-            return ServerHelper.CacheInHttpContext(key, func, context);
-        }
-
-        public static async Task<T> CacheInHttpContextAsync<T>(this HttpContext context, string key, Func<Task<T>> func)
-        {
-            return await ServerHelper.CacheInHttpContextAsync(key, func, context);
-        }
 
         /// <summary>
         /// 获取这个程序集中所用到的所有权限

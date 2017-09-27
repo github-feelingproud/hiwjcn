@@ -70,21 +70,19 @@ namespace Lib.mvc
         {
             var obj = session[key];
 
-            {
-                //用新的方法实现
-                if (obj is T res)
-                {
-                    return res;
-                }
-            }
+            if (obj == null) { return default(T); }
 
+            //判断1
+            if (obj is T res)
+            {
+                return res;
+            }
+            //判断2
             if (ValidateHelper.Is<T>(obj))
             {
                 return (T)obj;
             }
-
-            if (obj == null) { return default(T); }
-
+            //使用json转换
             try
             {
                 return obj.ToJson().JsonToEntity<T>();
