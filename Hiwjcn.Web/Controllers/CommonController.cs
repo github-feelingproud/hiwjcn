@@ -244,7 +244,7 @@ namespace Hiwjcn.Web.Controllers
                 if (!ValidateHelper.IsPlumpList(bs)) { return Content("没有数据"); }
 
                 ResponseHelper.SetResponseNoCache(this.X.context.Response);
-                SessionHelper.SetSession(this.X.context.Session, key, code.Code);
+                this.X.context.Session.SetSession(key, code.Code);
                 return File(bs, "image/Png");
             });
         }

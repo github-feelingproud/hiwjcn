@@ -158,32 +158,7 @@ namespace Lib.mvc
         /// <returns></returns>
         public static Dictionary<string, string> PostToDict(this HttpContext context) =>
             context.Request.Form.ToDict();
-
-        /// <summary>
-        /// 设置实体
-        /// </summary>
-        /// <param name="session"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public static void SetObject(this HttpSessionState session, string key, object value)
-        {
-            session[key] = value.ToJson();
-        }
-
-        /// <summary>
-        /// 获取实体
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="session"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static T GetObject<T>(this HttpSessionState session, string key)
-        {
-            var value = session[key]?.ToString();
-
-            return value == null ? default(T) : value.JsonToEntity<T>();
-        }
-
+        
         public static T CacheInHttpContext<T>(this HttpContext context, string key, Func<T> func)
         {
             return ServerHelper.CacheInHttpContext(key, func, context);

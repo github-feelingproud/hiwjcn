@@ -311,7 +311,7 @@
     <Compile Include="mvc\RequestHelper.cs" />
     <Compile Include="mvc\ResponseHelper.cs" />
     <Compile Include="mvc\ServerHelper.cs" />
-    <Compile Include="mvc\SessionHelper.cs" />
+    <Compile Include="mvc\SessionExtension.cs" />
     <Compile Include="data\IRepository.cs" />
     <Compile Include="infrastructure\IServiceBase.cs" />
     <Compile Include="ioc\AppContext.cs" />

@@ -313,7 +313,7 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes("两次输入密码不一样");
                 }
-                if (verify != SessionHelper.PopSession<string>(this.X.context.Session, "reg_verify"))
+                if (verify != this.X.context.Session.PopSession<string>("reg_verify"))
                 {
                     return GetJsonRes("验证码错误");
                 }

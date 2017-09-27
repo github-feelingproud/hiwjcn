@@ -5,8 +5,46 @@ using Lib.extension;
 
 namespace Lib.mvc
 {
-    public static class SessionHelper
+    public static class SessionExtension
     {
+        /// <summary>
+        /// 设置实体
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static void SetObjectAsJson(this HttpSessionState session, string key, object value)
+        {
+            session[key] = (value ?? throw new Exception("null不能转为json，并存入session")).ToJson();
+        }
+
+        /// <summary>
+        /// 获取实体
+        /// </summary>
+        public static T GetObjectFromJsonOrDefault<T>(this HttpSessionState session, string key)
+        {
+            try
+            {
+                var value = session[key]?.ToString();
+                if (ValidateHelper.IsPlumpString(value))
+                {
+                    return value.JsonToEntity<T>();
+                }
+                return default(T);
+            }
+            catch
+            {
+                return default(T);
+            }
+        }
+
+        public static T PopSessionFromJsonOrDefault<T>(this HttpSessionState session, string key)
+        {
+            var value = session.GetObjectFromJsonOrDefault<T>(key);
+            session.RemoveSession(key);
+            return value;
+        }
+
         /// <summary>
         /// 取出后删除
         /// </summary>
@@ -14,10 +52,10 @@ namespace Lib.mvc
         /// <param name="session"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static T PopSession<T>(HttpSessionState session, string key)
+        public static T PopSession<T>(this HttpSessionState session, string key)
         {
-            var value = GetSession<T>(session, key);
-            RemoveSession(session, key);
+            var value = session.GetSession<T>(key);
+            session.RemoveSession(key);
             return value;
         }
 
@@ -28,7 +66,7 @@ namespace Lib.mvc
         /// <param name="session"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static T GetSession<T>(HttpSessionState session, string key)
+        public static T GetSession<T>(this HttpSessionState session, string key)
         {
             var obj = session[key];
 
@@ -63,7 +101,7 @@ namespace Lib.mvc
         /// <param name="session"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public static void SetSession(HttpSessionState session, string key, object value)
+        public static void SetSession(this HttpSessionState session, string key, object value)
         {
             session[key] = value;
         }
@@ -73,7 +111,7 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="session"></param>
         /// <param name="keys"></param>
-        public static void RemoveSession(HttpSessionState session, params string[] keys)
+        public static void RemoveSession(this HttpSessionState session, params string[] keys)
         {
             foreach (var key in keys)
             {

@@ -174,7 +174,7 @@ namespace Lib.mvc.user
             }
 
             //保存到session
-            SessionHelper.SetSession(context.Session, this.LOGIN_USER_SESSION, loginuser);
+            context.Session.SetObjectAsJson(this.LOGIN_USER_SESSION, loginuser);
             //保存到cookie
             if (this.GetCookieUID() != loginuser.UserID)
             {
@@ -196,7 +196,7 @@ namespace Lib.mvc.user
         {
             context = this.GetContext(context);
 
-            SessionHelper.RemoveSession(context.Session, this.LOGIN_USER_SESSION);
+            context.Session.RemoveSession(this.LOGIN_USER_SESSION);
             //清空其他cookie操作
             //CookieHelper.RemoveResponseCookies(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN });
             if (ValidateHelper.IsPlumpString(this.GetCookieTokenRaw()))
@@ -214,7 +214,7 @@ namespace Lib.mvc.user
         {
             context = this.GetContext(context);
 
-            var model = SessionHelper.GetSession<LoginUserInfo>(context.Session, LOGIN_USER_SESSION);
+            var model = context.Session.GetObjectFromJsonOrDefault<LoginUserInfo>(this.LOGIN_USER_SESSION);
             var cookie_uid = this.GetCookieUID(context);
             var cookie_token = this.GetCookieToken(context);
 
