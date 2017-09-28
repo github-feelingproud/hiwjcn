@@ -84,7 +84,7 @@ namespace Lib.mvc
             }
             this.Layout = IncludePath(name);
         }
-        
+
         /// <summary>
         /// 从ViewData中拿到非空数据
         /// </summary>
@@ -111,10 +111,11 @@ namespace Lib.mvc
         protected string Lang(string key, string deft = null)
         {
             LoadLangResource();
+            var context = HttpContext.Current;
 
             LangModel cur_lang = null;
 
-            var cookie_lang = CookieHelper.GetCookie(System.Web.HttpContext.Current, LanguageHelper.CookieName);
+            var cookie_lang = context.GetCookie(LanguageHelper.CookieName);
 
             if (ValidateHelper.IsPlumpString(cookie_lang))
             {
@@ -123,7 +124,7 @@ namespace Lib.mvc
             if (cur_lang == null)
             {
                 cur_lang = this.Language.Where(x => x.Default).FirstOrDefault();
-                CookieHelper.RemoveCookie(System.Web.HttpContext.Current, new string[] { LanguageHelper.CookieName });
+                context.RemoveCookie(new string[] { LanguageHelper.CookieName });
             }
 
             var word = cur_lang?.Dict?.Where(x => x.key == key)?.FirstOrDefault();

@@ -137,14 +137,14 @@ namespace Lib.mvc.user
         {
             context = this.GetContext(context);
 
-            return CookieHelper.GetCookie(context, this.COOKIE_LOGIN_UID);
+            return context.GetCookie(this.COOKIE_LOGIN_UID);
         }
 
         public string GetCookieTokenRaw(HttpContext context = null)
         {
             context = this.GetContext(context);
 
-            return CookieHelper.GetCookie(context, this.COOKIE_LOGIN_TOKEN);
+            return context.GetCookie(this.COOKIE_LOGIN_TOKEN);
         }
 
         public string GetCookieToken(HttpContext context = null)
@@ -178,7 +178,7 @@ namespace Lib.mvc.user
             //保存到cookie
             if (this.GetCookieUID() != loginuser.UserID)
             {
-                CookieHelper.SetCookie(context, this.COOKIE_LOGIN_UID, loginuser.UserID,
+                context.SetCookie(this.COOKIE_LOGIN_UID, loginuser.UserID,
                     domain: this.COOKIE_DOMAIN,
                     expires_minutes: this.CookieExpiresMinutes);
             }
@@ -186,7 +186,7 @@ namespace Lib.mvc.user
             {
                 var data = this._CookieTokenEncryption.Encrypt(loginuser.LoginToken);
 
-                CookieHelper.SetCookie(context, this.COOKIE_LOGIN_TOKEN, data,
+                context.SetCookie(this.COOKIE_LOGIN_TOKEN, data,
                     domain: this.COOKIE_DOMAIN,
                     expires_minutes: this.CookieExpiresMinutes);
             }
@@ -201,11 +201,11 @@ namespace Lib.mvc.user
             //CookieHelper.RemoveResponseCookies(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN });
             if (ValidateHelper.IsPlumpString(this.GetCookieTokenRaw()))
             {
-                CookieHelper.RemoveCookie(context, this.COOKIE_LOGIN_TOKEN, domain: this.COOKIE_DOMAIN);
+                context.RemoveCookie(this.COOKIE_LOGIN_TOKEN, domain: this.COOKIE_DOMAIN);
             }
             if (ValidateHelper.IsPlumpString(this.GetCookieUID()))
             {
-                CookieHelper.RemoveCookie(context, this.COOKIE_LOGIN_UID, domain: this.COOKIE_DOMAIN);
+                context.RemoveCookie(this.COOKIE_LOGIN_UID, domain: this.COOKIE_DOMAIN);
             }
         }
 
@@ -242,7 +242,7 @@ namespace Lib.mvc.user
         /// <param name="key"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        private static LoginStatus CacheInstance(string key, Func<LoginStatus> func) => 
+        private static LoginStatus CacheInstance(string key, Func<LoginStatus> func) =>
             HttpContext.Current.CacheInHttpContext(key, func);
 
         private static readonly string domain = ConfigHelper.Instance.CookieDomain;

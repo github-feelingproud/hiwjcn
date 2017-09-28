@@ -30,7 +30,7 @@ namespace WebApp.Areas.Admin.Controllers
                     var cookie_key = "deft_category";
                     if (!ValidateHelper.IsPlumpString(type))
                     {
-                        type = CookieHelper.GetCookie(this.X.context, cookie_key);
+                        type = this.X.context.GetCookie(cookie_key);
                     }
                     if (!ValidateHelper.IsPlumpString(type) && ValidateHelper.IsPlumpList(model.TypesList))
                     {
@@ -41,7 +41,7 @@ namespace WebApp.Areas.Admin.Controllers
                         return Content("未指定类型");
                     }
                     //3个月过期
-                    CookieHelper.SetCookie(this.X.context, cookie_key, type, expires_minutes: 60 * 24 * 30);
+                    this.X.context.SetCookie(cookie_key, type, expires_minutes: 60 * 24 * 30);
                     model.CategoryType = type;
                 }
 

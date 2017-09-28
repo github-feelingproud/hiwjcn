@@ -330,7 +330,7 @@ namespace Hiwjcn.Web.Controllers
             }
             catch (Exception e)
             {
-                //
+                e.AddErrorLog();
             }
             return View();
         }

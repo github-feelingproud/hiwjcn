@@ -304,7 +304,7 @@
     <Compile Include="mvc\auth\ModelSet.cs" />
     <Compile Include="mvc\auth\validation\ITokenValidationProvider.cs" />
     <Compile Include="mvc\auth\validation\IValidationDataProvider.cs" />
-    <Compile Include="mvc\CookieHelper.cs" />
+    <Compile Include="mvc\CookieExtension.cs" />
     <Compile Include="mvc\MvcExtension.cs" />
     <Compile Include="mvc\plugin\BasePaymentController.cs" />
     <Compile Include="mvc\plugin\BasePluginController.cs" />

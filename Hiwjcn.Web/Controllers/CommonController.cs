@@ -36,11 +36,11 @@ namespace Hiwjcn.Web.Controllers
             {
                 if (ValidateHelper.IsPlumpString(lang))
                 {
-                    CookieHelper.SetCookie(this.X.context, LanguageHelper.CookieName, lang);
+                    this.X.context.SetCookie(LanguageHelper.CookieName, lang);
                 }
                 else
                 {
-                    CookieHelper.RemoveCookie(this.X.context, new string[] { LanguageHelper.CookieName });
+                    this.X.context.RemoveCookie(new string[] { LanguageHelper.CookieName });
                 }
                 return GetJsonRes("");
             });

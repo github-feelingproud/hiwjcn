@@ -8,9 +8,15 @@ namespace Lib.mvc
     /// <summary>
     /// 操作cookie
     /// </summary>
-    public static class CookieHelper
+    public static class CookieExtension
     {
-        public static void RemoveCookie(HttpContext context, string name, string domain = null)
+        /// <summary>
+        /// 移除cookie
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="name"></param>
+        /// <param name="domain"></param>
+        public static void RemoveCookie(this HttpContext context, string name, string domain = null)
         {
             RemoveCookie(context, new string[] { name }, domain: domain);
         }
@@ -18,7 +24,7 @@ namespace Lib.mvc
         /// <summary>
         /// 删除cookie
         /// </summary>
-        public static void RemoveCookie(HttpContext context, string[] names, string domain = null)
+        public static void RemoveCookie(this HttpContext context, string[] names, string domain = null)
         {
             if (!ValidateHelper.IsPlumpList(names)) { throw new ArgumentException(); }
             foreach (var name in names)
@@ -51,7 +57,7 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="context"></param>
         /// <param name="names"></param>
-        public static void RemoveResponseCookies(HttpContext context, string[] names)
+        public static void RemoveResponseCookies(this HttpContext context, string[] names)
         {
             foreach (var name in names)
             {
@@ -67,7 +73,7 @@ namespace Lib.mvc
         /// <param name="name"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string GetCookie(HttpContext context, string name, string key = null)
+        public static string GetCookie(this HttpContext context, string name, string key = null)
         {
             var cookie = context.Request.Cookies[name];
             if (cookie == null) { return string.Empty; }
@@ -100,7 +106,7 @@ namespace Lib.mvc
         /// <param name="path"></param>
         /// <param name="httpOnly"></param>
         /// <param name="expires_minutes"></param>
-        public static void SetCookie(HttpContext context, string name,
+        public static void SetCookie(this HttpContext context, string name,
             string value, Dictionary<string, string> values = null,
             string domain = null, string path = null, bool? httpOnly = null,
             double expires_minutes = 60 * 24)
