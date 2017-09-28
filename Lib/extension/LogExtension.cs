@@ -133,7 +133,7 @@ namespace Lib.extension
             {
                 var week = DateTimeHelper.GetWeek(now);
 
-                return $"【{now}】-【{now.ToDateTimeString()}】-【{week}】";
+                return $"【{now.ToDateTimeString()}】-【{week}】";
             }
             catch
             {
