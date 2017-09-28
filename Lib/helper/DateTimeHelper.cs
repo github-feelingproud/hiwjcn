@@ -61,10 +61,10 @@ namespace Lib.helper
         /// 
         /// </summary>
         /// <returns></returns>
-        public static string GetWeek()
+        public static string GetWeek(DateTime? time = null)
         {
             string week = string.Empty;
-            switch (DateTime.Now.DayOfWeek)
+            switch ((time ?? DateTime.Now).DayOfWeek)
             {
                 case DayOfWeek.Sunday: week = "星期日"; break;
                 case DayOfWeek.Monday: week = "星期一"; break;

@@ -126,6 +126,21 @@ namespace Lib.extension
 
         public static readonly bool LogFullException = (ConfigurationManager.AppSettings["LogFullException"] ?? "true").ToBool();
 
+        private static string FriendlyTime()
+        {
+            var now = DateTime.Now;
+            try
+            {
+                var week = DateTimeHelper.GetWeek(now);
+
+                return $"【{now}】-【{now.ToDateTimeString()}】-【{week}】";
+            }
+            catch
+            {
+                return $"{now}";
+            }
+        }
+
         /// <summary>
         /// 错误日志
         /// </summary>
@@ -154,6 +169,7 @@ namespace Lib.extension
                 full_exception = ExceptionJson(),
                 req_data = ReqData(),
                 extra_data = extra_data,
+                friendly_time = FriendlyTime(),
                 tips = new string[] { "建议使用json格式化工具：http://json.cn/" }
             }.ToJson();
 
@@ -169,7 +185,8 @@ namespace Lib.extension
             var json = new
             {
                 msg = log,
-                req_data = ReqData()
+                req_data = ReqData(),
+                friendly_time = FriendlyTime(),
             }.ToJson();
 
             json.AddInfoLog(LoggerName);
@@ -184,7 +201,8 @@ namespace Lib.extension
             var json = new
             {
                 msg = log,
-                req_data = ReqData()
+                req_data = ReqData(),
+                friendly_time = FriendlyTime(),
             }.ToJson();
 
             json.AddWarnLog(LoggerName);
