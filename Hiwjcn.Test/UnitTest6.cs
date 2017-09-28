@@ -24,6 +24,7 @@ using Lib.distributed;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Driver.Linq;
+using ZooKeeperNet;
 
 namespace Hiwjcn.Test
 {
@@ -77,13 +78,16 @@ namespace Hiwjcn.Test
         {
             try
             {
-                var client = new ZooKeeperClient("lib_zookeeper");
+                using (var client = new ZooKeeperClient("lib_zookeeper"))
+                {
+                    var bs = System.Text.Encoding.UTF8.GetBytes("fasdf");
 
-                client.Set("/qpl", "fasdfasd");
+                    client.Client.Create("/qpl", bs, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent);
 
-                var data = client.Get<string>("/qpl");
+                    client.Set("/qpl", "fasdfasd");
 
-                client.Dispose();
+                    var data = client.Get<string>("/qpl");
+                }
             }
             catch (Exception e)
             {

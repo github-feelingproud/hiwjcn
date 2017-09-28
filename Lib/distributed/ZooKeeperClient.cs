@@ -29,6 +29,8 @@ namespace Lib.distributed
     {
         private readonly IZooKeeper _zookeeper;
 
+        public IZooKeeper Client { get => this._zookeeper; }
+
         private readonly ManualResetEvent _resetEvent = new ManualResetEvent(false);
 
         public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
