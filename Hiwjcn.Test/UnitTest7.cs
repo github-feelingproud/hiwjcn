@@ -22,20 +22,33 @@ namespace Hiwjcn.Test
             {
                 this.connected = true;
             }
+            if (@event.getState() == Event.KeeperState.Disconnected)
+            {
+                this.connected = false;
+            }
+            if (@event.getState() == Event.KeeperState.Expired)
+            {
+                this.connected = false;
+            }
             await Task.FromResult(1);
         }
 
         [TestMethod]
         public async Task TestMethod1()
         {
+            //原来zk客户端不应该作为静态对象，每次new
+
             foreach (var i in Com.Range(100))
             {
                 var client = new ZooKeeper("localhost:32771",
-                    (int)TimeSpan.FromSeconds(5).TotalMilliseconds, this);
+                    (int)TimeSpan.FromSeconds(5).TotalMilliseconds, this,
+                    canBeReadOnly: false);
                 try
                 {
-                    while (!this.connected)
+                    var count = 0;
+                    while (client.getState() != ZooKeeper.States.CONNECTED)
                     {
+                        if (++count > 100) { throw new Exception("loss patient to wait for connection"); }
                         await Task.Delay(10);
                     }
 
@@ -44,7 +57,7 @@ namespace Hiwjcn.Test
                         var path = await client.createAsync("/home", "".GetBytes(),
                             Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                     }
-                    
+
                     var bs = new { id = 2, name = "fas", age = 44, time = DateTime.Now }.ToJson().GetBytes();
 
                     await client.setDataAsync("/home", bs);
@@ -67,6 +80,7 @@ namespace Hiwjcn.Test
                 finally
                 {
                     await client.closeAsync();
+                    this.connected = false;
                 }
             }
         }
