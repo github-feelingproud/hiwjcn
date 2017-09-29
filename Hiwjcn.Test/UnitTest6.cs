@@ -80,9 +80,10 @@ namespace Hiwjcn.Test
             {
                 using (var client = new ZooKeeperClient("lib_zookeeper"))
                 {
-                    var bs = System.Text.Encoding.UTF8.GetBytes("fasdf");
-
-                    client.Client.Create("/qpl", bs, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent);
+                    if (client.Client.Exists("/qpl", false) == null)
+                    {
+                        client.Client.Create("/qpl", "dataxx".GetBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent);
+                    }
 
                     client.Set("/qpl", "fasdfasd");
 

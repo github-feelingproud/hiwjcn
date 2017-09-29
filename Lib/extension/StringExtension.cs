@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.helper;
+using Lib.core;
 
 namespace Lib.extension
 {
@@ -208,5 +209,14 @@ namespace Lib.extension
         /// <param name="s"></param>
         /// <returns></returns>
         public static byte[] Base64ToBytes(this string s) => ConvertHelper.Base64ToBytes(s);
+
+        /// <summary>
+        /// 获取字节数组，可以指定编码
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static byte[] GetBytes(this string s, Encoding encoding = null) =>
+            (encoding ?? ConfigHelper.Instance.SystemEncoding).GetBytes(s);
     }
 }

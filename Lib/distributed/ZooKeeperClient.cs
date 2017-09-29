@@ -29,9 +29,9 @@ namespace Lib.distributed
     {
         private readonly IZooKeeper _zookeeper;
 
-        public IZooKeeper Client { get => this._zookeeper; }
+        //private readonly ManualResetEvent _resetEvent = new ManualResetEvent(false);
 
-        private readonly ManualResetEvent _resetEvent = new ManualResetEvent(false);
+        private readonly int ConnectionLossTimeout;
 
         public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
@@ -42,17 +42,14 @@ namespace Lib.distributed
                 throw new ArgumentNullException("zookeeper server can not be empty");
             }
 
-            ConnectionLossTimeout = configuration.SessionTimeOut;
+            this.ConnectionLossTimeout = configuration.SessionTimeOut;
             var timeOut = TimeSpan.FromMilliseconds(configuration.SessionTimeOut);
-
 
             _zookeeper = new ZooKeeper(
                 configuration.Server,
                 timeOut,
                 watcher ?? new DefaultWatcher());
         }
-
-        protected int ConnectionLossTimeout { get; set; }
 
         public bool IsAlive
         {
@@ -63,63 +60,45 @@ namespace Lib.distributed
             }
         }
 
-        public T Invoke<T>(string path, Func<IZooKeeper, string, T> func)
-        {
-            if (_resetEvent.WaitOne(ConnectionLossTimeout))
-            {
-                return func(_zookeeper, path);
-            }
-            else
-            {
-                return func(_zookeeper, path);
-            }
-        }
+        public IZooKeeper Client { get => this._zookeeper; }
 
-        public void Invoke(string path, Action<IZooKeeper, string> action)
-        {
-            if (_resetEvent.WaitOne(ConnectionLossTimeout))
-            {
-                action(_zookeeper, path);
-            }
-            else
-            {
-                action(_zookeeper, path);
-            }
-        }
+        public T Invoke<T>(Func<IZooKeeper, T> func) => func.Invoke(_zookeeper);
+
+        public void Invoke(Action<IZooKeeper> action) => this.Invoke(x => { action.Invoke(x); return true; });
 
         public virtual T Get<T>(string path, bool watch = false)
         {
-            return Deserialize<T>(Invoke(path, (zookeeper, p) => zookeeper.GetData(p, watch, null)));
+            return Deserialize<T>(this.Invoke(x => x.GetData(path, watch, null)));
         }
 
         public virtual bool Set<T>(string path, T objData, int version = -1)
         {
             var buffer = Serialize(objData);
-            return Invoke(path, (zookeeper, p) => zookeeper.SetData(p, buffer, version)) != null;
+            return this.Invoke(x => x.SetData(path, buffer, version)) != null;
         }
 
         public IEnumerable<string> GetChildren(string path, bool watch = false)
         {
-            return Invoke(path, (zookeeper, p) => zookeeper.GetChildren(p, watch));
+            return this.Invoke(x => x.GetChildren(path, watch));
         }
 
         public bool CreatePersistentPath(string path)
         {
-            if (Invoke(path, (zookeeper, p) => zookeeper.Exists(p, false)) != null)
+            if (this.Invoke(x => x.Exists(path, false)) != null)
                 return false;
 
             var _path = string.Empty;
             foreach (var item in path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 _path = _path + "/" + item;
-                if (Invoke(_path, (zookeeper, p) => zookeeper.Exists(p, false)) != null)
+                if (this.Invoke(x => x.Exists(_path, false)) != null)
                 {
                     continue;
                 }
 
                 try
                 {
-                    Invoke(_path, (zookeeper, p) => zookeeper.Create(p, null, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent));
+                    this.Invoke(x => x.Create(_path, null, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent));
                 }
                 catch (KeeperException.NodeExistsException e)
                 {
@@ -134,25 +113,23 @@ namespace Lib.distributed
 
         public string CreateSequential(string path, byte[] data, bool persistent)
         {
-            return Invoke(path, (zookeeper, p) =>
-                zookeeper.Create(p,
+            return this.Invoke(x =>
+                    x.Create(path,
                     data,
                     Ids.OPEN_ACL_UNSAFE,
                     persistent ? CreateMode.PersistentSequential : CreateMode.EphemeralSequential)).Substring(path.Length);
         }
 
-        public void DeleteNode(string path) => Invoke(path, (zookeeper, p) => zookeeper.Delete(p, -1));
+        public void DeleteNode(string path) => this.Invoke(x => x.Delete(path, -1));
 
-        public Stat Watch(string path) => Invoke(path, (zookeeper, p) => zookeeper.Exists(p, true));
+        public Stat Watch(string path) => this.Invoke(x => x.Exists(path, true));
 
-        public Stat Watch(string path, IWatcher watcher) => Invoke(path, (zookeeper, p) => zookeeper.Exists(p, watcher));
+        public Stat Watch(string path, IWatcher watcher) => this.Invoke(x => x.Exists(path, watcher));
 
-        public bool _disposed = false;
         public void Dispose()
         {
-            _zookeeper.Dispose();
-            _resetEvent.Dispose();
-            _disposed = true;
+            this._zookeeper?.Dispose();
+            //_resetEvent.Dispose();
         }
     }
 
