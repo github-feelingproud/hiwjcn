@@ -41,7 +41,7 @@ namespace WindowsFormApp
                     }
                     var api = new AuthApiFromWebApi(new AuthServerConfig("http://localhost:59840/"));
 
-                    var code = await api.GetAuthCodeByPasswordAsync(client.UID, new List<string>().ToJson(), "32", "53");
+                    var code = await api.GetAuthCodeByPasswordAsync(client.UID, new List<string>(), "32", "53");
                     if (!code.success)
                     {
                         MessageBox.Show(code.msg);

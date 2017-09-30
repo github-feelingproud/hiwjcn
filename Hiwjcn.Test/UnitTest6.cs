@@ -80,14 +80,7 @@ namespace Hiwjcn.Test
             {
                 using (var client = new ZooKeeperClient("lib_zookeeper"))
                 {
-                    if (client.Client.Exists("/qpl", false) == null)
-                    {
-                        client.Client.Create("/qpl", "dataxx".GetBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent);
-                    }
-
-                    client.Set("/qpl", "fasdfasd");
-
-                    var data = client.Get<string>("/qpl");
+                    //
                 }
             }
             catch (Exception e)

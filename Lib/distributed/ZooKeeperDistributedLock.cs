@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.extension;
-using ZooKeeperNet;
 using System.Threading;
 using System.Diagnostics;
 using Lib.helper;
+using Polly;
+using Polly.Retry;
 
 namespace Lib.distributed
 {
@@ -17,6 +18,9 @@ namespace Lib.distributed
         private readonly string _path;
         private string _no;
 
+        private RetryPolicy retry = Policy.Handle<Exception>()
+                .WaitAndRetryAsync(5, i => TimeSpan.FromMilliseconds(i * 50));
+
         public ZooKeeperDistributedLock(string key, string configName)
         {
             var config = ZooKeeperConfigSection.FromSection(configName);
@@ -24,22 +28,28 @@ namespace Lib.distributed
             _path = config.DistributedLockPath + "/" + key.ToMD5();
 
             //抢锁
-            new Action(() =>
+            Task.Factory.StartNew(async () =>
             {
-                _client.CreatePersistentPath(_path);
-                _no = _client.CreateSequential(_path + "/", false);
-            }).InvokeWithRetry<Exception>(5);
+                await this.retry.ExecuteAsync(async () =>
+                {
+                    await this._client.Client.CreatePersistentPathIfNotExist(_path);
+                    _no = await this._client.Client.CreateSequential(_path + "/", null, false);
+                });
+            }).Wait();
         }
 
         public void Dispose()
         {
             if (ValidateHelper.IsPlumpString(_no))
             {
-                new Action(() =>
+                Task.Factory.StartNew(async () =>
                 {
-                    _client.DeleteNode(_path + "/" + _no);
-                    _client.DeleteNode(_path);
-                }).InvokeWithRetry<Exception>(5);
+                    await this.retry.ExecuteAsync(async () =>
+                    {
+                        await this._client.Client.DeleteSingleNode_(this._path + "/" + this._no);
+                        await this._client.Client.DeleteSingleNode_(this._path);
+                    });
+                }).Wait();
             }
             _client.Dispose();
         }

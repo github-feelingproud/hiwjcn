@@ -1,23 +1,26 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Org.Apache.Zookeeper.Data;
-using ZooKeeperNet;
+using org.apache.zookeeper;
 using Lib.extension;
 using Lib.helper;
 using Lib.data;
 using Lib.ioc;
 using Lib.core;
+using System.Threading.Tasks;
+using static org.apache.zookeeper.ZooDefs;
+using org.apache.zookeeper.data;
 
 namespace Lib.distributed
 {
-    public class DefaultWatcher : IWatcher
+    public class DefaultWatcher : Watcher
     {
-        public void Process(WatchedEvent @event)
+        public override async Task process(WatchedEvent @event)
         {
-            //
+            await Task.FromResult(1);
         }
     }
 
@@ -27,142 +30,150 @@ namespace Lib.distributed
     /// </summary>
     public class ZooKeeperClient : SerializeBase, IDisposable
     {
-        private readonly IZooKeeper _zookeeper;
-
-        //private readonly ManualResetEvent _resetEvent = new ManualResetEvent(false);
-
-        private readonly int ConnectionLossTimeout;
+        private readonly ZooKeeper _zookeeper;
 
         public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
-        public ZooKeeperClient(ZooKeeperConfigSection configuration, IWatcher watcher = null)
+        public ZooKeeperClient(ZooKeeperConfigSection configuration, Watcher watcher = null)
         {
             if (!ValidateHelper.IsPlumpString(configuration.Server))
             {
                 throw new ArgumentNullException("zookeeper server can not be empty");
             }
 
-            this.ConnectionLossTimeout = configuration.SessionTimeOut;
-            var timeOut = TimeSpan.FromMilliseconds(configuration.SessionTimeOut);
-
-            _zookeeper = new ZooKeeper(
+            this._zookeeper = new ZooKeeper(
                 configuration.Server,
-                timeOut,
+                configuration.SessionTimeOut,
                 watcher ?? new DefaultWatcher());
+
+            this.EnsureConnected();
         }
 
         public bool IsAlive
         {
-            get
+            get => this._zookeeper.getState() == ZooKeeper.States.CONNECTED;
+        }
+
+        private void EnsureConnected()
+        {
+            var ms = 0;
+            var slp = 20;
+            while (!this.IsAlive)
             {
-                if (_zookeeper == null) { return false; }
-                return _zookeeper.State.IsAlive();
+                ms += slp;
+                if (TimeSpan.FromMilliseconds(ms).TotalSeconds > 10)
+                {
+                    throw new Exception("链接超时");
+                }
+                Thread.Sleep(slp);
             }
         }
 
-        public IZooKeeper Client { get => this._zookeeper; }
-
-        public T Invoke<T>(Func<IZooKeeper, T> func) => func.Invoke(_zookeeper);
-
-        public void Invoke(Action<IZooKeeper> action) => this.Invoke(x => { action.Invoke(x); return true; });
-
-        public virtual T Get<T>(string path, bool watch = false)
+        public ZooKeeper Client
         {
-            return Deserialize<T>(this.Invoke(x => x.GetData(path, watch, null)));
-        }
-
-        public virtual bool Set<T>(string path, T objData, int version = -1)
-        {
-            var buffer = Serialize(objData);
-            return this.Invoke(x => x.SetData(path, buffer, version)) != null;
-        }
-
-        public IEnumerable<string> GetChildren(string path, bool watch = false)
-        {
-            return this.Invoke(x => x.GetChildren(path, watch));
-        }
-
-        public bool CreatePersistentPath(string path)
-        {
-            if (this.Invoke(x => x.Exists(path, false)) != null)
-                return false;
-
-            var _path = string.Empty;
-            foreach (var item in path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+            get
             {
-                _path = _path + "/" + item;
-                if (this.Invoke(x => x.Exists(_path, false)) != null)
+                this.EnsureConnected();
+                return this._zookeeper;
+            }
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                if (this._zookeeper != null)
+                {
+                    Task.Factory.StartNew(async () => await this._zookeeper.closeAsync()).Wait();
+                }
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+        }
+    }
+
+    public static class ZooKeeperClientExtension
+    {
+        public static async Task<bool> ExistAsync_(this ZooKeeper client, string path) =>
+            await client.existsAsync(path) != null;
+
+        public static async Task<string> CreatePersistentPathIfNotExist(this ZooKeeper client,
+            string path, byte[] data = null)
+        {
+            if (await client.ExistAsync_(path))
+            {
+                return path;
+            }
+
+            var sp = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            var p = string.Empty;
+            foreach (var itm in sp)
+            {
+                p += $"/{itm}";
+                if (await client.ExistAsync_(p))
                 {
                     continue;
                 }
 
-                try
-                {
-                    this.Invoke(x => x.Create(_path, null, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent));
-                }
-                catch (KeeperException.NodeExistsException e)
-                {
-                    e.AddErrorLog();
-                }
+                await client.createAsync(p, data, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             }
-
-            return true;
+            return "/" + "/".Join_(sp);
         }
 
-        public string CreateSequential(string path, bool persistent) => CreateSequential(path, null, persistent);
-
-        public string CreateSequential(string path, byte[] data, bool persistent)
+        public static async Task<string> CreateSequential(this ZooKeeper client, string path,
+            byte[] data = null, bool persistent = true)
         {
-            return this.Invoke(x =>
-                    x.Create(path,
-                    data,
-                    Ids.OPEN_ACL_UNSAFE,
-                    persistent ? CreateMode.PersistentSequential : CreateMode.EphemeralSequential)).Substring(path.Length);
+            var p = await client.createAsync(path, data,
+                Ids.OPEN_ACL_UNSAFE,
+                persistent ? CreateMode.PERSISTENT_SEQUENTIAL : CreateMode.EPHEMERAL_SEQUENTIAL);
+            return p.Substring(path.Length);
         }
 
-        public void DeleteNode(string path) => this.Invoke(x => x.Delete(path, -1));
+        public static async Task<Stat> SetDataAsync<T>(this ZooKeeper client, string path, T data) =>
+            await client.setDataAsync(path, data.ToJson().GetBytes());
 
-        public Stat Watch(string path) => this.Invoke(x => x.Exists(path, true));
-
-        public Stat Watch(string path, IWatcher watcher) => this.Invoke(x => x.Exists(path, watcher));
-
-        public void Dispose()
+        public static async Task DeleteNode_(this ZooKeeper client, string path)
         {
-            this._zookeeper?.Dispose();
-            //_resetEvent.Dispose();
-        }
-    }
+            var handlered_list = new List<string>();
 
-    /// <summary>
-    /// 链接管理
-    /// </summary>
-    public class ZooKeeperClientManager : StaticClientManager<ZooKeeperClient>
-    {
-        public static readonly ZooKeeperClientManager Instance = new ZooKeeperClientManager();
+            List<string> Sp_path(string _p) =>
+                _p.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-        public override string DefaultKey
-        {
-            get
+            async Task __DeleteNode(string pre_path, string p)
             {
-                return "lib_zookeeper";
+                var node_sp = Sp_path(pre_path);
+                node_sp.AddRange(Sp_path(p));
+
+                var current_node = "/" + "/".Join(node_sp);
+                if (handlered_list.Contains(current_node))
+                {
+                    throw new Exception($"递归发生错误，已处理节点：{handlered_list.ToJson()}");
+                }
+                handlered_list.Add(current_node);
+
+                if (!await client.ExistAsync_(current_node))
+                {
+                    return;
+                }
+                var res = await client.getChildrenAsync(current_node, false);
+                if (ValidateHelper.IsPlumpList(res.Children))
+                {
+                    foreach (var child in res.Children.Where(x => ValidateHelper.IsPlumpString(x)))
+                    {
+                        //递归
+                        await __DeleteNode(current_node, child);
+                    }
+                }
+                await client.deleteAsync(current_node);
             }
+
+            await __DeleteNode(string.Empty, path);
         }
 
-        public override bool CheckClient(ZooKeeperClient ins)
-        {
-            return ins != null && ins.IsAlive;
-        }
-
-        public override ZooKeeperClient CreateNewClient(string key)
-        {
-            var config = ZooKeeperConfigSection.FromSection(key);
-            return new ZooKeeperClient(config);
-        }
-
-        public override void DisposeClient(ZooKeeperClient ins)
-        {
-            ins?.Dispose();
-        }
+        public static async Task DeleteSingleNode_(this ZooKeeper client, string path) =>
+            await client.deleteAsync(path);
     }
 
     /// <summary>

@@ -80,7 +80,7 @@ namespace Lib.core
             try
             {
                 //zookeeper
-                ZooKeeperClientManager.Instance?.Dispose();
+                //ZooKeeperClientManager.Instance?.Dispose();
             }
             catch (Exception e)
             {
