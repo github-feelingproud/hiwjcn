@@ -9,12 +9,38 @@ using Lib.data;
 using org.apache.zookeeper;
 using System.Threading.Tasks;
 using static org.apache.zookeeper.ZooDefs;
+using Lib.distributed;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest7 : Watcher
     {
+        [TestMethod]
+        public async Task khkjhfldskfjkasjdhflgfksadjfaslkj()
+        {
+            try
+            {
+                using (var client = new ZooKeeperClient("lib_zookeeper"))
+                {
+                    await client.Client.DeleteNodeRecursively_("/home");
+                }
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        }
+
+
+
+
+
+
+
+
+
+
         private bool connected = false;
         public override async Task process(WatchedEvent @event)
         {

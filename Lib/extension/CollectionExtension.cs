@@ -10,6 +10,15 @@ namespace Lib.extension
 {
     public static class CollectionExtension
     {
+        public static void AddOnceOrThrow(this List<string> list, string flag, string error_msg = null)
+        {
+            if (list.Contains(flag))
+            {
+                throw new Exception(error_msg ?? $"{flag}已经存在");
+            }
+            list.Add(flag);
+        }
+
         /// <summary>
         /// 拼接item.tostring()
         /// </summary>

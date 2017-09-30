@@ -24,7 +24,6 @@ using Lib.distributed;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Driver.Linq;
-using ZooKeeperNet;
 
 namespace Hiwjcn.Test
 {

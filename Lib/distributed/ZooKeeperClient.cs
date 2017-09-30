@@ -134,7 +134,7 @@ namespace Lib.distributed
         public static async Task<Stat> SetDataAsync<T>(this ZooKeeper client, string path, T data) =>
             await client.setDataAsync(path, data.ToJson().GetBytes());
 
-        public static async Task DeleteNode_(this ZooKeeper client, string path)
+        public static async Task DeleteNodeRecursively_(this ZooKeeper client, string path)
         {
             var handlered_list = new List<string>();
 
@@ -144,14 +144,17 @@ namespace Lib.distributed
             async Task __DeleteNode(string pre_path, string p)
             {
                 var node_sp = Sp_path(pre_path);
-                node_sp.AddRange(Sp_path(p));
+                var node_path = Sp_path(p);
+                if (!ValidateHelper.IsPlumpList(node_path))
+                {
+                    throw new Exception($"不能删除：{p}");
+                }
+                node_sp.AddRange(node_path);
 
                 var current_node = "/" + "/".Join(node_sp);
-                if (handlered_list.Contains(current_node))
-                {
-                    throw new Exception($"递归发生错误，已处理节点：{handlered_list.ToJson()}");
-                }
-                handlered_list.Add(current_node);
+                //检查死循环
+                handlered_list.AddOnceOrThrow(current_node,
+                    $"递归发生错误，已处理节点：{handlered_list.ToJson()}，再次处理：{current_node}");
 
                 if (!await client.ExistAsync_(current_node))
                 {
@@ -169,6 +172,7 @@ namespace Lib.distributed
                 await client.deleteAsync(current_node);
             }
 
+            //入口
             await __DeleteNode(string.Empty, path);
         }
 
