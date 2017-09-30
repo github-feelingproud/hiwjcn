@@ -16,11 +16,26 @@ using org.apache.zookeeper.data;
 
 namespace Lib.distributed
 {
-    public class DefaultWatcher : Watcher
+    public class EmptyWatcher : Watcher
     {
         public override async Task process(WatchedEvent @event)
         {
             await Task.FromResult(1);
+        }
+    }
+
+    public class CallBackWatcher : Watcher
+    {
+        private readonly Func<WatchedEvent, Task> callback;
+
+        public CallBackWatcher(Func<WatchedEvent, Task> callback)
+        {
+            this.callback = callback ?? throw new ArgumentNullException(nameof(callback));
+        }
+
+        public override async Task process(WatchedEvent @event)
+        {
+            await this.callback.Invoke(@event);
         }
     }
 
@@ -30,32 +45,54 @@ namespace Lib.distributed
     /// </summary>
     public class ZooKeeperClient : SerializeBase, IDisposable
     {
-        private readonly ZooKeeper _zookeeper;
+        protected ZooKeeper _zookeeper;
+        private readonly ZooKeeperConfigSection _config;
 
         public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
 
-        public ZooKeeperClient(ZooKeeperConfigSection configuration, Watcher watcher = null)
+        public ZooKeeperClient(ZooKeeperConfigSection configuration)
         {
-            if (!ValidateHelper.IsPlumpString(configuration.Server))
+            this._config = configuration ?? throw new Exception("配置为null");
+
+            if (!ValidateHelper.IsPlumpString(this._config.Server))
             {
                 throw new ArgumentNullException("zookeeper server can not be empty");
             }
+        }
 
-            this._zookeeper = new ZooKeeper(
-                configuration.Server,
-                configuration.SessionTimeOut,
-                watcher ?? new DefaultWatcher());
+        public virtual async Task WatchedChange(WatchedEvent @event)
+        {
+            await Task.FromResult(1);
+        }
 
-            this.EnsureConnected();
+        private readonly object lk = new object();
+
+        public void CreateClient()
+        {
+            if (this._zookeeper == null)
+            {
+                lock (this.lk)
+                {
+                    if (this._zookeeper == null)
+                    {
+                        this._zookeeper = new ZooKeeper(
+                            this._config.Server,
+                            this._config.SessionTimeOut,
+                            new CallBackWatcher(x => this.WatchedChange(x)));
+                    }
+                }
+            }
         }
 
         public bool IsAlive
         {
-            get => this._zookeeper.getState() == ZooKeeper.States.CONNECTED;
+            get => this._zookeeper?.getState() == ZooKeeper.States.CONNECTED;
         }
 
-        private void EnsureConnected()
+        public void EnsureConnected()
         {
+            this.CreateClient();
+
             var ms = 0;
             var slp = 20;
             while (!this.IsAlive)
@@ -91,6 +128,32 @@ namespace Lib.distributed
             {
                 e.AddErrorLog();
             }
+        }
+    }
+
+    public class AlwaysOnZooKeeperClient : ZooKeeperClient
+    {
+        public AlwaysOnZooKeeperClient() : base("")
+        {
+            //
+        }
+
+        public override async Task WatchedChange(WatchedEvent @event)
+        {
+            if (@event.getState() == Watcher.Event.KeeperState.SyncConnected)
+            {
+                //connected
+            }
+            else
+            {
+                if (this._zookeeper != null)
+                {
+                    await this._zookeeper.closeAsync();
+                    this._zookeeper = null;
+                }
+                this.EnsureConnected();
+            }
+            await Task.FromResult(1);
         }
     }
 
