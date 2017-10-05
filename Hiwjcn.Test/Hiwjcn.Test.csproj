@@ -156,6 +156,7 @@
     <Compile Include="UnitTest5.cs" />
     <Compile Include="UnitTest6.cs" />
     <Compile Include="UnitTest7.cs" />
+    <Compile Include="UnitTest8.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hiwjcn.Core\Hiwjcn.Core.csproj">

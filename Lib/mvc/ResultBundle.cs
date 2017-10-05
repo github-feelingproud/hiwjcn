@@ -1,5 +1,6 @@
 ﻿using Lib.core;
 using Lib.helper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace Lib.mvc
     /// </summary>
     [Serializable]
     [DataContract]
+    [JsonObject(MemberSerialization.OptOut)]
     public class _ : ResJson { }
 
     /// <summary>
@@ -48,6 +50,7 @@ namespace Lib.mvc
     /// </summary>
     [Serializable]
     [DataContract]
+    [JsonObject(MemberSerialization.OptOut)]
     public class _<T> : ResJson<T> { }
 
     /// <summary>
@@ -55,6 +58,7 @@ namespace Lib.mvc
     /// </summary>
     [Serializable]
     [DataContract]
+    [JsonObject(MemberSerialization.OptOut)]
     public class ResJson : ResJson<object> { }
 
     /// <summary>
@@ -62,9 +66,11 @@ namespace Lib.mvc
     /// </summary>
     [Serializable]
     [DataContract]
+    [JsonObject(MemberSerialization.OptOut)]
     public class ResJson<T> : ResultMsg<T>
     {
         [DataMember]
+        [JsonIgnore]
         public virtual bool error
         {
             get => !this.success;
@@ -72,6 +78,7 @@ namespace Lib.mvc
         }
 
         [DataMember]
+        [JsonIgnore]
         public virtual bool success
         {
             get => this.Success;
@@ -79,6 +86,7 @@ namespace Lib.mvc
         }
 
         [DataMember]
+        [JsonIgnore]
         public virtual string msg
         {
             get { return this.ErrorMsg; }
@@ -86,6 +94,7 @@ namespace Lib.mvc
         }
 
         [DataMember]
+        [JsonIgnore]
         public virtual T data
         {
             get { return this.Data; }
@@ -93,6 +102,7 @@ namespace Lib.mvc
         }
 
         [DataMember]
+        [JsonIgnore]
         public virtual string code
         {
             get { return this.ErrorCode; }
@@ -102,6 +112,7 @@ namespace Lib.mvc
 
     [Serializable]
     [DataContract]
+    [JsonObject(MemberSerialization.OptOut)]
     public class ResultMsg : ResultMsg<object> { }
 
     /// <summary>
@@ -109,6 +120,7 @@ namespace Lib.mvc
     /// </summary>
     [Serializable]
     [DataContract]
+    [JsonObject(MemberSerialization.OptOut)]
     public class ResultMsg<T>
     {
         public void ThrowIfNotSuccess()
@@ -133,9 +145,11 @@ namespace Lib.mvc
         }
 
         [DataMember]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string UserToken { get; set; }
 
         [DataMember]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string SafeCode { get; set; }
 
         [DataMember]
@@ -151,7 +165,8 @@ namespace Lib.mvc
         public T Data { get; set; }
 
         [DataMember]
-        public int Total { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int? Total { get; set; }
 
         [Obsolete("使用没有参数的构造函数")]
         public ResultMsg(T data, bool success, string errorCode, string errorMsg, string userToken)
