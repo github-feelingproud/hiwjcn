@@ -82,7 +82,7 @@
             var id = btn.data('id');
 
             postJson('/AuthManage/DeleteUserTokens', { user_uid: id }, function (res) {
-                if (res && res.success) {
+                if (res && res.Success) {
                     alert('操作成功');
                     btn.fadeOut();
                     setTimeout(function () {
@@ -90,7 +90,7 @@
                     }, 1000 * 5);
                 }
                 else {
-                    alert(res.msg);
+                    alert(res.ErrorMsg);
                 }
             });
 

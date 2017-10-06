@@ -36,7 +36,7 @@
                             var form = $(this);
                             var data = form.serializeArray();
                             postJson('/connect/loginbypassword', data, function (res) {
-                                if (res.success) {
+                                if (res.Success) {
                                     if (url.length > 0) {
                                         window.location.href = url;
                                     }
@@ -45,7 +45,7 @@
                                     }
                                 }
                                 else {
-                                    alert(res.msg);
+                                    alert(res.ErrorMsg);
                                 }
                             });
                             return false;

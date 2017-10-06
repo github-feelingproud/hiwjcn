@@ -105,11 +105,11 @@
         form.submit(function () {
             var data = form.serializeArray();
             postJson('/AuthManage/SaveScopeAction', data, function (res) {
-                if (res && res.success) {
+                if (res && res.Success) {
                     window.location.href = '/AuthManage/Scopes';
                 }
                 else {
-                    alert(res.msg);
+                    alert(res.ErrorMsg);
                 }
             });
             return false;

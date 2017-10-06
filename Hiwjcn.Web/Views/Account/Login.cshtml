@@ -69,16 +69,11 @@
                 var data = $(this).serializeArray();
 
                 postJson('/Account/LoginByPassword', data, function (res) {
-                    if (res && res.success) {
+                    if (res && res.Success) {
                         window.location.reload();
                     }
                     else {
-                        if (res && res.msg) {
-                            alert(res.msg);
-                        }
-                        else {
-                            alert('登陆失败，原因未知');
-                        }
+                        alert(res.ErrorMsg);
                     }
                 });
 
