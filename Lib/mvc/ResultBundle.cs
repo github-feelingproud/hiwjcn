@@ -165,8 +165,7 @@ namespace Lib.mvc
         public T Data { get; set; }
 
         [DataMember]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? Total { get; set; }
+        public int Total { get; set; }
 
         [Obsolete("使用没有参数的构造函数")]
         public ResultMsg(T data, bool success, string errorCode, string errorMsg, string userToken)
