@@ -17,6 +17,40 @@ namespace Hiwjcn.Test
     public class UnitTest7 : Watcher
     {
         [TestMethod]
+        public async Task fasfda()
+        {
+            try
+            {
+                //docker run --name some-zookeeper --restart always -p 2181:2181 -d zookeeper
+                var client = new AlwaysOnZooKeeperClient("localhost:2181");
+                client.OnRecconected += () =>
+                {
+                    "xxx".AddBusinessInfoLog();
+                };
+
+                foreach (var i in Com.Range(100))
+                {
+                    try
+                    {
+                        await client.FetchData();
+                        await Task.Delay(TimeSpan.FromSeconds(10));
+                    }
+                    catch (Exception err)
+                    {
+                        err.AddErrorLog();
+                    }
+                }
+
+                await Task.Delay(TimeSpan.FromMinutes(10));
+                await Task.FromResult(1);
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        }
+
+        [TestMethod]
         public async Task khkjhfldskfjkasjdhflgfksadjfaslkj()
         {
             try

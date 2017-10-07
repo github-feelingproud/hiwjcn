@@ -100,9 +100,14 @@ namespace Lib.distributed
 
         private ZooKeeperClient _client;
 
+        public event Action OnRecconected;
+        private bool IsClosing = false;
+
         public AlwaysOnZooKeeperClient(string host)
         {
             this.Host = host ?? throw new ArgumentNullException(nameof(host));
+
+            this.CreateNewClient();
         }
 
         private readonly object _locker = new object();
@@ -115,21 +120,49 @@ namespace Lib.distributed
                 {
                     if (this._client == null)
                     {
-                        this._client = new ZooKeeperClient(this.Host, TimeSpan.FromMinutes(5), this);
+                        this.IsClosing = false;
+                        this._client = new ZooKeeperClient(this.Host, TimeSpan.FromMinutes(1), this);
                     }
                 }
             }
         }
 
+        public async Task FetchData()
+        {
+            await this.EnsureClient();
+            if (await this._client.Client.ExistAsync_("/home"))
+            {
+                //
+            }
+        }
+
+        private async Task EnsureClient()
+        {
+            var start = DateTime.Now;
+            while (this._client == null)
+            {
+                if ((DateTime.Now - start).TotalSeconds > 5)
+                {
+                    throw new Exception("等待可用链接超时");
+                }
+                await Task.Delay(5);
+            }
+        }
+
         private void CloseClient()
         {
+            this.IsClosing = true;
             this._client?.Dispose();
             this._client = null;
         }
 
         public override async Task process(WatchedEvent @event)
         {
-            if (@event.getState() == Event.KeeperState.SyncConnected)
+            if (this.IsClosing) { return; }
+
+            var event_type = @event.get_Type();
+            var zk_status = @event.getState();
+            if (zk_status == Event.KeeperState.SyncConnected)
             {
                 //
             }
@@ -137,6 +170,7 @@ namespace Lib.distributed
             {
                 this.CloseClient();
                 this.CreateNewClient();
+                this.OnRecconected.Invoke();
                 $"创建新的ZK客户端".AddBusinessInfoLog();
             }
             await Task.FromResult(1);
