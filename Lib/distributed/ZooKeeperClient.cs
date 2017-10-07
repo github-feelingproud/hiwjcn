@@ -45,19 +45,22 @@ namespace Lib.distributed
     /// </summary>
     public class ZooKeeperClient : SerializeBase, IDisposable
     {
-        protected ZooKeeper _zookeeper;
-        private readonly ZooKeeperConfigSection _config;
+        protected readonly ZooKeeper _zookeeper;
 
-        public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName)) { }
-
-        public ZooKeeperClient(ZooKeeperConfigSection configuration)
+        public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName))
         {
-            this._config = configuration ?? throw new Exception("配置为null");
+            //
+        }
 
-            if (!ValidateHelper.IsPlumpString(this._config.Server))
-            {
-                throw new ArgumentNullException("zookeeper server can not be empty");
-            }
+        public ZooKeeperClient(ZooKeeperConfigSection configuration) :
+            this(configuration.Server, TimeSpan.FromMilliseconds(configuration.SessionTimeOut), null)
+        {
+            //
+        }
+
+        public ZooKeeperClient(string host, TimeSpan timeout, Watcher watcher)
+        {
+            this._zookeeper = new ZooKeeper(host, (int)timeout.TotalMilliseconds, watcher ?? new EmptyWatcher());
         }
 
         public virtual async Task WatchedChange(WatchedEvent @event)
@@ -65,54 +68,14 @@ namespace Lib.distributed
             await Task.FromResult(1);
         }
 
-        private readonly object lk = new object();
-
-        public void CreateClient()
-        {
-            if (this._zookeeper == null)
-            {
-                lock (this.lk)
-                {
-                    if (this._zookeeper == null)
-                    {
-                        this._zookeeper = new ZooKeeper(
-                            this._config.Server,
-                            this._config.SessionTimeOut,
-                            new CallBackWatcher(x => this.WatchedChange(x)));
-                    }
-                }
-            }
-        }
-
         public bool IsAlive
         {
             get => this._zookeeper?.getState() == ZooKeeper.States.CONNECTED;
         }
 
-        public void EnsureConnected()
-        {
-            this.CreateClient();
-
-            var ms = 0;
-            var slp = 20;
-            while (!this.IsAlive)
-            {
-                ms += slp;
-                if (TimeSpan.FromMilliseconds(ms).TotalSeconds > 10)
-                {
-                    throw new Exception("链接超时");
-                }
-                Thread.Sleep(slp);
-            }
-        }
-
         public ZooKeeper Client
         {
-            get
-            {
-                this.EnsureConnected();
-                return this._zookeeper;
-            }
+            get => this._zookeeper;
         }
 
         public void Dispose()
@@ -131,29 +94,57 @@ namespace Lib.distributed
         }
     }
 
-    public class AlwaysOnZooKeeperClient : ZooKeeperClient
+    public class AlwaysOnZooKeeperClient : Watcher, IDisposable
     {
-        public AlwaysOnZooKeeperClient() : base("")
+        private readonly string Host;
+
+        private ZooKeeperClient _client;
+
+        public AlwaysOnZooKeeperClient(string host)
         {
-            //
+            this.Host = host ?? throw new ArgumentNullException(nameof(host));
         }
 
-        public override async Task WatchedChange(WatchedEvent @event)
+        private readonly object _locker = new object();
+
+        private void CreateNewClient()
         {
-            if (@event.getState() == Watcher.Event.KeeperState.SyncConnected)
+            if (this._client == null)
             {
-                //connected
+                lock (this._locker)
+                {
+                    if (this._client == null)
+                    {
+                        this._client = new ZooKeeperClient(this.Host, TimeSpan.FromMinutes(5), this);
+                    }
+                }
+            }
+        }
+
+        private void CloseClient()
+        {
+            this._client?.Dispose();
+            this._client = null;
+        }
+
+        public override async Task process(WatchedEvent @event)
+        {
+            if (@event.getState() == Event.KeeperState.SyncConnected)
+            {
+                //
             }
             else
             {
-                if (this._zookeeper != null)
-                {
-                    await this._zookeeper.closeAsync();
-                    this._zookeeper = null;
-                }
-                this.EnsureConnected();
+                this.CloseClient();
+                this.CreateNewClient();
+                $"创建新的ZK客户端".AddBusinessInfoLog();
             }
             await Task.FromResult(1);
+        }
+
+        public void Dispose()
+        {
+            this.CloseClient();
         }
     }
 

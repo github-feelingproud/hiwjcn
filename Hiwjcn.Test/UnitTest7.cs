@@ -71,12 +71,12 @@ namespace Hiwjcn.Test
                     canBeReadOnly: false);
                 try
                 {
-                    var count = 0;
-                    while (client.getState() != ZooKeeper.States.CONNECTED)
-                    {
-                        if (++count > 100) { throw new Exception("loss patient to wait for connection"); }
-                        await Task.Delay(10);
-                    }
+                    //var count = 0;
+                    //while (client.getState() != ZooKeeper.States.CONNECTED)
+                    //{
+                    //    if (++count > 100) { throw new Exception("loss patient to wait for connection"); }
+                    //    await Task.Delay(10);
+                    //}
 
                     if (await client.existsAsync("/home", false) == null)
                     {
