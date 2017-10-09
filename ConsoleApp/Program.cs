@@ -1,6 +1,7 @@
 ﻿using Elasticsearch.Net;
 using Fleck;
 using Lib.core;
+using Lib.distributed;
 using Lib.extension;
 using Lib.helper;
 using Lib.io;
@@ -15,6 +16,7 @@ using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ConsoleApp
 {
@@ -22,50 +24,65 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            //var codeHelper = new DrawVerifyCode();
-            //var path = "d:\\data_vin_bg_1";
-            //new DirectoryInfo(path).CreateIfNotExist();
-            //for (var i = 500; i < 1000; ++i)
-            //{
-            //    var p = Path.Combine(path, $"data_{i}");
-            //    new DirectoryInfo(p).CreateIfNotExist();
-            //    for (var j = 0; j < 1000; ++j)
-            //    {
-            //        var (bs, with, height) = codeHelper.GetImageBytesAndSize();
-            //        var f = Path.Combine(p, $"{codeHelper.Code}_{Com.GetUUID()}.png");
-            //        using (var fs = new FileStream(f, FileMode.Create))
-            //        {
-            //            fs.Write(bs, 0, bs.Length);
-            //        }
-            //        Console.WriteLine(f);
-            //    }
-            //}
-            //return;
+            zk().Wait();
+            //Task.Factory.StartNew(async () => await zk()).Wait();
+            Console.WriteLine("finish");
+            Console.ReadLine();
+        }
 
+        private static async Task zk()
+        {
+            try
             {
-
-            }
-
-            {
-                var server = new WebSocketServer("ws://0.0.0.0:8181");
-                server.Start(socket =>
+                //docker run --name some-zookeeper --restart always -p 2181:2181 -d zookeeper
+                var client = new AlwaysOnZooKeeperClient("localhost:2181");
+                client.OnRecconected += () =>
                 {
-                    socket.OnOpen = () =>
+                    Console.WriteLine("重新链接");
+                };
+
+                foreach (var i in Com.Range(1000))
+                {
+                    try
                     {
-                        Console.WriteLine($"{socket.ConnectionInfo.Id}:Open");
-                        var valid = false;
-                        if (!valid)
-                        {
-                            socket.Send(new { close = true, reason = "验证未通过" }.ToJson());
-                            socket.Close();
-                        }
-                    };
-                    socket.OnClose = () => { Console.WriteLine("Close"); };
-                    socket.OnMessage = async msg => { await socket.Send(msg); };
-                });
-                Console.ReadLine();
-                server.Dispose();
+                        await client.FetchData();
+                        await Task.Delay(TimeSpan.FromSeconds(10));
+                    }
+                    catch (Exception err)
+                    {
+                        Console.WriteLine(err.Message);
+                        await Task.Delay(TimeSpan.FromSeconds(1));
+                    }
+                }
+
+                await Task.Delay(TimeSpan.FromMinutes(10));
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private void ws()
+        {
+            var server = new WebSocketServer("ws://0.0.0.0:8181");
+            server.Start(socket =>
+            {
+                socket.OnOpen = () =>
+                {
+                    Console.WriteLine($"{socket.ConnectionInfo.Id}:Open");
+                    var valid = false;
+                    if (!valid)
+                    {
+                        socket.Send(new { close = true, reason = "验证未通过" }.ToJson());
+                        socket.Close();
+                    }
+                };
+                socket.OnClose = () => { Console.WriteLine("Close"); };
+                socket.OnMessage = async msg => { await socket.Send(msg); };
+            });
+            Console.ReadLine();
+            server.Dispose();
         }
 
         private static readonly string indexName = "productlist";

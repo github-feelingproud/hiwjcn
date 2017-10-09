@@ -98,42 +98,92 @@ namespace Lib.distributed
     {
         private readonly string Host;
 
+        private readonly string ServicePath;
+
         private ZooKeeperClient _client;
 
         public event Action OnRecconected;
         private bool IsClosing = false;
 
-        public AlwaysOnZooKeeperClient(string host)
+        private readonly ManualResetEvent _event_set = new ManualResetEvent(false);
+
+        public AlwaysOnZooKeeperClient(string host) : this(host, "/QPL/WCF")
+        { }
+
+        public AlwaysOnZooKeeperClient(string host, string service_path)
         {
             this.Host = host ?? throw new ArgumentNullException(nameof(host));
+            this.ServicePath = service_path ?? throw new ArgumentNullException(nameof(service_path));
 
             this.CreateNewClient();
+
+            Task.Factory.StartNew(async () => await this.Init()).Wait();
         }
 
-        private readonly object _locker = new object();
+        private async Task Init()
+        {
+            await this.UseClient(async client =>
+            {
+                if (!await client.Client.ExistAsync_(this.ServicePath))
+                {
+                    await client.Client.CreatePersistentPathIfNotExist(this.ServicePath);
+                }
+            });
+        }
 
         private void CreateNewClient()
         {
-            if (this._client == null)
+            try
             {
-                lock (this._locker)
+                this._event_set.Set();
+
+                if (this._client != null)
                 {
-                    if (this._client == null)
-                    {
-                        this.IsClosing = false;
-                        this._client = new ZooKeeperClient(this.Host, TimeSpan.FromMinutes(1), this);
-                    }
+                    this.CloseClient();
                 }
+
+                if (this._client == null)
+                {
+                    this.IsClosing = false;
+                    this._client = new ZooKeeperClient(this.Host, TimeSpan.FromSeconds(5), this);
+                }
+            }
+            finally
+            {
+                this._event_set.Reset();
+            }
+        }
+
+        private async Task UseClient(Func<ZooKeeperClient, Task> action)
+        {
+            try
+            {
+                this._event_set.Set();
+                if (this._client == null) { throw new Exception("zookeeper client is not prepared"); }
+
+                await this.EnsureClient();
+                await action.Invoke(this._client);
+            }
+            finally
+            {
+                this._event_set.Reset();
             }
         }
 
         public async Task FetchData()
         {
-            await this.EnsureClient();
-            if (await this._client.Client.ExistAsync_("/home"))
+            await this.UseClient(async client =>
             {
-                //
-            }
+                if (await client.Client.ExistAsync_(this.ServicePath))
+                {
+                    var child = await client.Client.getChildrenAsync(this.ServicePath);
+                    Console.WriteLine($"找到节点{",".Join_(child.Children)}");
+                }
+                else
+                {
+                    Console.WriteLine("不存在节点");
+                }
+            });
         }
 
         private async Task EnsureClient()
@@ -179,6 +229,7 @@ namespace Lib.distributed
         public void Dispose()
         {
             this.CloseClient();
+            this._event_set.Dispose();
         }
     }
 
