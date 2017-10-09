@@ -100,6 +100,9 @@ namespace Lib.rpc
     /// </summary>
     public static class ServiceClientExtension
     {
+        public static List<Type> FindContracts(this Assembly ass) =>
+            ass.GetTypes().Where(x => x.IsInterface && x.IsAssignableTo_<IWcfContract>()).ToList();
+
         public static void FindSvc(this Assembly ass)
         {
             var tps = ass.GetTypes();
@@ -257,6 +260,8 @@ namespace Lib.rpc
             }
         }
     }
+
+    public interface IWcfContract { }
 
     public class IsWcfContractAttribute : Attribute
     {
