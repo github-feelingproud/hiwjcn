@@ -16,6 +16,7 @@ using org.apache.zookeeper.data;
 using System.Net;
 using System.Net.Http;
 using Lib.net;
+using Lib.rpc;
 
 namespace Lib.distributed
 {
@@ -122,9 +123,17 @@ namespace Lib.distributed
         {
             this.Host = host ?? throw new ArgumentNullException(nameof(host));
             this.ServicePath = service_path ?? throw new ArgumentNullException(nameof(service_path));
+            if (!this.ServicePath.StartsWith("/") || this.ServicePath.EndsWith("/"))
+            {
+                throw new Exception($"{nameof(service_path)}必须以/开头，并且不能以/结尾");
+            }
 
+            this.Init();
+        }
+
+        private void Init()
+        {
             this.CreateNewClient();
-
             Task.Factory.StartNew(async () =>
             {
                 await this.InitPath();
@@ -147,7 +156,7 @@ namespace Lib.distributed
         {
             try
             {
-                this._client_lock.WaitOne(TimeSpan.FromSeconds(30));
+                if (!this._client_lock.WaitOne(TimeSpan.FromSeconds(30))) { throw new Exception("等待锁超时"); }
 
                 if (this._client != null)
                 {
@@ -157,7 +166,7 @@ namespace Lib.distributed
                 if (this._client == null)
                 {
                     this.IsClosing = false;
-                    this._client = new ZooKeeperClient(this.Host, TimeSpan.FromSeconds(5), this);
+                    this._client = new ZooKeeperClient(this.Host, TimeSpan.FromSeconds(60), this);
                 }
             }
             finally
@@ -170,11 +179,21 @@ namespace Lib.distributed
         {
             try
             {
-                this._client_lock.WaitOne(TimeSpan.FromSeconds(30));
+                if (!this._client_lock.WaitOne(TimeSpan.FromSeconds(30))) { throw new Exception("等待锁超时"); }
 
                 if (this._client == null) { throw new Exception("zookeeper client is not prepared"); }
 
-                await this.EnsureClient();
+
+                var start = DateTime.Now;
+                while (!(this._client?.Client?.getState() == ZooKeeper.States.CONNECTED))
+                {
+                    if ((DateTime.Now - start).TotalSeconds > 10)
+                    {
+                        throw new Exception("等待可用链接超时");
+                    }
+                    await Task.Delay(5);
+                }
+
                 await action.Invoke(this._client);
             }
             catch (KeeperException.ConnectionLossException e)
@@ -188,16 +207,26 @@ namespace Lib.distributed
             }
         }
 
-        public async Task RegisterService<T>() => await this.RegisterService(typeof(T));
+        public async Task RegisterService<T>(string base_url) => await this.RegisterService(typeof(T), base_url);
 
-        public async Task RegisterService(Type contract)
+        public async Task RegisterService(Type contract, string base_url)
         {
-            var node_name = $"{contract.Assembly.FullName}-{contract.FullName}";
-            var svc = "";
+            var node_name = $"{contract.Assembly.FullName}-{contract.FullName}".Replace(' '.ToString(), string.Empty);
+            var attr = contract.GetCustomAttributes_<IsWcfContractAttribute>().FirstOrDefault() ??
+                throw new Exception($"{contract.FullName} has no attribute:{nameof(IsWcfContractAttribute)}");
+            var svc = $"{base_url}/{attr.RelativePath}";
             await this.UseClient(async client =>
             {
+                var path = $"{this.ServicePath}/{node_name}";
                 var data = this._serialize.Serialize(svc);
-                await client.Client.CreatePersistentPathIfNotExist($"{this.ServicePath}/{node_name}", data);
+                if (await client.Client.ExistAsync_(path))
+                {
+                    await client.Client.setDataAsync(path, data);
+                }
+                else
+                {
+                    await client.Client.CreatePersistentPathIfNotExist(path, data);
+                }
             });
         }
 
@@ -210,11 +239,19 @@ namespace Lib.distributed
                     var child = await client.Client.getChildrenAsync(this.ServicePath, this);
                     Console.WriteLine($"找到节点{",".Join_(child.Children)}");
                     var dict = new Dictionary<string, string>();
-                    foreach (var p in child.Children.Select(x => $"{this.ServicePath}/{x}"))
+                    foreach (var x in child.Children)
                     {
-                        var data = await client.Client.getDataAsync(p);
-                        var svc = this._serialize.Deserialize<string>(data.Data);
-                        dict[p] = svc;
+                        try
+                        {
+                            var p = $"{this.ServicePath}/{x}";
+                            var data = await client.Client.getDataAsync(p);
+                            var svc = this._serialize.Deserialize<string>(data.Data);
+                            dict[x] = svc;
+                        }
+                        catch (Exception e)
+                        {
+                            e.AddErrorLog();
+                        }
                     }
                     this.ServiceData.Clear();
                     this.ServiceData.AddDict(dict);
@@ -238,10 +275,12 @@ namespace Lib.distributed
                 {
                     try
                     {
-                        var response = await this._httpclient.GetAsync(kv.Value);
-                        if (!response.IsSuccessStatusCode)
+                        using (var response = await this._httpclient.GetAsync(kv.Value))
                         {
-                            throw new Exception($"{kv.Value}无法请求");
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                throw new Exception($"{kv.Value}无法请求");
+                            }
                         }
                     }
                     catch
@@ -251,19 +290,6 @@ namespace Lib.distributed
                     }
                 }
             }).Wait();
-        }
-
-        private async Task EnsureClient()
-        {
-            var start = DateTime.Now;
-            while (this._client == null || (!(this._client?.Client?.getState() == ZooKeeper.States.CONNECTED)))
-            {
-                if ((DateTime.Now - start).TotalSeconds > 10)
-                {
-                    throw new Exception("等待可用链接超时");
-                }
-                await Task.Delay(5);
-            }
         }
 
         private void CloseClient()
@@ -290,7 +316,8 @@ namespace Lib.distributed
                 return;
             }
             this.CloseClient();
-            this.CreateNewClient();
+
+            this.Init();
             this.OnRecconected.Invoke();
         }
 
@@ -307,7 +334,7 @@ namespace Lib.distributed
             {
                 try
                 {
-                    this._event_lock.WaitOne(TimeSpan.FromSeconds(30));
+                    if (!this._event_lock.WaitOne(TimeSpan.FromSeconds(30))) { throw new Exception("等待锁超时"); }
 
                     this.ReConnect();
                 }

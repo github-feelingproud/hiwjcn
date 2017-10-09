@@ -5,6 +5,7 @@ using Lib.distributed;
 using Lib.extension;
 using Lib.helper;
 using Lib.io;
+using Lib.rpc;
 using Nest;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp
 {
+    [IsWcfContract(RelativePath = "service/order.svc")]
+    public interface order
+    { }
+
     class Program
     {
         static void Main(string[] args)
@@ -40,6 +45,10 @@ namespace ConsoleApp
                 {
                     Console.WriteLine("重新链接");
                 };
+                client.OnFetchingData += () => { };
+
+                await client.RegisterService<order>("http://service.qipeilong.net/");
+
                 await Task.FromResult(1);
                 Console.ReadLine();
             }

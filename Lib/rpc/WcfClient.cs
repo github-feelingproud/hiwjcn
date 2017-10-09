@@ -259,5 +259,10 @@ namespace Lib.rpc
     }
 
     public class IsWcfContractAttribute : Attribute
-    { }
+    {
+        /// <summary>
+        /// not started with '/'
+        /// </summary>
+        public string RelativePath { get; set; }
+    }
 }
