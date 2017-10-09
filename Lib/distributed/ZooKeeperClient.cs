@@ -106,8 +106,8 @@ namespace Lib.distributed
 
         private ZooKeeperClient _client;
 
-        private readonly ManualResetEvent _client_lock = new ManualResetEvent(true);
-        private readonly ManualResetEvent _event_lock = new ManualResetEvent(true);
+        private readonly ManualResetEvent _client_lock = new ManualResetEvent(false);
+        private readonly object _event_lock = new object();
 
         public event Action OnRecconected;
         public event Action OnFetchingData;
@@ -154,24 +154,15 @@ namespace Lib.distributed
 
         private void CreateNewClient()
         {
-            try
+            if (this._client != null)
             {
-                if (!this._client_lock.WaitOne(TimeSpan.FromSeconds(30))) { throw new Exception("等待锁超时"); }
-
-                if (this._client != null)
-                {
-                    this.CloseClient();
-                }
-
-                if (this._client == null)
-                {
-                    this.IsClosing = false;
-                    this._client = new ZooKeeperClient(this.Host, TimeSpan.FromSeconds(60), this);
-                }
+                this.CloseClient();
             }
-            finally
+
+            if (this._client == null)
             {
-                this._client_lock.Set();
+                this.IsClosing = false;
+                this._client = new ZooKeeperClient(this.Host, TimeSpan.FromSeconds(60), this);
             }
         }
 
@@ -201,9 +192,10 @@ namespace Lib.distributed
                 //链接断开
                 throw e;
             }
-            finally
+            catch (KeeperException.SessionExpiredException e)
             {
-                this._client_lock.Set();
+                //链接断开
+                throw e;
             }
         }
 
@@ -308,25 +300,34 @@ namespace Lib.distributed
 
         private void ReConnect()
         {
-            var real_time_state = this._client?.Client?.getState();
-            var connecting_or_connected = new ZooKeeper.States?[] { ZooKeeper.States.CONNECTED, ZooKeeper.States.CONNECTING };
-            if (connecting_or_connected.Contains(real_time_state))
+            if (!Monitor.TryEnter(this._event_lock, TimeSpan.FromSeconds(5)))
             {
-                //已经链接，或者正在链接
-                return;
+                throw new Exception("抢锁失败");
             }
-            this.CloseClient();
+            try
+            {
+                var real_time_state = this._client?.Client?.getState();
+                var connecting_or_connected = new ZooKeeper.States?[] { ZooKeeper.States.CONNECTED, ZooKeeper.States.CONNECTING };
+                if (connecting_or_connected.Contains(real_time_state))
+                {
+                    //已经链接，或者正在链接
+                    return;
+                }
+                this.CloseClient();
 
-            this.Init();
-            this.OnRecconected.Invoke();
+                this.Init();
+                this.OnRecconected.Invoke();
+            }
+            finally
+            {
+                Monitor.Exit(this._event_lock);
+            }
         }
 
         public override async Task process(WatchedEvent @event)
         {
             try
             {
-                if (!this._event_lock.WaitOne(TimeSpan.FromSeconds(30))) { throw new Exception("等待锁超时"); }
-                
                 if (this.IsClosing) { return; }
 
                 var event_type = @event.get_Type();
@@ -349,6 +350,14 @@ namespace Lib.distributed
                 else
                 {
                     //conection status
+                    if (zk_status == Event.KeeperState.SyncConnected)
+                    {
+                        this._client_lock.Set();
+                    }
+                    else
+                    {
+                        this._client_lock.Reset();
+                    }
 
                     //重新接连
                     var reconnection_state = new Event.KeeperState[] { Event.KeeperState.Disconnected, Event.KeeperState.Expired };
@@ -363,10 +372,6 @@ namespace Lib.distributed
             {
                 e.AddErrorLog();
             }
-            finally
-            {
-                this._event_lock.Set();
-            }
 
             await Task.FromResult(1);
         }
@@ -375,7 +380,6 @@ namespace Lib.distributed
         {
             this.CloseClient();
             this._client_lock.Dispose();
-            this._event_lock.Dispose();
         }
     }
 

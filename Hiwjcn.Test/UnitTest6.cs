@@ -143,10 +143,16 @@ namespace Hiwjcn.Test
         public void jlkjifsldiflkj()
         {
             autoevent.Reset();
+            autoevent.WaitOne(TimeSpan.FromSeconds(5));
             autoevent.Set();
             autoevent.WaitOne();
+            autoevent.WaitOne(TimeSpan.FromSeconds(5));
 
             manualevent.Reset();
+            manualevent.WaitOne(TimeSpan.FromSeconds(5));
+            manualevent.Set();
+            manualevent.WaitOne();
+            manualevent.WaitOne(TimeSpan.FromSeconds(5));
             //etc
         }
 

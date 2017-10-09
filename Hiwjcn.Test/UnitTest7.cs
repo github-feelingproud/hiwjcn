@@ -32,7 +32,6 @@ namespace Hiwjcn.Test
                 {
                     try
                     {
-                        await client.FetchChildrenDataAndWatch();
                         await Task.Delay(TimeSpan.FromSeconds(10));
                     }
                     catch (Exception err)
