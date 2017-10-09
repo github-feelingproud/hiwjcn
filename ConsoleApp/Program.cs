@@ -46,12 +46,12 @@ namespace ConsoleApp
                     try
                     {
                         await client.FetchData();
-                        await Task.Delay(TimeSpan.FromSeconds(10));
+                        await Task.Delay(TimeSpan.FromSeconds(2));
                     }
                     catch (Exception err)
                     {
                         Console.WriteLine(err.Message);
-                        await Task.Delay(TimeSpan.FromSeconds(1));
+                        await Task.Delay(TimeSpan.FromSeconds(10));
                     }
                 }
 

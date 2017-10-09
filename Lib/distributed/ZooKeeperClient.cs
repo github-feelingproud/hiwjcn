@@ -102,10 +102,12 @@ namespace Lib.distributed
 
         private ZooKeeperClient _client;
 
-        public event Action OnRecconected;
         private bool IsClosing = false;
 
-        private readonly ManualResetEvent _event_set = new ManualResetEvent(false);
+        private readonly ManualResetEvent _client_lock = new ManualResetEvent(true);
+        private readonly ManualResetEvent _event_lock = new ManualResetEvent(true);
+
+        public event Action OnRecconected;
 
         public AlwaysOnZooKeeperClient(string host) : this(host, "/QPL/WCF")
         { }
@@ -129,13 +131,14 @@ namespace Lib.distributed
                     await client.Client.CreatePersistentPathIfNotExist(this.ServicePath);
                 }
             });
+            await this.FetchData();
         }
 
         private void CreateNewClient()
         {
             try
             {
-                this._event_set.Set();
+                this._client_lock.WaitOne();
 
                 if (this._client != null)
                 {
@@ -150,7 +153,7 @@ namespace Lib.distributed
             }
             finally
             {
-                this._event_set.Reset();
+                this._client_lock.Set();
             }
         }
 
@@ -158,15 +161,21 @@ namespace Lib.distributed
         {
             try
             {
-                this._event_set.Set();
+                this._client_lock.WaitOne();
+
                 if (this._client == null) { throw new Exception("zookeeper client is not prepared"); }
 
                 await this.EnsureClient();
                 await action.Invoke(this._client);
             }
+            catch (KeeperException.ConnectionLossException e)
+            {
+                //链接断开
+                throw e;
+            }
             finally
             {
-                this._event_set.Reset();
+                this._client_lock.Set();
             }
         }
 
@@ -176,7 +185,7 @@ namespace Lib.distributed
             {
                 if (await client.Client.ExistAsync_(this.ServicePath))
                 {
-                    var child = await client.Client.getChildrenAsync(this.ServicePath);
+                    var child = await client.Client.getChildrenAsync(this.ServicePath, this);
                     Console.WriteLine($"找到节点{",".Join_(child.Children)}");
                 }
                 else
@@ -189,9 +198,9 @@ namespace Lib.distributed
         private async Task EnsureClient()
         {
             var start = DateTime.Now;
-            while (this._client == null)
+            while (this._client == null || (!(this._client?.Client?.getState() == ZooKeeper.States.CONNECTED)))
             {
-                if ((DateTime.Now - start).TotalSeconds > 5)
+                if ((DateTime.Now - start).TotalSeconds > 10)
                 {
                     throw new Exception("等待可用链接超时");
                 }
@@ -202,8 +211,43 @@ namespace Lib.distributed
         private void CloseClient()
         {
             this.IsClosing = true;
-            this._client?.Dispose();
+            try
+            {
+                this._client?.Dispose();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
             this._client = null;
+        }
+
+        private void ReConnect()
+        {
+            try
+            {
+                this._event_lock.WaitOne();
+
+                var real_time_state = this._client?.Client?.getState();
+                var connecting_or_connected = new ZooKeeper.States?[] { ZooKeeper.States.CONNECTED, ZooKeeper.States.CONNECTING };
+                if (connecting_or_connected.Contains(real_time_state))
+                {
+                    //已经链接，或者正在链接
+                    return;
+                }
+                this.CloseClient();
+                this.CreateNewClient();
+                this.OnRecconected.Invoke();
+            }
+            finally
+            {
+                this._event_lock.Set();
+            }
+        }
+
+        private async Task ReLoadService()
+        {
+            await this.FetchData();
         }
 
         public override async Task process(WatchedEvent @event)
@@ -212,24 +256,32 @@ namespace Lib.distributed
 
             var event_type = @event.get_Type();
             var zk_status = @event.getState();
-            if (zk_status == Event.KeeperState.SyncConnected)
+
+            //注册节点发生改变
+            if (event_type == Event.EventType.NodeChildrenChanged)
             {
-                //
+                if (@event.getPath() == this.ServicePath)
+                {
+                    //服务发生改变
+                    await this.ReLoadService();
+                }
             }
-            else
+
+            //重新接连
+            var reconnection_state = new Event.KeeperState[] { Event.KeeperState.Disconnected, Event.KeeperState.Expired };
+            if (reconnection_state.Contains(zk_status))
             {
-                this.CloseClient();
-                this.CreateNewClient();
-                this.OnRecconected.Invoke();
-                $"创建新的ZK客户端".AddBusinessInfoLog();
+                this.ReConnect();
             }
+
             await Task.FromResult(1);
         }
 
         public void Dispose()
         {
             this.CloseClient();
-            this._event_set.Dispose();
+            this._client_lock.Dispose();
+            this._event_lock.Dispose();
         }
     }
 
