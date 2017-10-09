@@ -323,35 +323,49 @@ namespace Lib.distributed
 
         public override async Task process(WatchedEvent @event)
         {
-            if (this.IsClosing) { return; }
-
-            var event_type = @event.get_Type();
-            var zk_status = @event.getState();
-
-            //重新接连
-            var reconnection_state = new Event.KeeperState[] { Event.KeeperState.Disconnected, Event.KeeperState.Expired };
-            if (reconnection_state.Contains(zk_status))
+            try
             {
-                try
-                {
-                    if (!this._event_lock.WaitOne(TimeSpan.FromSeconds(30))) { throw new Exception("等待锁超时"); }
+                if (!this._event_lock.WaitOne(TimeSpan.FromSeconds(30))) { throw new Exception("等待锁超时"); }
+                
+                if (this.IsClosing) { return; }
 
-                    this.ReConnect();
-                }
-                finally
+                var event_type = @event.get_Type();
+                var zk_status = @event.getState();
+                var path = @event.getPath();
+
+                if (ValidateHelper.IsPlumpString(path))
                 {
-                    this._event_lock.Set();
+                    //node status
+                    //注册节点发生改变
+                    if (event_type == Event.EventType.NodeChildrenChanged)
+                    {
+                        if (@event.getPath() == this.ServicePath)
+                        {
+                            //服务发生改变
+                            await this.FetchChildrenDataAndWatch();
+                        }
+                    }
                 }
+                else
+                {
+                    //conection status
+
+                    //重新接连
+                    var reconnection_state = new Event.KeeperState[] { Event.KeeperState.Disconnected, Event.KeeperState.Expired };
+                    if (reconnection_state.Contains(zk_status))
+                    {
+                        this.ReConnect();
+                    }
+                }
+
             }
-
-            //注册节点发生改变
-            if (event_type == Event.EventType.NodeChildrenChanged)
+            catch (Exception e)
             {
-                if (@event.getPath() == this.ServicePath)
-                {
-                    //服务发生改变
-                    await this.FetchChildrenDataAndWatch();
-                }
+                e.AddErrorLog();
+            }
+            finally
+            {
+                this._event_lock.Set();
             }
 
             await Task.FromResult(1);
