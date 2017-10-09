@@ -40,22 +40,8 @@ namespace ConsoleApp
                 {
                     Console.WriteLine("重新链接");
                 };
-
-                foreach (var i in Com.Range(1000))
-                {
-                    try
-                    {
-                        await client.FetchData();
-                        await Task.Delay(TimeSpan.FromSeconds(2));
-                    }
-                    catch (Exception err)
-                    {
-                        Console.WriteLine(err.Message);
-                        await Task.Delay(TimeSpan.FromSeconds(10));
-                    }
-                }
-
-                await Task.Delay(TimeSpan.FromMinutes(10));
+                await Task.FromResult(1);
+                Console.ReadLine();
             }
             catch (Exception e)
             {

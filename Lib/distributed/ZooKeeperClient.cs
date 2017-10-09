@@ -245,11 +245,6 @@ namespace Lib.distributed
             }
         }
 
-        private async Task ReLoadService()
-        {
-            await this.FetchData();
-        }
-
         public override async Task process(WatchedEvent @event)
         {
             if (this.IsClosing) { return; }
@@ -263,7 +258,7 @@ namespace Lib.distributed
                 if (@event.getPath() == this.ServicePath)
                 {
                     //服务发生改变
-                    await this.ReLoadService();
+                    await this.FetchData();
                 }
             }
 
