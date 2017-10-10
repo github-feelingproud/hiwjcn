@@ -107,7 +107,9 @@ namespace Lib.distributed
         private ZooKeeperClient _client;
 
         private readonly ManualResetEvent _client_lock = new ManualResetEvent(false);
-        private readonly object _event_lock = new object();
+        private readonly object _create_client_lock = new object();
+        private readonly object _reconnection_lock = new object();
+        private readonly object _fetch_data_lock = new object();
 
         public event Action OnRecconected;
         public event Action OnFetchingData;
@@ -154,15 +156,18 @@ namespace Lib.distributed
 
         private void CreateNewClient()
         {
-            if (this._client != null)
+            lock (this._create_client_lock)
             {
-                this.CloseClient();
-            }
+                if (this._client != null)
+                {
+                    this.CloseClient();
+                }
 
-            if (this._client == null)
-            {
-                this.IsClosing = false;
-                this._client = new ZooKeeperClient(this.Host, TimeSpan.FromSeconds(60), this);
+                if (this._client == null)
+                {
+                    this.IsClosing = false;
+                    this._client = new ZooKeeperClient(this.Host, TimeSpan.FromSeconds(60), this);
+                }
             }
         }
 
@@ -230,6 +235,7 @@ namespace Lib.distributed
                 {
                     var child = await client.Client.getChildrenAsync(this.ServicePath, this);
                     Console.WriteLine($"找到节点{",".Join_(child.Children)}");
+                    /*
                     var dict = new Dictionary<string, string>();
                     foreach (var x in child.Children)
                     {
@@ -246,7 +252,7 @@ namespace Lib.distributed
                         }
                     }
                     this.ServiceData.Clear();
-                    this.ServiceData.AddDict(dict);
+                    this.ServiceData.AddDict(dict);*/
                 }
                 else
                 {
@@ -300,11 +306,7 @@ namespace Lib.distributed
 
         private void ReConnect()
         {
-            if (!Monitor.TryEnter(this._event_lock, TimeSpan.FromSeconds(5)))
-            {
-                throw new Exception("抢锁失败");
-            }
-            try
+            lock (this._reconnection_lock)
             {
                 var real_time_state = this._client?.Client?.getState();
                 var connecting_or_connected = new ZooKeeper.States?[] { ZooKeeper.States.CONNECTED, ZooKeeper.States.CONNECTING };
@@ -318,18 +320,25 @@ namespace Lib.distributed
                 this.Init();
                 this.OnRecconected.Invoke();
             }
-            finally
-            {
-                Monitor.Exit(this._event_lock);
-            }
         }
 
         private async Task NodeChildrenChanged(string path)
         {
             if (path == this.ServicePath)
             {
-                //服务发生改变
-                await this.FetchChildrenDataAndWatch();
+                try
+                {
+                    if (!Monitor.TryEnter(this._fetch_data_lock, TimeSpan.FromSeconds(5)))
+                    {
+                        throw new Exception("抢锁失败");
+                    }
+                    //服务发生改变
+                    await this.FetchChildrenDataAndWatch();
+                }
+                finally
+                {
+                    Monitor.Exit(this._fetch_data_lock);
+                }
             }
         }
 
