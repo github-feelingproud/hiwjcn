@@ -29,13 +29,21 @@ namespace Model
         public virtual string ParentUID { get; set; } = FIRST_PARENT_UID;
     }
 
+    /// <summary>
+    /// 树结构
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface ITreeServiceBase<T> : IServiceBase<T>
         where T : TreeBaseEntity
     {
         Task<List<T>> FindNodeChildrenRecursively_(IQueryable<T> data_source, T first_node,
-               string tree_error = "树存在无限递归");
+               string tree_error = null);
     }
 
+    /// <summary>
+    /// 树结构
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class TreeServiceBase<T> : ServiceBase<T>, ITreeServiceBase<T>
         where T : TreeBaseEntity
     {
@@ -58,6 +66,7 @@ namespace Model
                 {
                     foreach (var child in children)
                     {
+                        //递归
                         await FindRecursively(child);
                     }
                 }
@@ -68,6 +77,60 @@ namespace Model
             await FindRecursively(first_node);
 
             return list;
+        }
+
+        public async Task<(bool success, List<T> node_path)> CheckNodeIfCanFindRoot(IQueryable<T> data_source, T first_node)
+        {
+            var repeat_check = new List<string>();
+            var current_uid = first_node.UID;
+
+            var top_level = default(int?);
+            var top_parent = default(string);
+
+            var node = default(T);
+
+            var node_path = new List<T>();
+
+            while (true)
+            {
+                node = await data_source.Where(x => x.UID == current_uid).FirstOrDefaultAsync();
+                if (node == null) { break; }
+
+                repeat_check.AddOnceOrThrow(node.UID, error_msg: "存在无限循环");
+
+                {
+                    //设置检查值
+                    top_level = node.Level - 1;
+                    top_parent = node.ParentUID;
+                }
+
+                current_uid = node.ParentUID;
+                node_path.Add(node);
+            }
+            var success = top_level == TreeBaseEntity.FIRST_LEVEL && top_parent == TreeBaseEntity.FIRST_PARENT_UID;
+            return (success, node_path);
+        }
+
+        public async Task<List<T>> FindTreeBadNodes(IQueryable<T> data_source)
+        {
+            var list = await data_source.ToListAsync();
+            var error_list = new List<string>();
+
+            foreach (var node in list.OrderByDescending(x => x.Level))
+            {
+                if (error_list.Contains(node.UID))
+                {
+                    //防止中间节点被重复计算
+                    continue;
+                }
+                var check = await this.CheckNodeIfCanFindRoot(list.AsQueryable(), node);
+                if (!check.success)
+                {
+                    error_list.AddRange(check.node_path.Select(x => x.UID));
+                }
+            }
+
+            return list.Where(x => error_list.Distinct().Contains(x.UID)).ToList();
         }
     }
 
