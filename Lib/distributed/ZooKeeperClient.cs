@@ -324,6 +324,15 @@ namespace Lib.distributed
             }
         }
 
+        private async Task NodeChildrenChanged(string path)
+        {
+            if (path == this.ServicePath)
+            {
+                //服务发生改变
+                await this.FetchChildrenDataAndWatch();
+            }
+        }
+
         public override async Task process(WatchedEvent @event)
         {
             try
@@ -334,39 +343,50 @@ namespace Lib.distributed
                 var zk_status = @event.getState();
                 var path = @event.getPath();
 
-                if (ValidateHelper.IsPlumpString(path))
+                if (zk_status == Event.KeeperState.SyncConnected)
                 {
-                    //node status
-                    //注册节点发生改变
-                    if (event_type == Event.EventType.NodeChildrenChanged)
-                    {
-                        if (@event.getPath() == this.ServicePath)
-                        {
-                            //服务发生改变
-                            await this.FetchChildrenDataAndWatch();
-                        }
-                    }
+                    this._client_lock.Set();
                 }
                 else
                 {
-                    //conection status
-                    if (zk_status == Event.KeeperState.SyncConnected)
-                    {
-                        this._client_lock.Set();
-                    }
-                    else
-                    {
-                        this._client_lock.Reset();
-                    }
-
-                    //重新接连
-                    var reconnection_state = new Event.KeeperState[] { Event.KeeperState.Disconnected, Event.KeeperState.Expired };
-                    if (reconnection_state.Contains(zk_status))
-                    {
-                        this.ReConnect();
-                    }
+                    this._client_lock.Reset();
                 }
 
+                switch (zk_status)
+                {
+                    case Event.KeeperState.AuthFailed:
+                        break;
+                    case Event.KeeperState.ConnectedReadOnly:
+                        break;
+                    case Event.KeeperState.Disconnected:
+                        this.ReConnect();
+                        break;
+                    case Event.KeeperState.Expired:
+                        this.ReConnect();
+                        break;
+                    case Event.KeeperState.SyncConnected:
+                        break;
+                    default:
+                        break;
+                }
+
+                switch (event_type)
+                {
+                    case Event.EventType.NodeChildrenChanged:
+                        //注册节点发生改变
+                        await this.NodeChildrenChanged(path);
+                        break;
+                    case Event.EventType.NodeCreated:
+                        break;
+                    case Event.EventType.NodeDataChanged:
+                        break;
+                    case Event.EventType.NodeDeleted:
+                        break;
+                    case Event.EventType.None:
+                        break;
+                    default:
+                        break;
+                }
             }
             catch (Exception e)
             {
