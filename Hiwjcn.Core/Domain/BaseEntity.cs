@@ -38,6 +38,10 @@ namespace Model
     {
         Task<List<T>> FindNodeChildrenRecursively_(IQueryable<T> data_source, T first_node,
                string tree_error = null);
+
+        Task<(bool success, List<T> node_path)> CheckNodeIfCanFindRoot(IQueryable<T> data_source, T first_node);
+
+        Task<List<T>> FindTreeBadNodes(IQueryable<T> data_source);
     }
 
     /// <summary>
@@ -121,6 +125,8 @@ namespace Model
                 if (error_list.Contains(node.UID))
                 {
                     //防止中间节点被重复计算
+                    //node1->node2->node3->node4->node5
+                    //计算了node1到node5为错误节点之后将跳过1,2,3,4的检查
                     continue;
                 }
                 var check = await this.CheckNodeIfCanFindRoot(list.AsQueryable(), node);
