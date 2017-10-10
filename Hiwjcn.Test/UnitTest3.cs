@@ -7,12 +7,25 @@ using Hiwjcn.Core.Infrastructure.User;
 using Model.User;
 using System.Linq;
 using Lib.helper;
+using Model;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest3
     {
+        class tm : TreeBaseEntity
+        { }
+
+        class trr : TreeServiceBase<tm>
+        { }
+
+        [TestMethod]
+        public void lkhkjhafdsafasdkgf()
+        {
+            var interfaces = typeof(trr).GetInterfaces();
+        }
+
         [TestMethod]
         public void strhide()
         {

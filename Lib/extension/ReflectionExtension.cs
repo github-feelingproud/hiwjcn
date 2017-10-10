@@ -76,6 +76,13 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 获取所有实现接口，包括继承的
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static List<Type> GetAllInterfaces_(this Type t) => t.GetInterfaces().ToList();
+
+        /// <summary>
         /// 获取可以赋值给T的属性
         /// </summary>
         /// <typeparam name="T"></typeparam>

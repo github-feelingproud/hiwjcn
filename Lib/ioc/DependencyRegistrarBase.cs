@@ -80,6 +80,9 @@ namespace Lib.ioc
             {
                 foreach (var t in a.GetTypes())
                 {
+                    //用这种方式判断是否是某个泛型的实现
+                    //t.GetAllInterfaces_().Any(x => x.IsGenericType_(typeof(IServiceBase<>)));
+
                     //注册service
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(ServiceBase<>)))
                     {

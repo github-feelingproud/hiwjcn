@@ -104,7 +104,7 @@ namespace Model
 
                 {
                     //设置检查值
-                    top_level = node.Level - 1;
+                    top_level = node.Level;
                     top_parent = node.ParentUID;
                 }
 
