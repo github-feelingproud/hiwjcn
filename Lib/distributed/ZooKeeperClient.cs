@@ -109,10 +109,11 @@ namespace Lib.distributed
         private readonly ManualResetEvent _client_lock = new ManualResetEvent(false);
         private readonly object _create_client_lock = new object();
         private readonly object _reconnection_lock = new object();
-        private readonly object _fetch_data_lock = new object();
+        private readonly AutoResetEvent _fetch_data_lock = new AutoResetEvent(true);
 
         public event Action OnRecconected;
         public event Action OnFetchingData;
+        public event Action<Exception> OnError;
 
         private readonly Dictionary<string, string> ServiceData = new Dictionary<string, string>();
 
@@ -326,19 +327,30 @@ namespace Lib.distributed
         {
             if (path == this.ServicePath)
             {
+                this._fetch_data_lock.WaitOneOrThrow(TimeSpan.FromSeconds(5));
                 try
                 {
-                    if (!Monitor.TryEnter(this._fetch_data_lock, TimeSpan.FromSeconds(5)))
-                    {
-                        throw new Exception("抢锁失败");
-                    }
                     //服务发生改变
                     await this.FetchChildrenDataAndWatch();
                 }
                 finally
                 {
-                    Monitor.Exit(this._fetch_data_lock);
+                    this._fetch_data_lock.Set();
                 }
+
+                //if (!Monitor.TryEnter(this._fetch_data_lock, TimeSpan.FromSeconds(5)))
+                //{
+                //    throw new Exception("抢锁失败");
+                //}
+                //try
+                //{
+                //    //服务发生改变
+                //    await this.FetchChildrenDataAndWatch();
+                //}
+                //finally
+                //{
+                //    Monitor.Exit(this._fetch_data_lock);
+                //}
             }
         }
 
@@ -399,6 +411,7 @@ namespace Lib.distributed
             }
             catch (Exception e)
             {
+                this.OnError.Invoke(e);
                 e.AddErrorLog();
             }
 

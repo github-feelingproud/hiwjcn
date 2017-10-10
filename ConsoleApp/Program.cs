@@ -46,6 +46,10 @@ namespace ConsoleApp
                     Console.WriteLine("重新链接");
                 };
                 client.OnFetchingData += () => { };
+                client.OnError += e =>
+                {
+                    Console.WriteLine(e.GetInnerExceptionAsJson());
+                };
 
                 await client.RegisterService<order>("http://service.qipeilong.net/");
 
