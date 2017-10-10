@@ -170,7 +170,7 @@ namespace Lib.distributed
         {
             try
             {
-                if (!this._client_lock.WaitOne(TimeSpan.FromSeconds(30))) { throw new Exception("等待锁超时"); }
+                this._client_lock.WaitOneOrThrow(TimeSpan.FromSeconds(30));
 
                 if (this._client == null) { throw new Exception("zookeeper client is not prepared"); }
 

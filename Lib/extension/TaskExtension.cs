@@ -11,6 +11,30 @@ namespace Lib.extension
 {
     public static class TaskExtension
     {
+        public static void WaitOneOrThrow(this ManualResetEvent reset_event, TimeSpan span, string msg = null)
+        {
+            if (!reset_event.WaitOne(span))
+            {
+                throw new Exception(msg ?? "等待信号量超时");
+            }
+        }
+
+        public static void WaitOneOrThrow(this AutoResetEvent reset_event, TimeSpan span, string msg = null)
+        {
+            if (!reset_event.WaitOne(span))
+            {
+                throw new Exception(msg ?? "等待信号量超时");
+            }
+        }
+
+        public static void WaitOneOrThrow(this ManualResetEventSlim reset_event, TimeSpan span, string msg = null)
+        {
+            if (!reset_event.Wait(span))
+            {
+                throw new Exception(msg ?? "等待信号量超时");
+            }
+        }
+
         /// <summary>https://msdn.microsoft.com/zh-cn/library/hh873178(v=vs.110).aspx </summary>
         public static IAsyncResult AsApm<T>(this Task<T> task, AsyncCallback callback, object state)
         {

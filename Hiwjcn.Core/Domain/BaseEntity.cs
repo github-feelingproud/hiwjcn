@@ -7,10 +7,70 @@ using Lib.helper;
 using Lib.data;
 using Lib.core;
 using Lib.extension;
+using Lib.infrastructure;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using System.Data.Entity;
 
 namespace Model
 {
+    [Serializable]
+    public abstract class TreeBaseEntity : BaseEntity
+    {
+        public const int FIRST_LEVEL = 0;
+        public const string FIRST_PARENT_UID = "";
+
+        [Required]
+        [Range(FIRST_LEVEL, FIRST_LEVEL + 500, ErrorMessage = "层级不在范围之内")]
+        public virtual int Level { get; set; } = FIRST_LEVEL;
+
+        [Required]
+        [StringLength(100, ErrorMessage = "父级UID长度错误")]
+        public virtual string ParentUID { get; set; } = FIRST_PARENT_UID;
+    }
+
+    public interface ITreeServiceBase<T> : IServiceBase<T>
+        where T : TreeBaseEntity
+    {
+        Task<List<T>> FindNodeChildrenRecursively_(IQueryable<T> data_source, T first_node,
+               string tree_error = "树存在无限递归");
+    }
+
+    public abstract class TreeServiceBase<T> : ServiceBase<T>, ITreeServiceBase<T>
+        where T : TreeBaseEntity
+    {
+        public async Task<List<T>> FindNodeChildrenRecursively_(IQueryable<T> data_source, T first_node,
+            string tree_error = "树存在无限递归")
+        {
+            var repeat_check = new List<string>();
+            var list = new List<T>();
+
+            async Task FindRecursively(T node)
+            {
+                if (node == null) { return; }
+
+                repeat_check.AddOnceOrThrow(node.UID, error_msg: tree_error);
+
+                var child_parent_uid = node.UID;
+                var child_level = node.Level + 1;
+                var children = await data_source.Where(x => x.ParentUID == child_parent_uid && x.Level == child_level).ToListAsync();
+                if (ValidateHelper.IsPlumpList(children))
+                {
+                    foreach (var child in children)
+                    {
+                        await FindRecursively(child);
+                    }
+                }
+
+                list.Add(node);
+            }
+
+            await FindRecursively(first_node);
+
+            return list;
+        }
+    }
+
     [Serializable]
     public abstract class TimeBaseEntity : BaseEntity
     {
