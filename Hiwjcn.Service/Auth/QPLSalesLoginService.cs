@@ -180,7 +180,16 @@ namespace Hiwjcn.Bll.Auth
 
         public async Task<LoginUserInfo> LoadPermissions(LoginUserInfo model)
         {
-            return await Task.FromResult(model);
+            using (var client = new TraderAccessServiceClient())
+            {
+                var data = await client.Instance.SelectAccessList(new SelectAccessListRequest() { UID = model.GetExtraData("NewUserId") });
+                var pers = data.AccessList;
+                model.Permissions = new List<string>();
+                model.Permissions.AddRange(pers.Select(x => $"action:{x.ActionKey}"));
+                model.Permissions.AddRange(pers.Select(x => $"url:{x.Url}"));
+                model.Permissions.AddRange(pers.Select(x => $"uid:{x.UID}"));
+                return model;
+            }
         }
 
         public Task<_<LoginUserInfo>> LoginByCode(string phoneOrEmail, string code)

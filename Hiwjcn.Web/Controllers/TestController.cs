@@ -384,7 +384,7 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        [PageAuth(Permission = "auth_manage", Scope = "order")]
+        [PageAuth(Permission = "auth_manage.order,auth_manage.user", Scope = "order")]
         public ActionResult WJ()
         {
             var str = Com.GetUUID();
