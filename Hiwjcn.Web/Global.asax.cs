@@ -75,6 +75,10 @@ namespace Hiwjcn.Web
                         {
                             builder.UseAccountSystem<QPLSalesLoginService>();
                         }
+                        else if (account_system == nameof(AccountSystemEnum.TraderAccess))
+                        {
+                            builder.UseAccountSystem<TraderAccessLoginService>();
+                        }
                         else
                         {
                             throw new Exception($"不支持的账号体系：{account_system}");

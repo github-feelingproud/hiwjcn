@@ -18,7 +18,8 @@ namespace Hiwjcn.Core.Data
     public enum AccountSystemEnum : int
     {
         UserInfo = 1,
-        SalesInfo = 2
+        SalesInfo = 2,
+        TraderAccess = 3
     }
 
     public class QPLSqlServerConfiguration : DbConfiguration
