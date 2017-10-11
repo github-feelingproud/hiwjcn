@@ -12,6 +12,8 @@ using System.Configuration;
 using System.IO;
 using System.Web;
 using System.Reflection;
+using Castle.DynamicProxy;
+//using Castle.Core.Interceptor;
 
 namespace Lib.rpc
 {
@@ -79,12 +81,53 @@ namespace Lib.rpc
             //with default config
         }
 
+        class LogProxy : IInterceptor
+        {
+            public void Intercept(IInvocation invocation)
+            {
+                invocation.Proceed();
+
+                var valueType = invocation.ReturnValue;
+            }
+        }
+
+        private T _ins = null;
+
+        private readonly object _create_proxy_lock = new object();
+
+        [Obsolete("无法代理channel，方法没有实现")]
+        public bool UseProxy { get; set; } = false;
+
         /// <summary>
         /// 接口实例
         /// </summary>
         public T Instance
         {
-            get { return Channel; }
+            get
+            {
+                if (this.UseProxy)
+                {
+                    if (this._ins == null)
+                    {
+                        lock (this._create_proxy_lock)
+                        {
+                            if (this._ins == null)
+                            {
+                                var p = new ProxyGenerator();
+                                var classToProxy = this.Channel.GetType();
+                                var proxy_ins = (T)p.CreateClassProxy(classToProxy, new LogProxy());
+
+                                this._ins = proxy_ins;
+                            }
+                        }
+                    }
+                    return this._ins;
+                }
+                else
+                {
+                    return this.Channel;
+                }
+            }
         }
         /// <summary>
         /// 释放资源

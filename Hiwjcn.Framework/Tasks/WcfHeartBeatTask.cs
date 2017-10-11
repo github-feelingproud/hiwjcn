@@ -114,6 +114,12 @@ namespace Hiwjcn.Framework.Tasks
 
         public override void Execute(IJobExecutionContext context)
         {
+            var s = true;
+            if (s)
+            {
+                return;
+            }
+
             Action<long, string> logger = (ms, name) =>
             {
                 $"{this.Name},耗时：{ms}毫秒".AddBusinessInfoLog();

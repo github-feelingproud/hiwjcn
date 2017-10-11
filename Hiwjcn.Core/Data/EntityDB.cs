@@ -70,7 +70,7 @@ namespace Hiwjcn.Dal
 
         #region model对应的实体
 
-        public virtual DbSet<WcfMap> WcfMap { get; set; }
+        //public virtual DbSet<WcfMap> WcfMap { get; set; }
 
         public virtual DbSet<AuthClient> AuthClient { get; set; }
         public virtual DbSet<AuthScope> AuthScope { get; set; }

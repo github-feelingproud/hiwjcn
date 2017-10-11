@@ -11,10 +11,13 @@ namespace Lib.extension
     /// BaseType是类
     /// GetInterfaces是接口
     /// IsGenericType是泛型
-    /// GetGenericTypeDefinition()获取泛型类型比如Consumer<string>
+    /// GetGenericTypeDefinition()获取泛型类型比如Consumer《string》
     /// </summary>
     public static class ReflectionExtension
     {
+        public static bool IsAsync(this MethodInfo method) =>
+            method.ReturnType == typeof(Task) || method.ReturnType.IsGenericType_(typeof(Task<>));
+
         public static List<Type> FindTypesByBaseType<T>(this Assembly a)
         {
             return a.GetTypes().Where(x => x.BaseType != null && x.BaseType == typeof(T)).ToList();
