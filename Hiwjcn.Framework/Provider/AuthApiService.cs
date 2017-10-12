@@ -66,6 +66,9 @@ namespace Hiwjcn.Bll.Auth
                 RefreshToken = token.RefreshToken,
                 Expire = token.ExpiryTime
             };
+
+            this._cache.Remove(CacheKeyManager.AuthUserInfoKey(token.UserUID));
+
             res.SetSuccessData(token_data);
             return res;
         }
@@ -140,7 +143,7 @@ namespace Hiwjcn.Bll.Auth
 
             return data;
         }
-        
+
         public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
         {
             var data = new _<string>();

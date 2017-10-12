@@ -14,6 +14,20 @@ namespace Lib.mvc.user
     [Serializable]
     public class QPLData
     {
+        public virtual double Lon { get; set; }
+
+        public virtual double Lat { get; set; }
+
+        public virtual string TraderShopType { get; set; }
+
+        public virtual decimal MaxServiceDistance { get; set; }
+
+        public virtual bool IsGeneralDelivery { get; set; }
+
+        public virtual bool IsQuickArrive { get; set; }
+
+        public virtual string TraderId { get; set; }
+
         public virtual string TraderName { get; set; }
 
         public virtual int IsCheck { get; set; }

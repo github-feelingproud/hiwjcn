@@ -20,6 +20,15 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 转为长整型
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="deft"></param>
+        /// <returns></returns>
+        public static long ToLong(this string data, long? deft = default(long)) =>
+            ConvertHelper.GetLong(data, deft);
+
+        /// <summary>
         /// 转为float
         /// </summary>
         public static float ToFloat(this string data, float? deft = default(float))

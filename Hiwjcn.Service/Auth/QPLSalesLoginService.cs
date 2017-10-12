@@ -30,6 +30,7 @@ using Polly.CircuitBreaker;
 using Lib.rpc;
 using QPL.WebService.TraderAccess.Core.Model;
 using QPL.WebService.TraderAccess.Core.Request;
+using QPL.WebService.TraderAccess.Core;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -124,7 +125,7 @@ namespace Hiwjcn.Bll.Auth
         }
     }
 
-    public class TraderAccessServiceClient : ServiceClient<QPL.WebService.TraderAccess.Core.ITraderAccess>
+    public class TraderAccessServiceClient : ServiceClient<ITraderAccess>
     {
         public TraderAccessServiceClient() : base(ConfigurationManager.AppSettings["TraderServiceUrl"] ??
             throw new Exception("请在appsetting中配置traderaccess服务地址"))
@@ -137,20 +138,30 @@ namespace Hiwjcn.Bll.Auth
         {
             var user = new LoginUserInfo();
 
-            user.AddExtraData("NewUserId", model.UID);
             user.AddExtraData(nameof(model.UserType), model.UserType.ToString());
 
+            user.IID = model.IID;
+            user.UserID = model.UID;
             user.UserName = model.LoginNo;
             user.NickName = model.UserName;
 
-            user.IID = trader.IID;
-            user.UserID = trader.UID;
+            ////////////////////////////////////////////////////
+
+            user.TraderId = trader.UID;
             user.TraderName = trader.ShopName;
             user.IsCheck = trader.IsCheck ?? 0;
             user.CustomerType = trader.CustomerType;
             user.IsSelf = trader.IsSelf ?? 0;
             user.IsHaveInquiry = trader.IsHaveInquiry ?? 0;
             user.IsActive = trader.IsActive ?? 0;
+            user.IsGeneralDelivery = trader.IsGeneralDelivery ?? false;
+            user.IsQuickArrive = trader.IsQuickArrive ?? false;
+            user.MaxServiceDistance = trader.MaxServiceDistance ?? 0;
+            user.Lon = trader.Lon ?? 0;
+            user.Lat = (trader.Lat ?? "0").ToDouble();
+            user.TraderShopType = trader.TraderShopType;
+
+            user.AddExtraData(nameof(user.TraderId), user.TraderId);
             user.AddExtraData(nameof(trader.IsGeneralDelivery), (trader.IsGeneralDelivery ?? false).ToBoolInt().ToString());
             user.AddExtraData(nameof(trader.IsQuickArrive), (trader.IsQuickArrive ?? false).ToBoolInt().ToString());
             user.AddExtraData(nameof(trader.MaxServiceDistance), (trader.MaxServiceDistance ?? 0).ToString());
@@ -186,7 +197,7 @@ namespace Hiwjcn.Bll.Auth
                     return null;
                 }
 
-                return this.Parse(user, trader);
+                return await this.LoadPermissions(this.Parse(user, trader));
             }
         }
 
@@ -194,12 +205,15 @@ namespace Hiwjcn.Bll.Auth
         {
             using (var client = new TraderAccessServiceClient())
             {
-                var data = await client.Instance.SelectAccessList(new SelectAccessListRequest() { UID = model.GetExtraData("NewUserId") });
+                var data = await client.Instance.SelectAccessList(new SelectAccessListRequest() { UID = model.UserID });
                 var pers = data.AccessList;
                 model.Permissions = new List<string>();
-                model.Permissions.AddRange(pers.Select(x => $"action:{x.ActionKey}"));
-                model.Permissions.AddRange(pers.Select(x => $"url:{x.Url}"));
-                model.Permissions.AddRange(pers.Select(x => $"uid:{x.UID}"));
+                model.Permissions.AddRange(pers.Where(x => ValidateHelper.IsPlumpString(x.ActionKey)).Select(x => $"action:{x.ActionKey}"));
+                model.Permissions.AddRange(pers.Where(x => ValidateHelper.IsPlumpString(x.Url)).Select(x => $"url:{x.Url}".ToLower()));
+                model.Permissions.AddRange(pers.Where(x => ValidateHelper.IsPlumpString(x.UID)).Select(x => $"uid:{x.UID}"));
+                model.Permissions.AddRange(pers.Where(x => ValidateHelper.IsPlumpString(x.HtmlKey)).Select(x => $"html:{x.Url}{x.HtmlKey}".ToLower()));
+
+                model.Permissions = model.Permissions.Distinct().ToList();
                 return model;
             }
         }
@@ -231,7 +245,7 @@ namespace Hiwjcn.Bll.Auth
                     data.SetErrorMsg("user或者trader为空");
                     return data;
                 }
-                data.SetSuccessData(this.Parse(res.User, res.Trader));
+                data.SetSuccessData(await this.LoadPermissions(this.Parse(res.User, res.Trader)));
             }
             return data;
         }
