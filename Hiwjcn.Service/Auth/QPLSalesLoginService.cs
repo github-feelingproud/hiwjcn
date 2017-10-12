@@ -137,14 +137,13 @@ namespace Hiwjcn.Bll.Auth
         {
             var user = new LoginUserInfo();
 
-            user.IID = model.IID;
-            user.UserID = model.UID;
             user.AddExtraData("NewUserId", model.UID);
             user.AddExtraData(nameof(model.UserType), model.UserType.ToString());
 
             user.UserName = model.LoginNo;
             user.NickName = model.UserName;
 
+            user.IID = trader.IID;
             user.UserID = trader.UID;
             user.TraderName = trader.ShopName;
             user.IsCheck = trader.IsCheck ?? 0;
