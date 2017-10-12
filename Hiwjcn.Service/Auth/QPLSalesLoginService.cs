@@ -137,26 +137,29 @@ namespace Hiwjcn.Bll.Auth
         {
             var user = new LoginUserInfo();
 
+            user.IID = model.IID;
+            user.UserID = model.UID;
             user.AddExtraData("NewUserId", model.UID);
             user.AddExtraData(nameof(model.UserType), model.UserType.ToString());
 
-            if (trader != null)
-            {
-                user.NickName = trader.UserName;
-                user.UserID = trader.UID;
-                user.TraderName = trader.ShopName;
-                user.IsCheck = trader.IsCheck ?? 0;
-                user.CustomerType = trader.CustomerType;
-                user.IsSelf = trader.IsSelf ?? 0;
-                user.IsHaveInquiry = trader.IsHaveInquiry ?? 0;
-                user.IsActive = trader.IsActive ?? 0;
-                user.AddExtraData(nameof(trader.IsGeneralDelivery), (trader.IsGeneralDelivery ?? false).ToBoolInt().ToString());
-                user.AddExtraData(nameof(trader.IsQuickArrive), (trader.IsQuickArrive ?? false).ToBoolInt().ToString());
-                user.AddExtraData(nameof(trader.MaxServiceDistance), (trader.MaxServiceDistance ?? 0).ToString());
-                user.AddExtraData(nameof(trader.Lon), (trader.Lon ?? 0).ToString());
-                user.AddExtraData(nameof(trader.Lat), trader.Lat);
-                user.AddExtraData(nameof(trader.TraderShopType), trader.TraderShopType);
-            }
+            user.UserName = model.LoginNo;
+            user.NickName = model.UserName;
+
+            user.UserID = trader.UID;
+            user.TraderName = trader.ShopName;
+            user.IsCheck = trader.IsCheck ?? 0;
+            user.CustomerType = trader.CustomerType;
+            user.IsSelf = trader.IsSelf ?? 0;
+            user.IsHaveInquiry = trader.IsHaveInquiry ?? 0;
+            user.IsActive = trader.IsActive ?? 0;
+            user.AddExtraData(nameof(trader.IsGeneralDelivery), (trader.IsGeneralDelivery ?? false).ToBoolInt().ToString());
+            user.AddExtraData(nameof(trader.IsQuickArrive), (trader.IsQuickArrive ?? false).ToBoolInt().ToString());
+            user.AddExtraData(nameof(trader.MaxServiceDistance), (trader.MaxServiceDistance ?? 0).ToString());
+            user.AddExtraData(nameof(trader.Lon), (trader.Lon ?? 0).ToString());
+            user.AddExtraData(nameof(trader.Lat), trader.Lat);
+            user.AddExtraData(nameof(trader.TraderShopType), trader.TraderShopType);
+
+            user.LoginToken = "等待设置token";
 
             return user;
         }
@@ -172,8 +175,18 @@ namespace Hiwjcn.Bll.Auth
                     PageSize = 1
                 });
                 var user = list.UserList.FirstOrDefault();
+                if (user == null)
+                {
+                    return null;
+                }
+
                 var trader_list = await client.Instance.GetTradersByUids(new List<string>() { user.TraderId });
                 var trader = trader_list.FirstOrDefault();
+                if (trader == null)
+                {
+                    return null;
+                }
+
                 return this.Parse(user, trader);
             }
         }
@@ -214,6 +227,11 @@ namespace Hiwjcn.Bll.Auth
                     data.SetErrorMsg(res.Message);
                     return data;
                 }
+                if (res.User == null || res.Trader == null)
+                {
+                    data.SetErrorMsg("user或者trader为空");
+                    return data;
+                }
                 data.SetSuccessData(this.Parse(res.User, res.Trader));
             }
             return data;
@@ -234,7 +252,23 @@ namespace Hiwjcn.Bll.Auth
                 var trader_list = await client.Instance.GetTradersByUids(response.UserList.Select(x => x.TraderId).ToList());
 
                 data.ItemCount = response.Total;
-                data.DataList = response.UserList.Select(x => this.Parse(x, trader_list.Where(m => m.UID == x.TraderId).FirstOrDefault())).ToList();
+                data.DataList = new List<LoginUserInfo>();
+                foreach (var u in response.UserList)
+                {
+                    var user = u;
+                    if (user == null)
+                    {
+                        $"{nameof(TraderAccessLoginService)}：user为空".AddBusinessInfoLog();
+                        continue;
+                    }
+                    var trader = trader_list.Where(x => x.UID == u.TraderId).FirstOrDefault();
+                    if (trader == null)
+                    {
+                        $"{nameof(TraderAccessLoginService)}：user为空".AddBusinessInfoLog();
+                        continue;
+                    }
+                    data.DataList.Add(this.Parse(user, trader));
+                }
             }
             return data;
         }
