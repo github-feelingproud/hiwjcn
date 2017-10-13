@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.extension;
 
 namespace Lib.mq
 {
@@ -42,24 +43,22 @@ namespace Lib.mq
             get { return this[nameof(VirtualHost)].ToString(); }
         }
 
-        /// <summary>默认3000ms</summary>
+        /// <summary>
+        /// 默认3000ms
+        /// </summary>
         [ConfigurationProperty(nameof(ContinuationTimeout), IsRequired = false)]
         public int ContinuationTimeout
         {
-            get
-            {
-                return ConvertHelper.GetInt(this[nameof(ContinuationTimeout)], 3000);
-            }
+            get => (this[nameof(ContinuationTimeout)]?.ToString() ?? "3000").ToInt();
         }
 
-        /// <summary>默认2000ms</summary>
+        /// <summary>
+        /// 默认2000ms
+        /// </summary>
         [ConfigurationProperty(nameof(SocketTimeout), IsRequired = false)]
         public int SocketTimeout
         {
-            get
-            {
-                return ConvertHelper.GetInt(this[nameof(SocketTimeout)], 2000);
-            }
+            get => (this[nameof(SocketTimeout)]?.ToString() ?? "2000").ToInt();
         }
     }
 }
