@@ -12,7 +12,6 @@ namespace Lib.mq
 {
     public static class MqExtension
     {
-        public static void UseMessageQueue<T>() where T : class, IMessageProducer
-        { }
+        //
     }
 }
