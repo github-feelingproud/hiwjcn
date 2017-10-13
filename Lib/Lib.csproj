@@ -281,6 +281,7 @@
     <Compile Include="mq\MessageConsumer.cs" />
     <Compile Include="mq\MessageConsumerBase.cs" />
     <Compile Include="mq\MessageProducer.cs" />
+    <Compile Include="mq\MqExtension.cs" />
     <Compile Include="mq\RabbitMQChannel.cs" />
     <Compile Include="mq\RabbitMQClient.cs" />
     <Compile Include="mq\RabbitMQExtension.cs" />
