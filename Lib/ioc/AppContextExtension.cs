@@ -59,8 +59,8 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="builder"></param>
         public static void UseMessageQueue<T>(this ContainerBuilder builder)
-            where T : class, IMessageProducer =>
-            builder.RegisterType<T>().AsSelf().As<IMessageProducer>().SingleInstance();
+            where T : class, IMessageQueueProducer =>
+            builder.RegisterType<T>().AsSelf().As<IMessageQueueProducer>().SingleInstance();
 
         /// <summary>
         /// 配置不注册IOC

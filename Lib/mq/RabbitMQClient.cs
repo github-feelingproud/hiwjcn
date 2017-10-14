@@ -13,8 +13,8 @@ namespace Lib.mq
         private readonly IConnectionFactory _rabbitMqFactory;
         private readonly Lazy<IConnection> _rabbitMqConnection;
 
-        #region ctor
         public RabbitMQClient(string configurationName) : this(RabbitMQSection.FromSection(configurationName)) { }
+
         public RabbitMQClient(RabbitMQSection configuration)
         {
             _rabbitMqFactory = new ConnectionFactory
@@ -35,65 +35,38 @@ namespace Lib.mq
 
             _rabbitMqConnection = new Lazy<IConnection>(() => _rabbitMqFactory.CreateConnection());
         }
-        #endregion
 
         public IConnection Connection => _rabbitMqConnection.Value;
 
-        #region Dispose
+        private bool _disposed = false;
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        bool _disposed;
-        protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
 
-            if (disposing)
+            try
             {
-                //释放托管资源，比如将对象设置为null
+                this.Connection?.Close();
             }
+            catch
+            { }
 
-            //释放非托管资源
-            if (_rabbitMqConnection != null && _rabbitMqConnection.IsValueCreated)
+            try
             {
-                //Connection.AutoClose = true;
-                Connection.Close();
-                Connection.Dispose();
+                this.Connection?.Dispose();
             }
+            catch
+            { }
 
             _disposed = true;
+
+            GC.SuppressFinalize(this);
         }
 
-        //~RabbitMQClient()
-        //{
-        //    Dispose(false);
-        //}
-        #endregion
-
-        /// <summary>创建生产者</summary>
-        /// <param name="exchangeName">交换机名称</param>
-        /// <returns>生产者</returns>
-        public RabbitMQProducer CreateProducer(string exchangeName) => new RabbitMQProducer(Connection.CreateModel(), exchangeName);
-
-        #region CreateConsumer
-        /// <summary>创建Ack消费者</summary>
-        public RabbitMQAckConsumer CreateConsumer() => new RabbitMQAckConsumer(Connection.CreateModel());
-
-        /// <summary>创建Ack消费者</summary>
-        /// <param name="consumerName">消费都名称后缀</param>
-        public RabbitMQAckConsumer CreateConsumer(string consumerName) => new RabbitMQAckConsumer(Connection.CreateModel(), consumerName);
-
-        /// <summary>创建Noack消费者</summary>
-        public RabbitMQNoackConsumer CreateNoackConsumer() => new RabbitMQNoackConsumer(Connection.CreateModel());
-
-        /// <summary>创建Noack消费者</summary>
-        /// <param name="consumerName">消费都名称后缀</param>
-        public RabbitMQNoackConsumer CreateNoackConsumer(string consumerName) => new RabbitMQNoackConsumer(Connection.CreateModel(), consumerName);
-        #endregion
+        ~RabbitMQClient()
+        {
+            this.Dispose();
+        }
     }
 
     public class RabbitMQClientManager : StaticClientManager<RabbitMQClient>

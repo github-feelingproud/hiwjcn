@@ -11,40 +11,24 @@ using Polly;
 
 namespace Lib.mq
 {
-    public class SettingConfig
-    {
-        public string ExchangeName { get; set; }
-
-        public ExchangeTypeEnum ExchangeType { get; set; } = ExchangeTypeEnum.direct;
-
-        public bool Delay { get; set; } = false;
-
-        public string QueueName { get; set; }
-
-        public string RouteKey { get; set; }
-
-        public Dictionary<string, object> Args { get; set; }
-
-        public bool Ack { get; set; } = true;
-
-        public uint ConsumeRetryCount { get; set; } = 3;
-
-        public uint ConsumeRetryWaitMilliseconds { get; set; } = 10;
-
-        public string ConsumerName { get; set; }
-
-        public int ExchangeSetting { get; set; }
-        public int QueueSetting { get; set; }
-    }
-
-    public class MessageWrapper<T>
-    {
-        public int DeliverCount { get; set; } = 1;
-        public T Data { get; set; }
-    }
-
     public static class RabbitMQExtension
     {
+        public static string GetExchangeTypeName(this ExchangeTypeEnum type)
+        {
+            switch (type)
+            {
+                case ExchangeTypeEnum.direct:
+                    return ExchangeType.Direct;
+                case ExchangeTypeEnum.fanout:
+                    return ExchangeType.Fanout;
+                case ExchangeTypeEnum.topic:
+                    return ExchangeType.Topic;
+                case ExchangeTypeEnum.headers:
+                    return ExchangeType.Headers;
+            }
+            throw new NotSupportedException();
+        }
+
         public static MessageWrapper<T> GetWrapperMessage<T>(this BasicDeliverEventArgs args)
         {
             return Encoding.UTF8.GetString(args.Body).JsonToEntity<MessageWrapper<T>>();

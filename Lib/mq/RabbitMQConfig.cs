@@ -1,11 +1,10 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Lib.extension;
 
 namespace Lib.mq
 {
@@ -60,5 +59,37 @@ namespace Lib.mq
         {
             get => (this[nameof(SocketTimeout)]?.ToString() ?? "2000").ToInt();
         }
+    }
+
+    public class SettingConfig
+    {
+        public string ExchangeName { get; set; }
+
+        public ExchangeTypeEnum ExchangeType { get; set; } = ExchangeTypeEnum.direct;
+
+        public bool Delay { get; set; } = false;
+
+        public string QueueName { get; set; }
+
+        public string RouteKey { get; set; }
+
+        public Dictionary<string, object> Args { get; set; }
+
+        public bool Ack { get; set; } = true;
+
+        public uint ConsumeRetryCount { get; set; } = 3;
+
+        public uint ConsumeRetryWaitMilliseconds { get; set; } = 10;
+
+        public string ConsumerName { get; set; }
+
+        public int ExchangeSetting { get; set; }
+        public int QueueSetting { get; set; }
+    }
+
+    public class MessageWrapper<T>
+    {
+        public int DeliverCount { get; set; } = 1;
+        public T Data { get; set; }
     }
 }

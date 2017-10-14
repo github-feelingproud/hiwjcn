@@ -12,14 +12,14 @@ using Polly;
 
 namespace Lib.mq
 {
-    public abstract class MessageConsumerBase<DeliveryDataType> : IDisposable
+    public abstract class RabbitMessageConsumerBase<DeliveryDataType> : IMessageQueueConsumer<DeliveryDataType>
     {
         private IConnection _connection { get; set; }
         private IModel _channel { get; set; }
         private EventingBasicConsumer _consumer { get; set; }
         private SettingConfig _config { get; set; }
 
-        public MessageConsumerBase(ConnectionFactory factory, SettingConfig config)
+        public RabbitMessageConsumerBase(ConnectionFactory factory, SettingConfig config)
         {
             this._config = config ?? throw new ArgumentException(nameof(config));
 

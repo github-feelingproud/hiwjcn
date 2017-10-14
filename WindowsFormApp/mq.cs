@@ -74,7 +74,7 @@ namespace WindowsFormApp
 
     }
 
-    public class Worker : MessageConsumerBase<string>
+    public class Worker : RabbitMessageConsumerBase<string>
     {
         public Worker(ConnectionFactory factory, SettingConfig config) : base(factory, config)
         {

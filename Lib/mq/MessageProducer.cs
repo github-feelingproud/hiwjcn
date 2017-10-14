@@ -5,35 +5,12 @@ using System.Text;
 using Lib.extension;
 using RabbitMQ.Client;
 using Polly;
+using System.Threading.Tasks;
 
 namespace Lib.mq
 {
-    public interface IMessageProducer
-    {
-        /// <summary>发送消息</summary>
-        /// <param name="to">routingKey</param>
-        /// <param name="message">消息</param>
-        void Send(string to, object message);
-        /// <summary>发送消息</summary>
-        /// <param name="to">routingKey</param>
-        /// <param name="message">消息</param>
-        /// <param name="priority">优先级</param>
-        void Send(string to, object message, MessagePriority priority);
-        /// <summary>发送消息</summary>
-        /// <param name="to">routingKey</param>
-        /// <param name="message">消息</param>
-        /// <param name="delay">延迟毫秒数</param>
-        void Send(string to, object message, long delay);
-        /// <summary>发送消息</summary>
-        /// <param name="to">routingKey</param>
-        /// <param name="message">消息</param>
-        /// <param name="priority">优先级</param>
-        /// <param name="delay">延迟毫秒数</param>
-        void Send(string to, object message, MessagePriority priority, long delay);
-    }
-
     /// <summary>消息发送者</summary>
-    public class RabbitMQProducer : RabbitMQChannel, IMessageProducer
+    public class RabbitMQProducer : RabbitMQChannel, IMessageQueueProducer
     {
         #region ctor
         internal RabbitMQProducer(IModel channel, string exchangeName) : base(channel)
@@ -168,6 +145,11 @@ namespace Lib.mq
                     Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(1.5, counter++ - 5)));
                 }
             }
+        }
+
+        public Task SendAsync<T>(string routeKey, T message, MessagePriority? priority = null, TimeSpan? delay = null)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

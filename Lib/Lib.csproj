@@ -282,12 +282,12 @@
     <Compile Include="mq\MessageConsumer.cs" />
     <Compile Include="mq\MessageConsumerBase.cs" />
     <Compile Include="mq\MessageProducer.cs" />
+    <Compile Include="mq\MessageQueueCore.cs" />
     <Compile Include="mq\MessageQueueExtension.cs" />
     <Compile Include="mq\RabbitMQChannel.cs" />
     <Compile Include="mq\RabbitMQClient.cs" />
-    <Compile Include="mq\RabbitMQConnection.cs" />
+    <Compile Include="mq\RabbitMQConfig.cs" />
     <Compile Include="mq\RabbitMQExtension.cs" />
-    <Compile Include="mq\RabbitMQSection.cs" />
     <Compile Include="mvc\attr\AntiReSubmitAttribute.cs" />
     <Compile Include="mvc\attr\ApiExpireAtAttribute.cs" />
     <Compile Include="mvc\attr\CheckReferrerUrlAttribute.cs" />
