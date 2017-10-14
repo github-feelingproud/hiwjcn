@@ -10,14 +10,14 @@ namespace Lib.mq
 {
     public class RabbitMQClient : IDisposable
     {
-        private readonly IConnectionFactory _rabbitMqFactory;
-        private readonly Lazy<IConnection> _rabbitMqConnection;
+        private readonly IConnectionFactory _factory;
+        private readonly Lazy<IConnection> _connection;
 
         public RabbitMQClient(string configurationName) : this(RabbitMQSection.FromSection(configurationName)) { }
 
         public RabbitMQClient(RabbitMQSection configuration)
         {
-            _rabbitMqFactory = new ConnectionFactory
+            this._factory = new ConnectionFactory
             {
                 AutomaticRecoveryEnabled = true,
                 UseBackgroundThreadsForIO = true,
@@ -33,10 +33,17 @@ namespace Lib.mq
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(1)
             };
 
-            _rabbitMqConnection = new Lazy<IConnection>(() => _rabbitMqFactory.CreateConnection());
+            _connection = new Lazy<IConnection>(() =>
+            {
+                var con = _factory.CreateConnection();
+                con.ConnectionShutdown += (sender, args) => { };
+                con.ConnectionBlocked += (sender, args) => { };
+                con.ConnectionUnblocked += (sender, args) => { };
+                return con;
+            });
         }
 
-        public IConnection Connection => _rabbitMqConnection.Value;
+        public IConnection Connection => _connection.Value;
 
         private bool _disposed = false;
         public void Dispose()

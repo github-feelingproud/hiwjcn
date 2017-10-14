@@ -37,6 +37,13 @@ namespace Lib.mq
         Task SendAsync<T>(string routeKey, T message, MessagePriority? priority = null, TimeSpan? delay = null);
     }
 
+    [Serializable]
+    public enum DeliveryModeEnum : byte
+    {
+        NonPersistent = 1,
+        Persistent = 2
+    }
+
     /// <summary>
     /// exchange类型
     /// </summary>
