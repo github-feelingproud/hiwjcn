@@ -69,6 +69,8 @@ namespace Lib.mq
 
         public bool Delay { get; set; } = false;
 
+        public bool Persistent { get; set; } = false;
+
         public string QueueName { get; set; }
 
         public string RouteKey { get; set; }
@@ -82,6 +84,10 @@ namespace Lib.mq
         public uint ConsumeRetryWaitMilliseconds { get; set; } = 10;
 
         public string ConsumerName { get; set; }
+
+        public int PreFetchSize { get; set; } = 0;
+
+        public int PreFetchCount { get; set; } = 1;
 
         public int ExchangeSetting { get; set; }
         public int QueueSetting { get; set; }
