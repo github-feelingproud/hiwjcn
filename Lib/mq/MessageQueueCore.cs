@@ -40,7 +40,10 @@ namespace Lib.mq
         /// <param name="delay">延迟毫秒数</param>
         void Send(string to, object message, MessagePriority priority, long delay);
 
-        Task SendAsync<T>(string routeKey, T message, MessagePriority? priority = null, TimeSpan? delay = null);
+        Task SendAsync<T>(string routeKey, T message, 
+            DeliveryModeEnum? deliver_mode = null, 
+            MessagePriority? priority = null, 
+            TimeSpan? delay = null);
     }
 
     [Serializable]
