@@ -53,6 +53,9 @@ namespace Lib.mvc.auth
     /// <summary>
     /// wcf服务的约定，把这个发布到nuget用于调用
     /// 注意: 使用“重构”菜单上的“重命名”命令，可以同时更改代码和配置文件中的接口名“IAuthApiService”。
+    /// !!!!!!!!!!!!!!!!!!!!!!!!!
+    /// 方法名不要以async结尾
+    /// !!!!!!!!!!!!!!!!!!!!!!!!!
     /// </summary>
     [ServiceContract]
     public interface IAuthApiWcfServiceContract
@@ -70,7 +73,7 @@ namespace Lib.mvc.auth
         Task<_<string>> GetAuthCodeByPassword(string client_id, List<string> scopes, string username, string password);
 
         [OperationContract]
-        Task<_<string>> RemoveCacheAsync(CacheBundle data);
+        Task<_<string>> RemoveCache(CacheBundle data);
     }
 
     /// <summary>
@@ -120,7 +123,7 @@ namespace Lib.mvc.auth
         {
             using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
             {
-                return await client.Instance.RemoveCacheAsync(data);
+                return await client.Instance.RemoveCache(data);
             }
         }
     }

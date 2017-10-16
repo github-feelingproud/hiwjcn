@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Lib.extension;
 using Lib.ioc;
+using System.Runtime.Serialization;
 
 namespace Lib.mvc.user
 {
@@ -12,32 +13,46 @@ namespace Lib.mvc.user
     /// 为汽配龙业务提供的数据
     /// </summary>
     [Serializable]
+    [DataContract]
     public class QPLData
     {
+        [DataMember]
         public virtual double Lon { get; set; }
 
+        [DataMember]
         public virtual double Lat { get; set; }
 
+        [DataMember]
         public virtual string TraderShopType { get; set; }
 
+        [DataMember]
         public virtual decimal MaxServiceDistance { get; set; }
 
+        [DataMember]
         public virtual bool IsGeneralDelivery { get; set; }
 
+        [DataMember]
         public virtual bool IsQuickArrive { get; set; }
 
+        [DataMember]
         public virtual string TraderId { get; set; }
 
+        [DataMember]
         public virtual string TraderName { get; set; }
 
+        [DataMember]
         public virtual int IsCheck { get; set; }
 
+        [DataMember]
         public virtual string CustomerType { get; set; }
 
+        [DataMember]
         public virtual int IsHaveInquiry { get; set; }
 
+        [DataMember]
         public virtual string LocationId { get; set; }
 
+        [DataMember]
         public virtual int IsSelf { get; set; }
     }
 
@@ -45,43 +60,59 @@ namespace Lib.mvc.user
     /// 记录登陆信息，可以序列化
     /// </summary>
     [Serializable]
+    [DataContract]
     public class LoginUserInfo : QPLData
     {
         public LoginUserInfo() { }
 
+        [DataMember]
         public virtual long IID { get; set; }
 
+        [DataMember]
         public virtual string UserID { get; set; }
 
         [Obsolete("等同于UserID")]
+        [DataMember]
         public virtual string UserUID
         {
             get => this.UserID;
             set => this.UserID = value;
         }
 
+        [DataMember]
         public virtual string UserName { get; set; }
 
+        [DataMember]
         public virtual string NickName { get; set; }
 
+        [DataMember]
         public virtual string Email { get; set; }
 
+        [DataMember]
         public virtual string HeadImgUrl { get; set; }
 
+        [DataMember]
         public virtual int IsActive { get; set; }
 
+        [DataMember]
         public virtual bool IsValid { get; set; } = false;
 
+        [DataMember]
         public virtual string LoginToken { get; set; }
 
+        [DataMember]
         public virtual string RefreshToken { get; set; }
 
+        [DataMember]
         public virtual DateTime TokenExpire { get; set; }
 
+        [DataMember]
         public virtual List<string> Scopes { get; set; }
 
+        [DataMember]
         public virtual List<string> Permissions { get; set; }
 
+        [DataMember]
         public virtual Dictionary<string, string> ExtraData { get; set; }
 
 

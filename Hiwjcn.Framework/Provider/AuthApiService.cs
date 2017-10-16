@@ -212,26 +212,6 @@ namespace Hiwjcn.Bll.Auth
             return data;
         }
 
-        public async Task<_<string>> RemoveCacheAsync(string token_uid)
-        {
-            var key = CacheKeyManager.AuthTokenKey(token_uid);
-
-            this._cache.Remove(key);
-
-            await Task.FromResult(1);
-            return new _<string>() { success = true };
-        }
-
-        public async Task<_<string>> RemoveUserCacheAsync(string user_uid)
-        {
-            var key = CacheKeyManager.AuthUserInfoKey(user_uid);
-
-            this._cache.Remove(key);
-
-            await Task.FromResult(1);
-            return new _<string>() { success = true };
-        }
-
         public async Task<_<string>> RemoveCacheAsync(CacheBundle data)
         {
             var res = new _<string>();
@@ -263,14 +243,14 @@ namespace Hiwjcn.Bll.Auth
                 keys.AddRange(data.ScopeUID.Select(x => CacheKeyManager.AuthScopeKey(x)));
             }
 
-            foreach (var key in keys)
+            foreach (var key in keys.Distinct())
             {
                 this._cache.Remove(key);
             }
 
             await Task.FromResult(1);
 
-            res.SetSuccessData("");
+            res.SetSuccessData(string.Empty);
 
             return res;
         }
