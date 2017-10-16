@@ -102,5 +102,18 @@ namespace Hiwjcn.Web.Controllers
                 return GetJson(data);
             });
         }
+
+        [HttpPost]
+        [RequestLog]
+        [ActionName(AuthApiControllerConfig.Action_RemoveCache)]
+        public async Task<ActionResult> RemoveCache(string data)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var bundle = data?.JsonToEntity<CacheBundle>();
+                var res = await this.api.RemoveCacheAsync(bundle);
+                return GetJson(res);
+            });
+        }
     }
 }

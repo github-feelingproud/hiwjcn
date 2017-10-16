@@ -212,5 +212,67 @@ namespace Hiwjcn.Bll.Auth
             return data;
         }
 
+        public async Task<_<string>> RemoveCacheAsync(string token_uid)
+        {
+            var key = CacheKeyManager.AuthTokenKey(token_uid);
+
+            this._cache.Remove(key);
+
+            await Task.FromResult(1);
+            return new _<string>() { success = true };
+        }
+
+        public async Task<_<string>> RemoveUserCacheAsync(string user_uid)
+        {
+            var key = CacheKeyManager.AuthUserInfoKey(user_uid);
+
+            this._cache.Remove(key);
+
+            await Task.FromResult(1);
+            return new _<string>() { success = true };
+        }
+
+        public async Task<_<string>> RemoveCacheAsync(CacheBundle data)
+        {
+            var res = new _<string>();
+            if (data == null)
+            {
+                res.SetErrorMsg("缓存key参数为空");
+                return res;
+            }
+
+            var keys = new List<string>();
+            if (ValidateHelper.IsPlumpList(data.UserUID))
+            {
+                keys.AddRange(data.UserUID.Select(x => CacheKeyManager.AuthUserInfoKey(x)));
+            }
+            if (ValidateHelper.IsPlumpList(data.TokenUID))
+            {
+                keys.AddRange(data.TokenUID.Select(x => CacheKeyManager.AuthTokenKey(x)));
+            }
+            if (ValidateHelper.IsPlumpList(data.SSOUserUID))
+            {
+                keys.AddRange(data.SSOUserUID.Select(x => CacheKeyManager.AuthSSOUserInfoKey(x)));
+            }
+            if (ValidateHelper.IsPlumpList(data.ClientUID))
+            {
+                keys.AddRange(data.ClientUID.Select(x => CacheKeyManager.AuthClientKey(x)));
+            }
+            if (ValidateHelper.IsPlumpList(data.ScopeUID))
+            {
+                keys.AddRange(data.ScopeUID.Select(x => CacheKeyManager.AuthScopeKey(x)));
+            }
+
+            foreach (var key in keys)
+            {
+                this._cache.Remove(key);
+            }
+
+            await Task.FromResult(1);
+
+            res.SetSuccessData("");
+
+            return res;
+        }
     }
 }

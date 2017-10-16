@@ -13,6 +13,7 @@ using Lib.ioc;
 using System.ServiceModel;
 using System.Net.Http;
 using Lib.net;
+using System.Runtime.Serialization;
 
 namespace Lib.mvc.auth
 {
@@ -40,6 +41,13 @@ namespace Lib.mvc.auth
         /// 用密码登录换取code
         /// </summary>
         Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password);
+
+        /// <summary>
+        /// 删除缓存
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        Task<_<string>> RemoveCacheAsync(CacheBundle data);
     }
 
     /// <summary>
@@ -60,6 +68,9 @@ namespace Lib.mvc.auth
 
         [OperationContract]
         Task<_<string>> GetAuthCodeByPassword(string client_id, List<string> scopes, string username, string password);
+
+        [OperationContract]
+        Task<_<string>> RemoveCacheAsync(CacheBundle data);
     }
 
     /// <summary>
@@ -102,6 +113,14 @@ namespace Lib.mvc.auth
             using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
             {
                 return await client.Instance.GetLoginUserInfoByToken(client_id, access_token);
+            }
+        }
+
+        public async Task<_<string>> RemoveCacheAsync(CacheBundle data)
+        {
+            using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
+            {
+                return await client.Instance.RemoveCacheAsync(data);
             }
         }
     }
@@ -182,6 +201,20 @@ namespace Lib.mvc.auth
                 var json = await response.Content.ReadAsStringAsync();
                 var loginuser = json.JsonToEntity<_<LoginUserInfo>>();
                 return loginuser;
+            }
+        }
+
+        public async Task<_<string>> RemoveCacheAsync(CacheBundle data)
+        {
+            var response = await client.PostAsJsonAsync(this._server.RemoveCache(), new
+            {
+                data = (data ?? throw new ArgumentNullException(nameof(data))).ToJson()
+            });
+            using (response)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var res = json.JsonToEntity<_<string>>();
+                return res;
             }
         }
     }

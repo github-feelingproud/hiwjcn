@@ -19,6 +19,7 @@ namespace Lib.mvc.auth
         public const string Action_AuthCodeByOneTimeCode = "AuthCodeByOneTimeCode";
         public const string Action_AccessToken = "AccessToken";
         public const string Action_CheckToken = "CheckToken";
+        public const string Action_RemoveCache = "RemoveCache";
     }
 
     public class AuthServerConfig
@@ -87,6 +88,12 @@ namespace Lib.mvc.auth
         /// token换用户信息
         /// </summary>
         public string CheckToken() => this.AuthApiPath(AuthApiControllerConfig.Action_CheckToken);
+
+        /// <summary>
+        /// 删除token缓存
+        /// </summary>
+        /// <returns></returns>
+        public string RemoveCache() => this.AuthApiPath(AuthApiControllerConfig.Action_RemoveCache);
 
     }
 

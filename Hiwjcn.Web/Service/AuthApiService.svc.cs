@@ -41,5 +41,10 @@ namespace Hiwjcn.Web.Service
         {
             return await this.X(async s => await s.GetLoginUserInfoByTokenAsync(client_id, access_token));
         }
+
+        public async Task<_<string>> RemoveCacheAsync(CacheBundle data)
+        {
+            return await this.X(async s => await s.RemoveCacheAsync(data));
+        }
     }
 }
