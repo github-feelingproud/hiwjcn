@@ -11,6 +11,12 @@ namespace Lib.mq
         //
     }
 
+    [Obsolete("使用" + nameof(IMessageQueueProducer))]
+    public interface IMessageProducer : IMessageQueueProducer
+    {
+
+    }
+
     public interface IMessageQueueProducer
     {
         /// <summary>发送消息</summary>

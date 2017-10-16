@@ -140,8 +140,8 @@ namespace Hiwjcn.Core.Data
         public string address { get; set; }
         public string Website { get; set; }
         public string Notes { get; set; }
-        public Nullable<double> Lon { get; set; }
-        public string Lat { get; set; }
+        public decimal? Lon { get; set; }
+        public decimal? Lat { get; set; }
         public string CustomerType { get; set; }
         public int IsActive { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }

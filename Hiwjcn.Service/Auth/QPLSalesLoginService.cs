@@ -169,6 +169,16 @@ namespace Hiwjcn.Bll.Auth
             user.AddExtraData(nameof(trader.Lat), trader.Lat);
             user.AddExtraData(nameof(trader.TraderShopType), trader.TraderShopType);
 
+            user.AddExtraData("SalseName", model.LoginNo);
+            user.AddExtraData(nameof(trader.ShopName), trader.ShopName);
+            user.AddExtraData(nameof(trader.Mobile), trader.Mobile);
+            user.AddExtraData(nameof(trader.Phone), trader.Phone);
+            user.AddExtraData(nameof(trader.CompanyName), trader.CompanyName);
+            user.AddExtraData(nameof(trader.Images), trader.Images);
+            user.AddExtraData(nameof(trader.ProvinceId), trader.ProvinceId);
+            user.AddExtraData(nameof(trader.CityId), trader.CityId);
+            user.AddExtraData(nameof(trader.StreetId), trader.StreetId);
+
             user.LoginToken = "等待设置token";
 
             return user;
