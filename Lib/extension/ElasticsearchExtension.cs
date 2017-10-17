@@ -511,9 +511,13 @@ namespace Lib.extension
             sort.Script(x => sd.Descending());
         }
 
+        /// <summary>
+        /// https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/function-score-query-usage.html
+        /// </summary>
+        /// <param name="sd"></param>
         public static void FunctionQuery(this SearchDescriptor<EsExample.ProductListV2> sd)
         {
-            new FunctionScoreQuery()
+            var qs = new FunctionScoreQuery()
             {
                 Name = "named_query",
                 Boost = 1.1,
@@ -532,11 +536,16 @@ namespace Lib.extension
                         Field = "x", Factor = 1.1,    Missing = 0.1, Modifier = FieldValueFactorModifier.Ln
                     },
                     new RandomScoreFunction { Seed = 1337 },
+                    new GaussGeoDecayFunction() { Origin=new GeoLocation(32,4) },
                     new RandomScoreFunction { Seed = "randomstring" },
                     new WeightFunction { Weight = 1.0},
                     new ScriptScoreFunction { Script = new ScriptQuery { File = "x" } }
                 }
             };
+            sd = sd.Query(x => qs);
+            sd = sd.Sort(x => x.Descending(s => s.UpdatedDate));
+            sd = sd.Skip(0).Take(10);
+            new ElasticClient().Search<EsExample.ProductListV2>(_ => sd);
         }
 
         public static void UpdateDoc(IElasticClient client)
