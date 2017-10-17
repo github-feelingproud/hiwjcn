@@ -87,9 +87,18 @@ namespace Lib.mvc.auth
             this.url = _server.WcfUrl;
         }
 
+        private ServiceClient<IAuthApiWcfServiceContract> Client()
+        {
+            if (!ValidateHelper.IsPlumpString(this.url))
+            {
+                throw new Exception($"{nameof(IAuthApiWcfServiceContract)}没有配置远程地址");
+            }
+            return new ServiceClient<IAuthApiWcfServiceContract>(this.url);
+        }
+
         public async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
         {
-            using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
+            using (var client = this.Client())
             {
                 return await client.Instance.GetAccessToken(client_id, client_secret, code, grant_type);
             }
@@ -97,7 +106,7 @@ namespace Lib.mvc.auth
 
         public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
         {
-            using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
+            using (var client = this.Client())
             {
                 return await client.Instance.GetAuthCodeByOneTimeCode(client_id, scopes, phone, sms);
             }
@@ -105,7 +114,7 @@ namespace Lib.mvc.auth
 
         public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password)
         {
-            using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
+            using (var client = this.Client())
             {
                 return await client.Instance.GetAuthCodeByPassword(client_id, scopes, username, password);
             }
@@ -113,7 +122,7 @@ namespace Lib.mvc.auth
 
         public async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string client_id, string access_token)
         {
-            using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
+            using (var client = this.Client())
             {
                 return await client.Instance.GetLoginUserInfoByToken(client_id, access_token);
             }
@@ -121,7 +130,7 @@ namespace Lib.mvc.auth
 
         public async Task<_<string>> RemoveCacheAsync(CacheBundle data)
         {
-            using (var client = new ServiceClient<IAuthApiWcfServiceContract>(this.url))
+            using (var client = this.Client())
             {
                 return await client.Instance.RemoveCache(data);
             }
@@ -131,6 +140,7 @@ namespace Lib.mvc.auth
     /// <summary>
     /// 基于web api远程调用的auth api实现
     /// </summary>
+    [Obsolete("使用wcf的provider，不提供webapi的支持")]
     public class AuthApiFromWebApi : IAuthApi
     {
         private static readonly HttpClient client = HttpClientManager.Instance.DefaultClient;

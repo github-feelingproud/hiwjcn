@@ -23,6 +23,7 @@ using Hiwjcn.Framework;
 
 namespace Hiwjcn.Web.Controllers
 {
+    [Obsolete("使用wcf的provider，不提供webapi的支持")]
     [RoutePrefix(AuthApiControllerConfig.ControllerName)]
     public class AuthController : BaseController
     {
