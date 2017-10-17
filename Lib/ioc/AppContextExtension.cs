@@ -37,7 +37,7 @@ namespace Lib.ioc
         /// </summary>
         public static void UseSystemConfig<T>(this ContainerBuilder builder)
             where T : class, ISettings =>
-            builder.RegisterType<T>().AsSelf().As<ISettings>().SingleInstance();
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<ISettings>().SingleInstance();
 
         /// <summary>
         /// 使用数据库
@@ -60,7 +60,7 @@ namespace Lib.ioc
         /// <param name="builder"></param>
         public static void UseMessageQueue<T>(this ContainerBuilder builder)
             where T : class, IMessageQueueProducer =>
-            builder.RegisterType<T>().AsSelf().As<IMessageQueueProducer>().SingleInstance();
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IMessageQueueProducer>().SingleInstance();
 
         /// <summary>
         /// 配置不注册IOC
