@@ -55,7 +55,7 @@ namespace Lib.mq
         /// <param name="priority"></param>
         /// <param name="delay"></param>
         /// <param name="properties"></param>
-        void Send<T>(string routeKey, T message,
+        void SendMessage<T>(string routeKey, T message,
             DeliveryModeEnum? deliver_mode = null,
             MessagePriority? priority = null,
             TimeSpan? delay = null,
@@ -72,7 +72,7 @@ namespace Lib.mq
         /// <param name="delay"></param>
         /// <param name="properties"></param>
         /// <returns></returns>
-        Task SendAsync<T>(string routeKey, T message,
+        Task SendMessageAsync<T>(string routeKey, T message,
             DeliveryModeEnum? deliver_mode = null,
             MessagePriority? priority = null,
             TimeSpan? delay = null,

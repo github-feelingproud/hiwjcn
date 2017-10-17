@@ -147,12 +147,12 @@ namespace Lib.mq
             }
         }
 
-        public void Send<T>(string routeKey, T message, DeliveryModeEnum? deliver_mode = null, MessagePriority? priority = null, TimeSpan? delay = null, IDictionary<string, object> properties = null)
+        public void SendMessage<T>(string routeKey, T message, DeliveryModeEnum? deliver_mode = null, MessagePriority? priority = null, TimeSpan? delay = null, IDictionary<string, object> properties = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task SendAsync<T>(string routeKey, T message, DeliveryModeEnum? deliver_mode = null, MessagePriority? priority = null, TimeSpan? delay = null, IDictionary<string, object> properties = null)
+        public Task SendMessageAsync<T>(string routeKey, T message, DeliveryModeEnum? deliver_mode = null, MessagePriority? priority = null, TimeSpan? delay = null, IDictionary<string, object> properties = null)
         {
             throw new NotImplementedException();
         }
