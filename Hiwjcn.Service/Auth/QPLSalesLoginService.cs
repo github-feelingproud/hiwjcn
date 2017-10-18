@@ -157,8 +157,8 @@ namespace Hiwjcn.Bll.Auth
             user.IsGeneralDelivery = trader.IsGeneralDelivery ?? false;
             user.IsQuickArrive = trader.IsQuickArrive ?? false;
             user.MaxServiceDistance = trader.MaxServiceDistance ?? 0;
-            user.Lon = trader.Lon ?? 0;
-            user.Lat = (trader.Lat ?? "0").ToDouble();
+            user.Lon = (double)(trader.Lon ?? 0);
+            user.Lat = (double)(trader.Lat ?? 0); ;
             user.TraderShopType = trader.TraderShopType;
 
             user.AddExtraData(nameof(user.TraderId), user.TraderId);
@@ -166,7 +166,7 @@ namespace Hiwjcn.Bll.Auth
             user.AddExtraData(nameof(trader.IsQuickArrive), (trader.IsQuickArrive ?? false).ToBoolInt().ToString());
             user.AddExtraData(nameof(trader.MaxServiceDistance), (trader.MaxServiceDistance ?? 0).ToString());
             user.AddExtraData(nameof(trader.Lon), (trader.Lon ?? 0).ToString());
-            user.AddExtraData(nameof(trader.Lat), trader.Lat);
+            user.AddExtraData(nameof(trader.Lat), (trader.Lat ?? 0).ToString());
             user.AddExtraData(nameof(trader.TraderShopType), trader.TraderShopType);
 
             user.AddExtraData("SalseName", model.LoginNo);
@@ -178,6 +178,7 @@ namespace Hiwjcn.Bll.Auth
             user.AddExtraData(nameof(trader.ProvinceId), trader.ProvinceId);
             user.AddExtraData(nameof(trader.CityId), trader.CityId);
             user.AddExtraData(nameof(trader.StreetId), trader.StreetId);
+            user.AddExtraData(nameof(trader.RepositoryUID), trader.RepositoryUID);
 
             user.LoginToken = "等待设置token";
 
