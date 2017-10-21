@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Lib
@@ -39,6 +40,9 @@ namespace Lib
             var cls = new PartialCls();
             cls.xx();
             cls.xx_partial();
+
+            var cul = new CultureInfo("");
+            var s = DateTime.Now.ToString(cul.DateTimeFormat);
         }
     }
 

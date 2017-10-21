@@ -15,7 +15,7 @@ namespace Lib.data
     /// 使用依赖注入中name为db的dbcontext
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public partial class EFRepository<T> : EFRepositoryBase<T> where T : class, IDBTable
+    public class EFRepository<T> : EFRepositoryBase<T> where T : class, IDBTable
     {
         public EFManager _EFManager { get; private set; }
 
