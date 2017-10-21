@@ -14,6 +14,18 @@ namespace Lib
         public static readonly string CodingPage = "https://github.com/hiwjcn";
     }
 
+    public partial class PartialCls
+    {
+        public void xx()
+        { }
+    }
+
+    public partial class PartialCls
+    {
+        public void xx_partial()
+        { }
+    }
+
     public class SyntaxTest
     {
         public SyntaxTest()
@@ -23,6 +35,10 @@ namespace Lib
             updateDoc.Description = "default description";
 
             var bignum = 123_215_435_236_351;
+
+            var cls = new PartialCls();
+            cls.xx();
+            cls.xx_partial();
         }
     }
 

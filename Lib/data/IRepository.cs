@@ -13,7 +13,7 @@ namespace Lib.data
     /// 仓储接口
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IRepository<T> where T : IDBTable
+    public interface IRepository<T> : IDisposable where T : IDBTable
     {
         #region 添加
         /// <summary>
@@ -282,7 +282,6 @@ namespace Lib.data
 
     public abstract class EFRepositoryBase<T> : IRepository<T> where T : class, IDBTable
     {
-
         #region 添加
         /// <summary>
         /// 添加多个model
@@ -679,9 +678,11 @@ namespace Lib.data
         public const bool DEFAULT_TRACK = false;
 
         public abstract void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = DEFAULT_TRACK);
+
         public abstract Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = DEFAULT_TRACK);
 
         public abstract void PrepareSession(Func<DbContext, bool> callback);
+
         public abstract Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback);
 
         #endregion
@@ -779,5 +780,10 @@ namespace Lib.data
         }
 
         #endregion
+        
+        public virtual void Dispose()
+        {
+            //do nothing
+        }
     }
 }

@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace Lib.data
 {
+    /// <summary>
+    /// 使用依赖注入中name为db的dbcontext
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public partial class EFRepository<T> : EFRepositoryBase<T> where T : class, IDBTable
     {
         public EFManager _EFManager { get; private set; }
@@ -44,11 +48,10 @@ namespace Lib.data
         #endregion
     }
 
-    partial class EFRepository<T>
-    {
-        public void TODO_PLACE_ASYNC_METHOD_IN_THIS_PARTIAL_CLASS() { }
-    }
-
+    /// <summary>
+    /// 手动传入dbcontext
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class EFRepositoryFromSource<T> : EFRepositoryBase<T> where T : class, IDBTable
     {
         private readonly Func<DbContext> GetContext;
@@ -93,6 +96,11 @@ namespace Lib.data
         }
     }
 
+    /// <summary>
+    /// 通过泛型指定dbcontext
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="Context"></typeparam>
     public class EFRepositoryFromContext<T, Context> : EFRepositoryBase<T>
         where T : class, IDBTable
         where Context : DbContext, new()
@@ -129,6 +137,48 @@ namespace Lib.data
             {
                 await callback.Invoke(db);
             }
+        }
+    }
+
+    /// <summary>
+    /// 从依赖注入中获取默认dbcontext
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class EFRepositoryFromIOC<T> : EFRepositoryBase<T>
+        where T : class, IDBTable
+    {
+        private readonly DbContext _context;
+
+        public EFRepositoryFromIOC(DbContext _context)
+        {
+            this._context = _context;
+        }
+
+        public override void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
+        {
+            var query = this._context.Set<T>().AsQueryableTrackingOrNot(track);
+            callback.Invoke(query);
+        }
+
+        public override async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
+        {
+            var query = this._context.Set<T>().AsQueryableTrackingOrNot(track);
+            await callback.Invoke(query);
+        }
+
+        public override void PrepareSession(Func<DbContext, bool> callback)
+        {
+            callback.Invoke(this._context);
+        }
+
+        public override async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        {
+            await callback.Invoke(this._context);
+        }
+
+        public override void Dispose()
+        {
+            this._context?.Dispose();
         }
     }
 }
