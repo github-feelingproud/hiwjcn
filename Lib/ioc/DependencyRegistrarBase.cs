@@ -87,10 +87,11 @@ namespace Lib.ioc
             {
                 foreach (var t in a.GetTypes())
                 {
-                    var is_repo = t.GetAllInterfaces_().Any(x => x.IsGenericType_(typeof(IRepository<>)));
-                    if (t.BaseType != null && is_repo)
+                    var all_interfaces = t.GetAllInterfaces_();
+                    if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IRepository<>))))
                     {
-                        builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
+                        var valid_interfaces = all_interfaces.Where(x => x != typeof(IRepository<>) || !x.IsGenericType_(typeof(IRepository<>))).ToArray();
+                        builder.RegisterType(t).AsSelf().As(t.BaseType).As(valid_interfaces);
                     }
                 }
             }
