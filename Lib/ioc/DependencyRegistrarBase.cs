@@ -53,10 +53,11 @@ namespace Lib.ioc
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="ass"></param>
+        [Obsolete("使用" + nameof(RegDataRepositoryProvider) + "和" + nameof(RegDataRepository_) + "替代")]
         protected virtual void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
         {
             //注册泛型
-            builder.RegisterGeneric(typeof(EFRepository<>)).AsSelf().As(typeof(IRepository<>));
+            this.RegDataRepositoryProvider(ref builder, typeof(EFRepository<>));
             foreach (var a in ass)
             {
                 foreach (var t in a.GetTypes())
@@ -64,6 +65,32 @@ namespace Lib.ioc
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(EFRepository<>)))
                     {
                         var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
+                    }
+                }
+            }
+        }
+
+        protected virtual void RegDataRepositoryProvider(ref ContainerBuilder builder, Type t)
+        {
+            if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
+            builder.RegisterGeneric(t).AsSelf().As(typeof(IRepository<>));
+        }
+
+        /// <summary>
+        /// 注册泛型
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="ass"></param>
+        protected virtual void RegDataRepository_(ref ContainerBuilder builder, params Assembly[] ass)
+        {
+            foreach (var a in ass)
+            {
+                foreach (var t in a.GetTypes())
+                {
+                    var is_repo = t.GetAllInterfaces_().Any(x => x.IsGenericType_(typeof(IRepository<>)));
+                    if (t.BaseType != null && is_repo)
+                    {
+                        builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
                     }
                 }
             }

@@ -14,6 +14,7 @@ using System;
 using Bll.User;
 using Hiwjcn.Bll.Auth;
 using Lib.mvc.auth;
+using Lib.data;
 
 namespace Hiwjcn.Framework
 {
@@ -53,7 +54,9 @@ namespace Hiwjcn.Framework
 
             #region 注册Data
             //注册数据访问层
-            RegDataRepository(ref builder, tps.core.Assembly);
+            //RegDataRepository(ref builder, tps.core.Assembly);
+            RegDataRepository_(ref builder, tps.core.Assembly);
+            RegDataRepositoryProvider(ref builder, typeof(EFRepository<>));
             #endregion
 
             #region 注册service
