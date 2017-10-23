@@ -27,9 +27,9 @@ namespace Hiwjcn.Framework
         {
             var tps = new
             {
-                framework = typeof(UserBaseController),
-                service = typeof(MyService),
-                core = typeof(EntityDB)
+                framework = typeof(UserBaseController).Assembly,
+                service = typeof(MyService).Assembly,
+                core = typeof(EntityDB).Assembly
             };
 
             //Aop拦截
@@ -50,25 +50,24 @@ namespace Hiwjcn.Framework
             //builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().As<ILoginStatus>().SingleInstance();
 
             #region 自动注册
-            AutoRegistered(ref builder, tps.core.Assembly, tps.service.Assembly, tps.framework.Assembly);
+            AutoRegistered(ref builder, tps.core, tps.service, tps.framework);
             #endregion
 
             #region 注册Data
             //注册数据访问层
-            //RegDataRepository(ref builder, tps.core.Assembly);
-            RegDataRepository_(ref builder, tps.core.Assembly);
+            RegDataRepository_(ref builder, tps.core);
             RegDataRepositoryProvider(ref builder, typeof(EFRepository<>));
             #endregion
 
             #region 注册service
             //逻辑代码注册
-            RegService_(ref builder, tps.service.Assembly);
+            RegService_(ref builder, tps.service);
             RegServiceProvider(ref builder, typeof(ServiceBase<>));
             #endregion
 
             #region 注册事件
             //事件注册
-            RegEvent(ref builder, tps.service.Assembly);
+            RegEvent(ref builder, tps.service);
             #endregion
         }
     }
