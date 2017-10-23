@@ -71,11 +71,13 @@ namespace Lib.cache
         /// Removes items by pattern
         /// </summary>
         /// <param name="pattern">pattern</param>
+        [Obsolete("不推荐使用，效率低，部分provider无法实现")]
         void RemoveByPattern(string pattern);
 
         /// <summary>
         /// Clear all cache data
         /// </summary>
+        [Obsolete("不推荐使用，效率低，部分provider无法实现")]
         void Clear();
     }
 }

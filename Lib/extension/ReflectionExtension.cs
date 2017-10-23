@@ -46,14 +46,15 @@ namespace Lib.extension
         }
 
         /// <summary>
-        /// 非抽象类
+        /// 非抽象类，不是抽象类，不是接口
         /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
         public static bool IsNormalClass(this Type t)
         {
-            return t.IsClass && !t.IsAbstract;
+            return t.IsClass && !t.IsAbstract && !t.IsInterface;
         }
+
+        public static Type[] GetAllNormalClass(this Assembly ass) =>
+            ass.GetTypes().Where(x => x.IsNormalClass()).ToArray();
 
         /// <summary>
         /// 是指定的泛型

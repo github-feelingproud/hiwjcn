@@ -29,13 +29,11 @@ namespace Lib.ioc
         /// <summary>
         /// 自动注册
         /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="ass"></param>
         protected virtual void AutoRegistered(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
-                var types = a.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<IAutoRegistered>()).ToArray();
+                var types = a.GetAllNormalClass().Where(x => x.IsAssignableTo_<IAutoRegistered>()).ToArray();
                 foreach (var t in types)
                 {
                     var reg = builder.RegisterType(t).AsSelf().AsImplementedInterfaces();
@@ -51,8 +49,6 @@ namespace Lib.ioc
         /// <summary>
         /// 注册仓库
         /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="ass"></param>
         [Obsolete("使用" + nameof(RegDataRepositoryProvider) + "和" + nameof(RegDataRepository_) + "替代")]
         protected virtual void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
         {
@@ -60,7 +56,7 @@ namespace Lib.ioc
             this.RegDataRepositoryProvider(ref builder, typeof(EFRepository<>));
             foreach (var a in ass)
             {
-                foreach (var t in a.GetTypes())
+                foreach (var t in a.GetAllNormalClass())
                 {
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(EFRepository<>)))
                     {
@@ -70,6 +66,9 @@ namespace Lib.ioc
             }
         }
 
+        /// <summary>
+        /// 使用仓储实现
+        /// </summary>
         protected virtual void RegDataRepositoryProvider(ref ContainerBuilder builder, Type t)
         {
             if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
@@ -77,21 +76,50 @@ namespace Lib.ioc
         }
 
         /// <summary>
-        /// 注册泛型
+        /// 注册所有实现了仓储的类
         /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="ass"></param>
         protected virtual void RegDataRepository_(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
-                foreach (var t in a.GetTypes())
+                foreach (var t in a.GetAllNormalClass())
                 {
-                    var all_interfaces = t.GetAllInterfaces_();
+                    var all_interfaces = t.GetAllInterfaces_().ToArray();
                     if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IRepository<>))))
                     {
-                        var valid_interfaces = all_interfaces.Where(x => x != typeof(IRepository<>) || !x.IsGenericType_(typeof(IRepository<>))).ToArray();
-                        builder.RegisterType(t).AsSelf().As(t.BaseType).As(valid_interfaces);
+                        builder.RegisterType(t).AsSelf().As(t.BaseType).As(all_interfaces);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 注册logic service
+        /// </summary>
+        protected virtual void RegServiceProvider(ref ContainerBuilder builder, Type t)
+        {
+            if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
+            builder.RegisterGeneric(t).AsSelf().As(typeof(IServiceBase<>));
+        }
+
+        /// <summary>
+        /// 注册服务
+        /// </summary>
+        protected virtual void RegService_(ref ContainerBuilder builder, params Assembly[] ass)
+        {
+            foreach (var a in ass)
+            {
+                foreach (var t in a.GetAllNormalClass())
+                {
+                    var all_interfaces = t.GetAllInterfaces_().ToArray();
+                    if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IServiceBase<>))))
+                    {
+                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
+
+                        if (this.Intercept)
+                        {
+                            reg = reg.EnableClassInterceptors();
+                        }
                     }
                 }
             }
@@ -100,13 +128,14 @@ namespace Lib.ioc
         /// <summary>
         /// 注册服务
         /// </summary>
+        [Obsolete("使用" + nameof(RegServiceProvider) + "和" + nameof(RegService_) + "替代")]
         protected virtual void RegService(ref ContainerBuilder builder, params Assembly[] ass)
         {
             //注册泛型
-            builder.RegisterGeneric(typeof(ServiceBase<>)).AsSelf().As(typeof(IServiceBase<>));
+            this.RegServiceProvider(ref builder, typeof(ServiceBase<>));
             foreach (var a in ass)
             {
-                foreach (var t in a.GetTypes())
+                foreach (var t in a.GetAllNormalClass())
                 {
                     //用这种方式判断是否是某个泛型的实现
                     //t.GetAllInterfaces_().Any(x => x.IsGenericType_(typeof(IServiceBase<>)));
@@ -120,28 +149,6 @@ namespace Lib.ioc
                         {
                             reg = reg.EnableClassInterceptors();
                         }
-                        #region old code
-                        /*
-                     if (intercept)
-                        {
-                            builder.RegisterType(t).As(t).EnableClassInterceptors();
-                            builder.RegisterType(t).As(t.BaseType).EnableClassInterceptors();
-                            if (interfaces?.Count() > 0)
-                            {
-                                builder.RegisterType(t).As(interfaces).EnableClassInterceptors();
-                            }
-                        }
-                        else
-                        {
-                            builder.RegisterType(t).As(t);
-                            builder.RegisterType(t).As(t.BaseType);
-                            if (interfaces?.Count() > 0)
-                            {
-                                builder.RegisterType(t).As(interfaces);
-                            }
-                        }    
-                        */
-                        #endregion
                     }
                 }
             }
@@ -150,13 +157,11 @@ namespace Lib.ioc
         /// <summary>
         /// 注册aop拦截类
         /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="ass"></param>
         protected virtual void RegAop(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
-                var tps = a.GetTypes().Where(x => x.IsAssignableTo_<IInterceptor>()).ToArray();
+                var tps = a.GetAllNormalClass().Where(x => x.IsAssignableTo_<IInterceptor>()).ToArray();
                 builder.RegisterTypes(tps);
             }
         }
@@ -164,15 +169,13 @@ namespace Lib.ioc
         /// <summary>
         /// 注册事件
         /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="ass"></param>
         protected virtual void RegEvent(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
             {
                 try
                 {
-                    foreach (var t in a.GetTypes())
+                    foreach (var t in a.GetAllNormalClass())
                     {
                         var interfaces = t.GetInterfaces().Where(x => x.IsGenericType_(typeof(IConsumer<>))).ToArray();
                         if (interfaces?.Count() > 0)
@@ -203,8 +206,6 @@ namespace Lib.ioc
         /// <summary>
         /// 注册插件的控制器
         /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="ass"></param>
         protected virtual void RegController(ref ContainerBuilder builder, params Assembly[] ass)
         {
             foreach (var a in ass)
@@ -212,7 +213,7 @@ namespace Lib.ioc
                 //注册URL
                 builder.RegisterControllers(a);
                 //注册插件
-                var tps = a.GetTypes().Where(x => x.IsAssignableTo_<BasePaymentController>() && x.IsNormalClass()).ToArray();
+                var tps = a.GetAllNormalClass().Where(x => x.IsAssignableTo_<BasePaymentController>()).ToArray();
                 if (ValidateHelper.IsPlumpList(tps))
                 {
                     builder.RegisterTypes(tps).As<BasePaymentController>();

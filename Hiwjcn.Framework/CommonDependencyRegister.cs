@@ -15,6 +15,7 @@ using Bll.User;
 using Hiwjcn.Bll.Auth;
 using Lib.mvc.auth;
 using Lib.data;
+using Lib.infrastructure;
 
 namespace Hiwjcn.Framework
 {
@@ -61,7 +62,8 @@ namespace Hiwjcn.Framework
 
             #region 注册service
             //逻辑代码注册
-            RegService(ref builder, tps.service.Assembly);
+            RegService_(ref builder, tps.service.Assembly);
+            RegServiceProvider(ref builder, typeof(ServiceBase<>));
             #endregion
 
             #region 注册事件
