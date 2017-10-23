@@ -109,7 +109,7 @@ namespace Lib.extension
         /// <summary>
         /// json转为实体
         /// </summary>
-        public static T JsonToEntity<T>(this string json, bool throwIfException = true)
+        public static T JsonToEntity<T>(this string json, bool throwIfException = true, T deft = default(T))
         {
             try
             {
@@ -117,7 +117,7 @@ namespace Lib.extension
             }
             catch when (!throwIfException)
             {
-                return default(T);
+                return deft;
             }
         }
 
