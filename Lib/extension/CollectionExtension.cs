@@ -181,8 +181,12 @@ namespace Lib.extension
             {
                 throw new Exception($"空list无法执行{nameof(Reduce)}操作");
             }
+            if (list.Count < 2)
+            {
+                throw new Exception($"item少于2的list无法执行{nameof(Reduce)}操作");
+            }
 
-            var res = func(list[0], list.GetItem(1));
+            var res = func(list[0], list[1]);
             for (var i = 2; i < list.Count; ++i)
             {
                 res = func(res, list[i]);
@@ -222,6 +226,29 @@ namespace Lib.extension
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// 取出一批数据
+        /// </summary>
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> list, int size)
+        {
+            if (size <= 0) { throw new Exception("batch size必须大于0"); }
+            var temp = new List<T>();
+            foreach (var m in list)
+            {
+                temp.Add(m);
+                if (temp.Count >= size)
+                {
+                    yield return temp;
+                    //清空，开始下一个batch
+                    temp = new List<T>();
+                }
+            }
+            if (temp.Count > 0)
+            {
+                yield return temp;
+            }
         }
 
         /// <summary>
