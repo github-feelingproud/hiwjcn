@@ -27,9 +27,34 @@ namespace Lib.task
         public abstract bool AutoStart { get; }
 
         /// <summary>
-        /// 调度规则
+        /// 调度规则，多次调用将多次创建，多次调用请使用CachedTrigger
         /// </summary>
         public abstract ITrigger Trigger { get; }
+
+        private readonly object trigger_lock = new object();
+        private ITrigger _trigger = null;
+
+        /// <summary>
+        /// 触发器只创建一次
+        /// </summary>
+        public virtual ITrigger CachedTrigger
+        {
+            get
+            {
+                if (this._trigger == null)
+                {
+                    lock (this.trigger_lock)
+                    {
+                        if (this._trigger == null)
+                        {
+                            this._trigger = this.Trigger ?? throw new Exception("job触发器不能为空");
+                        }
+                    }
+                }
+                return this._trigger;
+            }
+        }
+
 
         /// <summary>
         /// 任务的具体实现
