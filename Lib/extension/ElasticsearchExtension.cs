@@ -196,19 +196,63 @@ namespace Lib.extension
 
         /// <summary>
         /// 搜索建议
+        /// https://elasticsearch.cn/article/142
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="targetField"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public static IDictionary<string, Suggest[]> SuggestKeyword<T>(this IElasticClient client,
-            Expression<Func<T, object>> targetField, string text)
+        public static IDictionary<string, Suggest[]> PhraseSuggest<T>(this IElasticClient client,
+            Expression<Func<T, object>> targetField, string text,
+            string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
             where T : class, IElasticSearchIndex
         {
             var response = client.Suggest<T>(
                 x => x.Phrase("phrase_suggest",
-                m => m.Field(targetField).Text(text)));
+                f => f.Field(targetField).Text(text)
+                .Highlight(h => h.PreTag(highlight_pre).PostTag(hightlight_post)).Size(size)));
+
+            response.ThrowIfException();
+
+            return response.Suggestions;
+        }
+
+        /// <summary>
+        /// 搜索建议
+        /// </summary>
+        public static IDictionary<string, Suggest[]> TermSuggest<T>(this IElasticClient client,
+            Expression<Func<T, object>> targetField, string text, string analyzer = null,
+            string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
+            where T : class, IElasticSearchIndex
+        {
+            var sd = new TermSuggesterDescriptor<T>();
+            sd = sd.Field(targetField).Text(text);
+            if (ValidateHelper.IsPlumpString(analyzer))
+            {
+                sd = sd.Analyzer(analyzer);
+            }
+            sd = sd.Size(size);
+
+            var response = client.Suggest<T>(x => x.Term("term_suggest", f => sd));
+
+            response.ThrowIfException();
+
+            return response.Suggestions;
+        }
+
+        /// <summary>
+        /// 搜索建议
+        /// </summary>
+        public static IDictionary<string, Suggest[]> CompletionSuggest<T>(this IElasticClient client,
+            Expression<Func<T, object>> targetField, string text, string analyzer = null,
+            string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
+            where T : class, IElasticSearchIndex
+        {
+            var sd = new CompletionSuggesterDescriptor<T>();
+            sd = sd.Field(targetField).Text(text);
+            if (ValidateHelper.IsPlumpString(analyzer))
+            {
+                sd = sd.Analyzer(analyzer);
+            }
+            sd = sd.Size(size);
+
+            var response = client.Suggest<T>(x => x.Completion("completion_suggest", f => sd));
 
             response.ThrowIfException();
 
