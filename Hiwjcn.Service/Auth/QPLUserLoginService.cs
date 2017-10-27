@@ -108,9 +108,6 @@ namespace Hiwjcn.Bll.Auth
                         x.CompanyName.Contains(kwd) ||
                         x.ShopName.Contains(kwd) ||
                         x.UserName.Contains(kwd) ||
-                        x.Contact.Contains(kwd) ||
-                        x.Notes.Contains(kwd) ||
-                        x.address.Contains(kwd) ||
                         x.Mobile == kwd ||
                         x.Phone == kwd ||
                         x.ShopNo == kwd ||
