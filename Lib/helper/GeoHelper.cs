@@ -34,13 +34,13 @@ namespace Lib.helper
         /// <summary>
         /// 计算距离
         /// </summary>
-        public static double GetDistance(double lat1, double lon1, double lat2, double lon2, double? defaultValue = -1) =>
-            GetDistance(new GeoInfo() { Lat = lat1, Lon = lon1 }, new GeoInfo() { Lat = lat2, Lon = lon2 }, defaultValue);
+        public static double GetDistanceInKm(double lat1, double lon1, double lat2, double lon2, double? defaultValue = -1) =>
+            GetDistanceInKm(new GeoInfo() { Lat = lat1, Lon = lon1 }, new GeoInfo() { Lat = lat2, Lon = lon2 }, defaultValue);
 
         /// <summary>
         /// 计算距离，如返回最大值需要检查数据
         /// </summary>
-        public static double GetDistance(GeoInfo startPoint, GeoInfo endPoint, double? defaultValue)
+        public static double GetDistanceInKm(GeoInfo startPoint, GeoInfo endPoint, double? defaultValue)
         {
             if (!IsGeoValid(startPoint) || !IsGeoValid(endPoint))
             {
