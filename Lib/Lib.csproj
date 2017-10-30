@@ -248,6 +248,7 @@
     <Compile Include="extension\TaskExtension.cs" />
     <Compile Include="extension\ValidateExtension.cs" />
     <Compile Include="helper\EncodingHelper.cs" />
+    <Compile Include="helper\GeoHelper.cs" />
     <Compile Include="helper\LanguageHelper.cs" />
     <Compile Include="helper\MapperHelper.cs" />
     <Compile Include="core\Singleton.cs" />
