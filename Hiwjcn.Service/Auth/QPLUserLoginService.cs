@@ -170,10 +170,39 @@ namespace Hiwjcn.Bll.Auth
                     return data;
                 }
                 var user = await db.UserInfo.Where(x => x.UserName == phoneOrEmail).FirstOrDefaultAsync();
-                if (!this.CheckUser(user, out var msg))
+                if (user != null)
                 {
-                    data.SetErrorMsg(msg);
-                    return data;
+                    if (!this.CheckUser(user, out var msg))
+                    {
+                        data.SetErrorMsg(msg);
+                        return data;
+                    }
+                }
+                else
+                {
+                    //create new user
+                    var now = DateTime.Now;
+                    user = new UserInfo()
+                    {
+                        UID = Com.GetUUID(),
+                        UserName = phoneOrEmail,
+                        Mobile = phoneOrEmail,
+                        CustomerType = "1",
+                        IsActive = 1,
+                        IsRemove = 0,
+                        IsCheck = 0,
+                        ProvinceId = "31",
+                        CreatedDate = now,
+                        UpdatedDate = now
+                    };
+
+                    db.UserInfo.Add(user);
+                    if (await db.SaveChangesAsync() <= 0)
+                    {
+                        new Exception($"用户创建失败：{user.ToJson()}").AddErrorLog();
+                        data.SetErrorMsg("创建新用户失败");
+                        return data;
+                    }
                 }
                 var loginuser = await this.LoadPermissions(this.Parse(user));
                 data.SetSuccessData(loginuser);
