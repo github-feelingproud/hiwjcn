@@ -39,6 +39,13 @@ namespace Lib.extension
         {
             Debug.WriteLine(e.GetInnerExceptionAsJson());
         }
+
+        /// <summary>
+        /// 输出
+        /// </summary>
+        public static void DebugInfo(this string msg) =>
+            Debug.WriteLine(msg);
+
         #endregion
 
         #region 日志扩展

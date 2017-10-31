@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace Lib.cache
 {
     /// <summary>
-    /// Represents a manager for caching between HTTP requests (long term caching)
+    /// 内存缓存
     /// </summary>
     public class MemoryCacheProvider : CacheBase, ICacheProvider
     {
@@ -15,10 +15,7 @@ namespace Lib.cache
         /// </summary>
         protected ObjectCache Cache
         {
-            get
-            {
-                return MemoryCache.Default;
-            }
+            get => MemoryCache.Default ?? throw new Exception("无法使用内存缓存");
         }
 
         /// <summary>
@@ -80,11 +77,15 @@ namespace Lib.cache
         public virtual void RemoveByPattern(string pattern)
         {
             var regex = new Regex(pattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            var keysToRemove = new List<String>();
+            var keysToRemove = new List<string>();
 
             foreach (var item in Cache)
+            {
                 if (regex.IsMatch(item.Key))
+                {
                     keysToRemove.Add(item.Key);
+                }
+            }
 
             foreach (string key in keysToRemove)
             {
@@ -98,7 +99,9 @@ namespace Lib.cache
         public virtual void Clear()
         {
             foreach (var item in Cache)
+            {
                 Remove(item.Key);
+            }
         }
 
         /// <summary>
