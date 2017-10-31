@@ -343,6 +343,8 @@
     <Compile Include="mvc\user\SSOClientHelper.cs" />
     <Compile Include="mvc\user\UserModelBase.cs" />
     <Compile Include="mvc\user\ValidLoginBaseAttribute.cs" />
+    <Compile Include="mvc\view\IViewRenderService.cs" />
+    <Compile Include="mvc\view\RazorViewRenderService.cs" />
     <Compile Include="mvc\WebWorkContext.cs" />
     <Compile Include="net\HttpClientHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
