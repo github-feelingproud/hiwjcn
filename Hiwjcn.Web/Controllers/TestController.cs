@@ -22,6 +22,7 @@ using Lib.storage;
 using WebCore.MvcLib.Controller;
 using Hiwjcn.Core.Data;
 using System.Text;
+using Nest;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -399,5 +400,27 @@ namespace Hiwjcn.Web.Controllers
             return Content(key);
         }
 
+        [ElasticsearchType(IdProperty = nameof(UID), Name = nameof(SuggestTest))]
+        public class SuggestTest : CompletionSuggestIndexBase
+        {
+            [String(Name = nameof(UID), Index = FieldIndexOption.NotAnalyzed)]
+            public virtual string UID { get; set; }
+
+            [String(Name = nameof(SearchTitle), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+            public string SearchTitle { get; set; }
+        }
+
+        public async Task<ActionResult> suggest(string q)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var client = ElasticsearchClientManager.Instance.DefaultClient.CreateClient();
+                var index = "a_suggest_test_index";
+
+                var list = await client.SimpleCompletionSuggest<SuggestTest>(index, q);
+
+                return GetJson(list);
+            });
+        }
     }
 }

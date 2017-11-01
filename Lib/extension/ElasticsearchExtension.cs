@@ -212,12 +212,13 @@ namespace Lib.extension
         /// https://elasticsearch.cn/article/142
         /// </summary>
         public static IDictionary<string, Suggest[]> PhraseSuggest<T>(this IElasticClient client,
+            string index,
             Expression<Func<T, object>> targetField, string text,
             string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
             where T : class, IElasticSearchIndex
         {
             var response = client.Suggest<T>(
-                x => x.Phrase("phrase_suggest",
+                x => x.Index(index).Phrase("phrase_suggest",
                 f => f.Field(targetField).Text(text)
                 .Highlight(h => h.PreTag(highlight_pre).PostTag(hightlight_post)).Size(size)));
 
@@ -230,6 +231,7 @@ namespace Lib.extension
         /// 搜索建议
         /// </summary>
         public static IDictionary<string, Suggest[]> TermSuggest<T>(this IElasticClient client,
+            string index,
             Expression<Func<T, object>> targetField, string text, string analyzer = null,
             string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
             where T : class, IElasticSearchIndex
@@ -242,7 +244,7 @@ namespace Lib.extension
             }
             sd = sd.Size(size);
 
-            var response = client.Suggest<T>(x => x.Term("term_suggest", f => sd));
+            var response = client.Suggest<T>(x => x.Index(index).Term("term_suggest", f => sd));
 
             response.ThrowIfException();
 
@@ -253,6 +255,7 @@ namespace Lib.extension
         /// 搜索建议
         /// </summary>
         public static IDictionary<string, Suggest[]> CompletionSuggest<T>(this IElasticClient client,
+            string index,
             Expression<Func<T, object>> targetField, string text, string analyzer = null,
             string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
             where T : class, IElasticSearchIndex
@@ -265,7 +268,7 @@ namespace Lib.extension
             }
             sd = sd.Size(size);
 
-            var response = client.Suggest<T>(x => x.Completion("completion_suggest", f => sd));
+            var response = client.Suggest<T>(x => x.Index(index).Completion("completion_suggest", f => sd));
 
             response.ThrowIfException();
 
@@ -273,6 +276,7 @@ namespace Lib.extension
         }
 
         public static async Task<List<string>> SimpleCompletionSuggest<T>(this IElasticClient client,
+            string index,
             string keyword, string analyzer = null, int size = 20)
             where T : CompletionSuggestIndexBase
         {
@@ -290,7 +294,7 @@ namespace Lib.extension
             }
             sd = sd.Size(size);
 
-            var response = await client.SuggestAsync<T>(x => x.Completion("p", f => sd));
+            var response = await client.SuggestAsync<T>(x => x.Index(index).Completion("p", f => sd));
             response.ThrowIfException();
 
             var list = response.Suggestions?["p"]?.FirstOrDefault()?.Options?.ToList();
@@ -307,12 +311,6 @@ namespace Lib.extension
         /// <summary>
         /// 给关键词添加高亮
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="sd"></param>
-        /// <param name="pre"></param>
-        /// <param name="after"></param>
-        /// <param name="fieldHighlighters"></param>
-        /// <returns></returns>
         public static SearchDescriptor<T> AddHighlightWrapper<T>(this SearchDescriptor<T> sd,
             string pre = "<em>", string after = "</em>",
             params Func<HighlightFieldDescriptor<T>, IHighlightField>[] fieldHighlighters)

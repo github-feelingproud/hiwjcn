@@ -176,8 +176,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZooKeeperNetEx, Version=3.4.9.4, Culture=neutral, PublicKeyToken=42cd15de36f9b993, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZooKeeperNetEx.3.4.9.4\lib\net45\ZooKeeperNetEx.dll</HintPath>
+    <Reference Include="ZooKeeperNetEx, Version=3.4.10.1, Culture=neutral, PublicKeyToken=42cd15de36f9b993, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZooKeeperNetEx.3.4.10.1\lib\net45\ZooKeeperNetEx.dll</HintPath>
     </Reference>
     <Reference Include="zxing, Version=1.0.4727.18517, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ZXing.2.1.1\lib\net20\zxing.dll</HintPath>
