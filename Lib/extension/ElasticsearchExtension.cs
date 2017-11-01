@@ -11,7 +11,20 @@ using System.Threading.Tasks;
 
 namespace Lib.extension
 {
+    /// <summary>
+    /// 标记为索引model
+    /// </summary>
     public interface IElasticSearchIndex { }
+
+    /// <summary>
+    /// 用于关键词补全
+    /// 分词默认是ik_max_word，可以override
+    /// </summary>
+    public abstract class CompletionSuggestIndexBase : IElasticSearchIndex
+    {
+        [Completion(Name = nameof(CompletionSearchTitle), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+        public virtual string CompletionSearchTitle { get; set; }
+    }
 
     public static class ElasticsearchExtension
     {
@@ -257,6 +270,38 @@ namespace Lib.extension
             response.ThrowIfException();
 
             return response.Suggestions;
+        }
+
+        public static async Task<List<string>> SimpleCompletionSuggest<T>(this IElasticClient client,
+            string keyword, string analyzer = null, int size = 20)
+            where T : CompletionSuggestIndexBase
+        {
+            var data = new List<string>();
+            if (!ValidateHelper.IsPlumpString(keyword))
+            {
+                return data;
+            }
+
+            var sd = new CompletionSuggesterDescriptor<T>();
+            sd = sd.Field(f => f.CompletionSearchTitle).Text(keyword);
+            if (ValidateHelper.IsPlumpString(analyzer))
+            {
+                sd = sd.Analyzer(analyzer);
+            }
+            sd = sd.Size(size);
+
+            var response = await client.SuggestAsync<T>(x => x.Completion("p", f => sd));
+            response.ThrowIfException();
+
+            var list = response.Suggestions?["p"]?.FirstOrDefault()?.Options?.ToList();
+            if (!ValidateHelper.IsPlumpList(list))
+            {
+                return data;
+            }
+            var sggs = list.OrderByDescending(x => x.Score).Select(x => x.Text);
+            data.AddRange(sggs);
+
+            return data.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
         }
 
         /// <summary>
