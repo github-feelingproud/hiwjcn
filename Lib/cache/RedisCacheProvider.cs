@@ -55,7 +55,7 @@ namespace Lib.cache
             RedisManager.PrepareDataBase(_db =>
             {
                 var res = new CacheResult<object>() { Success = true, Result = data };
-                var entryBytes = Serialize(res);
+                var entryBytes = this.Serialize(res);
 
                 _db.StringSet(key, entryBytes, expire);
                 return true;
@@ -140,6 +140,7 @@ namespace Lib.cache
         /// </summary>
         public virtual void Dispose()
         {
+            //do nothing
         }
 
         #endregion

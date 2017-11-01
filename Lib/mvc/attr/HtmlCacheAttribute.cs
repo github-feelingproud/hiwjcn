@@ -107,7 +107,8 @@ namespace Lib.mvc.attr
                     var vc = new ViewContext(
                         filterContext.Controller.ControllerContext,
                         view,
-                        filterContext.Controller.ViewData, filterContext.Controller.TempData,
+                        filterContext.Controller.ViewData,
+                        filterContext.Controller.TempData,
                         sw);
                     //渲染view
                     view.Render(vc, sw);

@@ -48,7 +48,7 @@ namespace Lib.cache
             policy.AbsoluteExpiration = DateTime.Now + expire;
 
             var res = new CacheResult<object>() { Result = data, Success = true };
-            Cache.Add(new CacheItem(key, Serialize(res)), policy);
+            Cache.Add(new CacheItem(key, this.Serialize(res)), policy);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Lib.cache
         /// </summary>
         public virtual void Dispose()
         {
-            //
+            //do nothing
         }
     }
 }
