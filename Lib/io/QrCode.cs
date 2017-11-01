@@ -16,10 +16,14 @@ using ImageProcessor.Imaging;
 namespace Lib.io
 {
     /// <summary>
-    /// Summary description for QrCode
+    /// 生成二维码和条码
     /// </summary>
     public class QrCode
     {
+        public const int QRCODE_SIZE = 230;
+        public const int BARCODE_SIZE_WIDTH = 300;
+        public const int BARCODE_SIZE_HEIGHT = 50;
+
         public string Charset { private get; set; }
         public ImageFormat Formart { private get; set; }
         public int? Margin { private get; set; }
@@ -31,7 +35,7 @@ namespace Lib.io
         /// <summary>
         /// 二维码
         /// </summary>
-        public byte[] GetQrCodeBytes(string content, int size = 230)
+        public byte[] GetQrCodeBytes(string content, int size = QRCODE_SIZE)
         {
             content = ConvertHelper.GetString(content);
 
@@ -61,7 +65,7 @@ namespace Lib.io
         /// <summary>
         /// 条码
         /// </summary>
-        public byte[] GetBarCodeBytes(string content, int width = 300, int height = 50)
+        public byte[] GetBarCodeBytes(string content, int width = BARCODE_SIZE_WIDTH, int height = BARCODE_SIZE_HEIGHT)
         {
             content = ConvertHelper.GetString(content);
 
@@ -117,11 +121,11 @@ namespace Lib.io
 
     public static class QrCodeExtension
     {
-
         /// <summary>
         /// 带图标二维码
         /// </summary>
-        public static byte[] GetQrCodeWithIconBytes(this QrCode coder, string content, string icon_path, int size = 230)
+        public static byte[] GetQrCodeWithIconBytes(this QrCode coder,
+            string content, string icon_path, int size = QrCode.QRCODE_SIZE)
         {
             if (!File.Exists(icon_path)) { throw new Exception("二维码水印图片不存在"); }
             var bs = coder.GetQrCodeBytes(content, size);
