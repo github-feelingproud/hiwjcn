@@ -292,12 +292,16 @@ namespace Lib.extension
             {
                 sd = sd.Analyzer(analyzer);
             }
+            //允许错4个单词
+            sd = sd.Fuzzy(f => f.Fuzziness(Fuzziness.EditDistance(4)));
             sd = sd.Size(size);
 
-            var response = await client.SuggestAsync<T>(x => x.Index(index).Completion("p", f => sd));
+            var s_name = "p";
+
+            var response = await client.SuggestAsync<T>(x => x.Index(index).Completion(s_name, f => sd));
             response.ThrowIfException();
 
-            var list = response.Suggestions?["p"]?.FirstOrDefault()?.Options?.ToList();
+            var list = response.Suggestions?[s_name]?.FirstOrDefault()?.Options?.ToList();
             if (!ValidateHelper.IsPlumpList(list))
             {
                 return data;
