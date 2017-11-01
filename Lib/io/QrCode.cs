@@ -1,4 +1,5 @@
 ﻿using Lib.helper;
+using Lib.extension;
 using System;
 using System.Collections;
 using System.Drawing;
@@ -16,20 +17,19 @@ namespace Lib.io
     /// </summary>
     public class QrCode
     {
-        /// <summary>
-        /// 生成二维码的bitmap
-        /// </summary>
-        /// <param name="content"></param>
-        /// <param name="size"></param>
-        /// <param name="img_path"></param>
-        /// <returns></returns>
-        private Bitmap GetBitmap(string content, int size = 230, string img_path = null)
+        public string Charset { get; set; }
+        public ImageFormat Formart { get; set; }
+
+        private string _charset { get => this.Charset ?? "UTF-8"; }
+        private ImageFormat _formart { get => this.Formart ?? ImageFormat.Png; }
+
+        public byte[] GetQrCodeBytes(string content, int size = 230)
         {
             content = ConvertHelper.GetString(content);
 
             var option = new QrCodeEncodingOptions()
             {
-                CharacterSet = "UTF-8",
+                CharacterSet = this._charset,
                 DisableECI = true,
                 ErrorCorrection = ZXing.QrCode.Internal.ErrorCorrectionLevel.H,
                 Width = size,
@@ -44,20 +44,22 @@ namespace Lib.io
             };
 
             //生成bitmap
-            var bm = writer.Write(content);
-
-            //如果有小图片就绘制
-            if (ValidateHelper.IsPlumpString(img_path))
+            using (var bm = writer.Write(content))
             {
-                if (!File.Exists(img_path))
-                {
-                    throw new Exception("二维码水印图片不存在");
-                }
-                //如果图片已经有被索引的像素，就删除原来的bm，重新生成
-                bm = ImageHelper.RemovePixelIndexed(bm);
+                return bm.ToBytes(this._formart);
+            }
+        }
+
+        public byte[] GetQrCodeWithIconBytes(string content, string icon_path, int size = 230)
+        {
+            if (!File.Exists(icon_path)) { throw new Exception("二维码水印图片不存在"); }
+            var bs = this.GetQrCodeBytes(content, size);
+
+            using (var bm = ConvertHelper.BytesToBitmap(bs))
+            {
                 using (var g = Graphics.FromImage(bm))
                 {
-                    using (var logo = Image.FromFile(img_path))
+                    using (var logo = Image.FromFile(icon_path))
                     {
                         using (var smallLogo = logo.GetThumbnailImage(bm.Width / 5, bm.Height / 5, null, IntPtr.Zero))
                         {
@@ -66,18 +68,23 @@ namespace Lib.io
                         }
                     }
                 }
+                return bm.ToBytes(this._formart);
             }
-            return bm;
         }
 
-        private Bitmap GetBarCodexx(string content, int width = 300, int height = 50)
+        public byte[] GetBarCodeBytes(string content, int width = 300, int height = 50)
         {
-            var options = new QrCodeEncodingOptions();
-            options.CharacterSet = "UTF-8";
-            options.Width = 300;
-            options.Height = 50;
-            options.Margin = 1;
-            options.PureBarcode = false; // 是否是纯码，如果为 false，则会在图片下方显示数字
+            content = ConvertHelper.GetString(content);
+
+            var options = new QrCodeEncodingOptions()
+            {
+                CharacterSet = this._charset,
+                Width = width,
+                Height = height,
+                Margin = 1,
+                // 是否是纯码，如果为 false，则会在图片下方显示数字
+                PureBarcode = false,
+            };
 
             var writer = new BarcodeWriter()
             {
@@ -85,47 +92,17 @@ namespace Lib.io
                 Options = options
             };
 
-            return writer.Write(content);
-        }
-
-        public byte[] GetBitmapBytes(string content, int size = 230, string img_path = null)
-        {
-            using (var bm = GetBitmap(content, size, img_path))
+            using (var bm = writer.Write(content))
             {
-                return ConvertHelper.BitmapToBytes(bm);
-            }
-        }
-
-        public void WriteToFile(string content, string file_path, string img_path = null)
-        {
-            using (var bm = this.GetBitmap(content, img_path: img_path))
-            {
-                bm.Save(file_path, ImageFormat.Png);
+                return bm.ToBytes(this._formart);
             }
         }
 
         /// <summary>
         /// 识别二维码
         /// </summary>
-        private string DistinguishQrImage(Bitmap bm)
-        {
-            bm = bm ?? throw new Exception("bitmap is null");
-            var reader = new BarcodeReader();
-            reader.Options = new DecodingOptions() { CharacterSet = "UTF-8" };
-            var res = reader.Decode(bm);
-            return res.Text;
-        }
-
-        /// <summary>
-        /// 识别二维码
-        /// </summary>
-        public string DistinguishQrImage(string img_path)
-        {
-            using (var bm = new Bitmap(img_path))
-            {
-                return DistinguishQrImage(bm);
-            }
-        }
+        public string DistinguishQrImage(string img_path) =>
+            this.DistinguishQrImage(File.ReadAllBytes(img_path));
 
         /// <summary>
         /// 识别二维码
@@ -136,7 +113,14 @@ namespace Lib.io
             {
                 using (var bm = new Bitmap(stream))
                 {
-                    return DistinguishQrImage(bm);
+                    var reader = new BarcodeReader();
+                    reader.Options = new DecodingOptions()
+                    {
+                        CharacterSet = this._charset,
+                        TryHarder = true
+                    };
+                    var res = reader.Decode(bm);
+                    return res.Text;
                 }
             }
         }
