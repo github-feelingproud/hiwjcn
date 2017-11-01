@@ -12,7 +12,7 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest10
     {
-        class User
+        public class User
         {
             public virtual string Name { get; set; }
             public virtual int Age { get; set; }
@@ -40,7 +40,11 @@ namespace Hiwjcn.Test
             //razor
             using (var timer = new CpuTimeLogger(logger, "razor engine"))
             {
-                Engine.Razor.RunCompile(templateSource: "用户：Model.Name，年龄：Model.Age", name: "a");
+                Engine.Razor.RunCompile(
+                    templateSource: "用户：@Model.Name，年龄：@Model.Age",
+                    name: "a", 
+                    modelType: user.GetType(), 
+                    model: user);
                 foreach (var i in Com.Range(count))
                 {
                     var data = Engine.Razor.Run("a", null, user);
