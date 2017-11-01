@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.IO;
 
 namespace Lib.io
 {
@@ -13,7 +14,11 @@ namespace Lib.io
 
         public INIFile(string INIPath)
         {
-            path = INIPath;
+            this.path = INIPath;
+            if (!File.Exists(this.path ?? throw new Exception("文件地址不能为空")))
+            {
+                throw new Exception($"文件{this.path}不存在");
+            }
         }
 
         [DllImport("kernel32")]
@@ -30,9 +35,6 @@ namespace Lib.io
         /// <summary>
         /// 写INI文件
         /// </summary>
-        /// <param name="Section"></param>
-        /// <param name="Key"></param>
-        /// <param name="Value"></param>
         public void IniWriteValue(string Section, string Key, string Value)
         {
             WritePrivateProfileString(Section, Key, Value, this.path);
@@ -41,18 +43,16 @@ namespace Lib.io
         /// <summary>
         /// 读取INI文件
         /// </summary>
-        /// <param name="Section"></param>
-        /// <param name="Key"></param>
-        /// <returns></returns>
         public string IniReadValue(string Section, string Key)
         {
-            StringBuilder temp = new StringBuilder(255);
+            var temp = new StringBuilder(255);
             int i = GetPrivateProfileString(Section, Key, "", temp, 255, this.path);
             return temp.ToString();
         }
+
         public byte[] IniReadValues(string section, string key)
         {
-            byte[] temp = new byte[255];
+            var temp = new byte[255];
             int i = GetPrivateProfileString(section, key, "", temp, 255, this.path);
             return temp;
 
@@ -66,10 +66,10 @@ namespace Lib.io
         {
             IniWriteValue(null, null, null);
         }
+
         /// <summary>
         /// 删除ini文件下personal段落下的所有键
         /// </summary>
-        /// <param name="Section"></param>
         public void ClearSection(string Section)
         {
             IniWriteValue(Section, null, null);
