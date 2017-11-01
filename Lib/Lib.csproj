@@ -179,9 +179,11 @@
     <Reference Include="ZooKeeperNetEx, Version=3.4.10.1, Culture=neutral, PublicKeyToken=42cd15de36f9b993, processorArchitecture=MSIL">
       <HintPath>..\packages\ZooKeeperNetEx.3.4.10.1\lib\net45\ZooKeeperNetEx.dll</HintPath>
     </Reference>
-    <Reference Include="zxing, Version=1.0.4727.18517, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZXing.2.1.1\lib\net20\zxing.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="zxing, Version=0.16.2.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.2\lib\net45\zxing.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.16.2.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.2\lib\net45\zxing.presentation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -266,6 +268,7 @@
     <Compile Include="ioc\IAutoRegistered.cs" />
     <Compile Include="ioc\IDependencyRegistrar.cs" />
     <Compile Include="ioc\Interceptors.cs" />
+    <Compile Include="io\INIFile.cs" />
     <Compile Include="log\ESLogAppender.cs" />
     <Compile Include="log\ESLogLine.cs" />
     <Compile Include="log\ESLogHelper.cs" />

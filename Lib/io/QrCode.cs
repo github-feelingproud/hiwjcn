@@ -1,12 +1,13 @@
-﻿using com.google.zxing;
-using com.google.zxing.common;
-using com.google.zxing.qrcode.decoder;
-using Lib.helper;
+﻿using Lib.helper;
 using System;
 using System.Collections;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using ZXing;
+using ZXing.Common;
+using ZXing.QrCode;
+using ZXing.Rendering;
 
 namespace Lib.io
 {
@@ -26,24 +27,25 @@ namespace Lib.io
         {
             content = ConvertHelper.GetString(content);
 
-            var writer = new MultiFormatWriter();
-            //参数(如果不把容错能力设置高一些，添加logo后就无法识别)
-            var hints = new Hashtable();
-            hints.Add(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);//容错能力
-            hints.Add(EncodeHintType.CHARACTER_SET, "UTF-8");//字符集
-            var byteMatrix = writer.encode(content, BarcodeFormat.QR_CODE, size, size, hints);
-            //生成bitmap
-            var bm = byteMatrix.ToBitmap();
-            /*
-             var bm = new Bitmap(size, size, PixelFormat.Format32bppArgb);
-            for (int x = 0; x < size; ++x)
+            var option = new QrCodeEncodingOptions()
             {
-                for (int y = 0; y < size; ++y)
-                {
-                    bm.SetPixel(x, y, byteMatrix.get_Renamed(x, y) != -1 ? Color.Black : Color.White);
-                }
-            }
-             */
+                CharacterSet = "UTF-8",
+                DisableECI = true,
+                ErrorCorrection = ZXing.QrCode.Internal.ErrorCorrectionLevel.H,
+                Width = size,
+                Height = size,
+                Margin = 1
+            };
+
+            var writer = new BarcodeWriter()
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = option
+            };
+
+            //生成bitmap
+            var bm = writer.Write(content);
+
             //如果有小图片就绘制
             if (ValidateHelper.IsPlumpString(img_path))
             {
@@ -68,6 +70,24 @@ namespace Lib.io
             return bm;
         }
 
+        private Bitmap GetBarCodexx(string content, int width = 300, int height = 50)
+        {
+            var options = new QrCodeEncodingOptions();
+            options.CharacterSet = "UTF-8";
+            options.Width = 300;
+            options.Height = 50;
+            options.Margin = 1;
+            options.PureBarcode = false; // 是否是纯码，如果为 false，则会在图片下方显示数字
+
+            var writer = new BarcodeWriter()
+            {
+                Format = BarcodeFormat.CODE_128,
+                Options = options
+            };
+
+            return writer.Write(content);
+        }
+
         public byte[] GetBitmapBytes(string content, int size = 230, string img_path = null)
         {
             using (var bm = GetBitmap(content, size, img_path))
@@ -87,24 +107,18 @@ namespace Lib.io
         /// <summary>
         /// 识别二维码
         /// </summary>
-        /// <param name="b"></param>
-        /// <returns></returns>
         private string DistinguishQrImage(Bitmap bm)
         {
-            if (bm == null)
-            {
-                throw new Exception("bitmap is null");
-            }
-            var source = new RGBLuminanceSource(bm, bm.Width, bm.Height);
-            var bbm = new BinaryBitmap(new HybridBinarizer(source));
-            var result = new MultiFormatReader().decode(bbm);
-            return result.Text;
+            bm = bm ?? throw new Exception("bitmap is null");
+            var reader = new BarcodeReader();
+            reader.Options = new DecodingOptions() { CharacterSet = "UTF-8" };
+            var res = reader.Decode(bm);
+            return res.Text;
         }
+
         /// <summary>
         /// 识别二维码
         /// </summary>
-        /// <param name="b"></param>
-        /// <returns></returns>
         public string DistinguishQrImage(string img_path)
         {
             using (var bm = new Bitmap(img_path))
@@ -112,11 +126,10 @@ namespace Lib.io
                 return DistinguishQrImage(bm);
             }
         }
+
         /// <summary>
         /// 识别二维码
         /// </summary>
-        /// <param name="b"></param>
-        /// <returns></returns>
         public string DistinguishQrImage(byte[] b)
         {
             using (var stream = new MemoryStream(b))
