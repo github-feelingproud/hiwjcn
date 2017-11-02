@@ -268,7 +268,9 @@
     <Compile Include="ioc\IAutoRegistered.cs" />
     <Compile Include="ioc\IDependencyRegistrar.cs" />
     <Compile Include="ioc\Interceptors.cs" />
+    <Compile Include="io\GZipHelper.cs" />
     <Compile Include="io\INIFile.cs" />
+    <Compile Include="io\Serialize.cs" />
     <Compile Include="log\ESLogAppender.cs" />
     <Compile Include="log\ESLogLine.cs" />
     <Compile Include="log\ESLogHelper.cs" />
