@@ -5,6 +5,7 @@ using System.Xml.Xsl;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Reflection;
 using System.Data;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -60,17 +61,27 @@ namespace Lib.io
         public static byte[] ObjectToExcel<T>(List<T> list, string sheet_name = "sheet")
         {
             list = list ?? throw new Exception("参数为空");
+            var t = typeof(T);
 
             var table = new DataTable();
-            table.TableName = sheet_name ?? throw new Exception($"{nameof(sheet_name)}不能为空");
-            var props = typeof(T).GetProperties();
+            table.TableName = sheet_name ??
+                t.GetCustomAttributes_<ExcelInfoAttribute>().FirstOrDefault()?.SheetName ??
+                throw new Exception($"{nameof(sheet_name)}不能为空");
+
+            IEnumerable<(PropertyInfo p, ExcelInfoAttribute attr)> props = t.GetProperties()
+                .Select(x => (x, x.GetCustomAttributes_<ExcelInfoAttribute>().FirstOrDefault()));
+            //根据索引排序
+            props = props.OrderBy(x => x.attr?.Index ?? 0);
+
             foreach (var p in props)
             {
-                table.Columns.Add(p.Name, typeof(string));
+                //优先取标签name
+                var name = p.attr?.HeaderName ?? p.p.Name;
+                table.Columns.Add(name, typeof(string));
             }
-            foreach (var x in list)
+            foreach (var m in list)
             {
-                var data = props.Select(m => ConvertHelper.GetString(m.GetValue(x))).ToArray();
+                var data = props.Select(x => ConvertHelper.GetString(x.p.GetValue(m))).ToArray();
                 table.Rows.Add(data);
             }
 
@@ -200,6 +211,18 @@ namespace Lib.io
         }
     }
 
+    public enum ExcelColorEnum : int
+    { }
+
+    public class ExcelInfoAttribute : Attribute
+    {
+        public virtual string SheetName { get; set; }
+        public virtual string HeaderName { get; set; }
+        public virtual int Index { get; set; }
+        public virtual ExcelColorEnum Color { get; set; }
+        public virtual ExcelColorEnum BackgroundColor { get; set; }
+    }
+
     public static class WordHelper
     {
         public static byte[] CreateWord(Dictionary<string, string> paragraphs)
@@ -227,6 +250,14 @@ namespace Lib.io
             {
                 doc.Close();
             }
+        }
+    }
+
+    public static class OfficeExtension
+    {
+        public static short ToNpoiColorIndex(this ExcelColorEnum color)
+        {
+            throw new NotImplementedException();
         }
     }
 }
