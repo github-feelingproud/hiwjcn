@@ -12,6 +12,7 @@ using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.io;
 
 namespace Hiwjcn.Core.Data
 {
@@ -54,6 +55,7 @@ namespace Hiwjcn.Core.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IID { get; set; }
         public string UID { get; set; }
+        [ExcelInfo(HeaderName = "用户名")]
         public string UserName { get; set; }
         public string ShopNo { get; set; }
         public string ShopName { get; set; }
