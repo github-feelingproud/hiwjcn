@@ -90,22 +90,28 @@ namespace Lib.helper
         /// <summary>
         /// json转model
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="json"></param>
-        /// <returns></returns>
         public static T JsonToEntity<T>(string json)
         {
-            if (!ValidateHelper.IsPlumpString(json))
-            {
-                throw new Exception("json为空");
-            }
+            var b = false;
+            if (b) { return JsonConvert.DeserializeObject<T>(json); }
+
+            return (T)JsonToEntity(json, typeof(T));
+        }
+
+        /// <summary>
+        /// json解析
+        /// </summary>
+        public static object JsonToEntity(string json, Type type)
+        {
+            if (!ValidateHelper.IsPlumpString(json)) { throw new Exception("json为空"); }
+            if (type == null) { throw new Exception("请指定json对应的实体类型"); }
             try
             {
-                return JsonConvert.DeserializeObject<T>(json);
+                return JsonConvert.DeserializeObject(json, type);
             }
             catch (Exception e)
             {
-                throw new Exception($"不能将json转为{typeof(T).FullName}。json数据：{json}", e);
+                throw new Exception($"不能将json转为{type.FullName}。json数据：{json}", e);
             }
         }
 
