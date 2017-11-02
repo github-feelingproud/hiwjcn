@@ -10,6 +10,9 @@ namespace Lib.extension
 {
     public static class CollectionExtension
     {
+        /// <summary>
+        /// 在list中添加item，遇到重复就抛异常
+        /// </summary>
         public static void AddOnceOrThrow(this List<string> list, string flag, string error_msg = null)
         {
             if (list.Contains(flag))
@@ -22,13 +25,18 @@ namespace Lib.extension
         /// <summary>
         /// 拼接item.tostring()
         /// </summary>
-        public static string AsString<T>(this IEnumerable<T> list)
+        public static string AsString<T>(this IEnumerable<T> list) =>
+            list.Select(x => x?.ToString()).ConcatString();
+
+        /// <summary>
+        /// 链接字符串
+        /// </summary>
+        public static string ConcatString(this IEnumerable<string> list)
         {
             var data = new StringBuilder();
-            foreach (var item in list)
+            foreach (var item in list.Where(x => x != null))
             {
-                if (item == null) { continue; }
-                data.Append(item.ToString());
+                data.Append(item);
             }
             return data.ToString();
         }

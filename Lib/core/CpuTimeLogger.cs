@@ -14,7 +14,7 @@ namespace Lib.core
     /// </summary>
     public class CpuTimeLogger : IDisposable
     {
-        private Stopwatch timer = new Stopwatch();
+        private readonly Stopwatch timer = new Stopwatch();
 
         public Action<long, string> OnStop { get; set; }
 

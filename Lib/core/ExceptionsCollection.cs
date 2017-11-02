@@ -9,6 +9,8 @@ namespace Lib.core
     [Serializable]
     public class MsgException : Exception
     {
+        public virtual string ErrorCode { get; set; }
+
         public MsgException(string msg) : base(msg)
         { }
     }

@@ -37,11 +37,11 @@ namespace Lib.extension
             var list = str.ToCharArray().ToList();
             if (list.Count < start_count + end_count) { return str; }
 
-            var start = "".Join_(list.Take(start_count));
+            var start = list.Take(start_count).AsString();
 
-            var mid = "".Join_(new int[mark_count].Select(x => "*"));
+            var mid = new int[mark_count].Select(x => '*').AsString();
 
-            var end = "".Join_(list.Reverse_().Take(end_count).Reverse_());
+            var end = list.Reverse_().Take(end_count).Reverse_().AsString();
 
             return $"{start}{mid}{end}";
         }

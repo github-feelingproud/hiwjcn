@@ -527,7 +527,7 @@ namespace Lib.helper
 
             if (ValidateHelper.IsPlumpList(list))
             {
-                Console.WriteLine("".Join_(list));
+                Console.WriteLine(",".Join_(list));
             }
 
             return list;
@@ -580,7 +580,7 @@ namespace Lib.helper
 
             if (ValidateHelper.IsPlumpList(list))
             {
-                Console.WriteLine("".Join_(list));
+                Console.WriteLine(",".Join_(list));
             }
 
             return list;

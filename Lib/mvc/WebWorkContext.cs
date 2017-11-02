@@ -65,7 +65,7 @@ namespace Lib.mvc
 
             this.IsPost = context.Request.IsPost();
             this.IsAjax = context.Request.IsAjax();
-            this.IP = context.Request.Ip();
+            this.IP = context.Ip();
             this.BaseUrl = context.Request.GetBaseUrl();
             this.Url = context.Request.GetCurrentUrl();
             //login user
