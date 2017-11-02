@@ -46,6 +46,14 @@ namespace Lib.helper
     /// </summary>
     public static class ValidateHelper
     {
+
+        private static readonly Regex RegNumber = new Regex("^[0-9]+$", RegexOptions.Compiled);
+        private static readonly Regex RegNumberSign = new Regex("^[+-]?[0-9]+$", RegexOptions.Compiled);
+        private static readonly Regex RegDecimal = new Regex("^[0-9]+[.]?[0-9]+$", RegexOptions.Compiled);
+        private static readonly Regex RegDecimalSign = new Regex("^[+-]?[0-9]+[.]?[0-9]+$", RegexOptions.Compiled); //等价于^[+-]?\d+[.]?\d+$
+        private static readonly Regex RegEmail = new Regex(@"^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$", RegexOptions.Compiled);//w 英文字母或数字的字符串，和 [a-zA-Z0-9] 语法一样 
+        private static readonly Regex RegCHZN = new Regex("[\u4e00-\u9fa5]", RegexOptions.Compiled);
+
         /// <summary>
         /// 判断是否是邮件地址，来自nop的方法
         /// </summary>
