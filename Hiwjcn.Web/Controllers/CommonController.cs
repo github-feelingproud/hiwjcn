@@ -254,7 +254,7 @@ namespace Hiwjcn.Web.Controllers
         /// 生成二维码
         /// </summary>
         /// <returns></returns>
-        public ActionResult QrCode(string con, string i, string bar)
+        public ActionResult QrCode(string con, string i, string bar, string hue)
         {
             return RunAction(() =>
             {
@@ -268,8 +268,13 @@ namespace Hiwjcn.Web.Controllers
                 {
                     img = Server.MapPath("~/Static/image/no_data.png");
                 }
-                var b = ValidateHelper.IsPlumpString(bar) ? 
+                var b = ValidateHelper.IsPlumpString(bar) ?
                 qr.GetBarCodeBytes(con) : qr.GetQrCodeWithIconBytes(con, icon_path: img);
+
+                if (ValidateHelper.IsPlumpString(hue))
+                {
+                    b = qr.AddRandomHue(b);
+                }
 
                 if (!ValidateHelper.IsPlumpList(b)) { return Content("bytes is empty"); }
 

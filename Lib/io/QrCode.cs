@@ -22,7 +22,7 @@ namespace Lib.io
     {
         public const int QRCODE_SIZE = 230;
         public const int BARCODE_SIZE_WIDTH = 300;
-        public const int BARCODE_SIZE_HEIGHT = 50;
+        public const int BARCODE_SIZE_HEIGHT = 100;
 
         public string Charset { private get; set; }
         public ImageFormat Formart { private get; set; }
@@ -94,12 +94,6 @@ namespace Lib.io
         /// <summary>
         /// 识别二维码
         /// </summary>
-        public string DistinguishQrImage(string img_path) =>
-            this.DistinguishQrImage(File.ReadAllBytes(img_path));
-
-        /// <summary>
-        /// 识别二维码
-        /// </summary>
         public string DistinguishQrImage(byte[] b)
         {
             using (var stream = new MemoryStream(b))
@@ -121,6 +115,12 @@ namespace Lib.io
 
     public static class QrCodeExtension
     {
+        /// <summary>
+        /// 识别二维码
+        /// </summary>
+        public static string DistinguishQrImage(this QrCode coder, string img_path) =>
+            coder.DistinguishQrImage(File.ReadAllBytes(img_path));
+
         /// <summary>
         /// 带图标二维码
         /// </summary>
@@ -150,7 +150,7 @@ namespace Lib.io
         /// <summary>
         /// 添加icon
         /// </summary>
-        public static byte[] AddIcon(QrCode coder, byte[] bs, string icon_path)
+        public static byte[] AddIcon(this QrCode coder, byte[] bs, string icon_path)
         {
             using (var bm = ConvertHelper.BytesToBitmap(bs))
             {
@@ -183,7 +183,7 @@ namespace Lib.io
         /// <summary>
         /// 随机调色
         /// </summary>
-        public static byte[] AddRandomHue(QrCode coder, byte[] bs)
+        public static byte[] AddRandomHue(this QrCode coder, byte[] bs)
         {
             using (var ms = new MemoryStream())
             {
@@ -195,6 +195,41 @@ namespace Lib.io
                 }
 
                 return ms.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 给二维码添加背景图片
+        /// </summary>
+        public static byte[] AddBackgroundImage(this QrCode coder, byte[] bs, byte[] background,
+            (double width_scale, double height_scale)? scale = null)
+        {
+            scale = scale ?? (1.5, 1.5);
+
+            using (var bg = ConvertHelper.BytesToBitmap(background))
+            {
+                using (var qr = ConvertHelper.BytesToBitmap(bs))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        using (var factory = new ImageFactory(preserveExifData: false))
+                        {
+                            var bg_size = new Size()
+                            {
+                                Width = (int)(qr.Width * scale.Value.width_scale),
+                                Height = (int)(qr.Height * scale.Value.height_scale)
+                            };
+                            var image_layer = new ImageLayer()
+                            {
+                                Image = qr,
+                                Size = new Size(qr.Width, qr.Height),
+                                Position = new Point((bg.Width - qr.Width) / 2, (bg.Height - qr.Height) / 2),
+                            };
+                            factory.Load(bg).Resize(bg_size).Overlay(image_layer).Save(ms);
+                        }
+                        return ms.ToArray();
+                    }
+                }
             }
         }
     }
