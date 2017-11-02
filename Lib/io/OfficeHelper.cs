@@ -13,6 +13,7 @@ using NPOI.XSSF.UserModel;
 using Lib.core;
 using NPOI.XWPF.UserModel;
 using Lib.helper;
+using Lib.extension;
 
 namespace Lib.io
 {
@@ -79,9 +80,7 @@ namespace Lib.io
         /// <summary>
         /// return File(bs, "application/vnd.ms-excel");
         /// </summary>
-        /// <param name="tb"></param>
-        /// <returns></returns>
-        public static byte[] DataTableToExcel(DataTable tb)
+        public static byte[] DataTableToExcel(DataTable tb, bool show_header = true)
         {
             tb = tb ?? throw new Exception($"无法把空{nameof(DataTable)}转成Excel");
 
@@ -90,16 +89,37 @@ namespace Lib.io
                 var workbook = new NPOI.XSSF.UserModel.XSSFWorkbook();
                 var sheet = workbook.CreateSheet(ValidateHelper.IsPlumpString(tb.TableName) ? tb.TableName : "sheet");
 
+                var columns = tb.Columns.AsEnumerable_<DataColumn>();
+
+                var row_index = 0;
+                IRow NewRow() => sheet.CreateRow(row_index++);
+                if (show_header)
+                {
+                    //头部
+                    var header_style = GetStyle(workbook,
+                        NPOI.HSSF.Util.HSSFColor.Black.Index, NPOI.HSSF.Util.HSSFColor.White.Index);
+                    var header = NewRow();
+                    var cell_index = 0;
+                    foreach (var col in columns)
+                    {
+                        var cell = header.CreateCell(cell_index++, CellType.String);
+                        var data = col.ColumnName;
+                        cell.SetCellValue(data);
+                        cell.CellStyle = header_style;
+                    }
+                }
+
                 var style = GetStyle(workbook,
                     NPOI.HSSF.Util.HSSFColor.White.Index, NPOI.HSSF.Util.HSSFColor.Black.Index);
 
-                for (int i = 0; i < tb.Rows.Count; ++i)
+                foreach (var tb_row in tb.Rows.AsEnumerable_<DataRow>())
                 {
-                    var row = sheet.CreateRow(i);
-                    for (int j = 0; j < tb.Columns.Count; ++j)
+                    var row = NewRow();
+                    var cell_index = 0;
+                    foreach (var tb_col in columns)
                     {
-                        var cell = row.CreateCell(j);
-                        var data = tb.Rows[i][j];
+                        var cell = row.CreateCell(cell_index++, CellType.String);
+                        var data = tb_row[tb_col.ColumnName];
                         cell.SetCellValue(ConvertHelper.GetString(data));
                         cell.CellStyle = style;
                     }

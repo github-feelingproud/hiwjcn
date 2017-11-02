@@ -5,11 +5,20 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Lib.helper;
+using System.Collections;
 
 namespace Lib.extension
 {
     public static class CollectionExtension
     {
+        public static IEnumerable<T> AsEnumerable_<T>(this IEnumerable collection)
+        {
+            foreach (T item in collection)
+            {
+                yield return item;
+            }
+        }
+
         /// <summary>
         /// 在list中添加item，遇到重复就抛异常
         /// </summary>
