@@ -87,6 +87,9 @@ namespace Hiwjcn.Core.Data
         public string NoPassReason { get; set; }
         public string BusinessId { get; set; }
         public Nullable<System.DateTime> VerifyDate { get; set; }
+
+        [Obsolete("原来有这个字段，现在这个数据从其他地方取")]
+        [NotMapped]
         public string RepositoryUID { get; set; }
     }
 
