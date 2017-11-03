@@ -13,7 +13,7 @@ using Lib.extension;
 using Polly.CircuitBreaker;
 using Polly;
 
-namespace Lib.api
+namespace Lib.extra.api
 {
     /// <summary>
     /// Umeng app key配置，默认读配置，也可以手动指定

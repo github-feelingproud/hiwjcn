@@ -34,7 +34,7 @@ namespace Lib.actor
             ins?.Dispose();
         }
     }
-    
+
     public class ActorsManager<T> : StaticClientManager<IActorRef> where T : ActorBase, new()
     {
         public static readonly ActorsManager<T> Instance = new ActorsManager<T>();
@@ -73,6 +73,11 @@ namespace Lib.actor
     public class ActorsManager : StaticClientManager<IActorRef, ActorAndName>
     {
         public override ActorAndName DefaultKey => throw new NotImplementedException();
+
+        public override string CreateStringKey(ActorAndName key)
+        {
+            return $"{key.ActorType.FullName}.name={key.Name}";
+        }
 
         public override bool CheckClient(IActorRef ins)
         {
@@ -118,7 +123,7 @@ namespace Lib.actor
             }
         }
     }
-    
+
     public static class AkkaHelper<T> where T : ActorBase, new()
     {
         public static IActorRef GetActor(string name = null) => AkkaHelper.GetActor<T>(name);

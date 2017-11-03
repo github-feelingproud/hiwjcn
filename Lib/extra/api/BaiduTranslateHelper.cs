@@ -9,7 +9,7 @@ using Lib.net;
 using Polly.CircuitBreaker;
 using Polly;
 
-namespace Lib.api
+namespace Lib.extra.api
 {
     public class BaiduTranslateHelper
     {

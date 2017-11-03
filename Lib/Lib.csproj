@@ -189,8 +189,8 @@
   <ItemGroup>
     <Compile Include="actor\ActorTest.cs" />
     <Compile Include="actor\AkkaHelper.cs" />
-    <Compile Include="api\BaiduTranslateHelper.cs" />
-    <Compile Include="api\UmengPushHelper.cs" />
+    <Compile Include="extra\api\BaiduTranslateHelper.cs" />
+    <Compile Include="extra\api\UmengPushHelper.cs" />
     <Compile Include="cache\CacheExtension.cs" />
     <Compile Include="cache\CacheManager.cs" />
     <Compile Include="cache\FireWall.cs" />
