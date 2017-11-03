@@ -13,9 +13,6 @@ using System.Threading;
 
 namespace Lib.actor
 {
-    /// <summary>
-    /// akka system manager
-    /// </summary>
     public class AkkaSystemManager : StaticClientManager<ActorSystem>
     {
         public static readonly AkkaSystemManager Instance = new AkkaSystemManager();
@@ -37,10 +34,7 @@ namespace Lib.actor
             ins?.Dispose();
         }
     }
-
-    /// <summary>
-    /// actors manager
-    /// </summary>
+    
     public class ActorsManager<T> : StaticClientManager<IActorRef> where T : ActorBase, new()
     {
         public static readonly ActorsManager<T> Instance = new ActorsManager<T>();
@@ -64,9 +58,36 @@ namespace Lib.actor
         }
     }
 
-    public class ActorsManager
+    public class ActorAndName
     {
+        public ActorAndName(Type t, string n)
+        {
+            this.ActorType = t;
+            this.Name = n;
+        }
 
+        public Type ActorType { get; private set; }
+        public string Name { get; private set; }
+    }
+
+    public class ActorsManager : StaticClientManager<IActorRef, ActorAndName>
+    {
+        public override ActorAndName DefaultKey => throw new NotImplementedException();
+
+        public override bool CheckClient(IActorRef ins)
+        {
+            return ins != null;
+        }
+
+        public override IActorRef CreateNewClient(ActorAndName key)
+        {
+            return AkkaHelper.GetActor(key.ActorType, key.Name);
+        }
+
+        public override void DisposeClient(IActorRef ins)
+        {
+            ins?.FeedPoisonPill();
+        }
     }
 
     public static class AkkaHelper
@@ -97,11 +118,7 @@ namespace Lib.actor
             }
         }
     }
-
-    /// <summary>
-    /// akka helper
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
+    
     public static class AkkaHelper<T> where T : ActorBase, new()
     {
         public static IActorRef GetActor(string name = null) => AkkaHelper.GetActor<T>(name);
