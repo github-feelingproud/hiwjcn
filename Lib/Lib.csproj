@@ -223,11 +223,11 @@
     <Compile Include="data\RedisManager.cs" />
     <Compile Include="data\SerializeBase.cs" />
     <Compile Include="distributed\CrossProcessLock.cs" />
-    <Compile Include="distributed\ZooKeeperDistributedLock.cs" />
+    <Compile Include="distributed\zookeeper\ZooKeeperDistributedLock.cs" />
     <Compile Include="distributed\IDistributedLock.cs" />
-    <Compile Include="distributed\RedisDistributedLock.cs" />
-    <Compile Include="distributed\ZooKeeperClient.cs" />
-    <Compile Include="distributed\ZooKeeperConfigProvider.cs" />
+    <Compile Include="distributed\redis\RedisDistributedLock.cs" />
+    <Compile Include="distributed\zookeeper\ZooKeeperClient.cs" />
+    <Compile Include="distributed\zookeeper\ZooKeeperConfigProvider.cs" />
     <Compile Include="events\EntityDeleted.cs" />
     <Compile Include="events\EntityInserted.cs" />
     <Compile Include="events\EntityUpdated.cs" />
@@ -384,8 +384,6 @@
     <Folder Include="data\orm\" />
     <Folder Include="data\redis\" />
     <Folder Include="distributed\orleans\" />
-    <Folder Include="distributed\redis\" />
-    <Folder Include="distributed\zookeeper\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

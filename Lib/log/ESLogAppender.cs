@@ -23,12 +23,17 @@ namespace Lib.log
     /// </summary>
     public class ESLogAppender : BufferingAppenderSkeleton
     {
-        private readonly IActorRef WriterActor = AkkaHelper<SendLogActor>.GetActor();
-        private readonly Random ran = new Random((int)DateTime.Now.Ticks);
+        private readonly IActorRef WriterActor;
+        private readonly Random ran;
 
         private readonly int ThreadHold = 10;
 
-        public ESLogAppender() { }
+        public ESLogAppender()
+        {
+            var sys = AkkaSystemManager.Instance.DefaultClient;
+            this.WriterActor = sys.CreateActor<SendLogActor>();
+            this.ran = new Random((int)DateTime.Now.Ticks);
+        }
 
         public override void ActivateOptions()
         {

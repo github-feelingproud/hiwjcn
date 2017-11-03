@@ -10,7 +10,7 @@ using Lib.helper;
 using Polly;
 using Polly.Retry;
 
-namespace Lib.distributed
+namespace Lib.distributed.zookeeper
 {
     public class ZooKeeperDistributedLock : IDistributedLock
     {

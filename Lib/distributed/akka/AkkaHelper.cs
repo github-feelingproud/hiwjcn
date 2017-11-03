@@ -97,13 +97,13 @@ namespace Lib.distributed.akka
 
     public static class AkkaHelper
     {
-        public static ActorSystem Container => AkkaSystemManager.Instance.DefaultClient;
+        public static ActorSystem AkkaSystem => AkkaSystemManager.Instance.DefaultClient;
 
         public static IActorRef GetActor<T>(string name = null)
             where T : ActorBase, new() =>
-            Container.CreateActor<T>(name);
+            AkkaSystem.CreateActor<T>(name);
 
-        public static IActorRef GetActor(Type t, string name = null) => Container.CreateActor(t, name);
+        public static IActorRef GetActor(Type t, string name = null) => AkkaSystem.CreateActor(t, name);
     }
 
     public static class AkkaHelper<T> where T : ActorBase, new()
@@ -138,14 +138,21 @@ namespace Lib.distributed.akka
         }
     }
 
-    public class KillableReceiveActor : ReceiveActor
+    public abstract class KillableReceiveActor : ReceiveActor
     {
         public KillableReceiveActor()
         {
-            this.Receive<ActorPoisonPill>(x =>
+            this.Receive<ActorPoisonPill>(x => this.OnReceivePoisonPill(x));
+        }
+
+        protected virtual void OnReceivePoisonPill(ActorPoisonPill pill)
+        {
+            foreach (var child in Context.GetChildren())
             {
-                Context.Stop(Self);
-            });
+                child.FeedPoisonPill();
+                //Context.Stop(child);
+            }
+            Context.Stop(this.Self);
         }
 
         protected override void PostStop()

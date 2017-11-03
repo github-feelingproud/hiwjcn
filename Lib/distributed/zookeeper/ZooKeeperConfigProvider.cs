@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.core;
 
-namespace Lib.distributed
+namespace Lib.distributed.zookeeper
 {
     /// <summary>
     /// 从ZooKeeper读取配置

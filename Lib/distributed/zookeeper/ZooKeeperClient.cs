@@ -18,7 +18,7 @@ using System.Net.Http;
 using Lib.net;
 using Lib.rpc;
 
-namespace Lib.distributed
+namespace Lib.distributed.zookeeper
 {
     public class EmptyWatcher : Watcher
     {

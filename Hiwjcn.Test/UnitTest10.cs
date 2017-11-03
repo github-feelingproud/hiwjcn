@@ -14,13 +14,31 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest10
     {
+        class SubWorker : KillableReceiveActor
+        {
+            public SubWorker()
+            {
+                //
+            }
+
+            protected override void OnReceivePoisonPill(ActorPoisonPill pill)
+            {
+                base.OnReceivePoisonPill(pill);
+            }
+        }
+
         class Worker : KillableReceiveActor
         {
+            private readonly IActorRef _sub = Context.ActorOf<SubWorker>();
+
             public Worker() : base()
             {
                 this.Receive<int>(x =>
                 {
-                    Context.Stop(Self);
+                    if (x == 3)
+                    {
+                        Context.Stop(Self);
+                    }
                 });
             }
         }
@@ -30,11 +48,16 @@ namespace Hiwjcn.Test
         {
             try
             {
-                var sys = AkkaSystemManager.Instance.DefaultClient;
-                var actor = sys.CreateActor<Worker>("wj");
+                using (var sys = AkkaSystemManager.Instance.DefaultClient)
+                {
+                    var actor = sys.CreateActor<Worker>("wj");
 
-                actor.Tell(1);
-                actor.Tell(2);
+                    actor.Tell(1);
+                    actor.Tell(30);
+                    actor.Tell(2);
+
+                    actor.FeedPoisonPill();
+                }
             }
             catch (Exception e)
             {

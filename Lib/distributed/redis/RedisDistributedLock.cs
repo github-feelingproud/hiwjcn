@@ -7,7 +7,7 @@ using Lib.data;
 using StackExchange.Redis;
 using System.Threading;
 
-namespace Lib.distributed
+namespace Lib.distributed.redis
 {
     /// <summary>
     /// Redis分布式锁
