@@ -6,12 +6,42 @@ using RazorEngine.Templating;
 using Lib.helper;
 using Lib.core;
 using Lib.extension;
+using Lib.distributed.akka;
+using Akka.Actor;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest10
     {
+        class Worker : KillableReceiveActor
+        {
+            public Worker() : base()
+            {
+                this.Receive<int>(x =>
+                {
+                    Context.Stop(Self);
+                });
+            }
+        }
+
+        [TestMethod]
+        public void fasdfasdflkjalh()
+        {
+            try
+            {
+                var sys = AkkaSystemManager.Instance.DefaultClient;
+                var actor = sys.CreateActor<Worker>("wj");
+
+                actor.Tell(1);
+                actor.Tell(2);
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        }
+
         public class User
         {
             public virtual string Name { get; set; }
@@ -42,8 +72,8 @@ namespace Hiwjcn.Test
             {
                 Engine.Razor.RunCompile(
                     templateSource: "用户：@Model.Name，年龄：@Model.Age",
-                    name: "a", 
-                    modelType: user.GetType(), 
+                    name: "a",
+                    modelType: user.GetType(),
                     model: user);
                 foreach (var i in Com.Range(count))
                 {

@@ -11,7 +11,7 @@ using Lib.helper;
 using Lib.extension;
 using System.Threading;
 
-namespace Lib.actor
+namespace Lib.distributed.akka
 {
     public class AkkaSystemManager : StaticClientManager<ActorSystem>
     {
@@ -99,29 +99,11 @@ namespace Lib.actor
     {
         public static ActorSystem Container => AkkaSystemManager.Instance.DefaultClient;
 
-        public static IActorRef GetActor<T>(string name = null) where T : ActorBase, new()
-        {
-            if (ValidateHelper.IsPlumpString(name))
-            {
-                return Container.ActorOf<T>(name);
-            }
-            else
-            {
-                return Container.ActorOf<T>();
-            }
-        }
+        public static IActorRef GetActor<T>(string name = null)
+            where T : ActorBase, new() =>
+            Container.CreateActor<T>(name);
 
-        public static IActorRef GetActor(Type t, string name = null)
-        {
-            if (ValidateHelper.IsPlumpString(name))
-            {
-                return Container.ActorOf(Props.Create(t), name);
-            }
-            else
-            {
-                return Container.ActorOf(Props.Create(t));
-            }
-        }
+        public static IActorRef GetActor(Type t, string name = null) => Container.CreateActor(t, name);
     }
 
     public static class AkkaHelper<T> where T : ActorBase, new()
@@ -186,6 +168,31 @@ namespace Lib.actor
         public static void FeedPoisonPill(this IActorRef actor)
         {
             actor.Tell(ActorPoisonPill.Instance);
+        }
+
+        public static IActorRef CreateActor(this ActorSystem sys, Type t, string name = null)
+        {
+            if (ValidateHelper.IsPlumpString(name))
+            {
+                return sys.ActorOf(Props.Create(t), name);
+            }
+            else
+            {
+                return sys.ActorOf(Props.Create(t));
+            }
+        }
+
+        public static IActorRef CreateActor<T>(this ActorSystem sys, string name = null)
+            where T : ActorBase, new()
+        {
+            if (ValidateHelper.IsPlumpString(name))
+            {
+                return sys.ActorOf<T>(name);
+            }
+            else
+            {
+                return sys.ActorOf<T>();
+            }
         }
     }
 }

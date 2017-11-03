@@ -9,7 +9,7 @@ using Hiwjcn.Framework.Actors;
 using Lib.events;
 using Lib.extension;
 using Lib.core;
-using Lib.actor;
+using Lib.distributed.akka;
 
 namespace Hiwjcn.Framework.Factory
 {

@@ -11,7 +11,7 @@ using Lib.helper;
 using Lib.extension;
 using System.Threading;
 
-namespace Lib.actor
+namespace Lib.distributed.akka
 {
     public class Greet
     {

@@ -19,7 +19,7 @@ using Lib.events;
 using Hiwjcn.Framework.Actors;
 using Akka;
 using Akka.Actor;
-using Lib.actor;
+using Lib.distributed.akka;
 
 namespace Hiwjcn.Bll.Auth
 {
