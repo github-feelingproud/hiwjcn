@@ -13,6 +13,7 @@ using Polly.CircuitBreaker;
 using Akka;
 using Akka.Actor;
 using Lib.events;
+using Lib.actor;
 
 namespace Lib.log
 {

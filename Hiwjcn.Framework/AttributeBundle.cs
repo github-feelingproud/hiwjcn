@@ -14,6 +14,7 @@ using Lib.mvc;
 using Hiwjcn.Framework.Actors;
 using System.Web;
 using Akka.Actor;
+using Lib.actor;
 
 namespace Hiwjcn.Framework
 {

@@ -187,6 +187,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="actor\ActorTest.cs" />
+    <Compile Include="actor\AkkaHelper.cs" />
     <Compile Include="api\BaiduTranslateHelper.cs" />
     <Compile Include="api\UmengPushHelper.cs" />
     <Compile Include="cache\CacheExtension.cs" />
@@ -226,7 +228,6 @@
     <Compile Include="distributed\RedisDistributedLock.cs" />
     <Compile Include="distributed\ZooKeeperClient.cs" />
     <Compile Include="distributed\ZooKeeperConfigProvider.cs" />
-    <Compile Include="events\AkkaHelper.cs" />
     <Compile Include="events\EntityDeleted.cs" />
     <Compile Include="events\EntityInserted.cs" />
     <Compile Include="events\EntityUpdated.cs" />

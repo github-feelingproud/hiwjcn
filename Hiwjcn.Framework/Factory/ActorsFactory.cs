@@ -9,6 +9,7 @@ using Hiwjcn.Framework.Actors;
 using Lib.events;
 using Lib.extension;
 using Lib.core;
+using Lib.actor;
 
 namespace Hiwjcn.Framework.Factory
 {

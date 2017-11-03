@@ -7,6 +7,7 @@ using Lib.mq;
 using Lib.task;
 using Lib.net;
 using System;
+using Lib.actor;
 
 namespace Lib.core
 {

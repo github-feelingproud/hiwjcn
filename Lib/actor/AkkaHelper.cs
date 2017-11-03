@@ -11,52 +11,8 @@ using Lib.helper;
 using Lib.extension;
 using System.Threading;
 
-namespace Lib.events
+namespace Lib.actor
 {
-    public class Greet
-    {
-        public Greet(string who)
-        {
-            Who = who;
-        }
-        public string Who { get; private set; }
-    }
-
-    public class GreetingActor : ReceiveActor
-    {
-        public GreetingActor()
-        {
-            this.Receive<Greet>(greet =>
-            {
-                Console.WriteLine("Hello {0}", greet.Who);
-            });
-        }
-    }
-
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            // Create a new actor system (a container for your actors)
-            var system = ActorSystem.Create("MySystem");
-
-            // Create your actor and get a reference to it.
-            // This will be an "ActorRef", which is not a
-            // reference to the actual actor instance
-            // but rather a client or proxy to it.
-            var greeter = system.ActorOf<GreetingActor>("greeter");
-
-            // Send a message to the actor
-            greeter.Tell(new Greet("World"));
-
-            var answer = greeter.Ask<string>(new Greet(""));
-
-            // This prevents the app from exiting
-            // before the async work is done
-            Console.ReadLine();
-        }
-    }
-
     /// <summary>
     /// akka system manager
     /// </summary>
@@ -158,4 +114,24 @@ namespace Lib.events
             return await GetActor(actor_name).Ask<Answer>(data);
         }
     }
+
+    public class KillableReceiveActor : ReceiveActor
+    {
+        public KillableReceiveActor()
+        {
+            this.Receive<ActorPoisonPill>(x =>
+            {
+                Context.Stop(Self);
+            });
+        }
+
+        protected override void PostStop()
+        {
+            $"{this.GetType()}stoped".AddBusinessInfoLog();
+            base.PostStop();
+        }
+    }
+
+    public class ActorPoisonPill
+    { }
 }
