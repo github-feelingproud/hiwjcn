@@ -14,7 +14,7 @@ using Lib.data;
 
 namespace Lib.mq
 {
-    public abstract class RabbitMessageConsumerBase<DeliveryDataType> : IMessageQueueConsumer<DeliveryDataType>
+    public abstract class RabbitMqConsumerBase<DeliveryDataType> : IMessageQueueConsumer<DeliveryDataType>
     {
         private readonly IModel _channel;
         private readonly EventingBasicConsumer _consumer;
@@ -24,7 +24,7 @@ namespace Lib.mq
         private readonly string _consumer_name;
         private readonly bool _ack;
 
-        public RabbitMessageConsumerBase(IModel channel, string consumer_name,
+        public RabbitMqConsumerBase(IModel channel, string consumer_name,
             string exchange_name, string queue_name, string route_key, ExchangeTypeEnum exchangeType,
             bool persist, bool ack, ushort concurrency, bool delay)
         {

@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 namespace Lib.mq
 {
     /// <summary>消息发送者</summary>
-    public class RabbitMQProducer : RabbitMQChannel, IMessageQueueProducer
+    public class RabbitMQProducer : IMessageQueueProducer
     {
+        private readonly IModel _channel;
+
         #region ctor
-        internal RabbitMQProducer(IModel channel, string exchangeName) : base(channel)
+        internal RabbitMQProducer(IModel channel, string exchangeName)
         {
             ExchangeName = exchangeName;
 
@@ -105,7 +107,7 @@ namespace Lib.mq
 
         public virtual IBasicProperties CreateBasicProperties(MessagePriority? priority, IDictionary<string, object> properties)
         {
-            var basicProperties = Channel.CreateBasicProperties();
+            var basicProperties = _channel.CreateBasicProperties();
 
             if (IsPersistent)
                 basicProperties.DeliveryMode = 2;
@@ -136,7 +138,7 @@ namespace Lib.mq
                 try
                 {
                     var bs = Encoding.UTF8.GetBytes(message.ToJson());
-                    Channel.BasicPublish(ExchangeName, routingKey, basicProperties, bs);
+                    _channel.BasicPublish(ExchangeName, routingKey, basicProperties, bs);
 
                     break;
                 }
