@@ -47,24 +47,21 @@ namespace Lib.mq
         /// <summary>
         /// 添加默认设置项
         /// </summary>
-        /// <param name="channel"></param>
-        /// <param name="exchange_name"></param>
-        /// <param name="exchange_type"></param>
-        /// <param name="is_delay"></param>
         public static void X_ExchangeDeclare(this IModel channel,
-            string exchange_name, ExchangeTypeEnum exchange_type, bool is_delay = false)
+            string exchange_name, ExchangeTypeEnum exchange_type,
+            bool durable = true, bool auto_delete = false, bool is_delay = false)
         {
             if (is_delay)
             {
-                channel.ExchangeDeclare(exchange_name, "x-delayed-message", true, false,
-                    new Dictionary<string, object>()
-                    {
-                        ["x-delayed-type"] = exchange_type.ToString()
-                    });
+                var args = new Dictionary<string, object>()
+                {
+                    ["x-delayed-type"] = exchange_type.GetExchangeTypeName()
+                };
+                channel.ExchangeDeclare(exchange_name, "x-delayed-message", durable, auto_delete, args);
             }
             else
             {
-                channel.ExchangeDeclare(exchange_name, exchange_type.ToString(), true, false, null);
+                channel.ExchangeDeclare(exchange_name, exchange_type.GetExchangeTypeName(), durable, auto_delete, null);
             }
         }
 

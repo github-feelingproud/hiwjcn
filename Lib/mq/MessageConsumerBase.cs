@@ -9,96 +9,79 @@ using Lib.io;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Polly;
+using Lib.cache;
+using Lib.data;
 
 namespace Lib.mq
 {
     public abstract class RabbitMessageConsumerBase<DeliveryDataType> : IMessageQueueConsumer<DeliveryDataType>
     {
-        private IConnection _connection { get; set; }
-        private IModel _channel { get; set; }
-        private EventingBasicConsumer _consumer { get; set; }
-        private SettingConfig _config { get; set; }
+        private readonly IModel _channel;
+        private readonly EventingBasicConsumer _consumer;
+        private readonly string _exchange_name;
+        private readonly string _queue_name;
+        private readonly string _route_key;
+        private readonly string _consumer_name;
+        private readonly bool _ack;
 
-        public RabbitMessageConsumerBase(ConnectionFactory factory, SettingConfig config)
+        private readonly SerializeHelper _serializer = new SerializeHelper();
+
+        public RabbitMessageConsumerBase(IModel channel, string consumer_name,
+            string exchange_name, string queue_name, string route_key, ExchangeTypeEnum exchangeType,
+            bool persist, bool ack, ushort concurrency, bool delay)
         {
-            this._config = config ?? throw new ArgumentException(nameof(config));
+            this._channel = channel ?? throw new ArgumentNullException(nameof(channel));
+            this._exchange_name = exchange_name;
+            this._queue_name = queue_name;
+            this._route_key = route_key;
+            this._consumer_name = consumer_name;
+            this._ack = ack;
 
-            this._connection = factory.CreateConnection();
-            this._connection.ConnectionShutdown += (sender, args) => { };
-            this._connection.ConnectionBlocked += (sender, args) => { };
-            this._connection.ConnectionUnblocked += (sender, args) => { };
+            //exchange
+            this._channel.X_ExchangeDeclare(exchange_name, exchangeType, durable: persist, auto_delete: !ack, is_delay: delay);
+            //queue
+            var queue_args = new Dictionary<string, object>() { };
+            this._channel.QueueDeclare(queue_name, durable: persist, exclusive: false, autoDelete: !ack, arguments: queue_args);
+            //bind
+            this._channel.QueueBind(queue_name, exchange_name, route_key);
+            //qos
+            this._channel.BasicQos(0, concurrency, false);
 
-            this._channel = this._connection.CreateModel();
-
-            this._channel.BasicSetting(this._config);
-
+            //consumer
             this._consumer = new EventingBasicConsumer(this._channel);
             this._consumer.Received += async (sender, args) =>
             {
                 try
                 {
-                    //重试策略
-                    var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(
-                        retryCount: (int)this._config.ConsumeRetryCount,
-                        sleepDurationProvider: i => TimeSpan.FromMilliseconds(this._config.ConsumeRetryWaitMilliseconds));
-
-                    await retryPolicy.ExecuteAsync(async () =>
+                    var message = this._serializer.Deserialize<DeliveryDataType>(args.Body);
+                    var result = await this.OnMessageReceived(message, sender, args);
+                    if (this._ack && result != null && result.Value)
                     {
-                        var result = await this.OnMessageReceived(sender, args);
-                        if (result == null || !result.Value)
-                        {
-                            throw new Exception("未能消费对象");
-                        }
-
-                        //do nothing
-                        await FakeAsync();
-                    });
+                        this._channel.X_BasicAck(args);
+                    }
                 }
                 catch (Exception e)
                 {
                     //log errors
-                    e.AddErrorLog();
-                }
-                finally
-                {
-                    if (this._config.Ack)
-                    {
-                        //从队列中移除消息
-                        this._channel.X_BasicAck(args);
-                    }
+                    e.AddErrorLog($"无法消费");
                 }
             };
-            var consumerTag = $"{Environment.MachineName}|{this._config.QueueName}|{this._config.ConsumerName}";
+            var consumerTag = $"{Environment.MachineName}|{this._queue_name}|{this._consumer_name}";
             this._channel.BasicConsume(
-                queue: this._config.QueueName,
-                noAck: !this._config.Ack,
+                queue: queue_name,
+                noAck: !this._ack,
                 consumerTag: consumerTag,
                 consumer: this._consumer);
         }
 
-        public abstract Task<bool?> OnMessageReceived(object sender, BasicDeliverEventArgs args);
-
-        /// <summary>
-        /// 假异步
-        /// </summary>
-        /// <returns></returns>
-        protected async Task<string> FakeAsync() => await Task.FromResult(nameof(FakeAsync));
+        public abstract Task<bool?> OnMessageReceived(DeliveryDataType message, object sender, BasicDeliverEventArgs args);
 
         public void Dispose()
         {
             try
             {
-                this._channel.Close();
-                this._channel.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-            try
-            {
-                this._connection.Close();
-                this._connection.Dispose();
+                this._channel?.Close();
+                this._channel?.Dispose();
             }
             catch (Exception e)
             {
