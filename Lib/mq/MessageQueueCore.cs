@@ -87,4 +87,11 @@ namespace Lib.mq
         /// </summary>
         Highest = 9
     }
+
+    [Serializable]
+    public class MessageWrapper<T>
+    {
+        public virtual int DeliverCount { get; set; } = 1;
+        public virtual T Data { get; set; }
+    }
 }

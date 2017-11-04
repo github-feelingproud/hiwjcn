@@ -271,7 +271,6 @@
     <Compile Include="ioc\Interceptors.cs" />
     <Compile Include="io\GZipHelper.cs" />
     <Compile Include="io\INIFile.cs" />
-    <Compile Include="io\Serialize.cs" />
     <Compile Include="log\ESLogAppender.cs" />
     <Compile Include="log\ESLogLine.cs" />
     <Compile Include="log\ESLogHelper.cs" />
@@ -368,7 +367,6 @@
     <Compile Include="task\TaskLogger.cs" />
     <Compile Include="task\TaskManager.cs" />
     <Compile Include="TestFile.cs" />
-    <Compile Include="helper\SerializationHelper.cs" />
     <Compile Include="rpc\WcfClient.cs" />
   </ItemGroup>
   <ItemGroup>

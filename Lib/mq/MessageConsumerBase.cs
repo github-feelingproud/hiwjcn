@@ -24,8 +24,6 @@ namespace Lib.mq
         private readonly string _consumer_name;
         private readonly bool _ack;
 
-        private readonly SerializeHelper _serializer = new SerializeHelper();
-
         public RabbitMessageConsumerBase(IModel channel, string consumer_name,
             string exchange_name, string queue_name, string route_key, ExchangeTypeEnum exchangeType,
             bool persist, bool ack, ushort concurrency, bool delay)
@@ -38,7 +36,7 @@ namespace Lib.mq
             this._ack = ack;
 
             //exchange
-            this._channel.X_ExchangeDeclare(exchange_name, exchangeType, durable: persist, auto_delete: !ack, is_delay: delay);
+            this._channel.ExchangeDeclare_(exchange_name, exchangeType, durable: persist, auto_delete: !ack, is_delay: delay);
             //queue
             var queue_args = new Dictionary<string, object>() { };
             this._channel.QueueDeclare(queue_name, durable: persist, exclusive: false, autoDelete: !ack, arguments: queue_args);
@@ -53,11 +51,11 @@ namespace Lib.mq
             {
                 try
                 {
-                    var message = this._serializer.Deserialize<DeliveryDataType>(args.Body);
+                    var message = args.GetMessage_<DeliveryDataType>();
                     var result = await this.OnMessageReceived(message, sender, args);
                     if (this._ack && result != null && result.Value)
                     {
-                        this._channel.X_BasicAck(args);
+                        this._channel.BasicAck_(args);
                     }
                 }
                 catch (Exception e)

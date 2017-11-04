@@ -8,6 +8,7 @@ using Lib.helper;
 using RabbitMQ.Client.Events;
 using Lib.extension;
 using Polly;
+using Lib.data;
 
 namespace Lib.mq
 {
@@ -29,17 +30,18 @@ namespace Lib.mq
             throw new NotSupportedException();
         }
 
-        public static MessageWrapper<T> GetWrapperMessage<T>(this BasicDeliverEventArgs args)
-        {
-            return Encoding.UTF8.GetString(args.Body).JsonToEntity<MessageWrapper<T>>();
-        }
+        public static T GetMessage_<T>(this BasicDeliverEventArgs args) =>
+            SerializeHelper.Instance.Deserialize<T>(args.Body);
+
+        public static MessageWrapper<T> GetWrapperMessage<T>(this BasicDeliverEventArgs args) =>
+            args.GetMessage_<MessageWrapper<T>>();
 
         public static byte[] DataToWrapperMessageBytes<T>(this T data)
         {
             return Encoding.UTF8.GetBytes(new MessageWrapper<T>() { Data = data }.ToJson());
         }
 
-        public static void X_BasicAck(this IModel channel, BasicDeliverEventArgs args)
+        public static void BasicAck_(this IModel channel, BasicDeliverEventArgs args)
         {
             channel.BasicAck(deliveryTag: args.DeliveryTag, multiple: false);
         }
@@ -47,7 +49,7 @@ namespace Lib.mq
         /// <summary>
         /// 添加默认设置项
         /// </summary>
-        public static void X_ExchangeDeclare(this IModel channel,
+        public static void ExchangeDeclare_(this IModel channel,
             string exchange_name, ExchangeTypeEnum exchange_type,
             bool durable = true, bool auto_delete = false, bool is_delay = false)
         {
@@ -82,43 +84,23 @@ namespace Lib.mq
 
             return queue;
         }
-
-        /// <summary>
-        /// 基本设置
-        /// </summary>
-        public static void BasicSetting(this IModel channel, SettingConfig config)
-        {
-            channel.X_ExchangeDeclare(config.ExchangeName, config.ExchangeType, config.Delay);
-
-            if (!ValidateHelper.IsPlumpString(config.QueueName)) { throw new ArgumentException(nameof(config.QueueName)); }
-            channel.X_QueueBind(config.QueueName, config.ExchangeName, config.RouteKey, config.Args);
-
-            //每个消费一次收到多少消息，其余的放在队列里
-            channel.BasicQos(0, 1, false);
-        }
-
+        
         /// <summary>
         /// 发送队列
         /// </summary>
         public static void Send<T>(this IModel channel,
             string routeKey, T data,
-            string exchangeName = "", uint retryCount = 5, Func<int, TimeSpan> sleepDurationProvider = null,
-            bool save_to_disk = true)
+            string exchangeName = "", bool save_to_disk = true)
         {
-            sleepDurationProvider = sleepDurationProvider ?? (i => TimeSpan.FromMilliseconds(i * 100));
-            var retryPolicy = Policy.Handle<Exception>().WaitAndRetry((int)retryCount, sleepDurationProvider);
-            retryPolicy.Execute(() =>
-            {
-                //数据
-                var wrapperdata = data.DataToWrapperMessageBytes();
+            //数据
+            var wrapperdata = data.DataToWrapperMessageBytes();
 
-                var properties = channel.CreateBasicProperties();
-                properties.Priority = (byte)MessagePriority.Hight;
-                properties.Persistent = save_to_disk;
-                //etc
-                //string exchange, string routingKey, IBasicProperties basicProperties, byte[] body
-                channel.BasicPublish(exchangeName, routeKey, properties, wrapperdata);
-            });
+            var properties = channel.CreateBasicProperties();
+            properties.Priority = (byte)MessagePriority.Hight;
+            properties.Persistent = save_to_disk;
+            //etc
+            //string exchange, string routingKey, IBasicProperties basicProperties, byte[] body
+            channel.BasicPublish(exchangeName, routeKey, properties, wrapperdata);
         }
 
     }
