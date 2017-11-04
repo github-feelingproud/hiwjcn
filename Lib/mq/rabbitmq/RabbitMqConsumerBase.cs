@@ -18,15 +18,19 @@ namespace Lib.mq
     {
         private readonly IModel _channel;
         private readonly EventingBasicConsumer _consumer;
+        private readonly ExchangeTypeEnum _exchange_type;
         private readonly string _exchange_name;
         private readonly string _queue_name;
         private readonly string _route_key;
         private readonly string _consumer_name;
         private readonly bool _ack;
+        private readonly bool _delay;
+        private readonly bool _persistent;
+        private readonly ushort _concurrency_size;
 
         public RabbitMqConsumerBase(IModel channel, string consumer_name,
             string exchange_name, string queue_name, string route_key, ExchangeTypeEnum exchangeType,
-            bool persist, bool ack, ushort concurrency, bool delay)
+            bool persistent, bool ack, ushort concurrency_size, bool delay)
         {
             this._channel = channel ?? throw new ArgumentNullException(nameof(channel));
             this._exchange_name = exchange_name;
@@ -34,19 +38,37 @@ namespace Lib.mq
             this._route_key = route_key;
             this._consumer_name = consumer_name;
             this._ack = ack;
+            this._concurrency_size = concurrency_size;
+            this._delay = delay;
+            this._exchange_type = exchangeType;
+            this._persistent = persistent;
 
+            this.SetupQueue();
+
+            this._consumer = new EventingBasicConsumer(this._channel);
+
+            this.SetUpConsumer();
+
+        }
+
+        private void SetupQueue()
+        {
             //exchange
-            this._channel.ExchangeDeclare_(exchange_name, exchangeType, durable: persist, auto_delete: !ack, is_delay: delay);
+            this._channel.ExchangeDeclare_(this._exchange_name, this._exchange_type,
+                durable: this._persistent, auto_delete: false, is_delay: this._delay);
             //queue
             var queue_args = new Dictionary<string, object>() { };
-            this._channel.QueueDeclare(queue_name, durable: persist, exclusive: false, autoDelete: !ack, arguments: queue_args);
+            this._channel.QueueDeclare(this._queue_name, durable: this._persistent,
+                exclusive: false, autoDelete: false, arguments: queue_args);
             //bind
-            this._channel.QueueBind(queue_name, exchange_name, route_key);
+            this._channel.QueueBind(this._queue_name, this._exchange_name, this._route_key);
             //qos
-            this._channel.BasicQos(0, concurrency, false);
+            this._channel.BasicQos(0, this._concurrency_size, false);
+        }
 
+        private void SetUpConsumer()
+        {
             //consumer
-            this._consumer = new EventingBasicConsumer(this._channel);
             this._consumer.Received += async (sender, args) =>
             {
                 try
@@ -66,10 +88,8 @@ namespace Lib.mq
             };
             var consumerTag = $"{Environment.MachineName}|{this._queue_name}|{this._consumer_name}";
             this._channel.BasicConsume(
-                queue: queue_name,
-                noAck: !this._ack,
-                consumerTag: consumerTag,
-                consumer: this._consumer);
+                queue: this._queue_name, noAck: !this._ack,
+                consumerTag: consumerTag, consumer: this._consumer);
         }
 
         public abstract Task<bool?> OnMessageReceived(DeliveryDataType message, object sender, BasicDeliverEventArgs args);

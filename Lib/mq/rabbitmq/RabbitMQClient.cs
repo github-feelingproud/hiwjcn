@@ -8,14 +8,14 @@ using Lib.core;
 
 namespace Lib.mq
 {
-    public class RabbitMQClient : IDisposable
+    public class RabbitMqClient : IDisposable
     {
         private readonly IConnectionFactory _factory;
         private readonly Lazy<IConnection> _connection;
 
-        public RabbitMQClient(string configurationName) : this(RabbitMQSection.FromSection(configurationName)) { }
+        public RabbitMqClient(string configurationName) : this(RabbitMQSection.FromSection(configurationName)) { }
 
-        public RabbitMQClient(RabbitMQSection configuration)
+        public RabbitMqClient(RabbitMQSection configuration)
         {
             this._factory = new ConnectionFactory
             {
@@ -70,13 +70,13 @@ namespace Lib.mq
             GC.SuppressFinalize(this);
         }
 
-        ~RabbitMQClient()
+        ~RabbitMqClient()
         {
             this.Dispose();
         }
     }
 
-    public class RabbitMQClientManager : StaticClientManager<RabbitMQClient>
+    public class RabbitMQClientManager : StaticClientManager<RabbitMqClient>
     {
         public static readonly RabbitMQClientManager Instance = new RabbitMQClientManager();
 
@@ -88,17 +88,17 @@ namespace Lib.mq
             }
         }
 
-        public override bool CheckClient(RabbitMQClient ins)
+        public override bool CheckClient(RabbitMqClient ins)
         {
             return ins != null && ins.Connection.IsOpen;
         }
 
-        public override RabbitMQClient CreateNewClient(string key)
+        public override RabbitMqClient CreateNewClient(string key)
         {
-            return new RabbitMQClient(key);
+            return new RabbitMqClient(key);
         }
 
-        public override void DisposeClient(RabbitMQClient ins)
+        public override void DisposeClient(RabbitMqClient ins)
         {
             ins?.Dispose();
         }

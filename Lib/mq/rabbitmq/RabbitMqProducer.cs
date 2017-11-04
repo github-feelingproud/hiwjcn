@@ -5,37 +5,27 @@ using System.Text;
 using Lib.extension;
 using RabbitMQ.Client;
 using Polly;
+using System.Linq;
+using Lib.helper;
+using Lib.data;
 using System.Threading.Tasks;
 
 namespace Lib.mq
 {
     /// <summary>消息发送者</summary>
-    public class RabbitMQProducer : IMessageQueueProducer
+    public class RabbitMqProducer : IMessageQueueProducer
     {
         private readonly IModel _channel;
+        private readonly string _exchange_name;
+        private readonly bool _persistent;
 
-        #region ctor
-        internal RabbitMQProducer(IModel channel, string exchangeName)
+        public RabbitMqProducer(IModel channel, string exchangeName, bool persistent = true)
         {
-            ExchangeName = exchangeName;
-
-            IsPersistent = true;
+            this._channel = channel;
+            this._exchange_name = exchangeName;
+            this._persistent = persistent;
         }
-        #endregion
 
-        #region Properties
-
-        /// <summary>是否持续化</summary>
-        public bool IsPersistent { get; set; }
-
-        /// <summary>ExchangeName</summary>
-        public string ExchangeName { get; }
-
-        /// <summary>重试次数，默认7次，总间隔约4.2秒。重试间隔使用的是1.5的指数，如，第一次间隔Math.Pow(1.5, -5)，第二次间隔Math.Pow(1.5, -4)</summary>
-        public byte Retires { get; set; } = 7;
-        #endregion
-
-        #region IMessageProducer
         /// <summary>发送消息</summary>
         /// <param name="to">routingKey</param>
         /// <param name="message">消息</param>
@@ -75,17 +65,18 @@ namespace Lib.mq
             else
                 Send(to, message, priority);
         }
-        #endregion
-
-        #region Send
-        /// <summary>发送消息</summary>
-        public virtual void Send(string routingKey, object message, IDictionary<string, object> properties) => Send(routingKey, message, CreateBasicProperties(null, properties));
 
         /// <summary>发送消息</summary>
-        public virtual void Send(string routingKey, object message, MessagePriority? priority, IDictionary<string, object> properties) => Send(routingKey, message, CreateBasicProperties(priority, properties));
+        public virtual void Send(string routingKey, object message, IDictionary<string, object> properties) =>
+            Send(routingKey, message, CreateBasicProperties(null, properties));
 
         /// <summary>发送消息</summary>
-        public virtual void Send(string routingKey, object message, long delay, IDictionary<string, object> properties) => Send(routingKey, message, null, delay, properties);
+        public virtual void Send(string routingKey, object message, MessagePriority? priority, IDictionary<string, object> properties) =>
+            Send(routingKey, message, CreateBasicProperties(priority, properties));
+
+        /// <summary>发送消息</summary>
+        public virtual void Send(string routingKey, object message, long delay, IDictionary<string, object> properties) =>
+            Send(routingKey, message, null, delay, properties);
 
         /// <summary>发送消息</summary>
         public virtual void Send(string routingKey, object message, MessagePriority? priority, long delay, IDictionary<string, object> properties)
@@ -105,25 +96,30 @@ namespace Lib.mq
                 Send(routingKey, message, properties);
         }
 
-        public virtual IBasicProperties CreateBasicProperties(MessagePriority? priority, IDictionary<string, object> properties)
+        private IBasicProperties CreateBasicProperties(MessagePriority? priority, IDictionary<string, object> properties)
         {
             var basicProperties = _channel.CreateBasicProperties();
 
-            if (IsPersistent)
-                basicProperties.DeliveryMode = 2;
+            if (this._persistent)
+            {
+                basicProperties.DeliveryMode = (byte)DeliveryModeEnum.Persistent;
+                basicProperties.Persistent = true;
+            }
             else
-                basicProperties.DeliveryMode = 1;
+            {
+                basicProperties.DeliveryMode = (byte)DeliveryModeEnum.NonPersistent;
+                basicProperties.Persistent = false;
+            }
 
             if (priority != null)
             {
-                if (priority > MessagePriority.Highest)
-                    throw new ArgumentOutOfRangeException(nameof(priority), priority, "最大值为10");
-
                 basicProperties.Priority = (byte)priority;
             }
 
-            if (properties != null && properties.Count > 0)
+            if (ValidateHelper.IsPlumpDict(properties))
+            {
                 basicProperties.Headers = new Dictionary<string, object>(properties);
+            }
 
             return basicProperties;
         }
@@ -132,33 +128,57 @@ namespace Lib.mq
         /// <summary>发送消息</summary>
         public virtual void Send(string routingKey, object message, IBasicProperties basicProperties)
         {
-            var counter = 0;
-            while (true)
+            var bs = SerializeHelper.Instance.Serialize(message);
+            this._channel.BasicPublish(this._exchange_name, routingKey, basicProperties, bs);
+        }
+
+        public void SendMessage<T>(string routeKey, T message,
+            DeliveryModeEnum? deliver_mode = null, MessagePriority? priority = null,
+            TimeSpan? delay = null, IDictionary<string, object> properties = null)
+        {
+            var basicProperties = _channel.CreateBasicProperties();
+            basicProperties.DeliveryMode = (byte)DeliveryModeEnum.NonPersistent;
+            basicProperties.Persistent = false;
+
+            var header = new Dictionary<string, object>();
+            if (ValidateHelper.IsPlumpDict(properties))
             {
-                try
-                {
-                    var bs = Encoding.UTF8.GetBytes(message.ToJson());
-                    _channel.BasicPublish(ExchangeName, routingKey, basicProperties, bs);
-
-                    break;
-                }
-                catch when (counter < Retires)
-                {
-                    Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(1.5, counter++ - 5)));
-                }
+                header.AddDict(properties.ToDictionary(x => x.Key, x => x.Value));
             }
+
+            //持久化
+            if (this._persistent)
+            {
+                basicProperties.DeliveryMode = (byte)DeliveryModeEnum.Persistent;
+                basicProperties.Persistent = true;
+            }
+            //优先级
+            if (priority != null)
+            {
+                basicProperties.Priority = (byte)priority;
+            }
+            //延迟消息
+            if (delay != null)
+            {
+                header["x-delay"] = Math.Abs((long)delay.Value.TotalMilliseconds);
+            }
+
+            if (ValidateHelper.IsPlumpDict(header))
+            {
+                basicProperties.Headers = new Dictionary<string, object>(header);
+            }
+
+            var bs = SerializeHelper.Instance.Serialize(message);
+            this._channel.BasicPublish(this._exchange_name, routeKey, basicProperties, bs);
         }
 
-        public void SendMessage<T>(string routeKey, T message, DeliveryModeEnum? deliver_mode = null, MessagePriority? priority = null, TimeSpan? delay = null, IDictionary<string, object> properties = null)
+        public async Task SendMessageAsync<T>(string routeKey, T message,
+            DeliveryModeEnum? deliver_mode = null, MessagePriority? priority = null,
+            TimeSpan? delay = null, IDictionary<string, object> properties = null)
         {
-            throw new NotImplementedException();
+            this.SendMessage(routeKey, message, deliver_mode, priority, delay, properties);
+            await Task.FromResult(1);
         }
 
-        public Task SendMessageAsync<T>(string routeKey, T message, DeliveryModeEnum? deliver_mode = null, MessagePriority? priority = null, TimeSpan? delay = null, IDictionary<string, object> properties = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 }
