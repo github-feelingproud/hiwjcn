@@ -40,9 +40,6 @@ namespace Lib.infrastructure.service
         where CodeBase : AuthCodeBase, new()
         where TokenScopeBase : AuthTokenScopeBase, new()
     {
-        [Obsolete("用另外一个构造函数注入对象")]
-        public AuthServiceBase() { }
-
         protected readonly IRepository<ClientBase> _clientRepo;
         protected readonly IRepository<ScopeBase> _scopeRepo;
         protected readonly IRepository<TokenBase> _tokenRepo;
@@ -65,7 +62,7 @@ namespace Lib.infrastructure.service
 
 
         #region
-        public async Task<PagerData<ClientBase>> QueryClientListAsync(
+        public virtual async Task<PagerData<ClientBase>> QueryClientListAsync(
             string user_uid = null, string q = null, bool? is_active = null, bool? is_remove = null,
             int page = 1, int pagesize = 10)
         {

@@ -15,7 +15,7 @@ using System.Data.Entity;
 namespace Lib.infrastructure.entity
 {
     [Serializable]
-    public abstract class TimeBaseEntity : BaseEntity
+    public abstract class TimeEntityBase : BaseEntity
     {
         public virtual int TimeYear { get; set; }
 

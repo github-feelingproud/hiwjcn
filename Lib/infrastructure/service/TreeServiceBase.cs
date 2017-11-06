@@ -20,7 +20,7 @@ namespace Lib.infrastructure.service
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface ITreeServiceBase<T> : IServiceBase<T>
-        where T : TreeBaseEntity
+        where T : TreeEntityBase
     {
         Task<List<T>> FindNodeChildrenRecursively_(IQueryable<T> data_source, T first_node,
                string tree_error = null);
@@ -35,7 +35,7 @@ namespace Lib.infrastructure.service
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class TreeServiceBase<T> : ServiceBase<T>, ITreeServiceBase<T>
-        where T : TreeBaseEntity
+        where T : TreeEntityBase
     {
         public async Task<List<T>> FindNodeChildrenRecursively_(IQueryable<T> data_source, T first_node,
             string tree_error = "树存在无限递归")
@@ -97,7 +97,7 @@ namespace Lib.infrastructure.service
                 current_uid = node.ParentUID;
                 node_path.Add(node);
             }
-            var success = top_level == TreeBaseEntity.FIRST_LEVEL && top_parent == TreeBaseEntity.FIRST_PARENT_UID;
+            var success = top_level == TreeEntityBase.FIRST_LEVEL && top_parent == TreeEntityBase.FIRST_PARENT_UID;
             return (success, node_path);
         }
 

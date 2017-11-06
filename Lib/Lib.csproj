@@ -264,8 +264,9 @@
     <Compile Include="helper\ReflectionHelper.cs" />
     <Compile Include="infrastructure\entity\AuthEntityBase.cs" />
     <Compile Include="infrastructure\entity\BaseEntity.cs" />
-    <Compile Include="infrastructure\entity\TimeBaseEntity.cs" />
-    <Compile Include="infrastructure\entity\TreeBaseEntity.cs" />
+    <Compile Include="infrastructure\entity\TimeEntityBase.cs" />
+    <Compile Include="infrastructure\entity\TreeEntityBase.cs" />
+    <Compile Include="infrastructure\entity\UserEntityBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="infrastructure\provider\AuthApiServiceFromDbBase.cs" />
     <Compile Include="infrastructure\service\AuthLoginService.cs" />

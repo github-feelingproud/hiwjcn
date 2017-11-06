@@ -20,6 +20,9 @@ namespace Lib.mvc.user
         string Decrypt(string data);
     }
 
+    /// <summary>
+    /// 可以用
+    /// </summary>
     public class DefaultCookieTokenEncryption : CookieTokenEncryption
     {
         class EncryptEntry
@@ -87,6 +90,23 @@ namespace Lib.mvc.user
             data = ran.Sample(chars, this.TrashLen).AsString() + data + ran.Sample(chars, this.TrashLen).AsString();
 
             return data;
+        }
+    }
+
+    public class CookieTokenDesEncryption : CookieTokenEncryption
+    {
+        private const string Key = "LiuJineagel=";
+
+        public string Decrypt(string data)
+        {
+            data = ConvertHelper.GetString(data);
+            return SecureHelper.DESDecrypt(data, Key);
+        }
+
+        public string Encrypt(string data)
+        {
+            data = ConvertHelper.GetString(data);
+            return SecureHelper.DESEncrypt(data, Key);
         }
     }
 

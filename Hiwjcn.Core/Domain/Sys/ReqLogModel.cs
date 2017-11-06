@@ -70,7 +70,7 @@ namespace Hiwjcn.Core.Model.Sys
 
     [Serializable]
     [Table("sys_reqlog")]
-    public class ReqLogModel : TimeBaseEntity
+    public class ReqLogModel : TimeEntityBase
     {
         [MaxLength(100)]
         public virtual string ReqID { get; set; }
@@ -159,7 +159,7 @@ namespace Hiwjcn.Core.Model.Sys
     /// </summary>
     [Serializable]
     [Table("sys_cachehitlog")]
-    public class CacheHitLog : TimeBaseEntity
+    public class CacheHitLog : TimeEntityBase
     {
         /// <summary>
         /// 没有无参构造函数autofac会报错
@@ -193,7 +193,7 @@ namespace Hiwjcn.Core.Model.Sys
 
     [Serializable]
     [Table("sys_user_activity")]
-    public class UserActivity : TimeBaseEntity
+    public class UserActivity : TimeEntityBase
     {
         [MaxLength(100)]
         public virtual string ReqID { get; set; }

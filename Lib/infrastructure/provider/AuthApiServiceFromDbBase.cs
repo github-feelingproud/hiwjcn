@@ -52,7 +52,7 @@ namespace Lib.infrastructure.provider
         public abstract string AuthScopeCacheKey(string scope);
 
 
-        public async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
+        public virtual async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
         {
             var res = new _<TokenModel>();
 
@@ -81,7 +81,7 @@ namespace Lib.infrastructure.provider
             return res;
         }
 
-        public async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string client_id, string access_token)
+        public virtual async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string client_id, string access_token)
         {
             var data = new _<LoginUserInfo>();
 
@@ -151,7 +151,7 @@ namespace Lib.infrastructure.provider
             return data;
         }
 
-        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
+        public virtual async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
         {
             var data = new _<string>();
 
@@ -185,7 +185,7 @@ namespace Lib.infrastructure.provider
             return data;
         }
 
-        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password)
+        public virtual async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password)
         {
             var data = new _<string>();
 
@@ -219,7 +219,7 @@ namespace Lib.infrastructure.provider
             return data;
         }
 
-        public async Task<_<string>> RemoveCacheAsync(CacheBundle data)
+        public virtual async Task<_<string>> RemoveCacheAsync(CacheBundle data)
         {
             var res = new _<string>();
             if (data == null)

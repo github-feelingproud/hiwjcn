@@ -15,7 +15,7 @@ using System.Data.Entity;
 namespace Lib.infrastructure.entity
 {
     [Serializable]
-    public abstract class TreeBaseEntity : BaseEntity
+    public abstract class TreeEntityBase : BaseEntity
     {
         public const int FIRST_LEVEL = 0;
         public const string FIRST_PARENT_UID = "";
