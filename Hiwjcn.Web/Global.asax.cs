@@ -72,10 +72,6 @@ namespace Hiwjcn.Web
                         {
                             builder.UseAccountSystem<QPLUserLoginService>();
                         }
-                        else if (account_system == nameof(AccountSystemEnum.SalesInfo))
-                        {
-                            builder.UseAccountSystem<QPLSalesLoginService>();
-                        }
                         else if (account_system == nameof(AccountSystemEnum.TraderAccess))
                         {
                             builder.UseAccountSystem<TraderAccessLoginService>();

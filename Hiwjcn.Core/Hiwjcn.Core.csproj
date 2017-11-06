@@ -110,7 +110,6 @@
     <Compile Include="Domain\Auth\AuthClients.cs" />
     <Compile Include="Domain\Category\CategoryModel.cs" />
     <Compile Include="Domain\Sys\CommentModel.cs" />
-    <Compile Include="Domain\BaseEntity.cs" />
     <Compile Include="Domain\Page\SectionModel.cs" />
     <Compile Include="Domain\Sys\AreaModel.cs" />
     <Compile Include="Domain\Sys\LinkModel.cs" />
