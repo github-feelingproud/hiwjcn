@@ -23,6 +23,29 @@ using Lib.distributed.akka;
 
 namespace Hiwjcn.Bll.Auth
 {
+    public class AuthApiServiceFromDB_ : Lib.infrastructure.provider.AuthApiServiceFromDbBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>
+    {
+        public AuthApiServiceFromDB_() : base()
+        { }
+
+        public override string AuthClientKey(string client) => CacheKeyManager.AuthClientKey(client);
+
+        public override string AuthScopeKey(string scope) => CacheKeyManager.AuthScopeKey(scope);
+
+        public override string AuthSSOUserInfoKey(string user_uid) => CacheKeyManager.AuthSSOUserInfoKey(user_uid);
+
+        public override string AuthTokenKey(string token) => CacheKeyManager.AuthTokenKey(token);
+
+        public override string AuthUserInfoKey(string user_uid) => CacheKeyManager.AuthUserInfoKey(user_uid);
+
+        private readonly IActorRef Actor = ActorsManager<CacheHitLogActor>.Instance.DefaultClient;
+        public override async Task CacheHitLog(string cache_key, CacheHitStatusEnum status)
+        {
+            Actor?.Tell(new CacheHitLog(cache_key, status));
+            await Task.FromResult(1);
+        }
+    }
+
     /// <summary>
     /// 读取数据库实现auth相关api
     /// </summary>
