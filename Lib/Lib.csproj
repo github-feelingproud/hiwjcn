@@ -262,6 +262,7 @@
     <Compile Include="helper\StringHelper.cs" />
     <Compile Include="helper\HtmlHelper.cs" />
     <Compile Include="helper\ReflectionHelper.cs" />
+    <Compile Include="infrastructure\controller\CRUDControllerBase.cs" />
     <Compile Include="infrastructure\entity\AuthEntityBase.cs" />
     <Compile Include="infrastructure\entity\BaseEntity.cs" />
     <Compile Include="infrastructure\entity\TimeEntityBase.cs" />

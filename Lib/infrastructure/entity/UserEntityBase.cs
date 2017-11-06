@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Lib.infrastructure.entity
 {
-    public class UserEntityBase
+    public class UserEntityBase : BaseEntity
     { }
 
     [Serializable]
