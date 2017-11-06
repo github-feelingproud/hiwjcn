@@ -326,7 +326,8 @@ namespace Hiwjcn.Bll.Auth
                     //对于scope不去排除isremove，这个条件在授权的时候已经拦截了
                     var scope_uids = db.Set<AuthTokenScope>().AsNoTrackingQueryable().Where(x => x.TokenUID == token.UID).Select(x => x.ScopeUID);
                     var scope_query = db.Set<AuthScope>().AsNoTrackingQueryable();
-                    token.Scopes = await scope_query.Where(x => scope_uids.Contains(x.UID)).ToListAsync();
+                    token.Scopes = (await scope_query.Where(x => scope_uids.Contains(x.UID)).ToListAsync())
+                    .Select(x => (Lib.infrastructure.entity.AuthScopeBase)x).ToList();
 
                     //自动刷新过期时间
                     if ((token.ExpiryTime - now).TotalDays < (TokenConfig.TokenExpireDays / 2.0))

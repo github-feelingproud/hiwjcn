@@ -25,8 +25,18 @@ namespace Hiwjcn.Bll.Auth
 {
     public class AuthApiServiceFromDB_ : Lib.infrastructure.provider.AuthApiServiceFromDbBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>
     {
-        public AuthApiServiceFromDB_() : base()
-        { }
+        public AuthApiServiceFromDB_(
+            IAuthLoginService _loginService,
+            //IAuthServiceBase<ClientBase, ScopeBase, TokenBase, CodeBase, TokenScopeBase> _authService,
+            ICacheProvider _cache,
+            IRepository<AuthClient> _clientRepo,
+            IRepository<AuthScope> _scopeRepo,
+            IRepository<AuthToken> _tokenRepo,
+            IRepository<AuthCode> _codeRepo,
+            IRepository<AuthTokenScope> _tokenScopeRepo) : base(_loginService, _cache, _clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
+        {
+            //
+        }
 
         public override string AuthClientKey(string client) => CacheKeyManager.AuthClientKey(client);
 
