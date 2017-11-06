@@ -262,7 +262,14 @@
     <Compile Include="helper\StringHelper.cs" />
     <Compile Include="helper\HtmlHelper.cs" />
     <Compile Include="helper\ReflectionHelper.cs" />
+    <Compile Include="infrastructure\entity\AuthEntityBase.cs" />
+    <Compile Include="infrastructure\entity\BaseEntity.cs" />
+    <Compile Include="infrastructure\entity\TimeBaseEntity.cs" />
+    <Compile Include="infrastructure\entity\TreeBaseEntity.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
+    <Compile Include="infrastructure\service\AuthApiServiceFromDbBase.cs" />
+    <Compile Include="infrastructure\service\AuthServiceBase.cs" />
+    <Compile Include="infrastructure\service\TreeServiceBase.cs" />
     <Compile Include="ioc\AppContextExtension.cs" />
     <Compile Include="ioc\BaseDependencyRegistrar.cs" />
     <Compile Include="ioc\DependencyRegistrarBase.cs" />
