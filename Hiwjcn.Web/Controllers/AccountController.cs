@@ -22,6 +22,7 @@ using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.mvc.auth.validation;
 using Hiwjcn.Core;
 using System.Collections.Generic;
+using Lib.infrastructure.service;
 
 namespace Hiwjcn.Web.Controllers
 {

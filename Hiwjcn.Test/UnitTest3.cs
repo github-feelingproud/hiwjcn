@@ -9,6 +9,7 @@ using System.Linq;
 using Lib.helper;
 using Model;
 using Lib.infrastructure.service;
+using Lib.infrastructure.entity;
 
 namespace Hiwjcn.Test
 {

@@ -11,6 +11,7 @@ using Lib.core;
 using Lib.helper;
 using Lib.extension;
 using Newtonsoft.Json;
+using Lib.infrastructure.entity;
 
 namespace Hiwjcn.Core.Model.Sys
 {

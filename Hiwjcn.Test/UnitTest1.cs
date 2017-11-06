@@ -27,6 +27,7 @@ using QPL.WebService.Order.Core.Models;
 using WebLogic.Model.Page;
 using Lib.distributed;
 using Lib.storage;
+using Lib.distributed.redis;
 
 namespace QPL.WebService.Order.Core.Models
 {

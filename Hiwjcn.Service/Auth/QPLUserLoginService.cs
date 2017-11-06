@@ -27,6 +27,7 @@ using System.Net.Http;
 using System.Net;
 using Polly;
 using Polly.CircuitBreaker;
+using Lib.infrastructure.service;
 
 namespace Hiwjcn.Bll.Auth
 {

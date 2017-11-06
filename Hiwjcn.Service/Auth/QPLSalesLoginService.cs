@@ -31,6 +31,7 @@ using Lib.rpc;
 using QPL.WebService.TraderAccess.Core.Model;
 using QPL.WebService.TraderAccess.Core.Request;
 using QPL.WebService.TraderAccess.Core;
+using Lib.infrastructure.service;
 
 namespace Hiwjcn.Bll.Auth
 {

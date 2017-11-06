@@ -11,6 +11,7 @@ using System.Runtime.Serialization;
 using Model;
 using System.Configuration;
 using Lib.extension;
+using Lib.infrastructure.entity;
 
 namespace Hiwjcn.Core.Domain.WCF
 {

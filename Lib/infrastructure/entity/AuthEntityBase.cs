@@ -23,7 +23,7 @@ namespace Lib.infrastructure.entity
     /// auth客户端
     /// </summary>
     [Serializable]
-    public abstract class AuthClientBase : BaseEntity
+    public class AuthClientBase : BaseEntity
     {
         [StringLength(20, MinimumLength = 1, ErrorMessage = "客户端名称必填")]
         [Required]
@@ -59,7 +59,7 @@ namespace Lib.infrastructure.entity
     }
 
     [Serializable]
-    public abstract class AuthClientCheckLogBase : BaseEntity
+    public class AuthClientCheckLogBase : BaseEntity
     {
         public virtual int CheckStatus { get; set; }
 
@@ -68,7 +68,7 @@ namespace Lib.infrastructure.entity
     }
 
     [Serializable]
-    public abstract class AuthClientUseageBase : BaseEntity
+    public class AuthClientUseageBase : BaseEntity
     {
         [StringLength(100, MinimumLength = 20, ErrorMessage = "client uid 名称必填")]
         [Required]
@@ -81,7 +81,7 @@ namespace Lib.infrastructure.entity
     }
 
     [Serializable]
-    public abstract class AuthScopeBase : BaseEntity
+    public class AuthScopeBase : BaseEntity
     {
         [StringLength(100, ErrorMessage = "scope 名称必填")]
         [Required]
@@ -109,7 +109,7 @@ namespace Lib.infrastructure.entity
     }
 
     [Serializable]
-    public abstract class AuthTokenBase : BaseEntity
+    public class AuthTokenBase : BaseEntity
     {
         [StringLength(100, MinimumLength = 20, ErrorMessage = "refresh token 必填")]
         [Required]
@@ -148,7 +148,7 @@ namespace Lib.infrastructure.entity
     }
 
     [Serializable]
-    public abstract class AuthTokenScopeBase : BaseEntity
+    public class AuthTokenScopeBase : BaseEntity
     {
         [StringLength(100, MinimumLength = 20, ErrorMessage = "token UID 必填")]
         [Required]
@@ -162,7 +162,7 @@ namespace Lib.infrastructure.entity
     }
 
     [Serializable]
-    public abstract class AuthCodeBase : BaseEntity
+    public class AuthCodeBase : BaseEntity
     {
         [StringLength(100, MinimumLength = 20, ErrorMessage = "用户UID 必填")]
         [Required]

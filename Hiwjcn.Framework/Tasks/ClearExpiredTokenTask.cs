@@ -10,6 +10,7 @@ using Lib.data;
 using System.Linq;
 using Hiwjcn.Core.Infrastructure;
 using Hiwjcn.Core.Domain.Auth;
+using Lib.infrastructure.entity;
 
 namespace Hiwjcn.Framework.Tasks
 {

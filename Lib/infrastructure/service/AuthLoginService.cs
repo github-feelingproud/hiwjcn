@@ -29,7 +29,7 @@ namespace Lib.infrastructure.service
     {
         public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : IAuthLoginService
         {
-            builder.RegisterType<T>().AsSelf().As<IAuthLoginService>().SingleInstance();
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IAuthLoginService>().SingleInstance();
         }
     }
 }

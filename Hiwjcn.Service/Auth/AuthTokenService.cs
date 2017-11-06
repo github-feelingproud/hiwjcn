@@ -16,6 +16,7 @@ using System.Configuration;
 using Lib.mvc;
 using Lib.cache;
 using Hiwjcn.Core;
+using Lib.infrastructure.entity;
 
 namespace Hiwjcn.Bll.Auth
 {

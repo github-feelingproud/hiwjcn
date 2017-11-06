@@ -15,16 +15,6 @@ using System.Data.Entity;
 namespace Model
 {
 
-    [Serializable]
-    public abstract class TreeBaseEntity : Lib.infrastructure.entity.TreeBaseEntity { }
-
-    [Serializable]
-    public abstract class TimeBaseEntity : Lib.infrastructure.entity.TimeBaseEntity { }
-
-    /// <summary>
-    /// 实体基类
-    /// </summary>
-    [Serializable]
-    public abstract class BaseEntity : Lib.infrastructure.entity.BaseEntity { }
+    //
 
 }

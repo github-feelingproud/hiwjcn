@@ -5,6 +5,7 @@ using System.Text;
 using Model;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Lib.infrastructure.entity;
 
 namespace WebLogic.Model.Page
 {

@@ -19,6 +19,7 @@ using Lib.mvc.auth;
 using Hiwjcn.Framework;
 using System.Collections.ObjectModel;
 using Lib.mvc.auth.validation;
+using Lib.infrastructure.service;
 
 namespace Hiwjcn.Web.Controllers
 {

@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WebLogic.Model.User;
 using Lib.core;
+using Lib.infrastructure.entity;
 
 namespace Model.User
 {

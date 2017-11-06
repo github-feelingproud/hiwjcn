@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Lib.extension;
+using Lib.infrastructure.entity;
 
 namespace Model.Category
 {

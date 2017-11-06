@@ -22,6 +22,7 @@ using Hiwjcn.Framework;
 using Lib.cache;
 using Lib.task;
 using Hiwjcn.Framework.Provider;
+using Lib.infrastructure.service;
 
 namespace Hiwjcn.Web.Controllers
 {

@@ -6,6 +6,7 @@ using WebLogic.Model;
 using Model;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Lib.infrastructure.entity;
 
 namespace WebLogic.Model.Tag
 {

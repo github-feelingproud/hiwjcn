@@ -10,6 +10,7 @@ using org.apache.zookeeper;
 using System.Threading.Tasks;
 using static org.apache.zookeeper.ZooDefs;
 using Lib.distributed;
+using Lib.distributed.zookeeper;
 
 namespace Hiwjcn.Test
 {
