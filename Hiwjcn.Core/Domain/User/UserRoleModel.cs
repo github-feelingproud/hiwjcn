@@ -14,20 +14,5 @@ namespace WebLogic.Model.User
     /// 用户角色关联
     /// </summary>
     [Table("account_user_role")]
-    public class UserRoleModel : BaseEntity
-    {
-        /// <summary>
-        /// 用户ID
-        /// </summary>
-        [Column("user_id")]
-        [StringLength(100)]
-        public virtual string UserID { get; set; }
-
-        /// <summary>
-        /// 角色ID
-        /// </summary>
-        [Column("role_id")]
-        [StringLength(100)]
-        public virtual string RoleID { get; set; }
-    }
+    public class UserRoleModel : UserRoleEntityBase { }
 }

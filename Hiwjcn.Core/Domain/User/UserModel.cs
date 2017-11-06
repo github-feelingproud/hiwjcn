@@ -13,34 +13,14 @@ namespace Model.User
 {
     [Serializable]
     [Table("account_user_avatar")]
-    public class UserAvatar : BaseEntity
-    {
-        [Required(ErrorMessage = "头像数据为空")]
-        public virtual byte[] AvatarBytes { get; set; }
-
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "UserUID长度错误")]
-        [Required(ErrorMessage = "UserUID必填")]
-        [Index]
-        public virtual string UserUID { get; set; }
-    }
+    public class UserAvatar : UserAvatarEntityBase { }
 
     /// <summary>
     /// 一次性登录用的code
     /// </summary>
     [Serializable]
     [Table("account_user_onetimecode")]
-    public class UserOneTimeCode : BaseEntity
-    {
-        [StringLength(100)]
-        [Required]
-        public virtual string Code { get; set; }
-
-        [StringLength(100)]
-        [Required]
-        public virtual string UserUID { get; set; }
-
-        public virtual int CodeType { get; set; }
-    }
+    public class UserOneTimeCode : UserOneTimeCodeEntityBase { }
 
     /// <summary>
     ///用户的账户模型

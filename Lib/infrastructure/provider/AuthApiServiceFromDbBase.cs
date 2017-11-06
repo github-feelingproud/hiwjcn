@@ -37,7 +37,8 @@ namespace Lib.infrastructure.provider
             IRepository<ScopeBase> _scopeRepo,
             IRepository<TokenBase> _tokenRepo,
             IRepository<CodeBase> _codeRepo,
-            IRepository<TokenScopeBase> _tokenScopeRepo) : base(_clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
+            IRepository<TokenScopeBase> _tokenScopeRepo) : 
+            base(_clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
         {
             this._loginService = _loginService;
             this._cache = _cache;
