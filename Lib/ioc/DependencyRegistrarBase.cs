@@ -74,16 +74,7 @@ namespace Lib.ioc
         {
             //注册泛型
             this.RegDataRepositoryProvider(ref builder, typeof(EFRepository<>));
-            foreach (var a in ass)
-            {
-                foreach (var t in this.CachedClass(a))
-                {
-                    if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(EFRepository<>)))
-                    {
-                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
-                    }
-                }
-            }
+            this.RegDataRepository_(ref builder, ass);
         }
 
         /// <summary>
@@ -107,7 +98,7 @@ namespace Lib.ioc
                     var all_interfaces = t.GetAllInterfaces_().ToArray();
                     if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IRepository<>))))
                     {
-                        builder.RegisterType(t).AsSelf().As(t.BaseType).As(all_interfaces);
+                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).As(all_interfaces);
                     }
                 }
             }
@@ -135,7 +126,6 @@ namespace Lib.ioc
                     if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IServiceBase<>))))
                     {
                         var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
-
                         if (t.IsInterceptClass())
                         {
                             reg = reg.EnableClassInterceptors();
@@ -153,25 +143,7 @@ namespace Lib.ioc
         {
             //注册泛型
             this.RegServiceProvider(ref builder, typeof(ServiceBase<>));
-            foreach (var a in ass)
-            {
-                foreach (var t in this.CachedClass(a))
-                {
-                    //用这种方式判断是否是某个泛型的实现
-                    //t.GetAllInterfaces_().Any(x => x.IsGenericType_(typeof(IServiceBase<>)));
-
-                    //注册service
-                    if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(ServiceBase<>)))
-                    {
-                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
-
-                        if (t.IsInterceptClass())
-                        {
-                            reg = reg.EnableClassInterceptors();
-                        }
-                    }
-                }
-            }
+            this.RegService_(ref builder, ass);
         }
 
         /// <summary>

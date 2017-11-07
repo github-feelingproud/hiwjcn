@@ -96,7 +96,7 @@ namespace Lib.data
         {
             foreach (var a in ass)
             {
-                var tps = a.GetTypes().Where(x => x.IsClass && !x.IsAbstract && x.IsAssignableTo_<IDBTable>());
+                var tps = a.GetTypes().Where(x => x.IsClass && !x.IsAbstract && x.IsDatabaseTable());
                 foreach (var t in tps)
                 {
                     builder.RegisterEntityType(t);

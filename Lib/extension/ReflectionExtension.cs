@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using Lib.data;
 
 namespace Lib.extension
 {
@@ -22,6 +23,8 @@ namespace Lib.extension
         {
             return a.GetTypes().Where(x => x.BaseType != null && x.BaseType == typeof(T)).ToList();
         }
+
+        public static bool IsDatabaseTable(this Type t) => t.IsAssignableTo_<IDBTable>();
 
         /// <summary>
         /// 是否可以赋值给

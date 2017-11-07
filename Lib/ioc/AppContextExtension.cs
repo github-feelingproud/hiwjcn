@@ -69,12 +69,6 @@ namespace Lib.ioc
             a.GetAllNormalClass().Where(x => x.CanRegIoc());
 
         /// <summary>
-        /// 配置不注册IOC
-        /// </summary>
-        public static bool NotRegIoc(this Type t) =>
-            t.GetCustomAttributes<NotRegIocAttribute>().Any();
-
-        /// <summary>
         /// 是否注册为单例
         /// </summary>
         public static bool IsSingleInstance(this Type t) =>
@@ -87,9 +81,11 @@ namespace Lib.ioc
             t.GetCustomAttributes_<InterceptInstanceAttribute>().Any();
 
         /// <summary>
-        /// 配置可以注册IOC
+        /// 配置可以注册IOC，
+        /// 要public，不是抽象类，不是接口，没有不注册属性，不是数据表model
         /// </summary>
-        public static bool CanRegIoc(this Type t) => t.IsPublic && !t.NotRegIoc();
+        public static bool CanRegIoc(this Type t) =>
+            t.IsPublic && !t.IsDatabaseTable() && !t.GetCustomAttributes<NotRegIocAttribute>().Any();
 
         /// <summary>
         /// 给mvc提供依赖注入功能
