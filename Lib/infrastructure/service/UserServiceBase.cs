@@ -10,6 +10,7 @@ using Lib.helper;
 using Lib.extension;
 using System.Data.Entity;
 using Lib.core;
+using Lib.mvc.user;
 using Lib.cache;
 
 namespace Lib.infrastructure.service
@@ -102,5 +103,92 @@ namespace Lib.infrastructure.service
             return data;
         }
 
+        public virtual async Task<_<string>> AddUser(UserBase model)
+        {
+            var data = new _<string>();
+            if (!model.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+
+            if (await this._userRepo.AddAsync(model) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+            }
+            return data;
+        }
+
+        public virtual async Task<_<string>> UpdateUser(UserBase model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> ActiveOrDeActiveUser(UserBase model, bool active)
+        {
+            var data = new _<string>();
+
+            return data;
+        }
+
+        public virtual async Task<_<LoginUserInfo>> LoginViaPassword()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<LoginUserInfo>> LoginViaOneTimeCode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> SetUserRoles()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> SetRolePermissions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<PagerData<RoleBase>> QueryRoleList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> AddRole()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> DeleteRole()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> UpdateRole()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<PagerData<PermissionBase>> QueryPermissionList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> AddPermission()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> UpdatePermission()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<_<string>> DeletePermission()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

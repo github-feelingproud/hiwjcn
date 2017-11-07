@@ -25,7 +25,7 @@ namespace Lib.infrastructure.entity
         [Column("user_pass")]
         [StringLength(50, MinimumLength = 10, ErrorMessage = "密码长度错误")]
         public virtual string PassWord { get; set; }
-        
+
         /// <summary>
         /// 电话
         /// </summary>
@@ -40,7 +40,7 @@ namespace Lib.infrastructure.entity
         [StringLength(50)]
         [EmailAddress(ErrorMessage = "邮件格式错误")]
         public virtual string Email { get; set; }
-        
+
         /// <summary>
         /// 头像链接
         /// </summary>
@@ -100,7 +100,7 @@ namespace Lib.infrastructure.entity
     }
 
     [Serializable]
-    public class RoleEntityBase : BaseEntity
+    public class RoleEntityBase : TreeEntityBase
     {
         /// <summary>
         /// 角色名
@@ -125,7 +125,7 @@ namespace Lib.infrastructure.entity
     }
 
     [Serializable]
-    public class PermissionEntityBase : BaseEntity
+    public class PermissionEntityBase : TreeEntityBase
     {
         [MaxLength(20)]
         [Required]
