@@ -273,6 +273,7 @@
     <Compile Include="infrastructure\service\AuthLoginService.cs" />
     <Compile Include="infrastructure\service\AuthServiceBase.cs" />
     <Compile Include="infrastructure\service\TreeServiceBase.cs" />
+    <Compile Include="infrastructure\service\UserServiceBase.cs" />
     <Compile Include="ioc\AppContextExtension.cs" />
     <Compile Include="ioc\BaseDependencyRegistrar.cs" />
     <Compile Include="ioc\DependencyRegistrarBase.cs" />
@@ -382,6 +383,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="core\contract\" />

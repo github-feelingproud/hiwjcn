@@ -27,43 +27,14 @@ namespace Model.User
     /// </summary>
     [Serializable]
     [Table("account_user")]
-    public class UserModel : BaseEntity
+    public class UserModel : UserEntityBase
     {
-        /// <summary>
-        /// 昵称
-        /// </summary>
-        [Column("nick_name")]
-        [StringLength(10, MinimumLength = 5, ErrorMessage = "昵称长度不匹配")]
-        public virtual string NickName { get; set; }
-
-        /// <summary>
-        /// md5加密的密码
-        /// </summary>
-        [Column("user_pass")]
-        [StringLength(50, MinimumLength = 10, ErrorMessage = "密码长度错误")]
-        public virtual string PassWord { get; set; }
-
         /// <summary>
         /// 余额
         /// </summary>
         [Column("user_money")]
         public virtual decimal Money { get; set; }
-
-        /// <summary>
-        /// 电话
-        /// </summary>
-        [Column("user_phone")]
-        [StringLength(50)]
-        public virtual string Phone { get; set; }
-
-        /// <summary>
-        /// 邮箱
-        /// </summary>
-        [Column("user_email")]
-        [StringLength(50)]
-        [EmailAddress(ErrorMessage = "邮件格式错误")]
-        public virtual string Email { get; set; }
-
+        
         /// <summary>
         /// 用户介绍
         /// </summary>
@@ -83,54 +54,6 @@ namespace Model.User
         /// </summary>
         [Column("user_sex")]
         public virtual int Sex { get; set; }
-
-        /// <summary>
-        /// 解析性别
-        /// </summary>
-        /// <param name="sex"></param>
-        /// <returns></returns>
-        public static string ParseSex(int sex)
-        {
-            try
-            {
-                return ((SexEnum)sex).ToString();
-            }
-            catch
-            {
-                return sex.ToString();
-            }
-        }
-
-        /// <summary>
-        /// 头像链接
-        /// </summary>
-        [Column("user_img")]
-        [StringLength(1000)]
-        public virtual string UserImg { get; set; }
-
-        /// <summary>
-        /// 用户拥有的权限（大分类）
-        /// </summary>
-        [Column("user_flag")]
-        public virtual int Flag { get; set; }
-
-        /// <summary>
-        /// 用户所有角色id
-        /// </summary>
-        [NotMapped]
-        public virtual List<string> RoleList { get; set; }
-
-        /// <summary>
-        /// 用户所有权限id（最终拿来验证用户行为是否有权限）
-        /// </summary>
-        [NotMapped]
-        public virtual List<string> PermissionList { get; set; }
-
-        /// <summary>
-        /// 用户角色模型
-        /// </summary>
-        [NotMapped]
-        public virtual List<RoleModel> RoleModelList { get; set; }
 
         /// <summary>
         /// Token
@@ -156,8 +79,25 @@ namespace Model.User
             if (ValidateHelper.IsPlumpString(this.UserImg)) { return this.UserImg; }
             return "/user/usermask/" + this.IID + "/";
         }
-    }
 
+        /// <summary>
+        /// 解析性别
+        /// </summary>
+        /// <param name="sex"></param>
+        /// <returns></returns>
+        public static string ParseSex(int sex)
+        {
+            try
+            {
+                return ((SexEnum)sex).ToString();
+            }
+            catch
+            {
+                return sex.ToString();
+            }
+        }
+    }
+    
     public class UserModelMapping : EFMappingBase<UserModel>
     {
         public UserModelMapping()

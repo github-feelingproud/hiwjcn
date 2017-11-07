@@ -17,6 +17,7 @@ using WebLogic.Model.User;
 using Lib.ioc;
 using Lib.infrastructure;
 using Lib.mvc.user;
+using Lib.infrastructure.entity;
 
 namespace Bll.User
 {
@@ -465,7 +466,7 @@ namespace Bll.User
                     {
                         var myroleidlist = userrolemaplist.Where(x => x.UserID == model.UID).Select(x => x.RoleID).Distinct().ToArray();
                         if (!ValidateHelper.IsPlumpList(myroleidlist)) { continue; }
-                        model.RoleModelList = rolelist.Where(x => myroleidlist.Contains(x.UID)).ToList();
+                        model.RoleModelList = rolelist.Where(x => myroleidlist.Contains(x.UID)).Select(x => (RoleEntityBase)x).ToList();
                     }
                 }
             }
