@@ -6,6 +6,8 @@
     <title>公共组件库Lib</title>
     <authors>王俊</authors>
     <iconUrl>http://hiwjcn.qiniudn.com/20170524_072555741_iOS.png</iconUrl>
+    <licenseUrl>https://github.com/hiwjcn/hiwjcn</licenseUrl>
+    <projectUrl>https://github.com/hiwjcn/hiwjcn</projectUrl>
     <description>公共组件库Lib</description>
   </metadata>
 </package>

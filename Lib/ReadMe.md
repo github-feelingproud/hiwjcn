@@ -6,6 +6,10 @@ https://github.com/hiwjcn/hiwjcn/issues
 
 hiwjcn@live.com
 
+# Installing via Nuget
+
+    Install-Package lib.com.nuget
+
 # 更新记录
 
 ### 1.0.0.42 待发布
