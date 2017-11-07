@@ -13,6 +13,7 @@ using System.IO;
 using System.Web;
 using System.Reflection;
 using Castle.DynamicProxy;
+using System.ServiceModel.Description;
 //using Castle.Core.Interceptor;
 
 namespace Lib.rpc
@@ -67,6 +68,12 @@ namespace Lib.rpc
         public ServiceClient(Binding binding, EndpointAddress endpoint) : base(binding, endpoint)
         {
             //manual config
+        }
+
+        public ServiceClient(string url, string via_url) : base(url)
+        {
+            var via = new ClientViaBehavior(new Uri(via_url));
+            this.Endpoint.EndpointBehaviors.Add(via);
         }
 
         public ServiceClient(string url, bool http = true) :
