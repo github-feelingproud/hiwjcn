@@ -86,6 +86,7 @@ namespace Lib.ioc
                                 foreach (var reg in ExtraRegistrars)
                                 {
                                     reg.Register(ref builder);
+                                    reg.Clean();
                                 }
                             }
 
@@ -235,12 +236,6 @@ namespace Lib.ioc
             }
         }
     }
-
-    /// <summary>
-    /// 不注册IOC
-    /// </summary>
-    public class NotRegIocAttribute : Attribute
-    { }
 
     public class RequestScopeModule : IHttpModule
     {

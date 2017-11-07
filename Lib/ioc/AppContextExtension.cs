@@ -63,29 +63,33 @@ namespace Lib.ioc
             builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IMessageQueueProducer>().SingleInstance();
 
         /// <summary>
+        /// 获取可以注册的类
+        /// </summary>
+        public static IEnumerable<Type> FindAllRegistableClass(this Assembly a) =>
+            a.GetAllNormalClass().Where(x => x.CanRegIoc());
+
+        /// <summary>
         /// 配置不注册IOC
         /// </summary>
-        public static bool NotRegIoc(this Type t)
-        {
-            return t.GetCustomAttributes<NotRegIocAttribute>().Any();
-        }
+        public static bool NotRegIoc(this Type t) =>
+            t.GetCustomAttributes<NotRegIocAttribute>().Any();
 
         /// <summary>
         /// 是否注册为单例
         /// </summary>
-        public static bool IsSingleInstance(this Type t) => 
+        public static bool IsSingleInstance(this Type t) =>
             t.GetCustomAttributes_<SingleInstanceAttribute>().Any();
 
         /// <summary>
         /// 是否拦截实例
         /// </summary>
-        public static bool IsInterceptClass(this Type t) => 
+        public static bool IsInterceptClass(this Type t) =>
             t.GetCustomAttributes_<InterceptInstanceAttribute>().Any();
 
         /// <summary>
         /// 配置可以注册IOC
         /// </summary>
-        public static bool CanRegIoc(this Type t) => !t.NotRegIoc();
+        public static bool CanRegIoc(this Type t) => t.IsPublic && !t.NotRegIoc();
 
         /// <summary>
         /// 给mvc提供依赖注入功能

@@ -10,7 +10,9 @@ using Lib.infrastructure;
 using Lib.mvc.plugin;
 using Lib.task;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
@@ -27,6 +29,19 @@ namespace Lib.ioc
 
         public abstract void Register(ref ContainerBuilder builder);
 
+        private readonly IDictionary<Assembly, List<Type>> _cache = new Dictionary<Assembly, List<Type>>();
+        //private readonly IDictionary<Type, (bool intercept, bool single_instance)> _cache_p = new Dictionary<Type, (bool intercept, bool single_instance)>();
+
+        private List<Type> CachedClass(Assembly a)
+        {
+            if (!this._cache.ContainsKey(a))
+            {
+                this._cache[a] = a.FindAllRegistableClass().ToList();
+            }
+
+            return this._cache[a] ?? throw new Exception("无法获取可以注册的类");
+        }
+
         /// <summary>
         /// 自动注册
         /// </summary>
@@ -34,7 +49,7 @@ namespace Lib.ioc
         {
             foreach (var a in ass)
             {
-                var types = a.GetAllNormalClass().Where(x => x.IsAssignableTo_<IAutoRegistered>()).ToArray();
+                var types = this.CachedClass(a).Where(x => x.IsAssignableTo_<IAutoRegistered>()).ToArray();
                 foreach (var t in types)
                 {
                     var reg = builder.RegisterType(t).AsSelf().AsImplementedInterfaces();
@@ -43,7 +58,7 @@ namespace Lib.ioc
                         reg.SingleInstance();
                     }
 
-                    if (this.Intercept || t.IsInterceptClass())
+                    if (t.IsInterceptClass())
                     {
                         reg = reg.EnableClassInterceptors();
                     }
@@ -61,7 +76,7 @@ namespace Lib.ioc
             this.RegDataRepositoryProvider(ref builder, typeof(EFRepository<>));
             foreach (var a in ass)
             {
-                foreach (var t in a.GetAllNormalClass())
+                foreach (var t in this.CachedClass(a))
                 {
                     if (t.BaseType != null && t.BaseType.IsGenericType_(typeof(EFRepository<>)))
                     {
@@ -87,7 +102,7 @@ namespace Lib.ioc
         {
             foreach (var a in ass)
             {
-                foreach (var t in a.GetAllNormalClass())
+                foreach (var t in this.CachedClass(a))
                 {
                     var all_interfaces = t.GetAllInterfaces_().ToArray();
                     if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IRepository<>))))
@@ -114,14 +129,14 @@ namespace Lib.ioc
         {
             foreach (var a in ass)
             {
-                foreach (var t in a.GetAllNormalClass())
+                foreach (var t in this.CachedClass(a))
                 {
                     var all_interfaces = t.GetAllInterfaces_().ToArray();
                     if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IServiceBase<>))))
                     {
                         var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
 
-                        if (this.Intercept || t.IsInterceptClass())
+                        if (t.IsInterceptClass())
                         {
                             reg = reg.EnableClassInterceptors();
                         }
@@ -140,7 +155,7 @@ namespace Lib.ioc
             this.RegServiceProvider(ref builder, typeof(ServiceBase<>));
             foreach (var a in ass)
             {
-                foreach (var t in a.GetAllNormalClass())
+                foreach (var t in this.CachedClass(a))
                 {
                     //用这种方式判断是否是某个泛型的实现
                     //t.GetAllInterfaces_().Any(x => x.IsGenericType_(typeof(IServiceBase<>)));
@@ -150,7 +165,7 @@ namespace Lib.ioc
                     {
                         var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
 
-                        if (this.Intercept || t.IsInterceptClass())
+                        if (t.IsInterceptClass())
                         {
                             reg = reg.EnableClassInterceptors();
                         }
@@ -166,7 +181,7 @@ namespace Lib.ioc
         {
             foreach (var a in ass)
             {
-                var tps = a.GetAllNormalClass().Where(x => x.IsAssignableTo_<IInterceptor>()).ToArray();
+                var tps = this.CachedClass(a).Where(x => x.IsAssignableTo_<IInterceptor>()).ToArray();
                 builder.RegisterTypes(tps);
             }
         }
@@ -180,7 +195,7 @@ namespace Lib.ioc
             {
                 try
                 {
-                    foreach (var t in a.GetAllNormalClass())
+                    foreach (var t in this.CachedClass(a))
                     {
                         var interfaces = t.GetInterfaces().Where(x => x.IsGenericType_(typeof(IConsumer<>))).ToArray();
                         if (interfaces?.Count() > 0)
@@ -218,7 +233,7 @@ namespace Lib.ioc
                 //注册URL
                 builder.RegisterControllers(a);
                 //注册插件
-                var tps = a.GetAllNormalClass().Where(x => x.IsAssignableTo_<BasePaymentController>()).ToArray();
+                var tps = this.CachedClass(a).Where(x => x.IsAssignableTo_<BasePaymentController>()).ToArray();
                 if (ValidateHelper.IsPlumpList(tps))
                 {
                     builder.RegisterTypes(tps).As<BasePaymentController>();
@@ -226,5 +241,9 @@ namespace Lib.ioc
             }
         }
 
+        public void Clean()
+        {
+            this._cache.Clear();
+        }
     }
 }

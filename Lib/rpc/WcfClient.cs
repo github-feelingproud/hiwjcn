@@ -14,7 +14,6 @@ using System.Web;
 using System.Reflection;
 using Castle.DynamicProxy;
 using System.ServiceModel.Description;
-//using Castle.Core.Interceptor;
 
 namespace Lib.rpc
 {
