@@ -168,6 +168,7 @@
     <Compile Include="User\UserBll.cs" />
     <Compile Include="User\UserEventHandler.cs" />
     <Compile Include="User\UserRoleBll.cs" />
+    <Compile Include="User\UserService.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

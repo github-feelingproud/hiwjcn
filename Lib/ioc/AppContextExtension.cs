@@ -71,6 +71,18 @@ namespace Lib.ioc
         }
 
         /// <summary>
+        /// 是否注册为单例
+        /// </summary>
+        public static bool IsSingleInstance(this Type t) => 
+            t.GetCustomAttributes_<SingleInstanceAttribute>().Any();
+
+        /// <summary>
+        /// 是否拦截实例
+        /// </summary>
+        public static bool IsInterceptClass(this Type t) => 
+            t.GetCustomAttributes_<InterceptInstanceAttribute>().Any();
+
+        /// <summary>
         /// 配置可以注册IOC
         /// </summary>
         public static bool CanRegIoc(this Type t) => !t.NotRegIoc();

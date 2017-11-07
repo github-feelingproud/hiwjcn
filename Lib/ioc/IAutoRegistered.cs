@@ -10,4 +10,8 @@ namespace Lib.ioc
     /// autofac 自动查找注册
     /// </summary>
     public interface IAutoRegistered { }
+
+    public class SingleInstanceAttribute : Attribute { }
+
+    public class InterceptInstanceAttribute : Attribute { }
 }

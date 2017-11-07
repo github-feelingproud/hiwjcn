@@ -22,6 +22,7 @@ namespace Lib.ioc
     /// </summary>
     public abstract class DependencyRegistrarBase : IDependencyRegistrar
     {
+        [Obsolete("计划过期，使用" + nameof(InterceptInstanceAttribute) + "指定需要拦截的类")]
         public abstract bool Intercept { get; }
 
         public abstract void Register(ref ContainerBuilder builder);
@@ -37,8 +38,12 @@ namespace Lib.ioc
                 foreach (var t in types)
                 {
                     var reg = builder.RegisterType(t).AsSelf().AsImplementedInterfaces();
+                    if (t.IsSingleInstance())
+                    {
+                        reg.SingleInstance();
+                    }
 
-                    if (this.Intercept)
+                    if (this.Intercept || t.IsInterceptClass())
                     {
                         reg = reg.EnableClassInterceptors();
                     }
@@ -116,7 +121,7 @@ namespace Lib.ioc
                     {
                         var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
 
-                        if (this.Intercept)
+                        if (this.Intercept || t.IsInterceptClass())
                         {
                             reg = reg.EnableClassInterceptors();
                         }
@@ -145,7 +150,7 @@ namespace Lib.ioc
                     {
                         var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
 
-                        if (this.Intercept)
+                        if (this.Intercept || t.IsInterceptClass())
                         {
                             reg = reg.EnableClassInterceptors();
                         }

@@ -34,15 +34,15 @@ namespace Lib.infrastructure.service
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
     {
-        private readonly ICacheProvider _cache;
+        protected readonly ICacheProvider _cache;
 
-        private readonly IRepository<UserBase> _userRepo;
-        private readonly IRepository<UserAvatarBase> _userAvatarRepo;
-        private readonly IRepository<OneTimeCodeBase> _oneTimeCodeRepo;
-        private readonly IRepository<RoleBase> _roleRepo;
-        private readonly IRepository<PermissionBase> _permissionRepo;
-        private readonly IRepository<RolePermissionBase> _rolePermissionRepo;
-        private readonly IRepository<UserRoleBase> _userRoleRepo;
+        protected readonly IRepository<UserBase> _userRepo;
+        protected readonly IRepository<UserAvatarBase> _userAvatarRepo;
+        protected readonly IRepository<OneTimeCodeBase> _oneTimeCodeRepo;
+        protected readonly IRepository<RoleBase> _roleRepo;
+        protected readonly IRepository<PermissionBase> _permissionRepo;
+        protected readonly IRepository<RolePermissionBase> _rolePermissionRepo;
+        protected readonly IRepository<UserRoleBase> _userRoleRepo;
 
         public UserServiceBase(
             ICacheProvider _cache,
