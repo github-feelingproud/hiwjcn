@@ -69,12 +69,6 @@ namespace Lib.rpc
             //manual config
         }
 
-        public ServiceClient(string url, string via_url) : base(url)
-        {
-            var via = new ClientViaBehavior(new Uri(via_url));
-            this.Endpoint.EndpointBehaviors.Add(via);
-        }
-
         public ServiceClient(string url, bool http = true) :
             this(http ? new BasicHttpBinding()
             {

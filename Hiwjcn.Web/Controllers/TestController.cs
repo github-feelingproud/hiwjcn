@@ -23,6 +23,8 @@ using WebCore.MvcLib.Controller;
 using Hiwjcn.Core.Data;
 using System.Text;
 using Nest;
+using Hiwjcn.Bll;
+using QPL.WebService.Product.Core.Models;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -41,6 +43,19 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher = pub;
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
+        }
+
+        public async Task<ActionResult> ss()
+        {
+            using (var client = new ProductServiceClient())
+            {
+                var data = await client.Instance.SearchUserProducts(new SearchParam()
+                {
+                    ProvinceUID = "31",
+                    CityUID = "3101"
+                });
+            }
+            return Content("");
         }
 
         public ActionResult excel()
