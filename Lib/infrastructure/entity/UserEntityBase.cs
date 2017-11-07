@@ -54,6 +54,9 @@ namespace Lib.infrastructure.entity
         [Column("user_flag")]
         public virtual int Flag { get; set; }
 
+        [Column("is_active")]
+        public virtual int IsActive { get; set; }
+
         /// <summary>
         /// 用户所有角色id
         /// </summary>

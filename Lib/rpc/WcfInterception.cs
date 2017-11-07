@@ -57,41 +57,45 @@ namespace Lib.rpc
     {
         void IClientMessageInspector.AfterReceiveReply(ref Message reply, object correlationState)
         {
-            //Console.WriteLine("客户端接收到的回复：\n{0}", reply.ToString());  
+            $"【{correlationState?.ToString()}】客户端接收到的回复:{reply.ToString()}".AddBusinessInfoLog();
             return;
         }
 
         object IClientMessageInspector.BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            //Console.WriteLine("客户端发送请求前的SOAP消息：\n{0}", request.ToString());  
-            // 插入验证信息  
-            MessageHeader hdUserName = MessageHeader.CreateHeader("u", "fuck", "admin");
-            MessageHeader hdPassWord = MessageHeader.CreateHeader("p", "fuck", "123");
+            var rid = Com.GetUUID();
+            $"【{rid}】客户端发送请求前的SOAP消息:{request.ToString()}".AddBusinessInfoLog();
+
+            // 插入验证信息
+            var request_id = MessageHeader.CreateHeader("rid", "rid", rid);
+            var hdUserName = MessageHeader.CreateHeader("u", "fuck", "admin");
+            var hdPassWord = MessageHeader.CreateHeader("p", "fuck", "123");
             request.Headers.Add(hdUserName);
             request.Headers.Add(hdPassWord);
-            return null;
+            return rid;
         }
 
         object IDispatchMessageInspector.AfterReceiveRequest(ref Message request, IClientChannel channel, InstanceContext instanceContext)
         {
-            //Console.WriteLine("服务器端：接收到的请求：\n{0}", request.ToString());  
+            $"服务器端：接收到的请求:{request.ToString()}".AddBusinessInfoLog();
+
             // 栓查验证信息  
-            string un = request.Headers.GetHeader<string>("u", "fuck");
-            string ps = request.Headers.GetHeader<string>("p", "fuck");
+            var un = request.Headers.GetHeader<string>("u", "fuck");
+            var ps = request.Headers.GetHeader<string>("p", "fuck");
             if (un == "admin" && ps == "abcd")
             {
-                Console.WriteLine("用户名和密码正确。");
+                //
             }
             else
             {
                 throw new Exception("验证失败，滚吧！");
             }
-            return null;
+            return $"将被传入方法{nameof(IDispatchMessageInspector.BeforeSendReply)}的correlationState参数";
         }
 
         void IDispatchMessageInspector.BeforeSendReply(ref Message reply, object correlationState)
         {
-            //Console.WriteLine("服务器即将作出以下回复：\n{0}", reply.ToString());  
+            $"服务器即将作出以下回复:{reply.ToString()}".AddBusinessInfoLog();
             return;
         }
     }
@@ -99,7 +103,8 @@ namespace Lib.rpc
     /// <summary>
     /// 测试 可以拦截消息
     /// </summary>
-    public class MyEndPointBehavior : IEndpointBehavior
+    public class MyEndPointBehavior<T> : IEndpointBehavior
+        where T : IClientMessageInspector, IDispatchMessageInspector, new()
     {
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
@@ -110,13 +115,13 @@ namespace Lib.rpc
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
             // 植入“偷听器”客户端  
-            clientRuntime.ClientMessageInspectors.Add(new MyMessageInspector());
+            clientRuntime.ClientMessageInspectors.Add(new T());
         }
 
         public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
         {
             // 植入“偷听器” 服务器端  
-            endpointDispatcher.DispatchRuntime.MessageInspectors.Add(new MyMessageInspector());
+            endpointDispatcher.DispatchRuntime.MessageInspectors.Add(new T());
         }
 
         public void Validate(ServiceEndpoint endpoint)

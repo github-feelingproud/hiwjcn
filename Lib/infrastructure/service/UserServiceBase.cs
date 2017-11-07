@@ -115,20 +115,63 @@ namespace Lib.infrastructure.service
             if (await this._userRepo.AddAsync(model) > 0)
             {
                 data.SetSuccessData(string.Empty);
+                return data;
             }
-            return data;
+
+            throw new Exception("注册失败");
         }
+
+        public abstract void UpdateUserEntity(ref UserBase old_user, ref UserBase new_user);
 
         public virtual async Task<_<string>> UpdateUser(UserBase model)
         {
-            throw new NotImplementedException();
+            var data = new _<string>();
+
+            var user = await this._userRepo.GetFirstAsync(x => x.UID == model.UID);
+            Com.AssertNotNull(user, $"用户不存在:{model.UID}");
+            this.UpdateUserEntity(ref user, ref model);
+            user.Update();
+            if (!user.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+
+            if (await this._userRepo.UpdateAsync(user) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("更新失败");
         }
 
         public virtual async Task<_<string>> ActiveOrDeActiveUser(UserBase model, bool active)
         {
             var data = new _<string>();
 
-            return data;
+            var user = await this._userRepo.GetFirstAsync(x => x.UID == model.UID);
+            Com.AssertNotNull(user, $"用户不存在:{model.UID}");
+
+            if (user.IsActive.ToBool() == active)
+            {
+                data.SetErrorMsg("状态不需要改变");
+                return data;
+            }
+            user.IsActive = active.ToBoolInt();
+            user.Update();
+            if (!user.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._userRepo.UpdateAsync(user) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("操作失败");
         }
 
         public virtual async Task<_<LoginUserInfo>> LoginViaPassword()

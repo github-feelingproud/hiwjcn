@@ -14,7 +14,7 @@ namespace Hiwjcn.Bll
     {
         public ProductServiceClient() : base("http://service.qipeilong.net:9006/wsProduct/Product.svc")
         {
-            this.Endpoint.EndpointBehaviors.Add(new MyEndPointBehavior());
+            this.Endpoint.EndpointBehaviors.Add(new MyEndPointBehavior<MyMessageInspector>());
         }
     }
 }
