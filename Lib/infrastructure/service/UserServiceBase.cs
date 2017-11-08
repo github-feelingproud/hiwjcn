@@ -222,14 +222,72 @@ namespace Lib.infrastructure.service
             throw new NotImplementedException();
         }
 
-        public virtual async Task<_<string>> SetUserRoles()
+        public virtual async Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles)
         {
-            throw new NotImplementedException();
+            var data = new _<string>();
+            if (ValidateHelper.IsPlumpList(roles))
+            {
+                if (roles.Any(x => x.UserID != user_uid))
+                {
+                    data.SetErrorMsg("用户ID错误");
+                    return data;
+                }
+            }
+            await this._userRoleRepo.DeleteWhereAsync(x => x.UserID == user_uid);
+            if (ValidateHelper.IsPlumpList(roles))
+            {
+                foreach (var m in roles)
+                {
+                    m.Init("ur");
+                    if (!m.IsValid(out var msg))
+                    {
+                        data.SetErrorMsg(msg);
+                        return data;
+                    }
+                }
+                if (await this._userRoleRepo.AddAsync(roles.ToArray()) <= 0)
+                {
+                    data.SetErrorMsg("保存角色错误");
+                    return data;
+                }
+            }
+
+            data.SetSuccessData(string.Empty);
+            return data;
         }
 
-        public virtual async Task<_<string>> SetRolePermissions()
+        public virtual async Task<_<string>> SetRolePermissions(string role_uid, List<RolePermissionBase> permissions)
         {
-            throw new NotImplementedException();
+            var data = new _<string>();
+            if (ValidateHelper.IsPlumpList(permissions))
+            {
+                if (permissions.Any(x => x.RoleID != role_uid))
+                {
+                    data.SetErrorMsg("角色ID错误");
+                    return data;
+                }
+            }
+            await this._rolePermissionRepo.DeleteWhereAsync(x => x.RoleID == role_uid);
+            if (ValidateHelper.IsPlumpList(permissions))
+            {
+                foreach (var m in permissions)
+                {
+                    m.Init("per");
+                    if (!m.IsValid(out var msg))
+                    {
+                        data.SetErrorMsg(msg);
+                        return data;
+                    }
+                }
+                if (await this._rolePermissionRepo.AddAsync(permissions.ToArray()) <= 0)
+                {
+                    data.SetErrorMsg("保存权限错误");
+                    return data;
+                }
+            }
+
+            data.SetSuccessData(string.Empty);
+            return data;
         }
 
         public virtual async Task<PagerData<RoleBase>> QueryRoleList()
@@ -279,9 +337,28 @@ namespace Lib.infrastructure.service
             throw new Exception("删除失败");
         }
 
-        public virtual async Task<_<string>> UpdateRole()
+        public abstract void UpdateRoleEntity(ref RoleBase old_role, ref RoleBase new_role);
+
+        public virtual async Task<_<string>> UpdateRole(RoleBase model)
         {
-            throw new NotImplementedException();
+            var data = new _<string>();
+
+            var role = await this._roleRepo.GetFirstAsync(x => x.UID == model.UID);
+            Com.AssertNotNull(role, $"角色不存在：{model.UID}");
+            this.UpdateRoleEntity(ref role, ref model);
+            role.Update();
+            if (!role.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._roleRepo.UpdateAsync(role) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("更新角色失败");
         }
 
         public virtual async Task<PagerData<PermissionBase>> QueryPermissionList()
@@ -294,14 +371,44 @@ namespace Lib.infrastructure.service
             throw new NotImplementedException();
         }
 
-        public virtual async Task<_<string>> UpdatePermission()
+        public abstract void UpdatePermissionEntity(ref PermissionBase old_permission, ref PermissionBase new_permission);
+
+        public virtual async Task<_<string>> UpdatePermission(PermissionBase model)
         {
-            throw new NotImplementedException();
+            var data = new _<string>();
+            var permission = await this._permissionRepo.GetFirstAsync(x => x.UID == model.UID);
+            Com.AssertNotNull(permission, $"权限为空:{model.UID}");
+            this.UpdatePermissionEntity(ref permission, ref model);
+            permission.Update();
+            if (!permission.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._permissionRepo.UpdateAsync(permission) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("更新权限错误");
         }
 
-        public virtual async Task<_<string>> DeletePermission()
+        public virtual async Task<_<string>> DeletePermission(string permission_uid)
         {
-            throw new NotImplementedException();
+            var data = new _<string>();
+            var list = await this._permissionRepo.GetListEnsureMaxCountAsync(null, 5000, "权限数量达到上线");
+            var permission = list.Where(x => x.UID == permission_uid).FirstOrThrow($"权限不存在{permission_uid}");
+
+            var dead_nodes = await list.AsQueryable().FindNodeChildrenRecursively_(permission);
+
+            if (await this._permissionRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("删除权限错误");
         }
     }
 }

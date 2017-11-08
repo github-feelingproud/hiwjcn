@@ -17,6 +17,23 @@ namespace Lib.extension
     /// </summary>
     public static class LinqExtensions
     {
+        public static T FirstOrThrow<T>(this IEnumerable<T> query, string error_msg) =>
+            query.AsQueryable().FirstOrThrow(error_msg);
+
+        public static T FirstOrThrow<T>(this IQueryable<T> query, string error_msg)
+        {
+            var model = query.FirstOrDefault();
+            Com.AssertNotNull(model, error_msg);
+            return model;
+        }
+
+        public static async Task<T> FirstOrThrowAsync<T>(this IQueryable<T> query, string error_msg)
+        {
+            var model = await query.FirstOrDefaultAsync();
+            Com.AssertNotNull(model, error_msg);
+            return model;
+        }
+
         /// <summary>
         /// 返回非null list
         /// </summary>
