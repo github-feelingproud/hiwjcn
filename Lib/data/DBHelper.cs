@@ -33,15 +33,16 @@ namespace Lib.data
     /// </summary>
     public static class DBHelper
     {
-        private static readonly string ConStr =
-            ConfigurationManager.ConnectionStrings["db"]?.ToString() ??
+        private static string ConStr
+        {
+            get => ConfigurationManager.ConnectionStrings["db"]?.ToString() ??
             ConfigurationManager.AppSettings["db"] ??
             throw new Exception("请在connectionstring或者appsetting中配置节点为db的通用链接字符串");
+        }
 
         /// <summary>
         /// 使用ioc中注册的数据库
         /// </summary>
-        /// <returns></returns>
         public static IDbConnection GetConnectionProvider(ILifetimeScope scope)
         {
             var con = scope.Resolve_<IDbConnection>();
@@ -50,10 +51,10 @@ namespace Lib.data
             con.OpenIfClosedWithRetry(2);
             return con;
         }
+
         /// <summary>
         /// 使用ioc中注册的数据库
         /// </summary>
-        /// <param name="callback"></param>
         public static void PrepareConnection(Action<IDbConnection> callback)
         {
             AppContext.Scope(x =>
@@ -65,11 +66,10 @@ namespace Lib.data
                 return true;
             });
         }
+
         /// <summary>
         /// 异步链接
         /// </summary>
-        /// <param name="callback"></param>
-        /// <returns></returns>
         public static async Task PrepareConnectionAsync(Func<IDbConnection, Task> callback)
         {
             await AppContext.ScopeAsync(async x =>
@@ -81,11 +81,10 @@ namespace Lib.data
                 return true;
             });
         }
+
         /// <summary>
         /// 使用ioc中注册的数据库
         /// </summary>
-        /// <param name="callback"></param>
-        /// <param name="iso"></param>
         public static void PrepareConnection(Func<IDbConnection, IDbTransaction, bool> callback,
             IsolationLevel? iso = null)
         {
@@ -116,9 +115,6 @@ namespace Lib.data
         /// <summary>
         /// 异步链接，带事务
         /// </summary>
-        /// <param name="callback"></param>
-        /// <param name="iso"></param>
-        /// <returns></returns>
         public static async Task PrepareConnectionAsync(Func<IDbConnection, IDbTransaction, Task<bool>> callback,
             IsolationLevel? iso = null)
         {
@@ -149,15 +145,19 @@ namespace Lib.data
 
 
 
-        //============================================================================
-        [Obsolete("方法已过期，请使用通用方法")]
+        /// <summary>
+        /// mysql MySqlConnectionString
+        /// </summary>
         public static MySqlConnection GetMySqlConnection()
         {
             var con = new MySqlConnection(ConfigHelper.Instance.MySqlConnectionString);
             con.Open();
             return con;
         }
-        [Obsolete("方法已过期，请使用通用方法")]
+
+        /// <summary>
+        /// mysql MySqlConnectionString
+        /// </summary>
         public static void PrepareMySqlConnection(Action<MySqlConnection> callback)
         {
             using (var db = GetMySqlConnection())
@@ -165,15 +165,20 @@ namespace Lib.data
                 callback.Invoke(db);
             }
         }
-        //==============================================================================
-        [Obsolete("方法已过期，请使用通用方法")]
+
+        /// <summary>
+        /// sqlserver MsSqlConnectionString
+        /// </summary>
         public static SqlConnection GetSqlServerConnection()
         {
             var con = new SqlConnection(ConfigHelper.Instance.MsSqlConnectionString);
             con.Open();
             return con;
         }
-        [Obsolete("方法已过期，请使用通用方法")]
+
+        /// <summary>
+        /// sqlserver MsSqlConnectionString
+        /// </summary>
         public static void PrepareSqlServerConnection(Action<SqlConnection> callback)
         {
             using (var db = GetSqlServerConnection())

@@ -12,6 +12,10 @@ namespace Lib.infrastructure.entity
     [Serializable]
     public class UserEntityBase : BaseEntity
     {
+        [Column("user_name")]
+        [StringLength(20, MinimumLength = 5, ErrorMessage = "用户名长度不匹配")]
+        public virtual string UserName { get; set; }
+
         /// <summary>
         /// 昵称
         /// </summary>

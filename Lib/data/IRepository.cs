@@ -140,6 +140,16 @@ namespace Lib.data
         Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int? count = null);
 
         /// <summary>
+        /// 获取列表，当数量达到最大limit就抛出异常
+        /// </summary>
+        List<T> GetListEnsureMaxCount(Expression<Func<T, bool>> where, int count, string error_msg);
+
+        /// <summary>
+        /// 获取列表，当数量达到最大limit就抛出异常
+        /// </summary>
+        Task<List<T>> GetListEnsureMaxCountAsync(Expression<Func<T, bool>> where, int count, string error_msg);
+
+        /// <summary>
         /// 查询第一个
         /// </summary>
         /// <param name="where"></param>
@@ -780,10 +790,30 @@ namespace Lib.data
         }
 
         #endregion
-        
+
         public virtual void Dispose()
         {
             //do nothing
+        }
+
+        public List<T> GetListEnsureMaxCount(Expression<Func<T, bool>> where, int count, string error_msg)
+        {
+            var list = this.GetList(where, count);
+            if (list.Count >= count)
+            {
+                throw new Exception(error_msg);
+            }
+            return list;
+        }
+
+        public async Task<List<T>> GetListEnsureMaxCountAsync(Expression<Func<T, bool>> where, int count, string error_msg)
+        {
+            var list = await this.GetListAsync(where, count);
+            if (list.Count >= count)
+            {
+                throw new Exception(error_msg);
+            }
+            return list;
         }
     }
 }

@@ -11,6 +11,7 @@ using WebLogic.Model.User;
 using Lib.data;
 using Lib.cache;
 using Lib.ioc;
+using Lib.mvc.user;
 
 namespace Hiwjcn.Bll.User
 {
@@ -37,6 +38,21 @@ namespace Hiwjcn.Bll.User
             base(_cache, _userRepo, _userAvatarRepo, _oneTimeCodeRepo, _roleRepo, _permissionRepo, _rolePermissionRepo, _userRoleRepo)
         {
 
+        }
+
+        public override string EncryptPassword(string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override LoginUserInfo ParseUser(UserModel model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateUserEntity(ref UserModel old_user, ref UserModel new_user)
+        {
+            throw new NotImplementedException();
         }
     }
 }

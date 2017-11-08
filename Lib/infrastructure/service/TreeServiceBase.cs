@@ -37,8 +37,22 @@ namespace Lib.infrastructure.service
     public abstract class TreeServiceBase<T> : ServiceBase<T>, ITreeServiceBase<T>
         where T : TreeEntityBase
     {
-        public async Task<List<T>> FindNodeChildrenRecursively_(IQueryable<T> data_source, T first_node,
+        public virtual async Task<List<T>> FindNodeChildrenRecursively_(IQueryable<T> data_source, T first_node,
+            string tree_error = "树存在无限递归") =>
+            await data_source.FindNodeChildrenRecursively_(first_node, tree_error);
+
+        public virtual async Task<(bool success, List<T> node_path)> CheckNodeIfCanFindRoot(IQueryable<T> data_source, T first_node) =>
+            await data_source.CheckNodeIfCanFindRoot(first_node);
+
+        public virtual async Task<List<T>> FindTreeBadNodes(IQueryable<T> data_source) =>
+            await data_source.FindTreeBadNodes();
+    }
+
+    public static class TreeEntityExtension
+    {
+        public static async Task<List<T>> FindNodeChildrenRecursively_<T>(this IQueryable<T> data_source, T first_node,
             string tree_error = "树存在无限递归")
+            where T : TreeEntityBase
         {
             var repeat_check = new List<string>();
             var list = new List<T>();
@@ -69,7 +83,8 @@ namespace Lib.infrastructure.service
             return list;
         }
 
-        public async Task<(bool success, List<T> node_path)> CheckNodeIfCanFindRoot(IQueryable<T> data_source, T first_node)
+        public static async Task<(bool success, List<T> node_path)> CheckNodeIfCanFindRoot<T>(this IQueryable<T> data_source, T first_node)
+            where T : TreeEntityBase
         {
             var repeat_check = new List<string>();
             var current_uid = first_node.UID;
@@ -101,7 +116,8 @@ namespace Lib.infrastructure.service
             return (success, node_path);
         }
 
-        public async Task<List<T>> FindTreeBadNodes(IQueryable<T> data_source)
+        public static async Task<List<T>> FindTreeBadNodes<T>(this IQueryable<T> data_source)
+            where T : TreeEntityBase
         {
             var list = await data_source.ToListAsync();
             var error_list = new List<string>();
@@ -115,7 +131,7 @@ namespace Lib.infrastructure.service
                     //计算了node1到node5为错误节点之后将跳过1,2,3,4的检查
                     continue;
                 }
-                var check = await this.CheckNodeIfCanFindRoot(list.AsQueryable(), node);
+                var check = await data_source.CheckNodeIfCanFindRoot(node);
                 if (!check.success)
                 {
                     error_list.AddRange(check.node_path.Select(x => x.UID));

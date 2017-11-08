@@ -174,12 +174,50 @@ namespace Lib.infrastructure.service
             throw new Exception("操作失败");
         }
 
-        public virtual async Task<_<LoginUserInfo>> LoginViaPassword()
+        public abstract string EncryptPassword(string password);
+
+        public abstract LoginUserInfo ParseUser(UserBase model);
+
+        public virtual async Task<_<LoginUserInfo>> LoginViaPassword(string user_name, string password)
         {
-            throw new NotImplementedException();
+            var data = new _<LoginUserInfo>();
+            var user_model = await this._userRepo.GetFirstAsync(x => x.UserName == user_name);
+            if (user_model == null)
+            {
+                data.SetErrorMsg("用户不存在");
+                return data;
+            }
+            if (user_model.PassWord != this.EncryptPassword(password))
+            {
+                data.SetErrorMsg("密码错误");
+                return data;
+            }
+
+            data.SetSuccessData(this.ParseUser(user_model));
+            return data;
         }
 
-        public virtual async Task<_<LoginUserInfo>> LoginViaOneTimeCode()
+        public virtual async Task<_<LoginUserInfo>> LoginViaOneTimeCode(string user_name, string code)
+        {
+            var data = new _<LoginUserInfo>();
+            var user_model = await this._userRepo.GetFirstAsync(x => x.UserName == user_name);
+            if (user_model == null)
+            {
+                data.SetErrorMsg("用户不存在");
+                return data;
+            }
+            var code_model = (await this._oneTimeCodeRepo.QueryListAsync(where: x => x.UserUID == user_model.UID, orderby: x => x.CreateTime, Desc: true, count: 1)).FirstOrDefault();
+            if (code_model?.Code != code)
+            {
+                data.SetErrorMsg("验证码错误");
+                return data;
+            }
+
+            data.SetSuccessData(this.ParseUser(user_model));
+            return data;
+        }
+
+        public virtual async Task<List<UserBase>> LoadPermission(List<UserBase> list)
         {
             throw new NotImplementedException();
         }
@@ -199,14 +237,46 @@ namespace Lib.infrastructure.service
             throw new NotImplementedException();
         }
 
-        public virtual async Task<_<string>> AddRole()
+        public virtual async Task<_<string>> AddRole(params RoleBase[] roles)
         {
-            throw new NotImplementedException();
+            if (!ValidateHelper.IsPlumpList(roles)) { throw new Exception("至少有一个权限"); }
+            var data = new _<string>();
+            foreach (var m in roles)
+            {
+                if (!m.IsValid(out var msg))
+                {
+                    data.SetErrorMsg(msg);
+                    return data;
+                }
+            }
+
+            if (await this._roleRepo.AddAsync(roles) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("保存失败");
         }
 
-        public virtual async Task<_<string>> DeleteRole()
+        public virtual async Task<_<string>> DeleteRole(string role_uid)
         {
-            throw new NotImplementedException();
+            var data = new _<string>();
+
+            var list = await this._roleRepo.GetListEnsureMaxCountAsync(null, 5000, "角色数量达到上限");
+
+            var node = list.Where(x => x.UID == role_uid).FirstOrDefault();
+            Com.AssertNotNull(node, $"权限节点为空：{role_uid}");
+
+            var dead_nodes = await list.AsQueryable().FindNodeChildrenRecursively_(node);
+
+            if (await this._roleRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("删除失败");
         }
 
         public virtual async Task<_<string>> UpdateRole()
