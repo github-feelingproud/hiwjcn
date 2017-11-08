@@ -57,14 +57,20 @@ namespace Lib.rpc
     {
         void IClientMessageInspector.AfterReceiveReply(ref Message reply, object correlationState)
         {
-            $"【{correlationState?.ToString()}】客户端接收到的回复:{reply.ToString()}".AddBusinessInfoLog();
-            return;
+            var data = new
+            {
+                LogName = "Wcf调用结果",
+                Request = correlationState?.ToString(),
+                Response = reply.ToString(),
+                Time = DateTime.Now
+            }.ToJson();
+
+            data.AddBusinessInfoLog();
         }
 
         object IClientMessageInspector.BeforeSendRequest(ref Message request, IClientChannel channel)
         {
             var rid = Com.GetUUID();
-            $"【{rid}】客户端发送请求前的SOAP消息:{request.ToString()}".AddBusinessInfoLog();
 
             // 插入验证信息
             var request_id = MessageHeader.CreateHeader("rid", "rid", rid);
@@ -72,7 +78,8 @@ namespace Lib.rpc
             var hdPassWord = MessageHeader.CreateHeader("p", "fuck", "123");
             request.Headers.Add(hdUserName);
             request.Headers.Add(hdPassWord);
-            return rid;
+
+            return request.ToString();
         }
 
         object IDispatchMessageInspector.AfterReceiveRequest(ref Message request, IClientChannel channel, InstanceContext instanceContext)

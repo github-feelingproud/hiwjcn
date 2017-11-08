@@ -50,6 +50,16 @@ namespace Hiwjcn.Bll.User
             throw new NotImplementedException();
         }
 
+        public override void UpdatePermissionEntity(ref PermissionModel old_permission, ref PermissionModel new_permission)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateRoleEntity(ref RoleModel old_role, ref RoleModel new_role)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void UpdateUserEntity(ref UserModel old_user, ref UserModel new_user)
         {
             throw new NotImplementedException();
