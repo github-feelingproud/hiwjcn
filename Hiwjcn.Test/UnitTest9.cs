@@ -5,12 +5,35 @@ using System.Globalization;
 using System.Linq;
 using Lib.extension;
 using Lib.helper;
+using Lib.io;
+using System.IO;
+using System.Text;
+using System.Xml;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest9
     {
+
+        [TestMethod]
+        public void TestMfasdfasdfasdfasdfethod1()
+        {
+            try
+            {
+                var dom = new XmlDocument();
+                dom.Load("d:\\xml.txt");
+
+                var node = dom.ChildNodes.AsEnumerable_<XmlNode>().Where(x => x.Name == "s:Envelope").FirstOrDefault().ChildNodes.AsEnumerable_<XmlNode>().Where(x => x.Name == "s:Body").FirstOrDefault();
+                var p = node.FirstChild.FirstChild.ChildNodes.AsEnumerable_<XmlNode>().Select(x => new { x.Name, x.InnerText }).ToList();
+
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        }
+
         [TestMethod]
         public void TestMethod1()
         {
