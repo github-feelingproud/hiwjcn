@@ -98,6 +98,7 @@ namespace Lib.infrastructure.service
             if (ValidateHelper.IsPlumpList(data.DataList) && load_role)
             {
                 //load role
+                data.DataList = await this.LoadPermission(data.DataList);
             }
 
             return data;
@@ -219,7 +220,38 @@ namespace Lib.infrastructure.service
 
         public virtual async Task<List<UserBase>> LoadPermission(List<UserBase> list)
         {
-            throw new NotImplementedException();
+            var user_uids = list.Select(x => x.UID);
+
+            await this._userRepo.PrepareSessionAsync(async db =>
+            {
+                //table
+                var user_role_map_query = db.Set<UserRoleBase>().AsNoTrackingQueryable();
+                var role_permission_map_query = db.Set<RolePermissionBase>().AsNoTrackingQueryable();
+                var role_query = db.Set<RoleBase>().AsNoTrackingQueryable();
+                var permission_query = db.Set<PermissionBase>().AsNoTrackingQueryable();
+                //role
+                var user_role_map = await user_role_map_query.Where(x => user_uids.Contains(x.UserID)).ToListAsync();
+                var role_uids = user_role_map.Select(x => x.RoleID);
+                var roles = await role_query.Where(x => role_uids.Contains(x.UID)).ToListAsync();
+                //permission
+                var role_permission_map = await role_permission_map_query.Where(x => role_uids.Contains(x.RoleID)).ToListAsync();
+                var permission_uids = role_permission_map.Select(x => x.PermissionID);
+                var permissions = await permission_query.Where(x => permission_uids.Contains(x.UID)).ToListAsync();
+
+                foreach (var m in list)
+                {
+                    //bind role
+                    var user_roles = user_role_map.Where(x => x.UserID == m.UID).Select(x => x.RoleID);
+                    m.RoleModelList = new List<RoleEntityBase>();
+                    m.RoleModelList.AddRange(roles.Where(x => user_roles.Contains(x.UID)));
+                    m.RoleList = m.RoleModelList.Select(x => x.UID).ToList();
+                    //bind permission
+                    var user_permissions = role_permission_map.Where(x => user_roles.Contains(x.RoleID)).Select(x => x.PermissionID);
+                    m.PermissionList = permissions.Where(x => user_permissions.Contains(x.UID)).Select(x => x.Name).ToList();
+                }
+            });
+
+            return list;
         }
 
         public virtual async Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles)
@@ -290,9 +322,16 @@ namespace Lib.infrastructure.service
             return data;
         }
 
-        public virtual async Task<PagerData<RoleBase>> QueryRoleList()
+        public virtual async Task<List<RoleBase>> QueryRoleList(string parent = null)
         {
-            throw new NotImplementedException();
+            return await this._roleRepo.PrepareIQueryableAsync_(async query =>
+            {
+                if (ValidateHelper.IsPlumpString(parent))
+                {
+                    query = query.Where(x => x.ParentUID == parent);
+                }
+                return await query.OrderByDescending(x => x.UpdateTime).Take(5000).ToListAsync();
+            });
         }
 
         public virtual async Task<_<string>> AddRole(params RoleBase[] roles)
@@ -361,12 +400,19 @@ namespace Lib.infrastructure.service
             throw new Exception("更新角色失败");
         }
 
-        public virtual async Task<PagerData<PermissionBase>> QueryPermissionList()
+        public virtual async Task<List<PermissionBase>> QueryPermissionList(string parent = null)
         {
-            throw new NotImplementedException();
+            return await this._permissionRepo.PrepareIQueryableAsync_(async query =>
+            {
+                if (ValidateHelper.IsPlumpString(parent))
+                {
+                    query = query.Where(x => x.ParentUID == parent);
+                }
+                return await query.OrderByDescending(x => x.UpdateTime).Take(5000).ToListAsync();
+            });
         }
 
-        public virtual async Task<_<string>> AddPermission()
+        public virtual async Task<_<string>> AddPermission(PermissionBase permission)
         {
             throw new NotImplementedException();
         }

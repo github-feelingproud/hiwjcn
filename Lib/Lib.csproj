@@ -263,11 +263,13 @@
     <Compile Include="helper\HtmlHelper.cs" />
     <Compile Include="helper\ReflectionHelper.cs" />
     <Compile Include="infrastructure\controller\CRUDControllerBase.cs" />
+    <Compile Include="infrastructure\controller\UserLoginControllerBase.cs" />
     <Compile Include="infrastructure\entity\AuthEntityBase.cs" />
     <Compile Include="infrastructure\entity\BaseEntity.cs" />
     <Compile Include="infrastructure\entity\TimeEntityBase.cs" />
     <Compile Include="infrastructure\entity\TreeEntityBase.cs" />
     <Compile Include="infrastructure\entity\UserEntityBase.cs" />
+    <Compile Include="infrastructure\provider\UserLoginServiceBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="infrastructure\provider\AuthApiServiceFromDbBase.cs" />
     <Compile Include="infrastructure\service\AuthLoginService.cs" />
