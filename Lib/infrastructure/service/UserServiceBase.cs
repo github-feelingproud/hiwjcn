@@ -23,7 +23,45 @@ namespace Lib.infrastructure.service
         where PermissionBase : PermissionEntityBase, new()
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
-    { }
+    {
+        Task<PagerData<UserBase>> QueryUserList(
+            string name = null, string email = null, string keyword = null,
+            bool load_role = false, int page = 1, int pagesize = 20);
+
+        Task<_<string>> AddUser(UserBase model);
+
+        Task<_<string>> UpdateUser(UserBase model);
+
+        Task<_<string>> ActiveOrDeActiveUser(UserBase model, bool active);
+
+        Task<_<LoginUserInfo>> LoginViaPassword(string user_name, string password, bool load_permission = true);
+
+        Task<_<LoginUserInfo>> LoginViaOneTimeCode(string user_name, string code, bool load_permission = true);
+
+        Task<List<UserBase>> LoadPermission(List<UserBase> list);
+
+        Task<UserBase> LoadPermission(UserBase model);
+
+        Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles);
+
+        Task<_<string>> SetRolePermissions(string role_uid, List<RolePermissionBase> permissions);
+
+        Task<List<RoleBase>> QueryRoleList(string parent = null);
+
+        Task<_<string>> AddRole(RoleBase role);
+
+        Task<_<string>> DeleteRole(string role_uid);
+
+        Task<_<string>> UpdateRole(RoleBase model);
+
+        Task<List<PermissionBase>> QueryPermissionList(string parent = null);
+
+        Task<_<string>> AddPermission(PermissionBase permission);
+
+        Task<_<string>> UpdatePermission(PermissionBase model);
+
+        Task<_<string>> DeletePermission(string permission_uid);
+    }
 
     public abstract class UserServiceBase<UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase> :
         IUserServiceBase<UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase>
@@ -179,7 +217,7 @@ namespace Lib.infrastructure.service
 
         public abstract LoginUserInfo ParseUser(UserBase model);
 
-        public virtual async Task<_<LoginUserInfo>> LoginViaPassword(string user_name, string password)
+        public virtual async Task<_<LoginUserInfo>> LoginViaPassword(string user_name, string password, bool load_permission = true)
         {
             var data = new _<LoginUserInfo>();
             var user_model = await this._userRepo.GetFirstAsync(x => x.UserName == user_name);
@@ -194,11 +232,16 @@ namespace Lib.infrastructure.service
                 return data;
             }
 
+            if (load_permission)
+            {
+                user_model = await this.LoadPermission(user_model);
+            }
+
             data.SetSuccessData(this.ParseUser(user_model));
             return data;
         }
 
-        public virtual async Task<_<LoginUserInfo>> LoginViaOneTimeCode(string user_name, string code)
+        public virtual async Task<_<LoginUserInfo>> LoginViaOneTimeCode(string user_name, string code, bool load_permission = true)
         {
             var data = new _<LoginUserInfo>();
             var user_model = await this._userRepo.GetFirstAsync(x => x.UserName == user_name);
@@ -212,6 +255,11 @@ namespace Lib.infrastructure.service
             {
                 data.SetErrorMsg("验证码错误");
                 return data;
+            }
+
+            if (load_permission)
+            {
+                user_model = await this.LoadPermission(user_model);
             }
 
             data.SetSuccessData(this.ParseUser(user_model));
@@ -253,6 +301,9 @@ namespace Lib.infrastructure.service
 
             return list;
         }
+
+        public virtual async Task<UserBase> LoadPermission(UserBase model) =>
+            (await this.LoadPermission(new List<UserBase>() { model })).FirstOrDefault();
 
         public virtual async Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles)
         {
@@ -334,26 +385,32 @@ namespace Lib.infrastructure.service
             });
         }
 
-        public virtual async Task<_<string>> AddRole(params RoleBase[] roles)
+        public virtual async Task<_<string>> AddRole(RoleBase role)
         {
-            if (!ValidateHelper.IsPlumpList(roles)) { throw new Exception("至少有一个权限"); }
             var data = new _<string>();
-            foreach (var m in roles)
+            if (role.ParentUID == RoleEntityBase.FIRST_PARENT_UID)
             {
-                if (!m.IsValid(out var msg))
-                {
-                    data.SetErrorMsg(msg);
-                    return data;
-                }
+                role.Level = RoleEntityBase.FIRST_LEVEL;
+            }
+            else
+            {
+                var parent = await this._permissionRepo.GetFirstAsync(x => x.UID == role.ParentUID);
+                Com.AssertNotNull(parent, "父级角色不存在");
+                role.Level = parent.Level + 1;
             }
 
-            if (await this._roleRepo.AddAsync(roles) > 0)
+            if (!role.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+
+            if (await this._roleRepo.AddAsync(role) > 0)
             {
                 data.SetSuccessData(string.Empty);
                 return data;
             }
-
-            throw new Exception("保存失败");
+            throw new Exception("保存角色失败");
         }
 
         public virtual async Task<_<string>> DeleteRole(string role_uid)
@@ -414,7 +471,30 @@ namespace Lib.infrastructure.service
 
         public virtual async Task<_<string>> AddPermission(PermissionBase permission)
         {
-            throw new NotImplementedException();
+            var data = new _<string>();
+            if (permission.ParentUID == PermissionEntityBase.FIRST_PARENT_UID)
+            {
+                permission.Level = PermissionEntityBase.FIRST_LEVEL;
+            }
+            else
+            {
+                var parent = await this._permissionRepo.GetFirstAsync(x => x.UID == permission.ParentUID);
+                Com.AssertNotNull(parent, "父级权限不存在");
+                permission.Level = parent.Level + 1;
+            }
+
+            if (!permission.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+
+            if (await this._permissionRepo.AddAsync(permission) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+            throw new Exception("保存权限失败");
         }
 
         public abstract void UpdatePermissionEntity(ref PermissionBase old_permission, ref PermissionBase new_permission);
