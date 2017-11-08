@@ -266,6 +266,8 @@
     <Compile Include="infrastructure\controller\UserLoginControllerBase.cs" />
     <Compile Include="infrastructure\entity\AuthEntityBase.cs" />
     <Compile Include="infrastructure\entity\BaseEntity.cs" />
+    <Compile Include="infrastructure\entity\LinkEntityBase.cs" />
+    <Compile Include="infrastructure\entity\MenuEntityBase.cs" />
     <Compile Include="infrastructure\entity\TimeEntityBase.cs" />
     <Compile Include="infrastructure\entity\TreeEntityBase.cs" />
     <Compile Include="infrastructure\entity\UserEntityBase.cs" />
