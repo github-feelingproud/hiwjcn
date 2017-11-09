@@ -82,6 +82,7 @@ namespace Lib.infrastructure.entity
         [NotMapped]
         public virtual List<DepartmentEntityBase> DepartmentModelList { get; set; }
 
+        [NotMapped]
         public virtual List<DepartmentRoleEntityBase> DepartmentRoleModelList { get; set; }
     }
 

@@ -669,6 +669,7 @@ namespace Lib.infrastructure.service
 
                     m.DepartmentRoleModelList = new List<DepartmentRoleEntityBase>();
                     m.DepartmentRoleModelList.AddRange(department_role_map.Where(x => user_department_uids.Contains(x.DepartmentUID)));
+
                     department_connected_role_uids.AddRange(m.DepartmentRoleModelList.Select(x => x.RoleUID));
                 }
 
@@ -707,13 +708,41 @@ namespace Lib.infrastructure.service
             return list;
         }
 
-        public override async Task<UserBase> LoadPermission(UserBase model)
+        public virtual async Task<_<string>> DeleteDepartment(params string[] department_uids)
         {
-            await this._userRepo.PrepareSessionAsync_(async db => 
+            var data = new _<string>();
+            if (!ValidateHelper.IsPlumpList(department_uids))
             {
-                return 1;
-            });
-            return await base.LoadPermission(model);
+                data.SetErrorMsg("部门为空");
+                return data;
+            }
+
+            var dead_nodes = await this._departmentRepo.GetListAsync(x => department_uids.Contains(x.UID));
+            if (dead_nodes.Count != department_uids.Count()) { throw new Exception("部分部门不存在"); }
+
+            if (await this._departmentRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("删除部门失败");
+        }
+
+        public virtual async Task<_<string>> DeleteDepartmentRecursively(string department_uid)
+        {
+            var data = new _<string>();
+            var list = await this._departmentRepo.GetListEnsureMaxCountAsync(null, 5000, "部门数量达到上线");
+            var node = list.Where(x => x.UID == department_uid).FirstOrThrow("部门不存在");
+            var dead_nodes = await list.AsQueryable().FindNodeChildrenRecursively_(node);
+
+            if (await this._departmentRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("删除部门失败");
         }
 
     }
