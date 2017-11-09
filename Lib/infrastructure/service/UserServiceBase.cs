@@ -50,7 +50,9 @@ namespace Lib.infrastructure.service
 
         Task<_<string>> AddRole(RoleBase role);
 
-        Task<_<string>> DeleteRole(string role_uid);
+        Task<_<string>> DeleteRoleRecursively(string role_uid);
+
+        Task<_<string>> DeleteRole(params string[] role_uids);
 
         Task<_<string>> UpdateRole(RoleBase model);
 
@@ -60,7 +62,9 @@ namespace Lib.infrastructure.service
 
         Task<_<string>> UpdatePermission(PermissionBase model);
 
-        Task<_<string>> DeletePermission(string permission_uid);
+        Task<_<string>> DeletePermissionRecursively(string permission_uid);
+
+        Task<_<string>> DeletePermission(params string[] permission_uids);
     }
 
     public abstract class UserServiceBase<UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase> :
@@ -73,8 +77,6 @@ namespace Lib.infrastructure.service
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
     {
-        protected readonly ICacheProvider _cache;
-
         protected readonly IRepository<UserBase> _userRepo;
         protected readonly IRepository<UserAvatarBase> _userAvatarRepo;
         protected readonly IRepository<OneTimeCodeBase> _oneTimeCodeRepo;
@@ -84,8 +86,6 @@ namespace Lib.infrastructure.service
         protected readonly IRepository<UserRoleBase> _userRoleRepo;
 
         public UserServiceBase(
-            ICacheProvider _cache,
-
             IRepository<UserBase> _userRepo,
             IRepository<UserAvatarBase> _userAvatarRepo,
             IRepository<OneTimeCodeBase> _oneTimeCodeRepo,
@@ -94,7 +94,6 @@ namespace Lib.infrastructure.service
             IRepository<RolePermissionBase> _rolePermissionRepo,
             IRepository<UserRoleBase> _userRoleRepo)
         {
-            this._cache = _cache;
 
             this._userRepo = _userRepo;
             this._userAvatarRepo = _userAvatarRepo;
@@ -413,7 +412,7 @@ namespace Lib.infrastructure.service
             throw new Exception("保存角色失败");
         }
 
-        public virtual async Task<_<string>> DeleteRole(string role_uid)
+        public virtual async Task<_<string>> DeleteRoleRecursively(string role_uid)
         {
             var data = new _<string>();
 
@@ -431,6 +430,25 @@ namespace Lib.infrastructure.service
             }
 
             throw new Exception("删除失败");
+        }
+
+        public virtual async Task<_<string>> DeleteRole(params string[] role_uids)
+        {
+            var data = new _<string>();
+            if (!ValidateHelper.IsPlumpList(role_uids))
+            {
+                data.SetErrorMsg("角色ID为空");
+                return data;
+            }
+            var dead_nodes = await this._roleRepo.GetListAsync(x => role_uids.Contains(x.UID));
+            if (dead_nodes.Count != role_uids.Count()) { throw new Exception("部分角色不存在"); }
+            if (await this._roleRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("删除角色错误");
         }
 
         public abstract void UpdateRoleEntity(ref RoleBase old_role, ref RoleBase new_role);
@@ -520,7 +538,7 @@ namespace Lib.infrastructure.service
             throw new Exception("更新权限错误");
         }
 
-        public virtual async Task<_<string>> DeletePermission(string permission_uid)
+        public virtual async Task<_<string>> DeletePermissionRecursively(string permission_uid)
         {
             var data = new _<string>();
             var list = await this._permissionRepo.GetListEnsureMaxCountAsync(null, 5000, "权限数量达到上线");
@@ -528,6 +546,25 @@ namespace Lib.infrastructure.service
 
             var dead_nodes = await list.AsQueryable().FindNodeChildrenRecursively_(permission);
 
+            if (await this._permissionRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("删除权限错误");
+        }
+
+        public virtual async Task<_<string>> DeletePermission(params string[] permission_uids)
+        {
+            var data = new _<string>();
+            if (!ValidateHelper.IsPlumpList(permission_uids))
+            {
+                data.SetErrorMsg("权限ID为空");
+                return data;
+            }
+            var dead_nodes = await this._permissionRepo.GetListAsync(x => permission_uids.Contains(x.UID));
+            if (dead_nodes.Count != permission_uids.Count()) { throw new Exception("部分权限不存在"); }
             if (await this._permissionRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
             {
                 data.SetSuccessData(string.Empty);

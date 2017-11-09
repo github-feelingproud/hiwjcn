@@ -16,7 +16,7 @@ using Lib.mvc.user;
 namespace Hiwjcn.Bll.User
 {
     public interface IUserService :
-        IUserServiceBase<UserModel, UserAvatar, UserOneTimeCode, RoleModel, PermissionModel, RolePermissionModel, UserRoleModel>, 
+        IUserServiceBase<UserModel, UserAvatar, UserOneTimeCode, RoleModel, PermissionModel, RolePermissionModel, UserRoleModel>,
         IAutoRegistered
     { }
 
@@ -25,6 +25,8 @@ namespace Hiwjcn.Bll.User
         UserServiceBase<UserModel, UserAvatar, UserOneTimeCode, RoleModel, PermissionModel, RolePermissionModel, UserRoleModel>,
         IUserService
     {
+        private readonly ICacheProvider _cache;
+
         public UserService(
             ICacheProvider _cache,
 
@@ -35,9 +37,9 @@ namespace Hiwjcn.Bll.User
             IRepository<PermissionModel> _permissionRepo,
             IRepository<RolePermissionModel> _rolePermissionRepo,
             IRepository<UserRoleModel> _userRoleRepo) :
-            base(_cache, _userRepo, _userAvatarRepo, _oneTimeCodeRepo, _roleRepo, _permissionRepo, _rolePermissionRepo, _userRoleRepo)
+            base(_userRepo, _userAvatarRepo, _oneTimeCodeRepo, _roleRepo, _permissionRepo, _rolePermissionRepo, _userRoleRepo)
         {
-
+            this._cache = _cache;
         }
 
         public override string EncryptPassword(string password)
