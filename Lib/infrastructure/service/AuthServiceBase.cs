@@ -193,6 +193,11 @@ namespace Lib.infrastructure.service
                 data.SetErrorMsg("code已失效");
                 return data;
             }
+            if (!ValidateHelper.IsPlumpString(code.ScopesJson))
+            {
+                data.SetErrorMsg("scope丢失");
+                return data;
+            }
             //client
             var client = await this._clientRepo.GetFirstAsync(x =>
             x.UID == client_id &&

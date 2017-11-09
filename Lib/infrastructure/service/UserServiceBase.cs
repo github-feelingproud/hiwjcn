@@ -42,6 +42,8 @@ namespace Lib.infrastructure.service
 
         Task<UserBase> LoadPermission(UserBase model);
 
+        Task<_<string>> AddOneTimeCode(OneTimeCodeBase code);
+
         Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles);
 
         Task<_<string>> SetRolePermissions(string role_uid, List<RolePermissionBase> permissions);
@@ -303,6 +305,24 @@ namespace Lib.infrastructure.service
 
         public virtual async Task<UserBase> LoadPermission(UserBase model) =>
             (await this.LoadPermission(new List<UserBase>() { model })).FirstOrDefault();
+
+        public virtual async Task<_<string>> AddOneTimeCode(OneTimeCodeBase code)
+        {
+            var data = new _<string>();
+            code.Init("code");
+            if (!code.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._oneTimeCodeRepo.AddAsync(code) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("添加验证码失败");
+        }
 
         public virtual async Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles)
         {

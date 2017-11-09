@@ -147,7 +147,7 @@ namespace Hiwjcn.Bll.Auth
         {
             using (var db = new QPLEntityDB())
             {
-                var userinfo = await db.UserInfo.Where(x => x.UID == uid).FirstOrDefaultAsync();
+                var userinfo = await db.UserInfo.Where(x => x.UID == uid && x.IsRemove <= 0).FirstOrDefaultAsync();
                 if (userinfo != null)
                 {
                     return await this.LoadPermissions(this.Parse(userinfo));
