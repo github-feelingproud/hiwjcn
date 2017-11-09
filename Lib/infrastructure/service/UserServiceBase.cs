@@ -707,6 +707,15 @@ namespace Lib.infrastructure.service
             return list;
         }
 
+        public override async Task<UserBase> LoadPermission(UserBase model)
+        {
+            await this._userRepo.PrepareSessionAsync_(async db => 
+            {
+                return 1;
+            });
+            return await base.LoadPermission(model);
+        }
+
     }
 
 }
