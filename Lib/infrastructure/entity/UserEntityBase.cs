@@ -78,6 +78,11 @@ namespace Lib.infrastructure.entity
         /// </summary>
         [NotMapped]
         public virtual List<RoleEntityBase> RoleModelList { get; set; }
+
+        [NotMapped]
+        public virtual List<DepartmentEntityBase> DepartmentModelList { get; set; }
+
+        public virtual List<DepartmentRoleEntityBase> DepartmentRoleModelList { get; set; }
     }
 
     [Serializable]
@@ -176,5 +181,29 @@ namespace Lib.infrastructure.entity
         [Column("role_id")]
         [StringLength(100)]
         public virtual string RoleID { get; set; }
+    }
+
+    [Serializable]
+    public class DepartmentEntityBase : TreeEntityBase
+    {
+        public virtual string Name { get; set; }
+
+        public virtual string Description { get; set; }
+    }
+
+    [Serializable]
+    public class UserDepartmentEntityBase : BaseEntity
+    {
+        public virtual string UserUID { get; set; }
+
+        public virtual string DepartmentUID { get; set; }
+    }
+
+    [Serializable]
+    public class DepartmentRoleEntityBase : BaseEntity
+    {
+        public virtual string DepartmentUID { get; set; }
+
+        public virtual string RoleUID { get; set; }
     }
 }

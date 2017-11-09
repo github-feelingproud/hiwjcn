@@ -253,7 +253,7 @@ namespace Lib.infrastructure.service
             }
             var time = DateTime.Now.AddMinutes(-5);
             var code_model = (await this._oneTimeCodeRepo.QueryListAsync(
-                where: x => x.UserUID == user_model.UID && x.CreateTime > time, 
+                where: x => x.UserUID == user_model.UID && x.CreateTime > time,
                 orderby: x => x.CreateTime, Desc: true, count: 1)).FirstOrDefault();
             if (code_model?.Code != code)
             {
@@ -597,4 +597,116 @@ namespace Lib.infrastructure.service
             throw new Exception("删除权限错误");
         }
     }
+
+    //UserServiceWithDepartmentBase
+    public interface IUserServiceWithDepartmentBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase, UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase>
+    { }
+
+    public abstract class UserServiceWithDepartmentBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase, UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase> :
+        UserServiceBase<UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase>,
+        IUserServiceWithDepartmentBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase, UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase>
+        where DepartmentBase : DepartmentEntityBase, new()
+        where UserDepartmentBase : UserDepartmentEntityBase, new()
+        where DepartmentRoleBase : DepartmentRoleEntityBase, new()
+        where UserBase : UserEntityBase, new()
+        where UserAvatarBase : UserAvatarEntityBase, new()
+        where OneTimeCodeBase : UserOneTimeCodeEntityBase, new()
+        where RoleBase : RoleEntityBase, new()
+        where PermissionBase : PermissionEntityBase, new()
+        where RolePermissionBase : RolePermissionEntityBase, new()
+        where UserRoleBase : UserRoleEntityBase, new()
+    {
+        protected readonly IRepository<DepartmentBase> _departmentRepo;
+        protected readonly IRepository<UserDepartmentBase> _userDepartmentRepo;
+        protected readonly IRepository<DepartmentRoleBase> _departmentRoleRepo;
+
+        public UserServiceWithDepartmentBase(
+            IRepository<DepartmentBase> _departmentRepo,
+            IRepository<UserDepartmentBase> _userDepartmentRepo,
+            IRepository<DepartmentRoleBase> _departmentRoleRepo,
+            IRepository<UserBase> _userRepo,
+            IRepository<UserAvatarBase> _userAvatarRepo,
+            IRepository<OneTimeCodeBase> _oneTimeCodeRepo,
+            IRepository<RoleBase> _roleRepo,
+            IRepository<PermissionBase> _permissionRepo,
+            IRepository<RolePermissionBase> _rolePermissionRepo,
+            IRepository<UserRoleBase> _userRoleRepo) :
+            base(_userRepo, _userAvatarRepo, _oneTimeCodeRepo, _roleRepo, _permissionRepo, _rolePermissionRepo, _userRoleRepo)
+        {
+            this._departmentRepo = _departmentRepo;
+            this._userDepartmentRepo = _userDepartmentRepo;
+            this._departmentRoleRepo = _departmentRoleRepo;
+        }
+
+        public override async Task<List<UserBase>> LoadPermission(List<UserBase> list)
+        {
+            var user_uids = list.Select(x => x.UID);
+
+            await this._userRepo.PrepareSessionAsync(async db =>
+            {
+                //table
+                var user_role_map_query = db.Set<UserRoleBase>().AsNoTrackingQueryable();
+                var role_permission_map_query = db.Set<RolePermissionBase>().AsNoTrackingQueryable();
+                var role_query = db.Set<RoleBase>().AsNoTrackingQueryable();
+
+                var user_department_map_query = db.Set<UserDepartmentBase>().AsNoTrackingQueryable();
+                var department_role_map_query = db.Set<DepartmentRoleBase>().AsNoTrackingQueryable();
+                var department_query = db.Set<DepartmentBase>().AsNoTrackingQueryable();
+
+                var permission_query = db.Set<PermissionBase>().AsNoTrackingQueryable();
+
+                //department
+                var user_department_map = await user_department_map_query.Where(x => user_uids.Contains(x.UserUID)).ToListAsync();
+                var department_uids = user_department_map.Select(x => x.DepartmentUID);
+                var departments = await department_query.Where(x => department_uids.Contains(x.UID)).ToListAsync();
+                var department_role_map = await department_role_map_query.Where(x => department_uids.Contains(x.DepartmentUID)).ToListAsync();
+                var department_connected_role_uids = new List<string>();
+                foreach (var m in list)
+                {
+                    var user_department_uids = user_department_map.Where(x => x.UserUID == m.UID).Select(x => x.DepartmentUID);
+                    m.DepartmentModelList = new List<DepartmentEntityBase>();
+                    m.DepartmentModelList.AddRange(departments.Where(x => user_department_uids.Contains(x.UID)));
+
+                    m.DepartmentRoleModelList = new List<DepartmentRoleEntityBase>();
+                    m.DepartmentRoleModelList.AddRange(department_role_map.Where(x => user_department_uids.Contains(x.DepartmentUID)));
+                    department_connected_role_uids.AddRange(m.DepartmentRoleModelList.Select(x => x.RoleUID));
+                }
+
+                //role
+                var user_role_map = await user_role_map_query.Where(x => user_uids.Contains(x.UserID)).ToListAsync();
+                var role_uids = user_role_map.Select(x => x.RoleID).ToList();
+                {
+                    //添加部门关联的角色
+                    role_uids.AddRange(department_connected_role_uids);
+                    role_uids = role_uids.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
+                }
+                var roles = await role_query.Where(x => role_uids.Contains(x.UID)).ToListAsync();
+                foreach (var m in list)
+                {
+                    //bind role
+                    var user_roles = user_role_map.Where(x => x.UserID == m.UID).Select(x => x.RoleID).ToList();
+                    user_roles.AddRange(m.DepartmentRoleModelList.Select(x => x.RoleUID));
+                    m.RoleModelList = new List<RoleEntityBase>();
+                    m.RoleModelList.AddRange(roles.Where(x => user_roles.Contains(x.UID)));
+                    m.RoleList = m.RoleModelList.Select(x => x.UID).ToList();
+                }
+
+                //permission
+                var role_permission_map = await role_permission_map_query.Where(x => role_uids.Contains(x.RoleID)).ToListAsync();
+                var permission_uids = role_permission_map.Select(x => x.PermissionID);
+                var permissions = await permission_query.Where(x => permission_uids.Contains(x.UID)).ToListAsync();
+
+                foreach (var m in list)
+                {
+                    //bind permission
+                    var user_permissions = role_permission_map.Where(x => m.RoleList.Contains(x.RoleID)).Select(x => x.PermissionID);
+                    m.PermissionList = permissions.Where(x => user_permissions.Contains(x.UID)).Select(x => x.Name).ToList();
+                }
+            });
+
+            return list;
+        }
+
+    }
+
 }
