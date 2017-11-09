@@ -745,6 +745,116 @@ namespace Lib.infrastructure.service
             throw new Exception("删除部门失败");
         }
 
+        public virtual async Task<_<string>> AddDepartment(DepartmentBase model)
+        {
+            var data = new _<string>();
+            if (model.ParentUID == TreeEntityBase.FIRST_PARENT_UID)
+            {
+                model.Level = TreeEntityBase.FIRST_LEVEL;
+            }
+            else
+            {
+                var parent = await this._departmentRepo.GetFirstAsync(x => x.UID == model.ParentUID);
+                Com.AssertNotNull(parent, "父级部门不存在");
+                model.Level = parent.Level + 1;
+            }
+            model.Init("dept");
+            if (!model.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._departmentRepo.AddAsync(model) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("添加部门失败");
+        }
+
+        public abstract void UpdateDepartmentEntity(ref DepartmentBase old_department, ref DepartmentBase new_department);
+
+        public virtual async Task<_<string>> UpdateDepartment(DepartmentBase model)
+        {
+            var data = new _<string>();
+            var department = await this._departmentRepo.GetFirstAsync(x => x.UID == model.UID);
+            Com.AssertNotNull(department, "部门不存在");
+            this.UpdateDepartmentEntity(ref department, ref model);
+            department.Update();
+
+            if (await this._departmentRepo.UpdateAsync(department) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("更新部门失败");
+        }
+
+        public virtual async Task<List<DepartmentBase>> QueryDepartmentList(string parent = null)
+        {
+            return await this._departmentRepo.PrepareIQueryableAsync_(async query =>
+            {
+                if (ValidateHelper.IsPlumpString(parent))
+                {
+                    query = query.Where(x => x.ParentUID == parent);
+                }
+                return await query.OrderByDescending(x => x.UpdateTime).Take(5000).ToListAsync();
+            });
+        }
+
+        public virtual async Task<_<string>> SetUserDepartment(string user_uid, List<UserDepartmentBase> departments)
+        {
+            var data = new _<string>();
+            if (ValidateHelper.IsPlumpList(departments))
+            {
+                if (departments.Any(x => x.UserUID != user_uid))
+                {
+                    data.SetErrorMsg("分配部门参数错误");
+                    return data;
+                }
+            }
+
+            await this._userDepartmentRepo.DeleteWhereAsync(x => x.UserUID == user_uid);
+
+            if (ValidateHelper.IsPlumpList(departments))
+            {
+                if (await this._userDepartmentRepo.AddAsync(departments.ToArray()) <= 0)
+                {
+                    throw new Exception("设置部门失败");
+                }
+            }
+
+            data.SetSuccessData(string.Empty);
+            return data;
+        }
+
+        public virtual async Task<_<string>> SetDepartmentRole(string department_uid, List<DepartmentRoleBase> roles)
+        {
+            var data = new _<string>();
+            if (ValidateHelper.IsPlumpList(roles))
+            {
+                if (roles.Any(x => x.DepartmentUID != department_uid))
+                {
+                    data.SetErrorMsg("设置角色参数错误");
+                    return data;
+                }
+            }
+
+            await this._departmentRoleRepo.DeleteWhereAsync(x => x.DepartmentUID == department_uid);
+
+            if (ValidateHelper.IsPlumpList(roles))
+            {
+                if (await this._departmentRoleRepo.AddAsync(roles.ToArray()) <= 0)
+                {
+                    throw new Exception("保存角色失败");
+                }
+            }
+
+            data.SetSuccessData(string.Empty);
+            return data;
+        }
     }
 
 }
