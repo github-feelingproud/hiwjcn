@@ -251,7 +251,10 @@ namespace Lib.infrastructure.service
                 data.SetErrorMsg("用户不存在");
                 return data;
             }
-            var code_model = (await this._oneTimeCodeRepo.QueryListAsync(where: x => x.UserUID == user_model.UID, orderby: x => x.CreateTime, Desc: true, count: 1)).FirstOrDefault();
+            var time = DateTime.Now.AddMinutes(-5);
+            var code_model = (await this._oneTimeCodeRepo.QueryListAsync(
+                where: x => x.UserUID == user_model.UID && x.CreateTime > time, 
+                orderby: x => x.CreateTime, Desc: true, count: 1)).FirstOrDefault();
             if (code_model?.Code != code)
             {
                 data.SetErrorMsg("验证码错误");
