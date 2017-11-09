@@ -187,6 +187,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="data\mongodb\MongoRepository.cs" />
+    <Compile Include="data\mongodb\MongoEntityBase.cs" />
     <Compile Include="distributed\akka\ActorTest.cs" />
     <Compile Include="distributed\akka\AkkaHelper.cs" />
     <Compile Include="extra\api\BaiduTranslateHelper.cs" />
@@ -264,6 +266,7 @@
     <Compile Include="helper\ReflectionHelper.cs" />
     <Compile Include="infrastructure\controller\CRUDControllerBase.cs" />
     <Compile Include="infrastructure\controller\UserLoginControllerBase.cs" />
+    <Compile Include="infrastructure\entity\AreaEntityBase.cs" />
     <Compile Include="infrastructure\entity\AuthEntityBase.cs" />
     <Compile Include="infrastructure\entity\BaseEntity.cs" />
     <Compile Include="infrastructure\entity\LinkEntityBase.cs" />
@@ -395,7 +398,6 @@
     <Folder Include="core\contract\" />
     <Folder Include="core\ioc\" />
     <Folder Include="data\elasticsearch\" />
-    <Folder Include="data\mongodb\" />
     <Folder Include="data\orm\" />
     <Folder Include="data\redis\" />
     <Folder Include="distributed\orleans\" />
