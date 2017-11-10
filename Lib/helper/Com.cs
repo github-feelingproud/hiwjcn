@@ -128,11 +128,11 @@ namespace Lib.helper
         {
             var dict = new Dictionary<string, object>();
 
-            var props = data.GetType().GetProperties().Where(x => x.CanRead).ToList();
-            props.ForEach(x =>
+            var props = data.GetType().GetProperties().Where(x => x.CanRead);
+            foreach (var x in props)
             {
                 dict[x.Name] = x.GetValue(data);
-            });
+            }
 
             return dict;
         }
@@ -933,7 +933,7 @@ namespace Lib.helper
             size = size ?? 10;
             return size < 1 ? 10 : size;
         }
-        
+
         /// <summary>
         /// 监听目录文件变化
         /// </summary>

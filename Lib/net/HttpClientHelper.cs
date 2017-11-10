@@ -69,13 +69,7 @@ namespace Lib.net
                 //创建cookie
                 if (ValidateHelper.IsPlumpList(cookies))
                 {
-                    var cookieContainer = new System.Net.CookieContainer();
-                    cookies.ForEach(x =>
-                    {
-                        cookieContainer.Add(u, x);
-                    });
-                    httpHandler.UseCookies = true;
-                    httpHandler.CookieContainer = cookieContainer;
+                    httpHandler.SetCookies(cookies, u);
                 }
                 using (var client = new HttpClient(httpHandler))
                 {

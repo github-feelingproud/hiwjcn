@@ -17,6 +17,32 @@ namespace Lib.net
 {
     public static class HttpClientExtension
     {
+        public static async Task<HttpResponseMessage> PostAsJsonAsync_<T>(this HttpClient client, string url, T data) =>
+            await client.PostAsJsonAsync(url, data);
+
+        public static void SetCookies(this HttpClientHandler handler, List<Cookie> cookies, Uri uri = null)
+        {
+            if (handler.CookieContainer == null)
+            {
+                handler.CookieContainer = new CookieContainer();
+            }
+            handler.UseCookies = true;
+            if (ValidateHelper.IsPlumpList(cookies))
+            {
+                foreach (var c in cookies)
+                {
+                    if (uri == null)
+                    {
+                        handler.CookieContainer.Add(c);
+                    }
+                    else
+                    {
+                        handler.CookieContainer.Add(uri, c);
+                    }
+                }
+            }
+        }
+
         public static void AddFile_(this MultipartFormDataContent content, string key, string file_path)
         {
             var bs = File.ReadAllBytes(file_path);
