@@ -269,6 +269,7 @@
     <Compile Include="infrastructure\entity\AreaEntityBase.cs" />
     <Compile Include="infrastructure\entity\AuthEntityBase.cs" />
     <Compile Include="infrastructure\entity\BaseEntity.cs" />
+    <Compile Include="infrastructure\entity\CatalogEntityBase.cs" />
     <Compile Include="infrastructure\entity\LinkEntityBase.cs" />
     <Compile Include="infrastructure\entity\MenuEntityBase.cs" />
     <Compile Include="infrastructure\entity\TimeEntityBase.cs" />

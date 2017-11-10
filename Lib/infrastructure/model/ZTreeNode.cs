@@ -16,17 +16,27 @@ namespace Lib.infrastructure.model
     [JsonObject(MemberSerialization.OptOut)]
     public class ZTreeNode
     {
+        [JsonProperty(Required = Required.Always)]
         public virtual string id { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public virtual string pId { get; set; }
 
+        [JsonProperty(Required = Required.Always)]
         public virtual string name { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public virtual string icon { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public virtual string url { get; set; }
 
         [JsonProperty(PropertyName = nameof(@checked))]
         public virtual bool @checked { get; set; } = false;
 
         public virtual bool open { get; set; } = false;
+
+        public virtual bool chkDisabled { get; set; } = true;
 
 
         public static implicit operator ZTreeNode(RoleEntityBase role) =>
@@ -34,7 +44,7 @@ namespace Lib.infrastructure.model
             {
                 id = role.UID,
                 pId = role.ParentUID,
-                name = role.RoleName
+                name = role.RoleName,
             };
 
         public static implicit operator ZTreeNode(DepartmentEntityBase department) =>
