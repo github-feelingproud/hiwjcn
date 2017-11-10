@@ -27,7 +27,7 @@ namespace Lib.mvc.auth
         {
             return await AppContext.ScopeAsync(async x =>
             {
-                var loginuser = await x.Resolve_<TokenValidationProviderBase>(name).GetLoginUserInfoAsync(context);
+                var loginuser = await x.Resolve_<ITokenValidationProvider>(name).GetLoginUserInfoAsync(context);
 
                 return loginuser;
             });
@@ -36,12 +36,11 @@ namespace Lib.mvc.auth
         /// <summary>
         /// 获取当前登录用户
         /// </summary>
-        [Obsolete("请优先使用异步方法！！！")]
         public static LoginUserInfo GetAuthUser(this HttpContext context, string name = null)
         {
             return AppContext.Scope(x =>
             {
-                var loginuser = x.Resolve_<TokenValidationProviderBase>(name).GetLoginUserInfo(context);
+                var loginuser = x.Resolve_<ITokenValidationProvider>(name).GetLoginUserInfo(context);
 
                 return loginuser;
             });
@@ -126,7 +125,7 @@ namespace Lib.mvc.auth
         /// 获取token client的逻辑
         /// </summary>
         public static void AuthUseValidationDataProvider<T>(this ContainerBuilder builder)
-            where T : IValidationDataProvider
+            where T : IAuthDataProvider
         {
             builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().SingleInstance();
         }
@@ -151,9 +150,9 @@ namespace Lib.mvc.auth
         /// 自定义验证
         /// </summary>
         public static void AuthClientUseCustomValidation<T>(this ContainerBuilder builder)
-            where T : TokenValidationProviderBase
+            where T : ITokenValidationProvider
         {
-            builder.RegisterType<T>().AsSelf().As<TokenValidationProviderBase>().SingleInstance();
+            builder.RegisterType<T>().AsSelf().As<ITokenValidationProvider>().SingleInstance();
         }
     }
 }

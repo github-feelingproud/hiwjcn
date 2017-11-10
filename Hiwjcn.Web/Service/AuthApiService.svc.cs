@@ -9,6 +9,7 @@ using Lib.mvc;
 using Lib.mvc.auth;
 using Lib.mvc.user;
 using Lib.ioc;
+using Lib.mvc.auth.api;
 
 namespace Hiwjcn.Web.Service
 {

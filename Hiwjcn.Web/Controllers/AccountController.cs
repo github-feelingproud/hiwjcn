@@ -34,7 +34,7 @@ namespace Hiwjcn.Web.Controllers
         private readonly LoginStatus _LoginStatus;
         private readonly IRepository<AuthScope> _AuthScopeRepository;
         private readonly IAuthTokenService _IAuthTokenService;
-        private readonly IValidationDataProvider _IValidationDataProvider;
+        private readonly IAuthDataProvider _IValidationDataProvider;
         private readonly ICacheProvider _cache;
 
         public AccountController(
@@ -44,7 +44,7 @@ namespace Hiwjcn.Web.Controllers
             LoginStatus logincontext,
             IRepository<AuthScope> _AuthScopeRepository,
             IAuthTokenService _IAuthTokenService,
-            IValidationDataProvider _IValidationDataProvider,
+            IAuthDataProvider _IValidationDataProvider,
             ICacheProvider _cache)
         {
             this._IAuthLoginService = _IAuthLoginService;

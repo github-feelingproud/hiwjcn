@@ -15,17 +15,22 @@ using Lib.net;
 
 namespace Lib.mvc.auth.validation
 {
+    public interface ITokenValidationProvider
+    {
+        LoginUserInfo GetLoginUserInfo(HttpContext context);
+
+        Task<LoginUserInfo> GetLoginUserInfoAsync(HttpContext context);
+    }
+
     /// <summary>
     /// 拿到token和client信息后去验证信息，并拿到用户信息
     /// </summary>
-    public abstract class TokenValidationProviderBase
+    public abstract class TokenValidationProviderBase : ITokenValidationProvider
     {
         public virtual string HttpContextItemKey() => "context.items.auth.user.entity";
-
-        [Obsolete("不要直接调用，使用哪个有缓存的")]
+        
         public abstract LoginUserInfo FindUser(HttpContext context);
-
-        [Obsolete("不要直接调用，使用哪个有缓存的")]
+        
         public abstract Task<LoginUserInfo> FindUserAsync(HttpContext context);
 
         public virtual void WhenUserNotLogin(HttpContext context)
@@ -91,11 +96,11 @@ namespace Lib.mvc.auth.validation
     /// </summary>
     public class AuthBasicValidationProvider : TokenValidationProviderBase
     {
-        private readonly IValidationDataProvider _dataProvider;
+        private readonly IAuthDataProvider _dataProvider;
         private readonly IAuthApi api;
 
         public AuthBasicValidationProvider(
-            IValidationDataProvider _dataProvider,
+            IAuthDataProvider _dataProvider,
             IAuthApi api)
         {
             this._dataProvider = _dataProvider;

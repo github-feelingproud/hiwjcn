@@ -12,19 +12,10 @@ using Lib.helper;
 
 namespace Lib.mvc.auth.validation
 {
-    public static class WebClientConfig
-    {
-        private static readonly Lazy<string> id = new Lazy<string>(() => ConfigurationManager.AppSettings["auth.client_id"]?.ToMD5()?.ToLower());
-        private static readonly Lazy<string> security = new Lazy<string>(() => ConfigurationManager.AppSettings["auth.client_security"]?.ToMD5()?.ToLower());
-
-        public static string ClientID() => id.Value;
-        public static string ClientSecurity() => security.Value;
-    }
-
     /// <summary>
     /// 获取token和client 信息的渠道
     /// </summary>
-    public interface IValidationDataProvider
+    public interface IAuthDataProvider
     {
         string GetToken(HttpContext context);
 
@@ -34,49 +25,9 @@ namespace Lib.mvc.auth.validation
     }
 
     /// <summary>
-    /// 从header中获取token和client信息
+    /// 尝试获取app或者web的token信息
     /// </summary>
-    public class AppValidationDataProvider : IValidationDataProvider
-    {
-        public string GetClientID(HttpContext context)
-        {
-            return context.GetAuthClientID();
-        }
-
-        public string GetClientSecurity(HttpContext context)
-        {
-            return context.GetAuthClientSecurity();
-        }
-
-        public string GetToken(HttpContext context)
-        {
-            return context.GetAuthToken();
-        }
-    }
-
-    /// <summary>
-    /// 从cookie中获取token，从web.config中获取client信息
-    /// </summary>
-    public class WebValidationDataProvider : IValidationDataProvider
-    {
-        private readonly LoginStatus _LoginStatus;
-
-        public WebValidationDataProvider(LoginStatus _LoginStatus)
-        {
-            this._LoginStatus = _LoginStatus;
-        }
-
-        public string GetClientID(HttpContext context) => WebClientConfig.ClientID();
-
-        public string GetClientSecurity(HttpContext context) => WebClientConfig.ClientSecurity();
-
-        public string GetToken(HttpContext context)
-        {
-            return this._LoginStatus.GetCookieToken();
-        }
-    }
-
-    public class AppOrWebTokenProvider : IValidationDataProvider
+    public class AppOrWebTokenProvider : IAuthDataProvider
     {
         public readonly LoginStatus _loginstatus;
 

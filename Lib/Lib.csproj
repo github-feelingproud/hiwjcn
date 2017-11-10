@@ -316,6 +316,8 @@
     <Compile Include="mvc\attr\ValidateSignAttribute.cs" />
     <Compile Include="mvc\attr\ValidCSRFAttribute.cs" />
     <Compile Include="mvc\attr\_ActionFilterBaseAttribute.cs" />
+    <Compile Include="mvc\auth\api\AuthApiFromWcf.cs" />
+    <Compile Include="mvc\auth\api\AuthApiFromWebApi.cs" />
     <Compile Include="mvc\auth\AuthExtension.cs" />
     <Compile Include="mvc\auth\AuthHelper.cs" />
     <Compile Include="mvc\auth\AuthServerConfig.cs" />
