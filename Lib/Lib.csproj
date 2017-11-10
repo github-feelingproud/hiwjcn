@@ -187,6 +187,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="core\StaticData.cs" />
     <Compile Include="data\mongodb\MongoRepository.cs" />
     <Compile Include="data\mongodb\MongoEntityBase.cs" />
     <Compile Include="distributed\akka\ActorTest.cs" />
@@ -207,7 +208,6 @@
     <Compile Include="core\EnumBundle.cs" />
     <Compile Include="core\ExceptionsCollection.cs" />
     <Compile Include="core\LibStartUpHelper.cs" />
-    <Compile Include="core\MimeTypes.cs" />
     <Compile Include="core\MyStringComparer.cs" />
     <Compile Include="core\LibReleaseHelper.cs" />
     <Compile Include="core\ResultBase.cs" />
@@ -401,7 +401,6 @@
     <None Include="ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="core\contract\" />
     <Folder Include="core\ioc\" />
     <Folder Include="data\elasticsearch\" />
     <Folder Include="data\orm\" />

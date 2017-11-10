@@ -21,7 +21,7 @@ namespace Lib.net
         {
             var bs = File.ReadAllBytes(file_path);
             var name = Path.GetFileName(file_path);
-            var content_type = MimeTypes.GetMimeType(Path.GetExtension(file_path));
+            var content_type = StaticData.MimeTypes.GetMimeType(Path.GetExtension(file_path));
             content.AddFile_(key, bs, name, content_type);
         }
 
