@@ -132,23 +132,6 @@ namespace Lib.net
         /// <summary>
         /// 用的.NET4.5中httpclient的简易封装
         /// </summary>
-        [Obsolete(nameof(HttpClient) + "有bug")]
-        public static void SendHttpRequest(
-            string url,
-            Dictionary<string, string> param,
-            Dictionary<string, FileModel> files,
-            List<Cookie> cookies,
-            RequestMethodEnum method,
-            int timeout_second,
-            VoidFunc<HttpResponseMessage> handler)
-        {
-            var t = SendHttpRequestAsync(url, param, files, cookies, method, timeout_second, handler);
-            AsyncHelper.RunSync(() => t);
-        }
-
-        /// <summary>
-        /// 用的.NET4.5中httpclient的简易封装
-        /// </summary>
         /// <param name="url"></param>
         /// <param name="param"></param>
         /// <param name="files"></param>

@@ -17,17 +17,18 @@ namespace Lib.net
 {
     public static class HttpClientExtension
     {
-        public static ByteArrayContent CreateFileContent(this FileInfo f, string key, string contentType)
+        public static void AddFile_(this MultipartFormDataContent content, 
+            string key, byte[] bs, string file_name, string content_type)
         {
-            var fileContent = new ByteArrayContent(File.ReadAllBytes(f.FullName));
+            var fileContent = new ByteArrayContent(bs);
             fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
             {
                 Name = key,
-                FileName = f.Name,
-                Size = f.Length
+                FileName = file_name,
+                Size = bs.Length
             };
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            return fileContent;
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(content_type);
+            content.Add(fileContent, key);
         }
 
         public static Dictionary<string, string> ParamNotNull(this IDictionary<string, string> param)
