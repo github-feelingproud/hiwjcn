@@ -47,14 +47,11 @@ namespace Lib.mvc.auth
 
         public AuthServerConfig(string host, string wcf_path)
         {
-            void CheckUrl(string url)
+            void EnsureUrl(string url)
             {
-                if (!ValidateHelper.IsPlumpString(url))
-                {
-                    throw new Exception("auth服务器地址不能为空");
-                }
-                var cp = url.ToLower();
-                if (!(cp.StartsWith("http://") || cp.StartsWith("https://")))
+                var lower = (url ?? throw new Exception("auth服务器地址不能为空")).ToLower();
+                var prefix_ok = lower.StartsWith("http://") || lower.StartsWith("https://");
+                if (!prefix_ok)
                 {
                     throw new Exception("服务器地址必须以http或者https开头");
                 }
@@ -62,15 +59,11 @@ namespace Lib.mvc.auth
 
             //server root
             this.ServerUrl = ConvertHelper.GetString(host);
-            CheckUrl(this.ServerUrl);
+            EnsureUrl(this.ServerUrl);
 
             //server wcf url
             this.WcfUrl = wcf_path;
-            CheckUrl(this.WcfUrl);
-            if (!this.WcfUrl.ToLower().EndsWith(".svc"))
-            {
-                throw new Exception("auth wcf地址必须以.svc结尾");
-            }
+            EnsureUrl(this.WcfUrl);
         }
 
         public string ApiPath(params string[] paths)

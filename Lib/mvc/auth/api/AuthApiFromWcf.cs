@@ -47,16 +47,14 @@ namespace Lib.mvc.auth.api
         public AuthApiFromWcf(AuthServerConfig _server)
         {
             this.url = _server.WcfUrl;
-        }
-
-        private ServiceClient<IAuthApiWcfServiceContract> Client()
-        {
             if (!ValidateHelper.IsPlumpString(this.url))
             {
                 throw new Exception($"{nameof(IAuthApiWcfServiceContract)}没有配置远程地址");
             }
-            return new ServiceClient<IAuthApiWcfServiceContract>(this.url);
         }
+
+        private ServiceClient<IAuthApiWcfServiceContract> Client() => 
+            new ServiceClient<IAuthApiWcfServiceContract>(this.url);
 
         public async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
         {
