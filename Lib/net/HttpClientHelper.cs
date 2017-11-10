@@ -23,14 +23,6 @@ namespace Lib.net
         GET = 1, POST = 2, PUT = 3, DELETE = 4
     }
 
-    public static class NetworkRequestExtension
-    {
-        public static string Get(this Uri url) => HttpClientHelper.Get(url.AbsoluteUri);
-
-        public static async Task<string> GetAsync(this Uri url, int? second = null) =>
-            await HttpClientHelper.GetAsync(url.AbsoluteUri, second);
-    }
-
     public class HttpClientManager : StaticClientManager<HttpClient>
     {
         public static readonly HttpClientManager Instance = new HttpClientManager();
@@ -124,16 +116,6 @@ namespace Lib.net
             "Mozilla/5.0 (Linux; U; Android 1.6; en-us; SonyEricssonX10i Build/R1AA056) AppleWebKit/528.5  (KHTML, like Gecko) Version/3.1.2 Mobile Safari/525.20.1",
         }.AsReadOnly();
 
-        public static Dictionary<string, string> NotNull(this Dictionary<string, string> param)
-        {
-            return param.ToDictionary(x => ConvertHelper.GetString(x.Key), x => ConvertHelper.GetString(x.Value));
-        }
-
-        private static string GetMethod(RequestMethodEnum m)
-        {
-            return m.ToString();
-        }
-
         private static ByteArrayContent CreateFileContent(FileModel f, string key)
         {
             var fileContent = new ByteArrayContent(f.BytesArray);
@@ -218,7 +200,7 @@ namespace Lib.net
                         {
                             if (ValidateHelper.IsPlumpDict(param))
                             {
-                                param = param.NotNull();
+                                param = param.ParamNotNull();
                                 foreach (var key in param.Keys)
                                 {
                                     formContent.Add(new StringContent(param[key]), key);
@@ -291,7 +273,7 @@ namespace Lib.net
                 {
                     if (ValidateHelper.IsPlumpDict(param))
                     {
-                        param = param.NotNull();
+                        param = param.ParamNotNull();
                         foreach (var key in param.Keys)
                         {
                             formContent.Add(new StringContent(param[key]), key);
@@ -368,7 +350,7 @@ namespace Lib.net
             var data = default(byte[]);
             if (ValidateHelper.IsPlumpDict(param))
             {
-                data = Encoding.UTF8.GetBytes(param.NotNull().ToUrlParam());
+                data = Encoding.UTF8.GetBytes(param.ParamNotNull().ToUrlParam());
             }
             return Send(url, data, "application/x-www-form-urlencoded");
         }
@@ -399,12 +381,10 @@ namespace Lib.net
             return Send(url, null, string.Empty, RequestMethodEnum.GET);
         }
 
-        /// <summary>
-        /// send request
-        /// </summary>
-        public static string Send(string url, byte[] data = null, string contentType = null,
-            RequestMethodEnum method = RequestMethodEnum.POST, int? timeout_second = 30,
-            int[] ensure_http_code = null)
+        public static void SendCore(string url, Action<HttpWebResponse, HttpStatusCode> handler,
+            List<Cookie> cookies = null,
+            byte[] data = null, string contentType = null, RequestMethodEnum method = RequestMethodEnum.POST,
+            TimeSpan? timeout = null, int[] ensure_http_code = null)
         {
             HttpWebRequest req = null;
             HttpWebResponse res = null;
@@ -412,16 +392,26 @@ namespace Lib.net
             {
                 //连接到目标网页
                 req = (HttpWebRequest)WebRequest.Create(url);
-                if (timeout_second != null)
+                //timeout
+                timeout = timeout ?? TimeSpan.FromSeconds(30);
+                req.Timeout = (int)timeout.Value.TotalMilliseconds;
+                //method
+                req.Method = method.GetMethodString();
+                //cookie
+                if (ValidateHelper.IsPlumpList(cookies))
                 {
-                    req.Timeout = timeout_second.Value * 1000;
+                    req.CookieContainer = new CookieContainer();
+                    foreach (var c in cookies)
+                    {
+                        req.CookieContainer.Add(c);
+                    }
                 }
-                req.Method = GetMethod(method);
+                //content type
                 if (ValidateHelper.IsPlumpString(contentType))
                 {
                     req.ContentType = contentType;
                 }
-
+                //data
                 if (ValidateHelper.IsPlumpList(data))
                 {
                     req.ContentLength = data.Length;
@@ -430,18 +420,17 @@ namespace Lib.net
                         stream.Write(data, 0, data.Length);
                     }
                 }
-
+                //response
                 res = (HttpWebResponse)req.GetResponse();
-
+                //ensure http status
                 if (ValidateHelper.IsPlumpList(ensure_http_code) && !ensure_http_code.Contains((int)res.StatusCode))
                 {
                     throw new Exception($"{url}请求的返回码：{(int)res.StatusCode}不在允许的范围内：{",".Join_(ensure_http_code)}");
                 }
 
-                using (var s = res.GetResponseStream())
-                {
-                    return ConvertHelper.StreamToString(s);
-                }
+                //callback
+                handler.Invoke(res, res.StatusCode);
+
             }
             finally
             {
@@ -458,71 +447,28 @@ namespace Lib.net
         }
 
         /// <summary>
-        /// 处理请求
+        /// send request
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="param"></param>
-        /// <param name="cookies"></param>
-        /// <param name="method"></param>
-        /// <param name="timeout_second"></param>
-        /// <param name="handler"></param>
-        public static void HttpRequestHandler(
-            string url,
-            Dictionary<string, string> param,
-            List<Cookie> cookies,
-            RequestMethodEnum method,
-            int timeout_second,
-            VoidFunc<HttpWebResponse, HttpStatusCode> handler)
+        public static string Send(string url, byte[] data = null, string contentType = null,
+            RequestMethodEnum method = RequestMethodEnum.POST, int? timeout_second = 30,
+            int[] ensure_http_code = null)
         {
-            HttpWebRequest req = null;
-            HttpWebResponse res = null;
-            try
+            var response_data = string.Empty;
+            Action<HttpWebResponse, HttpStatusCode> callback = (res, code) =>
             {
-                //连接到目标网页
-                req = (HttpWebRequest)WebRequest.Create(url);
-                req.Timeout = timeout_second * 1000;//10s请求超时
-                req.Method = GetMethod(method);
-                req.ContentType = "application/x-www-form-urlencoded";
-                //添加cookie
-                if (ValidateHelper.IsPlumpList(cookies))
+                using (var s = res.GetResponseStream())
                 {
-                    req.CookieContainer = new CookieContainer();
-                    foreach (var c in cookies)
-                    {
-                        req.CookieContainer.Add(c);
-                    }
+                    response_data = ConvertHelper.StreamToString(s);
                 }
-                //如果是post并且有参数
-                if (method == RequestMethodEnum.POST && ValidateHelper.IsPlumpDict(param))
-                {
-                    param = param.NotNull();
-                    var post_data = param.ToUrlParam();
-                    var data = Encoding.UTF8.GetBytes(post_data);
-                    using (var stream = req.GetRequestStream())
-                    {
-                        stream.Write(data, 0, data.Length);
-                    }
-                }
-                res = (HttpWebResponse)req.GetResponse();
-                handler.Invoke(res, res.StatusCode);
-            }
-            catch (Exception e)
+            };
+            TimeSpan? to = null;
+            if (timeout_second != null)
             {
-                e.AddErrorLog();
-                throw e;
+                to = TimeSpan.FromSeconds(timeout_second.Value);
             }
-            finally
-            {
-                try
-                {
-                    req?.Abort();
-                }
-                catch (Exception e)
-                {
-                    e.AddLog(typeof(HttpClientHelper));
-                }
-                res?.Dispose();
-            }
+            SendCore(url, callback, data: data, contentType: contentType, method: method, timeout: to, ensure_http_code: ensure_http_code);
+
+            return response_data;
         }
 
         /// <summary>
@@ -551,7 +497,7 @@ namespace Lib.net
         public static UpLoadFileResult DownloadFile(string url, string save_path)
         {
             var model = new UpLoadFileResult();
-            HttpRequestHandler(url, null, null, RequestMethodEnum.GET, 1000 * 60, (res, status) =>
+            Action<HttpWebResponse, HttpStatusCode> callback = (res, status) =>
             {
                 if (status != HttpStatusCode.OK) { throw new Exception($"status:{status}"); }
                 using (var s = res.GetResponseStream())
@@ -591,7 +537,10 @@ namespace Lib.net
                         model.SuccessUpload = true;
                     }
                 }
-            });
+            };
+
+            SendCore(url, callback, method: RequestMethodEnum.GET, timeout: TimeSpan.FromSeconds(60));
+
             return model;
         }
 
@@ -599,25 +548,14 @@ namespace Lib.net
         /// 返回描述本地计算机上的网络接口的对象(网络接口也称为网络适配器)。
         /// </summary>
         /// <returns></returns>
-        public static NetworkInterface[] NetCardInfo()
-        {
-            return NetworkInterface.GetAllNetworkInterfaces();
-        }
+        public static NetworkInterface[] NetCardInfo() => NetworkInterface.GetAllNetworkInterfaces();
 
         ///<summary>
         /// 通过NetworkInterface读取网卡Mac
         ///</summary>
         ///<returns></returns>
-        public static List<string> GetMacByNetworkInterface()
-        {
-            List<string> macs = new List<string>();
-            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (NetworkInterface ni in interfaces)
-            {
-                macs.Add(ni.GetPhysicalAddress().ToString());
-            }
-            return macs;
-        }
+        public static List<string> GetMacByNetworkInterface() =>
+            NetCardInfo().Select(x => x.GetPhysicalAddress()?.ToString()).Where(x => ValidateHelper.IsPlumpString(x)).ToList();
 
     }
 }

@@ -17,6 +17,12 @@ namespace Hiwjcn.Test
     {
 
         [TestMethod]
+        public void TestMfasdfasdfasdfasedfethod1()
+        {
+            var x = Lib.net.HttpClientHelper.Get("http://www.baidu.com/");
+        }
+
+        [TestMethod]
         public void TestMfasdfasdfasdfasdfethod1()
         {
             try

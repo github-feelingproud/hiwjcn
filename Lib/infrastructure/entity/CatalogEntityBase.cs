@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lib.infrastructure.entity
 {
+    [Serializable]
     public class CatalogEntityBase : TreeEntityBase
     {
         public virtual string CatalogName { get; set; }

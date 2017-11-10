@@ -372,6 +372,7 @@
     <Compile Include="mvc\view\IViewRenderService.cs" />
     <Compile Include="mvc\view\RazorViewRenderService.cs" />
     <Compile Include="mvc\WebWorkContext.cs" />
+    <Compile Include="net\HttpClientExtension.cs" />
     <Compile Include="net\HttpClientHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="helper\RegexHelper.cs" />
