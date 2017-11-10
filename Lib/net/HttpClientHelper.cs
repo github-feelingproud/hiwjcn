@@ -15,14 +15,6 @@ using System.Threading.Tasks;
 
 namespace Lib.net
 {
-    /// <summary>
-    /// 请求方法
-    /// </summary>
-    public enum RequestMethodEnum : int
-    {
-        GET = 1, POST = 2, PUT = 3, DELETE = 4
-    }
-
     public class HttpClientManager : StaticClientManager<HttpClient>
     {
         public static readonly HttpClientManager Instance = new HttpClientManager();
@@ -144,7 +136,7 @@ namespace Lib.net
         public static async Task SendHttpRequestAsync(
             string url,
             Dictionary<string, string> param,
-            Dictionary<string, FileModel> files,
+            Dictionary<string, string> files,
             List<Cookie> cookies,
             RequestMethodEnum method,
             int timeout_second,
@@ -183,17 +175,13 @@ namespace Lib.net
                         {
                             if (ValidateHelper.IsPlumpDict(param))
                             {
-                                param = param.ParamNotNull();
-                                foreach (var key in param.Keys)
-                                {
-                                    formContent.Add(new StringContent(param[key]), key);
-                                }
+                                formContent.AddParam_(param);
                             }
                             if (ValidateHelper.IsPlumpDict(files))
                             {
-                                foreach (var key in files.Keys)
+                                foreach (var kv in files)
                                 {
-                                    formContent.Add(CreateFileContent(files[key], key), key);
+                                    formContent.AddFile_(kv.Key, kv.Value);
                                 }
                             }
                             response = await client.PostAsync(u, formContent);
@@ -256,11 +244,7 @@ namespace Lib.net
                 {
                     if (ValidateHelper.IsPlumpDict(param))
                     {
-                        param = param.ParamNotNull();
-                        foreach (var key in param.Keys)
-                        {
-                            formContent.Add(new StringContent(param[key]), key);
-                        }
+                        formContent.AddParam_(param);
                     }
                     var response = await client.PostAsync(u, formContent);
                     return await response.Content.ReadAsStringAsync();

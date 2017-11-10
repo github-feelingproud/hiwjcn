@@ -64,6 +64,17 @@ namespace Lib.core
     }
 
     /// <summary>
+    /// 请求方法
+    /// </summary>
+    public enum RequestMethodEnum : int
+    {
+        GET = 1,
+        POST = 2,
+        PUT = 3,
+        DELETE = 4
+    }
+
+    /// <summary>
     /// 常用类型
     /// </summary>
     public static class TypeEnum

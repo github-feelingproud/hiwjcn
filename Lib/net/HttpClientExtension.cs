@@ -17,7 +17,15 @@ namespace Lib.net
 {
     public static class HttpClientExtension
     {
-        public static void AddFile_(this MultipartFormDataContent content, 
+        public static void AddFile_(this MultipartFormDataContent content, string key, string file_path)
+        {
+            var bs = File.ReadAllBytes(file_path);
+            var name = Path.GetFileName(file_path);
+            var content_type = MimeTypes.GetMimeType(Path.GetExtension(file_path));
+            content.AddFile_(key, bs, name, content_type);
+        }
+
+        public static void AddFile_(this MultipartFormDataContent content,
             string key, byte[] bs, string file_name, string content_type)
         {
             var fileContent = new ByteArrayContent(bs);
@@ -29,6 +37,19 @@ namespace Lib.net
             };
             fileContent.Headers.ContentType = new MediaTypeHeaderValue(content_type);
             content.Add(fileContent, key);
+        }
+
+        public static void AddParam_(this MultipartFormDataContent content, string key, string value)
+        {
+            content.Add(new StringContent(value), key);
+        }
+
+        public static void AddParam_(this MultipartFormDataContent content, IDictionary<string, string> param)
+        {
+            foreach (var kv in param.ParamNotNull())
+            {
+                content.AddParam_(kv.Key, kv.Value);
+            }
         }
 
         public static Dictionary<string, string> ParamNotNull(this IDictionary<string, string> param)
