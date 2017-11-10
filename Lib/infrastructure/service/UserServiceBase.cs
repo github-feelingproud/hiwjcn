@@ -599,8 +599,34 @@ namespace Lib.infrastructure.service
     }
 
     //UserServiceWithDepartmentBase
-    public interface IUserServiceWithDepartmentBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase, UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase>
-    { }
+    public interface IUserServiceWithDepartmentBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase, UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase> :
+        IUserServiceBase<UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase>
+        where DepartmentBase : DepartmentEntityBase, new()
+        where UserDepartmentBase : UserDepartmentEntityBase, new()
+        where DepartmentRoleBase : DepartmentRoleEntityBase, new()
+
+        where UserBase : UserEntityBase, new()
+        where UserAvatarBase : UserAvatarEntityBase, new()
+        where OneTimeCodeBase : UserOneTimeCodeEntityBase, new()
+        where RoleBase : RoleEntityBase, new()
+        where PermissionBase : PermissionEntityBase, new()
+        where RolePermissionBase : RolePermissionEntityBase, new()
+        where UserRoleBase : UserRoleEntityBase, new()
+    {
+        Task<_<string>> DeleteDepartment(params string[] department_uids);
+
+        Task<_<string>> DeleteDepartmentRecursively(string department_uid);
+
+        Task<_<string>> AddDepartment(DepartmentBase model);
+
+        Task<_<string>> UpdateDepartment(DepartmentBase model);
+
+        Task<List<DepartmentBase>> QueryDepartmentList(string parent = null);
+
+        Task<_<string>> SetUserDepartment(string user_uid, List<UserDepartmentBase> departments);
+
+        Task<_<string>> SetDepartmentRole(string department_uid, List<DepartmentRoleBase> roles);
+    }
 
     public abstract class UserServiceWithDepartmentBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase, UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase> :
         UserServiceBase<UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase>,

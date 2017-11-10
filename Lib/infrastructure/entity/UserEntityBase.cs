@@ -187,7 +187,7 @@ namespace Lib.infrastructure.entity
     [Serializable]
     public class DepartmentEntityBase : TreeEntityBase
     {
-        public virtual string Name { get; set; }
+        public virtual string DepartmentName { get; set; }
 
         public virtual string Description { get; set; }
     }

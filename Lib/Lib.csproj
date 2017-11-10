@@ -274,11 +274,15 @@
     <Compile Include="infrastructure\entity\TimeEntityBase.cs" />
     <Compile Include="infrastructure\entity\TreeEntityBase.cs" />
     <Compile Include="infrastructure\entity\UserEntityBase.cs" />
+    <Compile Include="infrastructure\model\ZTreeNode.cs" />
     <Compile Include="infrastructure\provider\UserLoginServiceBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="infrastructure\provider\AuthApiServiceFromDbBase.cs" />
     <Compile Include="infrastructure\service\AuthLoginService.cs" />
     <Compile Include="infrastructure\service\AuthServiceBase.cs" />
+    <Compile Include="infrastructure\service\DepartmentServiceBase.cs" />
+    <Compile Include="infrastructure\service\PermissionServiceBase.cs" />
+    <Compile Include="infrastructure\service\RoleServiceBase.cs" />
     <Compile Include="infrastructure\service\TreeServiceBase.cs" />
     <Compile Include="infrastructure\service\UserServiceBase.cs" />
     <Compile Include="ioc\AppContextExtension.cs" />

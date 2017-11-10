@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Lib.infrastructure.entity
 {
-    class MenuEntityBase
+    public class MenuEntityBase : TreeEntityBase
     {
+        public virtual string MenuName { get; set; }
     }
 }
