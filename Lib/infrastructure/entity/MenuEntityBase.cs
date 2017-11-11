@@ -17,5 +17,7 @@ namespace Lib.infrastructure.entity
         public virtual int Sort { get; set; }
 
         public virtual string PermissionJson { get; set; }
+
+        public virtual string Group { get; set; }
     }
 }

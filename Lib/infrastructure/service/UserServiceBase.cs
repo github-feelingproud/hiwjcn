@@ -404,22 +404,8 @@ namespace Lib.infrastructure.service
         public virtual async Task<_<string>> DeleteRoleRecursively(string role_uid) =>
             await this._roleRepo.DeleteTreeNodeRecursively(role_uid);
 
-        public virtual async Task<_<string>> DeleteRole(params string[] role_uids)
-        {
-            var data = new _<string>();
-            if (!ValidateHelper.IsPlumpList(role_uids))
-            {
-                data.SetErrorMsg("角色ID为空");
-                return data;
-            }
-            if (await this._roleRepo.DeleteWhereAsync(x => role_uids.Contains(x.UID)) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("删除角色错误");
-        }
+        public virtual async Task<_<string>> DeleteRole(params string[] role_uids) =>
+            await this._roleRepo.DeleteByMultipleUIDS(role_uids);
 
         public abstract void UpdateRoleEntity(ref RoleBase old_role, ref RoleBase new_role);
 
@@ -477,22 +463,8 @@ namespace Lib.infrastructure.service
         public virtual async Task<_<string>> DeletePermissionRecursively(string permission_uid) =>
             await this._permissionRepo.DeleteTreeNodeRecursively(permission_uid);
 
-        public virtual async Task<_<string>> DeletePermission(params string[] permission_uids)
-        {
-            var data = new _<string>();
-            if (!ValidateHelper.IsPlumpList(permission_uids))
-            {
-                data.SetErrorMsg("权限ID为空");
-                return data;
-            }
-            if (await this._permissionRepo.DeleteWhereAsync(x => permission_uids.Contains(x.UID)) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("删除权限错误");
-        }
+        public virtual async Task<_<string>> DeletePermission(params string[] permission_uids) =>
+            await this._permissionRepo.DeleteByMultipleUIDS(permission_uids);
     }
 
     //UserServiceWithDepartmentBase
@@ -631,22 +603,8 @@ namespace Lib.infrastructure.service
             return list;
         }
 
-        public virtual async Task<_<string>> DeleteDepartment(params string[] department_uids)
-        {
-            var data = new _<string>();
-            if (!ValidateHelper.IsPlumpList(department_uids))
-            {
-                data.SetErrorMsg("部门为空");
-                return data;
-            }
-            if (await this._departmentRepo.DeleteWhereAsync(x => department_uids.Contains(x.UID)) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("删除部门失败");
-        }
+        public virtual async Task<_<string>> DeleteDepartment(params string[] department_uids) =>
+            await this._departmentRepo.DeleteByMultipleUIDS(department_uids);
 
         public virtual async Task<_<string>> DeleteDepartmentRecursively(string department_uid) =>
             await this._departmentRepo.DeleteTreeNodeRecursively(department_uid);
