@@ -31,5 +31,25 @@ namespace Lib.infrastructure.extension
 
             throw new Exception("删除数据错误");
         }
+        
+        public static async Task<_<string>> AddEntity<T>(this IRepository<T> repo, T model, string model_flag)
+            where T : BaseEntity
+        {
+            var data = new _<string>();
+
+            model.Init(model_flag);
+            if (!model.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await repo.AddAsync(model) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("保存失败");
+        }
     }
 }
