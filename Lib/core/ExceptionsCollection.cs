@@ -22,4 +22,18 @@ namespace Lib.core
     [Serializable]
     public class AccessDenyException : Exception
     { }
+
+    [Serializable]
+    public class DeleteNodeException : Exception
+    {
+        public DeleteNodeException(string msg) : base(msg) { }
+    }
+
+    [Serializable]
+    public class NodeNotExistException : Exception
+    { }
+
+    [Serializable]
+    public class NodeTooMuchException : Exception
+    { }
 }

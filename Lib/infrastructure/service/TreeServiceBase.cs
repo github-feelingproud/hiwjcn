@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Data.Entity;
 using Lib.infrastructure.entity;
+using Lib.infrastructure.extension;
 
 namespace Lib.infrastructure.service
 {
@@ -46,99 +47,5 @@ namespace Lib.infrastructure.service
 
         public virtual async Task<List<T>> FindTreeBadNodes(IQueryable<T> data_source) =>
             await data_source.FindTreeBadNodes();
-    }
-
-    public static class TreeEntityExtension
-    {
-        public static async Task<List<T>> FindNodeChildrenRecursively_<T>(this IQueryable<T> data_source, T first_node,
-            string tree_error = "树存在无限递归")
-            where T : TreeEntityBase
-        {
-            var repeat_check = new List<string>();
-            var list = new List<T>();
-
-            async Task FindRecursively(T node)
-            {
-                if (node == null) { return; }
-
-                repeat_check.AddOnceOrThrow(node.UID, error_msg: tree_error);
-
-                var child_parent_uid = node.UID;
-                var child_level = node.Level + 1;
-                var children = await data_source.Where(x => x.ParentUID == child_parent_uid && x.Level == child_level).ToListAsync();
-                if (ValidateHelper.IsPlumpList(children))
-                {
-                    foreach (var child in children)
-                    {
-                        //递归
-                        await FindRecursively(child);
-                    }
-                }
-
-                list.Add(node);
-            }
-
-            await FindRecursively(first_node);
-
-            return list;
-        }
-
-        public static async Task<(bool success, List<T> node_path)> CheckNodeIfCanFindRoot<T>(this IQueryable<T> data_source, T first_node)
-            where T : TreeEntityBase
-        {
-            var repeat_check = new List<string>();
-            var current_uid = first_node.UID;
-
-            var top_level = default(int?);
-            var top_parent = default(string);
-
-            var node = default(T);
-
-            var node_path = new List<T>();
-
-            while (true)
-            {
-                node = await data_source.Where(x => x.UID == current_uid).FirstOrDefaultAsync();
-                if (node == null) { break; }
-
-                repeat_check.AddOnceOrThrow(node.UID, error_msg: "存在无限循环");
-
-                {
-                    //设置检查值
-                    top_level = node.Level;
-                    top_parent = node.ParentUID;
-                }
-
-                current_uid = node.ParentUID;
-                node_path.Add(node);
-            }
-            var success = top_level == TreeEntityBase.FIRST_LEVEL && top_parent == TreeEntityBase.FIRST_PARENT_UID;
-            return (success, node_path);
-        }
-
-        public static async Task<List<T>> FindTreeBadNodes<T>(this IQueryable<T> data_source)
-            where T : TreeEntityBase
-        {
-            var list = await data_source.ToListAsync();
-            var error_list = new List<string>();
-
-            foreach (var node in list.OrderByDescending(x => x.Level))
-            {
-                if (error_list.Contains(node.UID))
-                {
-                    //防止中间节点被重复计算
-                    //node1->node2->node3->node4->node5
-                    //计算了node1到node5为错误节点之后将跳过1,2,3,4的检查
-                    continue;
-                }
-                var check = await data_source.CheckNodeIfCanFindRoot(node);
-                if (!check.success)
-                {
-                    error_list.AddRange(check.node_path.Select(x => x.UID));
-                }
-            }
-
-            return list.Where(x => error_list.Distinct().Contains(x.UID)).ToList();
-        }
     }
 }

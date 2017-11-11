@@ -12,6 +12,7 @@ using System.Data.Entity;
 using Lib.core;
 using Lib.mvc.user;
 using Lib.cache;
+using Lib.infrastructure.extension;
 
 namespace Lib.infrastructure.service
 {
@@ -395,65 +396,13 @@ namespace Lib.infrastructure.service
             return data;
         }
 
-        public virtual async Task<List<RoleBase>> QueryRoleList(string parent = null)
-        {
-            return await this._roleRepo.PrepareIQueryableAsync_(async query =>
-            {
-                if (ValidateHelper.IsPlumpString(parent))
-                {
-                    query = query.Where(x => x.ParentUID == parent);
-                }
-                return await query.OrderByDescending(x => x.UpdateTime).Take(5000).ToListAsync();
-            });
-        }
+        public virtual async Task<List<RoleBase>> QueryRoleList(string parent = null) =>
+            await this._roleRepo.QueryNodeList(parent);
 
-        public virtual async Task<_<string>> AddRole(RoleBase role)
-        {
-            var data = new _<string>();
-            if (role.ParentUID == RoleEntityBase.FIRST_PARENT_UID)
-            {
-                role.Level = RoleEntityBase.FIRST_LEVEL;
-            }
-            else
-            {
-                var parent = await this._permissionRepo.GetFirstAsync(x => x.UID == role.ParentUID);
-                Com.AssertNotNull(parent, "父级角色不存在");
-                role.Level = parent.Level + 1;
-            }
+        public virtual async Task<_<string>> AddRole(RoleBase role) => await this._roleRepo.AddTreeNode(role, "role");
 
-            if (!role.IsValid(out var msg))
-            {
-                data.SetErrorMsg(msg);
-                return data;
-            }
-
-            if (await this._roleRepo.AddAsync(role) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-            throw new Exception("保存角色失败");
-        }
-
-        public virtual async Task<_<string>> DeleteRoleRecursively(string role_uid)
-        {
-            var data = new _<string>();
-
-            var list = await this._roleRepo.GetListEnsureMaxCountAsync(null, 5000, "角色数量达到上限");
-
-            var node = list.Where(x => x.UID == role_uid).FirstOrDefault();
-            Com.AssertNotNull(node, $"权限节点为空：{role_uid}");
-
-            var dead_nodes = await list.AsQueryable().FindNodeChildrenRecursively_(node);
-
-            if (await this._roleRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("删除失败");
-        }
+        public virtual async Task<_<string>> DeleteRoleRecursively(string role_uid) =>
+            await this._roleRepo.DeleteTreeNodeRecursively(role_uid);
 
         public virtual async Task<_<string>> DeleteRole(params string[] role_uids)
         {
@@ -463,9 +412,7 @@ namespace Lib.infrastructure.service
                 data.SetErrorMsg("角色ID为空");
                 return data;
             }
-            var dead_nodes = await this._roleRepo.GetListAsync(x => role_uids.Contains(x.UID));
-            if (dead_nodes.Count != role_uids.Count()) { throw new Exception("部分角色不存在"); }
-            if (await this._roleRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            if (await this._roleRepo.DeleteWhereAsync(x => role_uids.Contains(x.UID)) > 0)
             {
                 data.SetSuccessData(string.Empty);
                 return data;
@@ -498,45 +445,11 @@ namespace Lib.infrastructure.service
             throw new Exception("更新角色失败");
         }
 
-        public virtual async Task<List<PermissionBase>> QueryPermissionList(string parent = null)
-        {
-            return await this._permissionRepo.PrepareIQueryableAsync_(async query =>
-            {
-                if (ValidateHelper.IsPlumpString(parent))
-                {
-                    query = query.Where(x => x.ParentUID == parent);
-                }
-                return await query.OrderByDescending(x => x.UpdateTime).Take(5000).ToListAsync();
-            });
-        }
+        public virtual async Task<List<PermissionBase>> QueryPermissionList(string parent = null) =>
+            await this._permissionRepo.QueryNodeList(parent);
 
-        public virtual async Task<_<string>> AddPermission(PermissionBase permission)
-        {
-            var data = new _<string>();
-            if (permission.ParentUID == PermissionEntityBase.FIRST_PARENT_UID)
-            {
-                permission.Level = PermissionEntityBase.FIRST_LEVEL;
-            }
-            else
-            {
-                var parent = await this._permissionRepo.GetFirstAsync(x => x.UID == permission.ParentUID);
-                Com.AssertNotNull(parent, "父级权限不存在");
-                permission.Level = parent.Level + 1;
-            }
-
-            if (!permission.IsValid(out var msg))
-            {
-                data.SetErrorMsg(msg);
-                return data;
-            }
-
-            if (await this._permissionRepo.AddAsync(permission) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-            throw new Exception("保存权限失败");
-        }
+        public virtual async Task<_<string>> AddPermission(PermissionBase permission) =>
+            await this._permissionRepo.AddTreeNode(permission, "per");
 
         public abstract void UpdatePermissionEntity(ref PermissionBase old_permission, ref PermissionBase new_permission);
 
@@ -561,22 +474,8 @@ namespace Lib.infrastructure.service
             throw new Exception("更新权限错误");
         }
 
-        public virtual async Task<_<string>> DeletePermissionRecursively(string permission_uid)
-        {
-            var data = new _<string>();
-            var list = await this._permissionRepo.GetListEnsureMaxCountAsync(null, 5000, "权限数量达到上线");
-            var permission = list.Where(x => x.UID == permission_uid).FirstOrThrow($"权限不存在{permission_uid}");
-
-            var dead_nodes = await list.AsQueryable().FindNodeChildrenRecursively_(permission);
-
-            if (await this._permissionRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("删除权限错误");
-        }
+        public virtual async Task<_<string>> DeletePermissionRecursively(string permission_uid) =>
+            await this._permissionRepo.DeleteTreeNodeRecursively(permission_uid);
 
         public virtual async Task<_<string>> DeletePermission(params string[] permission_uids)
         {
@@ -586,9 +485,7 @@ namespace Lib.infrastructure.service
                 data.SetErrorMsg("权限ID为空");
                 return data;
             }
-            var dead_nodes = await this._permissionRepo.GetListAsync(x => permission_uids.Contains(x.UID));
-            if (dead_nodes.Count != permission_uids.Count()) { throw new Exception("部分权限不存在"); }
-            if (await this._permissionRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            if (await this._permissionRepo.DeleteWhereAsync(x => permission_uids.Contains(x.UID)) > 0)
             {
                 data.SetSuccessData(string.Empty);
                 return data;
@@ -742,11 +639,7 @@ namespace Lib.infrastructure.service
                 data.SetErrorMsg("部门为空");
                 return data;
             }
-
-            var dead_nodes = await this._departmentRepo.GetListAsync(x => department_uids.Contains(x.UID));
-            if (dead_nodes.Count != department_uids.Count()) { throw new Exception("部分部门不存在"); }
-
-            if (await this._departmentRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
+            if (await this._departmentRepo.DeleteWhereAsync(x => department_uids.Contains(x.UID)) > 0)
             {
                 data.SetSuccessData(string.Empty);
                 return data;
@@ -755,49 +648,11 @@ namespace Lib.infrastructure.service
             throw new Exception("删除部门失败");
         }
 
-        public virtual async Task<_<string>> DeleteDepartmentRecursively(string department_uid)
-        {
-            var data = new _<string>();
-            var list = await this._departmentRepo.GetListEnsureMaxCountAsync(null, 5000, "部门数量达到上线");
-            var node = list.Where(x => x.UID == department_uid).FirstOrThrow("部门不存在");
-            var dead_nodes = await list.AsQueryable().FindNodeChildrenRecursively_(node);
+        public virtual async Task<_<string>> DeleteDepartmentRecursively(string department_uid) =>
+            await this._departmentRepo.DeleteTreeNodeRecursively(department_uid);
 
-            if (await this._departmentRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("删除部门失败");
-        }
-
-        public virtual async Task<_<string>> AddDepartment(DepartmentBase model)
-        {
-            var data = new _<string>();
-            if (model.ParentUID == TreeEntityBase.FIRST_PARENT_UID)
-            {
-                model.Level = TreeEntityBase.FIRST_LEVEL;
-            }
-            else
-            {
-                var parent = await this._departmentRepo.GetFirstAsync(x => x.UID == model.ParentUID);
-                Com.AssertNotNull(parent, "父级部门不存在");
-                model.Level = parent.Level + 1;
-            }
-            model.Init("dept");
-            if (!model.IsValid(out var msg))
-            {
-                data.SetErrorMsg(msg);
-                return data;
-            }
-            if (await this._departmentRepo.AddAsync(model) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("添加部门失败");
-        }
+        public virtual async Task<_<string>> AddDepartment(DepartmentBase model) =>
+            await this._departmentRepo.AddTreeNode(model, "dept");
 
         public abstract void UpdateDepartmentEntity(ref DepartmentBase old_department, ref DepartmentBase new_department);
 
@@ -818,17 +673,8 @@ namespace Lib.infrastructure.service
             throw new Exception("更新部门失败");
         }
 
-        public virtual async Task<List<DepartmentBase>> QueryDepartmentList(string parent = null)
-        {
-            return await this._departmentRepo.PrepareIQueryableAsync_(async query =>
-            {
-                if (ValidateHelper.IsPlumpString(parent))
-                {
-                    query = query.Where(x => x.ParentUID == parent);
-                }
-                return await query.OrderByDescending(x => x.UpdateTime).Take(5000).ToListAsync();
-            });
-        }
+        public virtual async Task<List<DepartmentBase>> QueryDepartmentList(string parent = null) =>
+            await this._departmentRepo.QueryNodeList(parent);
 
         public virtual async Task<_<string>> SetUserDepartment(string user_uid, List<UserDepartmentBase> departments)
         {
