@@ -264,6 +264,7 @@
     <Compile Include="helper\StringHelper.cs" />
     <Compile Include="helper\HtmlHelper.cs" />
     <Compile Include="helper\ReflectionHelper.cs" />
+    <Compile Include="helper\TaskHelper.cs" />
     <Compile Include="infrastructure\controller\CRUDControllerBase.cs" />
     <Compile Include="infrastructure\controller\UserLoginControllerBase.cs" />
     <Compile Include="infrastructure\entity\AreaEntityBase.cs" />

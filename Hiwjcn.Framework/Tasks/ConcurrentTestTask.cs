@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Lib.core;
 using System.Threading;
 using Lib.extension;
+using Lib.helper;
 
 namespace Hiwjcn.Framework.Tasks
 {

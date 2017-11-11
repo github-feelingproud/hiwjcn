@@ -25,6 +25,7 @@ using System.Text;
 using Nest;
 using Hiwjcn.Bll;
 using QPL.WebService.Product.Core.Models;
+using Hiwjcn.Core.Domain.Auth;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -37,12 +38,47 @@ namespace Hiwjcn.Web.Controllers
 
     public class TestController : UserBaseController
     {
-        private IEventPublisher _IEventPublisher { get; set; }
-        public TestController(IEventPublisher pub)
+        private readonly IEventPublisher _IEventPublisher;
+        private readonly Lib.data.IRepository<AuthClient> _clientRepo;
+
+        public TestController(
+            IEventPublisher pub,
+            Lib.data.IRepository<AuthClient> _clientRepo)
         {
             this._IEventPublisher = pub;
+            this._clientRepo = _clientRepo;
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
+        }
+
+        /// <summary>
+        /// 不会卡死
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult mimimi1()
+        {
+            var data = AsyncHelper_.RunSync(() => this._clientRepo.GetListAsync(null));
+            return GetJson(data);
+        }
+
+        /// <summary>
+        /// 不会卡死
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult mimimi2()
+        {
+            var data = Lib.helper.AsyncHelper.RunSync(() => this._clientRepo.GetListAsync(null));
+            return GetJson(data);
+        }
+
+        /// <summary>
+        /// 卡死
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult mimimi3()
+        {
+            var data = this._clientRepo.GetListAsync(null).Result;
+            return GetJson(data);
         }
 
         public async Task<ActionResult> ss()

@@ -62,7 +62,7 @@ namespace Lib.log
                     {
                         //等待结束
                         var task = this.WriterActor.Ask<bool>(events);
-                        AsyncHelper_.RunSync(() => task);
+                        Lib.helper.AsyncHelper.RunSync(() => task);
                         return;
                     }
                 }
