@@ -5,6 +5,11 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Reactive.Concurrency;
 using System.Collections;
+using Lib.helper;
+using Lib.core;
+using Lib.extension;
+using Lib.io;
+using System.Linq;
 
 namespace Hiwjcn.Test
 {
@@ -14,8 +19,13 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void TestMethod1()
         {
-            //Observable.from();
-
+            Com.Range(100).ToObservable()
+                .ObserveOn(Scheduler.ThreadPool)
+                .ObserveOn(Scheduler.Default)
+                .Subscribe(x =>
+                {
+                    Console.WriteLine(x);
+                });
         }
     }
 }

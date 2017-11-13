@@ -25,12 +25,12 @@ namespace Lib.mvc.auth
         /// </summary>
         public static async Task<LoginUserInfo> GetAuthUserAsync(this HttpContext context, string name = null)
         {
-            return await AppContext.ScopeAsync(async x =>
+            using (var x = AppContext.Scope())
             {
                 var loginuser = await x.Resolve_<ITokenValidationProvider>(name).GetLoginUserInfoAsync(context);
 
                 return loginuser;
-            });
+            }
         }
 
         /// <summary>
@@ -38,12 +38,12 @@ namespace Lib.mvc.auth
         /// </summary>
         public static LoginUserInfo GetAuthUser(this HttpContext context, string name = null)
         {
-            return AppContext.Scope(x =>
+            using (var x = AppContext.Scope())
             {
                 var loginuser = x.Resolve_<ITokenValidationProvider>(name).GetLoginUserInfo(context);
 
                 return loginuser;
-            });
+            }
         }
 
         /// <summary>
@@ -92,12 +92,11 @@ namespace Lib.mvc.auth
         /// </summary>
         public static void CookieLogin(this HttpContext context, LoginUserInfo loginuser)
         {
-            AppContext.Scope(s =>
+            using (var s = AppContext.Scope())
             {
                 var loginstatus = s.Resolve_<LoginStatus>();
                 loginstatus.SetUserLogin(context, loginuser);
-                return true;
-            });
+            }
         }
 
         /// <summary>
@@ -105,12 +104,11 @@ namespace Lib.mvc.auth
         /// </summary>
         public static void CookieLogout(this HttpContext context)
         {
-            AppContext.Scope(s =>
+            using (var s = AppContext.Scope())
             {
                 var loginstatus = s.Resolve_<LoginStatus>();
                 loginstatus.SetUserLogout(context);
-                return true;
-            });
+            }
         }
 
         /// <summary>

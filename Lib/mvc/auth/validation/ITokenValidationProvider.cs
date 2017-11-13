@@ -27,7 +27,10 @@ namespace Lib.mvc.auth.validation
     /// </summary>
     public abstract class TokenValidationProviderBase : ITokenValidationProvider
     {
-        public virtual string HttpContextItemKey() => "context.items.auth.user.entity";
+        /// <summary>
+        /// 缓存一个请求中的登录用户信息
+        /// </summary>
+        public abstract string HttpContextItemKey();
         
         public abstract LoginUserInfo FindUser(HttpContext context);
         
@@ -35,20 +38,18 @@ namespace Lib.mvc.auth.validation
 
         public virtual void WhenUserNotLogin(HttpContext context)
         {
-            AppContext.Scope(s =>
+            using (var s = AppContext.Scope())
             {
                 s.ResolveOptional_<LoginStatus>()?.SetUserLogout(context);
-                return true;
-            });
+            }
         }
 
         public virtual void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
         {
-            AppContext.Scope(s =>
+            using (var s = AppContext.Scope())
             {
                 s.ResolveOptional_<LoginStatus>()?.SetUserLogin(context, loginuser);
-                return true;
-            });
+            }
         }
 
         public LoginUserInfo GetLoginUserInfo(HttpContext context)
@@ -106,6 +107,8 @@ namespace Lib.mvc.auth.validation
             this._dataProvider = _dataProvider;
             this.api = api;
         }
+
+        public override string HttpContextItemKey() => "context.items.auth.user.entity";
 
         public override LoginUserInfo FindUser(HttpContext context)
         {

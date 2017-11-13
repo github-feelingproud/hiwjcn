@@ -343,7 +343,7 @@
     <Compile Include="mvc\auth\IAuthApi.cs" />
     <Compile Include="mvc\auth\ModelSet.cs" />
     <Compile Include="mvc\auth\validation\ITokenValidationProvider.cs" />
-    <Compile Include="mvc\auth\validation\IValidationDataProvider.cs" />
+    <Compile Include="mvc\auth\validation\IAuthDataProvider.cs" />
     <Compile Include="mvc\CookieExtension.cs" />
     <Compile Include="mvc\MvcExtension.cs" />
     <Compile Include="mvc\plugin\BasePaymentController.cs" />
