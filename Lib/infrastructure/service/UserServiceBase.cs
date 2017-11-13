@@ -644,6 +644,15 @@ namespace Lib.infrastructure.service
                     data.SetErrorMsg("分配部门参数错误");
                     return data;
                 }
+                foreach (var m in departments)
+                {
+                    m.Init("user_dept");
+                    if (!m.IsValid(out var msg))
+                    {
+                        data.SetErrorMsg(msg);
+                        return data;
+                    }
+                }
             }
 
             await this._userDepartmentRepo.DeleteWhereAsync(x => x.UserUID == user_uid);
@@ -669,6 +678,15 @@ namespace Lib.infrastructure.service
                 {
                     data.SetErrorMsg("设置角色参数错误");
                     return data;
+                }
+                foreach (var m in roles)
+                {
+                    m.Init("dept_role");
+                    if (!m.IsValid(out var msg))
+                    {
+                        data.SetErrorMsg(msg);
+                        return data;
+                    }
                 }
             }
 

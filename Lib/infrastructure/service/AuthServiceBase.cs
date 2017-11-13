@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.infrastructure.entity;
 using Lib.data;
+using Lib.cache;
 using Lib.mvc;
 using Lib.helper;
 using Lib.extension;
@@ -23,12 +24,16 @@ namespace Lib.infrastructure.service
         where CodeBase : AuthCodeBase, new()
         where TokenScopeBase : AuthTokenScopeBase, new()
     {
+        Task<_<string>> DeleteUserTokensAsync(string user_uid);
+
         Task<PagerData<ClientBase>> QueryClientListAsync(
             string user_uid = null, string q = null, bool? is_active = null, bool? is_remove = null,
             int page = 1, int pagesize = 10);
 
         Task<_<CodeBase>> CreateCodeAsync(string client_uid, List<string> scopes, string user_uid);
+
         Task<TokenBase> FindTokenAsync(string client_uid, string token_uid);
+
         Task<_<TokenBase>> CreateTokenAsync(string client_id, string client_secret, string code_uid);
     }
 
@@ -40,6 +45,8 @@ namespace Lib.infrastructure.service
         where CodeBase : AuthCodeBase, new()
         where TokenScopeBase : AuthTokenScopeBase, new()
     {
+        protected readonly ICacheProvider _cache;
+
         protected readonly IRepository<ClientBase> _clientRepo;
         protected readonly IRepository<ScopeBase> _scopeRepo;
         protected readonly IRepository<TokenBase> _tokenRepo;
@@ -47,12 +54,14 @@ namespace Lib.infrastructure.service
         protected readonly IRepository<TokenScopeBase> _tokenScopeRepo;
 
         public AuthServiceBase(
+            ICacheProvider _cache,
             IRepository<ClientBase> _clientRepo,
             IRepository<ScopeBase> _scopeRepo,
             IRepository<TokenBase> _tokenRepo,
             IRepository<CodeBase> _codeRepo,
             IRepository<TokenScopeBase> _tokenScopeRepo)
         {
+            this._cache = _cache;
             this._clientRepo = _clientRepo;
             this._scopeRepo = _scopeRepo;
             this._tokenRepo = _tokenRepo;
@@ -60,6 +69,77 @@ namespace Lib.infrastructure.service
             this._tokenScopeRepo = _tokenScopeRepo;
         }
 
+        public abstract string AuthTokenCacheKey(string token);
+        public abstract string AuthUserInfoCacheKey(string user_uid);
+        public abstract string AuthSSOUserInfoCacheKey(string user_uid);
+        public abstract string AuthClientCacheKey(string client);
+        public abstract string AuthScopeCacheKey(string scope);
+
+        public async Task<_<string>> DeleteUserTokensAsync(string user_uid)
+        {
+            var data = new _<string>();
+            if (!ValidateHelper.IsPlumpString(user_uid))
+            {
+                data.SetErrorMsg("用户ID为空");
+                return data;
+            }
+
+            var max_count = 3000;
+
+            var token_to_delete = await this._tokenRepo.GetListAsync(x => x.UserUID == user_uid, count: max_count);
+
+            var errors = await this.DeleteTokensAndRemoveCacheAsync(token_to_delete);
+            if (ValidateHelper.IsPlumpString(errors))
+            {
+                data.SetErrorMsg(errors);
+                return data;
+            }
+            else
+            {
+                if (max_count == token_to_delete.Count)
+                {
+                    data.SetErrorMsg("要删除的记录数比较多，请多试几次，直到完全删除");
+                    return data;
+                }
+            }
+            data.SetSuccessData(string.Empty);
+            return data;
+        }
+
+        private async Task<string> DeleteTokensAndRemoveCacheAsync(List<TokenBase> list)
+        {
+            if (!ValidateHelper.IsPlumpList(list))
+            {
+                return string.Empty;
+            }
+            var msg = string.Empty;
+            await this._tokenRepo.PrepareSessionAsync(async db =>
+            {
+                var token_query = db.Set<TokenBase>();
+
+                var token_uid_list = list.Select(x => x.UID).Distinct().ToList();
+                var user_uid_list = list.Select(x => x.UserUID).Distinct().ToList();
+
+                token_query.RemoveRange(token_query.Where(x => token_uid_list.Contains(x.UID)));
+
+                if (await db.SaveChangesAsync() <= 0)
+                {
+                    msg = "删除token失败";
+                    return false;
+                }
+
+                foreach (var token in token_uid_list)
+                {
+                    this._cache.Remove(this.AuthTokenCacheKey(token));
+                }
+                foreach (var user_uid in user_uid_list)
+                {
+                    this._cache.Remove(this.AuthUserInfoCacheKey(user_uid));
+                }
+                return true;
+            });
+            return msg;
+        }
 
         #region
         public virtual async Task<PagerData<ClientBase>> QueryClientListAsync(

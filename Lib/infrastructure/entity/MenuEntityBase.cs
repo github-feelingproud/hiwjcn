@@ -38,8 +38,6 @@ namespace Lib.infrastructure.entity
 
         public virtual string PermissionJson { get; set; }
 
-        public virtual string GroupKey { get; set; }
-        
         public virtual bool ShowForUser(LoginUserInfo loginuser)
         {
             var pers = this.PermissionJson?.JsonToEntity<List<string>>();

@@ -14,9 +14,12 @@ namespace Lib.infrastructure.entity
 {
     public static class TokenConfig
     {
-        public static readonly int TokenExpireDays = (ConfigurationManager.AppSettings["AuthExpireDays"] ?? "30").ToInt(30);
-        public static readonly int CodeExpireMinutes = (ConfigurationManager.AppSettings["CodeExpireMinutes"] ?? "5").ToInt(5);
-        public static readonly int MaxCodeCreatedDaily = (ConfigurationManager.AppSettings["MaxCodeCreatedDaily"] ?? "2000").ToInt(2000);
+        public static readonly int TokenExpireDays = 
+            (ConfigurationManager.AppSettings["AuthExpireDays"] ?? "30").ToInt(30);
+        public static readonly int CodeExpireMinutes = 
+            (ConfigurationManager.AppSettings["CodeExpireMinutes"] ?? "5").ToInt(5);
+        public static readonly int MaxCodeCreatedDaily = 
+            (ConfigurationManager.AppSettings["MaxCodeCreatedDaily"] ?? "2000").ToInt(2000);
     }
 
     /// <summary>

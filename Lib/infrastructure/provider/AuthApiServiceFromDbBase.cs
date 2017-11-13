@@ -28,7 +28,6 @@ namespace Lib.infrastructure.provider
         private readonly object AuthApiServiceFromDB = new object();
 
         protected readonly IAuthLoginService _loginService;
-        protected readonly ICacheProvider _cache;
 
         public AuthApiServiceFromDbBase(
             IAuthLoginService _loginService,
@@ -37,22 +36,14 @@ namespace Lib.infrastructure.provider
             IRepository<ScopeBase> _scopeRepo,
             IRepository<TokenBase> _tokenRepo,
             IRepository<CodeBase> _codeRepo,
-            IRepository<TokenScopeBase> _tokenScopeRepo) : 
-            base(_clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
+            IRepository<TokenScopeBase> _tokenScopeRepo) :
+            base(_cache, _clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
         {
             this._loginService = _loginService;
-            this._cache = _cache;
         }
 
         public abstract Task CacheHitLog(string cache_key, CacheHitStatusEnum status);
-
-        public abstract string AuthTokenCacheKey(string token);
-        public abstract string AuthUserInfoCacheKey(string user_uid);
-        public abstract string AuthSSOUserInfoCacheKey(string user_uid);
-        public abstract string AuthClientCacheKey(string client);
-        public abstract string AuthScopeCacheKey(string scope);
-
-
+        
         public virtual async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
         {
             var res = new _<TokenModel>();
