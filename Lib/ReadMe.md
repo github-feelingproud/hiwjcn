@@ -14,7 +14,11 @@ hiwjcn@live.com
 
 # 更新记录
 
-### 1.0.0.42 待发布
+### 1.0.0.43 待发布
+`完善用户体系` `完善base menu` `完善tree extension` `完善base controller` 
+`ioc重复注册检查` `MongoRepository`
+
+### 1.0.0.42 仓促发布
 `auth作为组件包含在lib中` `加入一个简单的用户体系` `CRUD Base Controller` 
 `删除rabbitmq过度封装的代码` `加入一些Base Entity` `加入rabbitmq consumer base`
 `aop拦截改为使用attribute标注` `添加ioc注册自动识别是否单例` `base menu` `tree extension`
