@@ -8,6 +8,7 @@ using Lib.task;
 using Lib.net;
 using System;
 using Lib.distributed.akka;
+using Lib.mq.rabbitmq;
 
 namespace Lib.core
 {

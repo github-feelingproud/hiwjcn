@@ -6,16 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.core;
 
-namespace Lib.mq
+namespace Lib.mq.rabbitmq
 {
     public class RabbitMqClient : IDisposable
     {
         private readonly IConnectionFactory _factory;
         private readonly Lazy<IConnection> _connection;
 
-        public RabbitMqClient(string configurationName) : this(RabbitMQSection.FromSection(configurationName)) { }
+        public RabbitMqClient(string configurationName) : this(RabbitMqSection.FromSection(configurationName)) { }
 
-        public RabbitMqClient(RabbitMQSection configuration)
+        public RabbitMqClient(RabbitMqSection configuration)
         {
             this._factory = new ConnectionFactory
             {

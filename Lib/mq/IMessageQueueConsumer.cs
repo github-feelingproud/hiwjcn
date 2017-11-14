@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Lib.mq
 {
+    public interface IMessageQueueConsumer : IMessageQueueConsumer<string> { }
+
     public interface IMessageQueueConsumer<T> : IDisposable
     {
         //

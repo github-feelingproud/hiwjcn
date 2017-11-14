@@ -169,12 +169,6 @@
     <Compile Include="Menus.Designer.cs">
       <DependentUpon>Menus.cs</DependentUpon>
     </Compile>
-    <Compile Include="mq.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="mq.Designer.cs">
-      <DependentUpon>mq.cs</DependentUpon>
-    </Compile>
     <Compile Include="NettyClient.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -221,9 +215,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Menus.resx">
       <DependentUpon>Menus.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="mq.resx">
-      <DependentUpon>mq.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NettyClient.resx">
       <DependentUpon>NettyClient.cs</DependentUpon>

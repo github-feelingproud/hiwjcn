@@ -10,7 +10,7 @@ using Lib.helper;
 using Lib.data;
 using System.Threading.Tasks;
 
-namespace Lib.mq
+namespace Lib.mq.rabbitmq
 {
     /// <summary>消息发送者</summary>
     public class RabbitMqProducer : IMessageQueueProducer

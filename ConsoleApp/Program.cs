@@ -2,11 +2,15 @@
 using Fleck;
 using Lib.core;
 using Lib.distributed;
+using Lib.distributed.zookeeper;
 using Lib.extension;
 using Lib.helper;
 using Lib.io;
+using Lib.mq;
+using Lib.mq.rabbitmq;
 using Lib.rpc;
 using Nest;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +22,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using RabbitMQ.Client.Events;
+using System.Text;
 
 namespace ConsoleApp
 {
@@ -29,10 +35,55 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            zk().Wait();
+            Consumer();
+
+            //zk().Wait();
             //Task.Factory.StartNew(async () => await zk()).Wait();
             Console.WriteLine("finish");
             Console.ReadLine();
+        }
+
+        private static void Consumer()
+        {
+            var _factory = new ConnectionFactory()
+            {
+                AutomaticRecoveryEnabled = true,
+                UseBackgroundThreadsForIO = true,
+                HostName = "mq.qipeilong.net",
+                UserName = "admin",
+                Password = "mypass",
+                VirtualHost = "/",
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(1)
+            };
+            using (var con = _factory.CreateConnection())
+            {
+                using (var consumer = new Worker(con.CreateModel()))
+                {
+                    Console.ReadLine();
+                }
+            }
+        }
+
+        public class Worker : RabbitMqConsumerBase
+        {
+            public Worker(IModel channel) :
+                base(channel, "测试消费", "test_exchange", "test_queue", "#.msg.#", 
+                    ExchangeTypeEnum.topic, true, true, 10, true)
+            { }
+
+            public override async Task<bool?> OnMessageReceived(object sender, BasicDeliverEventArgs args)
+            {
+                try
+                {
+                    var msg = Encoding.UTF8.GetString(args.Body);
+                    Console.WriteLine(msg);
+                }
+                catch (Exception e)
+                {
+                    e.DebugInfo();
+                }
+                return await Task.FromResult(true);
+            }
         }
 
         private static async Task zk()

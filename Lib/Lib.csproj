@@ -318,6 +318,7 @@
     <Compile Include="log\ESLogHelper.cs" />
     <Compile Include="mq\IMessageQueueConsumer.cs" />
     <Compile Include="mq\IMessageQueueProducer.cs" />
+    <Compile Include="mq\RabbitMQSection.cs" />
     <Compile Include="mq\rabbitmq\RabbitMqConsumerBase.cs" />
     <Compile Include="mq\rabbitmq\RabbitMqProducer.cs" />
     <Compile Include="mq\MessageQueueCore.cs" />

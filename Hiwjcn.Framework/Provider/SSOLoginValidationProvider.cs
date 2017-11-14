@@ -110,12 +110,12 @@ namespace Hiwjcn.Framework.Provider
     {
         public static LoginUserInfo GetSSOLoginUser(this HttpContext context)
         {
-            return new SSOValidationProvider().GetLoginUserInfo(context);
+            return ((ITokenValidationProvider)new SSOValidationProvider()).GetLoginUserInfo(context);
         }
 
         public static async Task<LoginUserInfo> GetSSOLoginUserAsync(this HttpContext context)
         {
-            return await new SSOValidationProvider().GetLoginUserInfoAsync(context);
+            return await ((ITokenValidationProvider)new SSOValidationProvider()).GetLoginUserInfoAsync(context);
         }
 
         public static LoginUserInfo LoginUserInfo(this T_UserInfo model)

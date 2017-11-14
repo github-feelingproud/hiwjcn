@@ -12,9 +12,12 @@ using Polly;
 using Lib.cache;
 using Lib.data;
 
-namespace Lib.mq
+namespace Lib.mq.rabbitmq
 {
-    public abstract class RabbitMqConsumerBase<DeliveryDataType> : IMessageQueueConsumer<DeliveryDataType>
+    /// <summary>
+    /// 测试ok
+    /// </summary>
+    public abstract class RabbitMqConsumerBase : IMessageQueueConsumer
     {
         private readonly IModel _channel;
         private readonly EventingBasicConsumer _consumer;
@@ -33,10 +36,10 @@ namespace Lib.mq
             bool persistent, bool ack, ushort concurrency_size, bool delay)
         {
             this._channel = channel ?? throw new ArgumentNullException(nameof(channel));
-            this._exchange_name = exchange_name;
-            this._queue_name = queue_name;
-            this._route_key = route_key;
-            this._consumer_name = consumer_name;
+            this._exchange_name = exchange_name ?? throw new ArgumentNullException(nameof(exchange_name));
+            this._queue_name = queue_name ?? throw new ArgumentNullException(nameof(queue_name));
+            this._route_key = route_key ?? throw new ArgumentNullException(nameof(route_key));
+            this._consumer_name = consumer_name ?? throw new ArgumentNullException(nameof(consumer_name));
             this._ack = ack;
             this._concurrency_size = concurrency_size;
             this._delay = delay;
@@ -73,8 +76,7 @@ namespace Lib.mq
             {
                 try
                 {
-                    var message = args.GetMessage_<DeliveryDataType>();
-                    var result = await this.OnMessageReceived(message, sender, args);
+                    var result = await this.OnMessageReceived(sender, args);
                     if (this._ack && result != null && result.Value)
                     {
                         this._channel.BasicAck_(args);
@@ -92,7 +94,7 @@ namespace Lib.mq
                 consumerTag: consumerTag, consumer: this._consumer);
         }
 
-        public abstract Task<bool?> OnMessageReceived(DeliveryDataType message, object sender, BasicDeliverEventArgs args);
+        public abstract Task<bool?> OnMessageReceived(object sender, BasicDeliverEventArgs args);
 
         public void Dispose()
         {

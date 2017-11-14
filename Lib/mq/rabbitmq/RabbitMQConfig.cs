@@ -6,16 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lib.mq
+namespace Lib.mq.rabbitmq
 {
     /// <summary>
     /// rabitmq，配置
     /// </summary>
-    public class RabbitMQSection : ConfigurationSection
+    public class RabbitMqSection : ConfigurationSection
     {
-        public static RabbitMQSection FromSection(string name)
+        public static RabbitMqSection FromSection(string name)
         {
-            return (RabbitMQSection)ConfigurationManager.GetSection(name);
+            return (RabbitMqSection)ConfigurationManager.GetSection(name);
         }
 
         [ConfigurationProperty(nameof(HostName), IsRequired = true)]
