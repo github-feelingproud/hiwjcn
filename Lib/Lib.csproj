@@ -342,6 +342,8 @@
     <Compile Include="mvc\auth\AuthServerConfig.cs" />
     <Compile Include="mvc\auth\IAuthApi.cs" />
     <Compile Include="mvc\auth\ModelSet.cs" />
+    <Compile Include="mvc\auth\validation\AppOrWebAuthDataProvider.cs" />
+    <Compile Include="mvc\auth\validation\AuthBasicValidationProvider.cs" />
     <Compile Include="mvc\auth\validation\ITokenValidationProvider.cs" />
     <Compile Include="mvc\auth\validation\IAuthDataProvider.cs" />
     <Compile Include="mvc\CookieExtension.cs" />

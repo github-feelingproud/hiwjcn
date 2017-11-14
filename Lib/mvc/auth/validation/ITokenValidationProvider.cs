@@ -31,9 +31,9 @@ namespace Lib.mvc.auth.validation
         /// 缓存一个请求中的登录用户信息
         /// </summary>
         public abstract string HttpContextItemKey();
-        
+
         public abstract LoginUserInfo FindUser(HttpContext context);
-        
+
         public abstract Task<LoginUserInfo> FindUserAsync(HttpContext context);
 
         public virtual void WhenUserNotLogin(HttpContext context)
@@ -52,7 +52,7 @@ namespace Lib.mvc.auth.validation
             }
         }
 
-        public LoginUserInfo GetLoginUserInfo(HttpContext context)
+        LoginUserInfo ITokenValidationProvider.GetLoginUserInfo(HttpContext context)
         {
             var data = context.CacheInHttpContext(this.HttpContextItemKey(), () =>
             {
@@ -71,7 +71,7 @@ namespace Lib.mvc.auth.validation
             return data;
         }
 
-        public async Task<LoginUserInfo> GetLoginUserInfoAsync(HttpContext context)
+        async Task<LoginUserInfo> ITokenValidationProvider.GetLoginUserInfoAsync(HttpContext context)
         {
             var data = await context.CacheInHttpContextAsync(this.HttpContextItemKey(), async () =>
             {
@@ -90,53 +90,5 @@ namespace Lib.mvc.auth.validation
             return data;
         }
 
-    }
-
-    /// <summary>
-    /// 使用了auth api来验证
-    /// </summary>
-    public class AuthBasicValidationProvider : TokenValidationProviderBase
-    {
-        private readonly IAuthDataProvider _dataProvider;
-        private readonly IAuthApi api;
-
-        public AuthBasicValidationProvider(
-            IAuthDataProvider _dataProvider,
-            IAuthApi api)
-        {
-            this._dataProvider = _dataProvider;
-            this.api = api;
-        }
-
-        public override string HttpContextItemKey() => "context.items.auth.user.entity";
-
-        public override LoginUserInfo FindUser(HttpContext context)
-        {
-            return AsyncHelper.RunSync(() => FindUserAsync(context));
-        }
-
-        public override async Task<LoginUserInfo> FindUserAsync(HttpContext context)
-        {
-            try
-            {
-                var access_token = this._dataProvider.GetToken(context);
-                var client_id = this._dataProvider.GetClientID(context);
-
-                var loginuser = await this.api.GetLoginUserInfoByTokenAsync(client_id, access_token);
-
-                if (!loginuser.success)
-                {
-                    loginuser.msg?.AddBusinessInfoLog();
-                    return null;
-                }
-
-                return loginuser.data;
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-                return null;
-            }
-        }
     }
 }

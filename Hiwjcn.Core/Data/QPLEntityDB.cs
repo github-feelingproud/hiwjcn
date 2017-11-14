@@ -16,10 +16,12 @@ using Lib.io;
 
 namespace Hiwjcn.Core.Data
 {
+    /// <summary>
+    /// 账号体系
+    /// </summary>
     public enum AccountSystemEnum : int
     {
-        UserInfo = 1,
-        TraderAccess = 3
+        UserInfo = 1
     }
 
     public class QPLSqlServerConfiguration : DbConfiguration

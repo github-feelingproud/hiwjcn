@@ -65,27 +65,11 @@ namespace Hiwjcn.Web
                         //sso
                         //builder.Register(_ => new LoginStatus("auth_sso_uid", "auth_sso_token", "auth_sso_session", "")).Named<LoginStatus>("sso").SingleInstance();
                         //builder.RegisterType<SSOValidationProvider>().Named<TokenValidationProviderBase>("sso").SingleInstance();
-                        var account_system = string.Empty;
-                        account_system = ConfigurationManager.AppSettings[nameof(account_system)] ?? "未知账号体系";
 
-                        if (account_system == nameof(AccountSystemEnum.UserInfo))
-                        {
-                            builder.UseAccountSystem<QPLUserLoginService>();
-                        }
-                        else if (account_system == nameof(AccountSystemEnum.TraderAccess))
-                        {
-                            builder.UseAccountSystem<TraderAccessLoginService>();
-                        }
-                        else
-                        {
-                            throw new Exception($"不支持的账号体系：{account_system}");
-                        }
+                        builder.UseAccountSystem<QPLUserLoginService>();
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
-                        //new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")
-                        //builder.AuthClientUseCookieValidation(() => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", ""));
-
-                        builder.AuthUseLoginStatus(() => new LoginStatus($"auth_{account_system}_uid", $"auth_{account_system}_token", $"auth_{account_system}_session"));
-                        builder.AuthUseValidationDataProvider<AppOrWebTokenProvider>();
+                        builder.AuthUseLoginStatus(() => new LoginStatus($"auth_user_uid", $"auth_user_token", $"auth_user_session"));
+                        builder.AuthUseValidationDataProvider<AppOrWebAuthDataProvider>();
                         builder.AuthClientUseCustomValidation<AuthBasicValidationProvider>();
                         //auth 功能逻辑
                         builder.AuthUseServerApiAccessService<AuthApiServiceFromDB_>();
