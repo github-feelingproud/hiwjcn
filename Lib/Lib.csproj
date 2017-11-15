@@ -208,6 +208,15 @@
     <Compile Include="data\mongodb\MongoEntityBase.cs" />
     <Compile Include="distributed\akka\ActorTest.cs" />
     <Compile Include="distributed\akka\AkkaHelper.cs" />
+    <Compile Include="distributed\zookeeper\AlwaysOnZooKeeperClient.cs" />
+    <Compile Include="distributed\zookeeper\ServiceManager\ServiceManagerExtension.cs" />
+    <Compile Include="distributed\zookeeper\ServiceManager\ServiceRegister.cs" />
+    <Compile Include="distributed\zookeeper\ServiceManager\ServiceSubscribe.cs" />
+    <Compile Include="distributed\zookeeper\watcher\NodeMonitorWatcher.cs" />
+    <Compile Include="distributed\zookeeper\watcher\ReconnectionWatcher.cs" />
+    <Compile Include="distributed\zookeeper\watcher\WatcherBase.cs" />
+    <Compile Include="distributed\zookeeper\ZooKeeperClientExtension.cs" />
+    <Compile Include="distributed\zookeeper\ZooKeeperConfigSection.cs" />
     <Compile Include="extra\api\BaiduTranslateHelper.cs" />
     <Compile Include="extra\api\UmengPushHelper.cs" />
     <Compile Include="cache\CacheExtension.cs" />

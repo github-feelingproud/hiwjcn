@@ -31,6 +31,24 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest6
     {
+        [TestMethod]
+        public void fasdfahgfagsd()
+        {
+            double d1 = 123.4342232323;
+            decimal d2 = 442.54243m;
+            float d3 = 323.433434f;
+            try
+            {
+                var m1 = Lib.helper.ConvertHelper.GetInt(d1);
+                var m2 = Lib.helper.ConvertHelper.GetInt(d2);
+                var m3 = Lib.helper.ConvertHelper.GetInt(d3);
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        }
+
         class Users
         {
             public ObjectId _id { get; set; }

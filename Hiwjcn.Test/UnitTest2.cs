@@ -37,7 +37,7 @@ namespace Hiwjcn.Test
         {
             AppContext.AddExtraRegistrar(new CommonDependencyRegister());
         }
-
+        
         [TestMethod]
         public void fasdfkjasldfajsdkfhasldfkj()
         {
@@ -176,7 +176,7 @@ namespace Hiwjcn.Test
                     Url = "http://www.qq.com/"
                 };
                 var t = UmengPushHelper.PushAndroid(new UmengPushKeyConfig(), payload, new List<string>() { "6d28395cac6c427bb77fba889b9e54a5", "b11dfe19ef4d4f60860dda673dfa7863" });
-                var data = Lib.core.AsyncHelper.RunSync(() => t);
+                var data = Lib.helper.AsyncHelper.RunSync(() => t);
             }
             catch (Exception e)
             {
@@ -197,7 +197,7 @@ namespace Hiwjcn.Test
                     Url = "http://www.qq.com/"
                 };
                 var t = UmengPushHelper.PushIOS(new UmengPushKeyConfig(), payload, new List<string>() { "6d28395cac6c427bb77fba889b9e54a5", "b11dfe19ef4d4f60860dda673dfa7863" });
-                var data = Lib.core.AsyncHelper.RunSync(() => t);
+                var data = Lib.helper.AsyncHelper.RunSync(() => t);
             }
             catch (Exception e)
             { }
