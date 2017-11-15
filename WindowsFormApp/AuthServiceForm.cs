@@ -14,6 +14,7 @@ using Lib.data;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.rpc;
 using Lib.mvc.auth;
+using Lib.mvc.auth.api;
 
 namespace WindowsFormApp
 {

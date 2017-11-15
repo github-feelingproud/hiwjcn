@@ -22,10 +22,25 @@ namespace Lib.distributed.zookeeper
 {
     public static class ZooKeeperClientExtension
     {
-        public static async Task<bool> ExistAsync_(this ZooKeeper client, string path) =>
-            await client.existsAsync(path) != null;
+        public static async Task CreateNode_(this ZooKeeper client, string path, byte[] data = null, CreateMode mode = null) =>
+                await client.createAsync(path, data, Ids.OPEN_ACL_UNSAFE, mode);
 
-        public static async Task<string> CreatePersistentPathIfNotExist(this ZooKeeper client,
+        public static async Task Watch_(this ZooKeeper client, string path, Watcher watcher) =>
+            await client.ExistAsync_(path, watcher ?? throw new ArgumentNullException(nameof(watcher)));
+
+        public static async Task<bool> ExistAsync_(this ZooKeeper client, string path, Watcher watcher = null)
+        {
+            if (watcher == null)
+            {
+                return await client.existsAsync(path) != null;
+            }
+            else
+            {
+                return await client.existsAsync(path, watcher) != null;
+            }
+        }
+
+        public static async Task<string> CreatePersistentPathIfNotExist_(this ZooKeeper client,
             string path, byte[] data = null)
         {
             if (await client.ExistAsync_(path))
@@ -43,12 +58,12 @@ namespace Lib.distributed.zookeeper
                     continue;
                 }
 
-                await client.createAsync(p, data, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                await client.CreateNode_(p, data, CreateMode.PERSISTENT);
             }
             return "/" + "/".Join_(sp);
         }
 
-        public static async Task<string> CreateSequential(this ZooKeeper client, string path,
+        public static async Task<string> CreateSequential_(this ZooKeeper client, string path,
             byte[] data = null, bool persistent = true)
         {
             var p = await client.createAsync(path, data,
@@ -57,7 +72,7 @@ namespace Lib.distributed.zookeeper
             return p.Substring(path.Length);
         }
 
-        public static async Task<Stat> SetDataAsync<T>(this ZooKeeper client, string path, T data) =>
+        public static async Task<Stat> SetDataAsync_<T>(this ZooKeeper client, string path, T data) =>
             await client.setDataAsync(path, data.ToJson().GetBytes());
 
         public static async Task DeleteNodeRecursively_(this ZooKeeper client, string path)
@@ -95,7 +110,7 @@ namespace Lib.distributed.zookeeper
                         await __DeleteNode(current_node, child);
                     }
                 }
-                await client.deleteAsync(current_node);
+                await client.DeleteSingleNode_(current_node);
             }
 
             //入口

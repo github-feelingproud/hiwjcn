@@ -75,7 +75,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 {
                     if (!await client.Client.ExistAsync_(this.ServicePath))
                     {
-                        await client.Client.CreatePersistentPathIfNotExist(this.ServicePath);
+                        await client.Client.CreatePersistentPathIfNotExist_(this.ServicePath);
                     }
                 });
             }
@@ -157,7 +157,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                     }
                     else
                     {
-                        await client.Client.CreatePersistentPathIfNotExist(path, data);
+                        await client.Client.CreatePersistentPathIfNotExist_(path, data);
                     }
                 });
             }

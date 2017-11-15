@@ -15,7 +15,7 @@ namespace ConsoleApp
             try
             {
                 //docker run --name some-zookeeper --restart always -p 2181:2181 -d zookeeper
-                var client = new AlwaysOnZooKeeperClient("zk.qipeilong.net:2181");
+                var client = new AlwaysOnZooKeeperClient("es.qipeilong.net:2181");
                 client.OnRecconected += () =>
                 {
                     Console.WriteLine("重新链接");

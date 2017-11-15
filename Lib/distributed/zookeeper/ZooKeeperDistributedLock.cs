@@ -32,8 +32,8 @@ namespace Lib.distributed.zookeeper
             {
                 await this.retry.ExecuteAsync(async () =>
                 {
-                    await this._client.Client.CreatePersistentPathIfNotExist(_path);
-                    _no = await this._client.Client.CreateSequential(_path + "/", null, false);
+                    await this._client.Client.CreatePersistentPathIfNotExist_(_path);
+                    _no = await this._client.Client.CreateSequential_(_path + "/", null, false);
                 });
             }).Wait();
         }
