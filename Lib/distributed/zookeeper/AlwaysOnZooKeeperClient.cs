@@ -49,6 +49,7 @@ namespace Lib.distributed.zookeeper
                     if (this._client == null)
                     {
                         this.IsClosing = false;
+
                         var reconnect_watcher = new ReconnectionWatcher(() =>
                         {
                             //服务可用
@@ -77,16 +78,19 @@ namespace Lib.distributed.zookeeper
             }
             catch (KeeperException.ConnectionLossException e)
             {
+                this.OnError?.Invoke(e);
                 //链接断开
                 throw e;
             }
             catch (KeeperException.SessionExpiredException e)
             {
+                this.OnError?.Invoke(e);
                 //链接断开
                 throw e;
             }
             catch (Exception e)
             {
+                this.OnError?.Invoke(e);
                 throw e;
             }
         }

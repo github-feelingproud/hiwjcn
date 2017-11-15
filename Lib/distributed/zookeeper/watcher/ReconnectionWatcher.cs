@@ -14,19 +14,20 @@ namespace Lib.distributed.zookeeper.watcher
 
         public ReconnectionWatcher(Action connectioned, Action disconnect)
         {
-            this._connectioned = connectioned;
-            this._disconnect = disconnect;
+            this._connectioned = connectioned ?? throw new ArgumentNullException(nameof(connectioned));
+            this._disconnect = disconnect ?? throw new ArgumentNullException(nameof(disconnect));
         }
-        
+
         public override async Task process(WatchedEvent watchedEvent)
         {
-            if (watchedEvent.getState() == Event.KeeperState.SyncConnected)
+            var status = watchedEvent.getState();
+            if (status == Event.KeeperState.SyncConnected)
             {
-                _connectioned();
+                this._connectioned.Invoke();
             }
             else
             {
-                _disconnect();
+                this._disconnect.Invoke();
             }
             await Task.FromResult(1);
         }
