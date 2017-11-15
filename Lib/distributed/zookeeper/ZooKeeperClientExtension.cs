@@ -22,10 +22,10 @@ namespace Lib.distributed.zookeeper
 {
     public static class ZooKeeperClientExtension
     {
-        public static async Task CreateNode_(this ZooKeeper client, string path, byte[] data = null, CreateMode mode = null) =>
+        public static async Task<string> CreateNode_(this ZooKeeper client, string path, byte[] data = null, CreateMode mode = null) =>
                 await client.createAsync(path, data, Ids.OPEN_ACL_UNSAFE, mode);
 
-        public static async Task Watch_(this ZooKeeper client, string path, Watcher watcher) =>
+        public static async Task<bool> Watch_(this ZooKeeper client, string path, Watcher watcher) =>
             await client.ExistAsync_(path, watcher ?? throw new ArgumentNullException(nameof(watcher)));
 
         public static async Task<bool> ExistAsync_(this ZooKeeper client, string path, Watcher watcher = null)
@@ -63,12 +63,11 @@ namespace Lib.distributed.zookeeper
             return "/" + "/".Join_(sp);
         }
 
-        public static async Task<string> CreateSequential_(this ZooKeeper client, string path,
-            byte[] data = null, bool persistent = true)
+        public static async Task<string> CreateSequential_(this ZooKeeper client,
+            string path, byte[] data = null, bool persistent = true)
         {
-            var p = await client.createAsync(path, data,
-                Ids.OPEN_ACL_UNSAFE,
-                persistent ? CreateMode.PERSISTENT_SEQUENTIAL : CreateMode.EPHEMERAL_SEQUENTIAL);
+            var mode = persistent ? CreateMode.PERSISTENT_SEQUENTIAL : CreateMode.EPHEMERAL_SEQUENTIAL;
+            var p = await client.CreateNode_(path, data, mode);
             return p.Substring(path.Length);
         }
 

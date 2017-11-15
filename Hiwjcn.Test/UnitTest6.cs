@@ -73,6 +73,8 @@ namespace Hiwjcn.Test
                 var list = query.Take(500).ToList();
 
                 list = query.Where(x => x.Name.Contains("1")).ToList();
+                
+                //near
             }
             catch (Exception e)
             {
