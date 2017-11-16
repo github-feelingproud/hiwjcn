@@ -217,8 +217,10 @@
   <ItemGroup>
     <Compile Include="core\StaticData.cs" />
     <Compile Include="data\DataSourceContextBase.cs" />
+    <Compile Include="data\ef\EFRepositoryBase.cs" />
     <Compile Include="data\ef\IEFRepository.cs" />
     <Compile Include="data\ILinqRepository.cs" />
+    <Compile Include="data\mongodb\IMongoRepository.cs" />
     <Compile Include="data\mongodb\MongoContextBase.cs" />
     <Compile Include="data\mongodb\MongoRepository.cs" />
     <Compile Include="data\mongodb\MongoEntityBase.cs" />
@@ -258,11 +260,11 @@
     <Compile Include="data\AntiBadRetry.cs" />
     <Compile Include="data\DapperLinq.cs" />
     <Compile Include="data\DBHelper.cs" />
-    <Compile Include="data\EFEntityDB.cs" />
-    <Compile Include="data\EFExtension.cs" />
-    <Compile Include="data\EFMappingBase.cs" />
-    <Compile Include="data\EFRepository.cs" />
-    <Compile Include="data\EFManager.cs" />
+    <Compile Include="data\ef\EFEntityDB.cs" />
+    <Compile Include="data\ef\EFExtension.cs" />
+    <Compile Include="data\ef\EFMappingBase.cs" />
+    <Compile Include="data\ef\EFRepository.cs" />
+    <Compile Include="data\ef\EFManager.cs" />
     <Compile Include="data\RedisManager.cs" />
     <Compile Include="data\SerializeBase.cs" />
     <Compile Include="distributed\CrossProcessLock.cs" />

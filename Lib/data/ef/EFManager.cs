@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Autofac;
 
-namespace Lib.data
+namespace Lib.data.ef
 {
     /// <summary>
     /// EF的帮助类

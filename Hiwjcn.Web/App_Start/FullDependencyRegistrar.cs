@@ -18,8 +18,6 @@ namespace Hiwjcn.Web.App_Start
 {
     public class FullDependencyRegistrar : DependencyRegistrarBase
     {
-        public override bool Intercept => true;
-
         public override void Register(ref ContainerBuilder builder)
         {
             //注册控制器

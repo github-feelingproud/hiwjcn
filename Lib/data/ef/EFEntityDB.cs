@@ -6,7 +6,7 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.Entity.SqlServer;
 using System.Reflection;
 
-namespace Lib.data
+namespace Lib.data.ef
 {
 
     /// <summary>

@@ -13,6 +13,7 @@ using Lib.core;
 using Lib.mvc.user;
 using Lib.cache;
 using Lib.infrastructure.extension;
+using Lib.data.ef;
 
 namespace Lib.infrastructure.service
 {
@@ -80,22 +81,22 @@ namespace Lib.infrastructure.service
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
     {
-        protected readonly IRepository<UserBase> _userRepo;
-        protected readonly IRepository<UserAvatarBase> _userAvatarRepo;
-        protected readonly IRepository<OneTimeCodeBase> _oneTimeCodeRepo;
-        protected readonly IRepository<RoleBase> _roleRepo;
-        protected readonly IRepository<PermissionBase> _permissionRepo;
-        protected readonly IRepository<RolePermissionBase> _rolePermissionRepo;
-        protected readonly IRepository<UserRoleBase> _userRoleRepo;
+        protected readonly IEFRepository<UserBase> _userRepo;
+        protected readonly IEFRepository<UserAvatarBase> _userAvatarRepo;
+        protected readonly IEFRepository<OneTimeCodeBase> _oneTimeCodeRepo;
+        protected readonly IEFRepository<RoleBase> _roleRepo;
+        protected readonly IEFRepository<PermissionBase> _permissionRepo;
+        protected readonly IEFRepository<RolePermissionBase> _rolePermissionRepo;
+        protected readonly IEFRepository<UserRoleBase> _userRoleRepo;
 
         public UserServiceBase(
-            IRepository<UserBase> _userRepo,
-            IRepository<UserAvatarBase> _userAvatarRepo,
-            IRepository<OneTimeCodeBase> _oneTimeCodeRepo,
-            IRepository<RoleBase> _roleRepo,
-            IRepository<PermissionBase> _permissionRepo,
-            IRepository<RolePermissionBase> _rolePermissionRepo,
-            IRepository<UserRoleBase> _userRoleRepo)
+            IEFRepository<UserBase> _userRepo,
+            IEFRepository<UserAvatarBase> _userAvatarRepo,
+            IEFRepository<OneTimeCodeBase> _oneTimeCodeRepo,
+            IEFRepository<RoleBase> _roleRepo,
+            IEFRepository<PermissionBase> _permissionRepo,
+            IEFRepository<RolePermissionBase> _rolePermissionRepo,
+            IEFRepository<UserRoleBase> _userRoleRepo)
         {
 
             this._userRepo = _userRepo;
@@ -511,21 +512,21 @@ namespace Lib.infrastructure.service
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
     {
-        protected readonly IRepository<DepartmentBase> _departmentRepo;
-        protected readonly IRepository<UserDepartmentBase> _userDepartmentRepo;
-        protected readonly IRepository<DepartmentRoleBase> _departmentRoleRepo;
+        protected readonly IEFRepository<DepartmentBase> _departmentRepo;
+        protected readonly IEFRepository<UserDepartmentBase> _userDepartmentRepo;
+        protected readonly IEFRepository<DepartmentRoleBase> _departmentRoleRepo;
 
         public UserServiceWithDepartmentBase(
-            IRepository<DepartmentBase> _departmentRepo,
-            IRepository<UserDepartmentBase> _userDepartmentRepo,
-            IRepository<DepartmentRoleBase> _departmentRoleRepo,
-            IRepository<UserBase> _userRepo,
-            IRepository<UserAvatarBase> _userAvatarRepo,
-            IRepository<OneTimeCodeBase> _oneTimeCodeRepo,
-            IRepository<RoleBase> _roleRepo,
-            IRepository<PermissionBase> _permissionRepo,
-            IRepository<RolePermissionBase> _rolePermissionRepo,
-            IRepository<UserRoleBase> _userRoleRepo) :
+            IEFRepository<DepartmentBase> _departmentRepo,
+            IEFRepository<UserDepartmentBase> _userDepartmentRepo,
+            IEFRepository<DepartmentRoleBase> _departmentRoleRepo,
+            IEFRepository<UserBase> _userRepo,
+            IEFRepository<UserAvatarBase> _userAvatarRepo,
+            IEFRepository<OneTimeCodeBase> _oneTimeCodeRepo,
+            IEFRepository<RoleBase> _roleRepo,
+            IEFRepository<PermissionBase> _permissionRepo,
+            IEFRepository<RolePermissionBase> _rolePermissionRepo,
+            IEFRepository<UserRoleBase> _userRoleRepo) :
             base(_userRepo, _userAvatarRepo, _oneTimeCodeRepo, _roleRepo, _permissionRepo, _rolePermissionRepo, _userRoleRepo)
         {
             this._departmentRepo = _departmentRepo;

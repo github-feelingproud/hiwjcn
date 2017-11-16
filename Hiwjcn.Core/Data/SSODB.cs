@@ -14,6 +14,7 @@ using Lib.extension;
 using Lib.mvc.user;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.data.ef;
 
 namespace Hiwjcn.Core.Data
 {

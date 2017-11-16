@@ -14,6 +14,7 @@ using Lib.mvc.auth;
 using Lib.data;
 using Lib.core;
 using System.Data.Entity;
+using Lib.data.ef;
 
 namespace Lib.infrastructure.provider
 {
@@ -32,11 +33,11 @@ namespace Lib.infrastructure.provider
         public AuthApiServiceFromDbBase(
             IAuthLoginService _loginService,
             ICacheProvider _cache,
-            IRepository<ClientBase> _clientRepo,
-            IRepository<ScopeBase> _scopeRepo,
-            IRepository<TokenBase> _tokenRepo,
-            IRepository<CodeBase> _codeRepo,
-            IRepository<TokenScopeBase> _tokenScopeRepo) :
+            IEFRepository<ClientBase> _clientRepo,
+            IEFRepository<ScopeBase> _scopeRepo,
+            IEFRepository<TokenBase> _tokenRepo,
+            IEFRepository<CodeBase> _codeRepo,
+            IEFRepository<TokenScopeBase> _tokenScopeRepo) :
             base(_cache, _clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
         {
             this._loginService = _loginService;

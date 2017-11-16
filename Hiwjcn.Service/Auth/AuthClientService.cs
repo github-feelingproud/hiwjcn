@@ -12,16 +12,17 @@ using Lib.core;
 using Lib.extension;
 using Lib.helper;
 using System.Data.Entity;
+using Lib.data.ef;
 
 namespace Hiwjcn.Bll.Auth
 {
     public class AuthClientService : ServiceBase<AuthClient>, IAuthClientService
     {
-        private readonly IRepository<AuthClient> _AuthClientRepository;
-        private readonly IRepository<AuthClientCheckLog> _AuthClientCheckLogRepository;
+        private readonly IEFRepository<AuthClient> _AuthClientRepository;
+        private readonly IEFRepository<AuthClientCheckLog> _AuthClientCheckLogRepository;
         public AuthClientService(
-            IRepository<AuthClient> _AuthClientRepository,
-            IRepository<AuthClientCheckLog> _AuthClientCheckLogRepository)
+            IEFRepository<AuthClient> _AuthClientRepository,
+            IEFRepository<AuthClientCheckLog> _AuthClientCheckLogRepository)
         {
             this._AuthClientRepository = _AuthClientRepository;
             this._AuthClientCheckLogRepository = _AuthClientCheckLogRepository;

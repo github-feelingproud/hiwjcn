@@ -22,6 +22,7 @@ using System.Configuration;
 using System.Reflection;
 using System;
 using Hiwjcn.Core.Domain.WCF;
+using Lib.data.ef;
 
 namespace Hiwjcn.Dal
 {

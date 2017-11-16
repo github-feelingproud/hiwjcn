@@ -12,17 +12,18 @@ using Lib.events;
 using Lib.core;
 using Lib.extension;
 using System.Data.Entity;
+using Lib.data.ef;
 
 namespace Hiwjcn.Bll.Auth
 {
     public class AuthScopeService : ServiceBase<AuthScope>, IAuthScopeService
     {
         private readonly IEventPublisher _publisher;
-        private readonly IRepository<AuthScope> _AuthScopeRepository;
+        private readonly IEFRepository<AuthScope> _AuthScopeRepository;
 
         public AuthScopeService(
             IEventPublisher _publisher,
-            IRepository<AuthScope> _AuthScopeRepository)
+            IEFRepository<AuthScope> _AuthScopeRepository)
         {
             this._publisher = _publisher;
             this._AuthScopeRepository = _AuthScopeRepository;

@@ -3,6 +3,8 @@ using Autofac.Extras.DynamicProxy;
 using Autofac.Integration.Mvc;
 using Castle.DynamicProxy;
 using Lib.data;
+using Lib.data.ef;
+using Lib.data.mongodb;
 using Lib.events;
 using Lib.extension;
 using Lib.helper;
@@ -24,9 +26,6 @@ namespace Lib.ioc
     /// </summary>
     public abstract class DependencyRegistrarBase : IDependencyRegistrar
     {
-        [Obsolete("计划过期，使用" + nameof(InterceptInstanceAttribute) + "指定需要拦截的类")]
-        public abstract bool Intercept { get; }
-
         public abstract void Register(ref ContainerBuilder builder);
 
         private readonly IDictionary<Assembly, List<Type>> _cache = new Dictionary<Assembly, List<Type>>();
@@ -69,21 +68,32 @@ namespace Lib.ioc
         /// <summary>
         /// 注册仓库
         /// </summary>
-        [Obsolete("使用" + nameof(RegDataRepositoryProvider) + "和" + nameof(RegDataRepository_) + "替代")]
+        [Obsolete("使用" + nameof(RegEFDataRepositoryProvider) + "和" + nameof(RegDataRepository_) + "替代")]
         protected virtual void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
         {
             //注册泛型
-            this.RegDataRepositoryProvider(ref builder, typeof(EFRepository<>));
+            this.RegEFDataRepositoryProvider(ref builder, typeof(EFRepository<>));
             this.RegDataRepository_(ref builder, ass);
         }
 
         /// <summary>
-        /// 使用仓储实现
+        /// 使用EF仓储实现
         /// </summary>
-        protected virtual void RegDataRepositoryProvider(ref ContainerBuilder builder, Type t)
+        protected virtual void RegEFDataRepositoryProvider(ref ContainerBuilder builder, Type t)
         {
             if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
-            builder.RegisterGeneric(t).AsSelf().As(typeof(IRepository<>));
+            builder.RegisterGeneric(t).AsSelf()
+                .As(typeof(IEFRepository<>)).As(typeof(ILinqRepository<>)).As(typeof(IRepository<>));
+        }
+
+        /// <summary>
+        /// 使用mongodb仓储实现
+        /// </summary>
+        protected virtual void RegMongoDataRepositoryProvider(ref ContainerBuilder builder, Type t)
+        {
+            if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
+            builder.RegisterGeneric(t).AsSelf()
+                .As(typeof(IMongoRepository<>)).As(typeof(ILinqRepository<>)).As(typeof(IRepository<>));
         }
 
         /// <summary>

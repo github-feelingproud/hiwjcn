@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.io;
+using Lib.data.ef;
 
 namespace Hiwjcn.Core.Data
 {

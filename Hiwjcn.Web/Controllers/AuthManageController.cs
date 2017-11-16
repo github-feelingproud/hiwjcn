@@ -23,6 +23,7 @@ using Lib.cache;
 using Lib.task;
 using Hiwjcn.Framework.Provider;
 using Lib.infrastructure.service;
+using Lib.data.ef;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -38,10 +39,10 @@ namespace Hiwjcn.Web.Controllers
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly IAuthClientService _IAuthClientService;
-        private readonly IRepository<AuthScope> _AuthScopeRepository;
-        private readonly IRepository<AuthClient> _AuthClientRepository;
-        private readonly IRepository<ReqLogModel> _ReqLogModelRepository;
-        private readonly IRepository<CacheHitLog> _CacheHitLogRepository;
+        private readonly IEFRepository<AuthScope> _AuthScopeRepository;
+        private readonly IEFRepository<AuthClient> _AuthClientRepository;
+        private readonly IEFRepository<ReqLogModel> _ReqLogModelRepository;
+        private readonly IEFRepository<CacheHitLog> _CacheHitLogRepository;
         private readonly ICacheProvider _cache;
 
         public AuthManageController(
@@ -50,10 +51,10 @@ namespace Hiwjcn.Web.Controllers
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService,
             IAuthClientService _IAuthClientService,
-            IRepository<AuthScope> _AuthScopeRepository,
-            IRepository<AuthClient> _AuthClientRepository,
-            IRepository<ReqLogModel> _ReqLogModelRepository,
-            IRepository<CacheHitLog> _CacheHitLogRepository,
+            IEFRepository<AuthScope> _AuthScopeRepository,
+            IEFRepository<AuthClient> _AuthClientRepository,
+            IEFRepository<ReqLogModel> _ReqLogModelRepository,
+            IEFRepository<CacheHitLog> _CacheHitLogRepository,
             ICacheProvider _cache)
         {
             this._IValidationDataProvider = _IValidationDataProvider;

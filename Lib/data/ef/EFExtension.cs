@@ -9,7 +9,7 @@ using Lib.extension;
 using System.Data.Entity.Infrastructure;
 using Dapper;
 
-namespace Lib.data
+namespace Lib.data.ef
 {
     public static class EFExtension
     {

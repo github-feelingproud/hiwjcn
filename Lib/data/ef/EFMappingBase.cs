@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lib.data
+namespace Lib.data.ef
 {
     /// <summary>
     /// fluent map base class

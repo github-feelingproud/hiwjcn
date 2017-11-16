@@ -9,7 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Lib.data
+namespace Lib.data.ef
 {
     /// <summary>
     /// 使用依赖注入中name为db的dbcontext

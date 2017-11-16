@@ -22,6 +22,7 @@ using Akka.Actor;
 using Lib.distributed.akka;
 using Lib.infrastructure.service;
 using Lib.infrastructure.provider;
+using Lib.data.ef;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -33,11 +34,11 @@ namespace Hiwjcn.Bll.Auth
         public AuthApiServiceFromDB_(
             IAuthLoginService _loginService,
             ICacheProvider _cache,
-            IRepository<AuthClient> _clientRepo,
-            IRepository<AuthScope> _scopeRepo,
-            IRepository<AuthToken> _tokenRepo,
-            IRepository<AuthCode> _codeRepo,
-            IRepository<AuthTokenScope> _tokenScopeRepo) :
+            IEFRepository<AuthClient> _clientRepo,
+            IEFRepository<AuthScope> _scopeRepo,
+            IEFRepository<AuthToken> _tokenRepo,
+            IEFRepository<AuthCode> _codeRepo,
+            IEFRepository<AuthTokenScope> _tokenScopeRepo) :
             base(_loginService, _cache, _clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
         {
             this.LogActor = new Lazy<IActorRef>(() => ActorsManager<CacheHitLogActor>.Instance.DefaultClient);

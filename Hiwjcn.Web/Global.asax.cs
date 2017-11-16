@@ -33,6 +33,7 @@ using System.IO;
 using System.Configuration;
 using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.infrastructure.service;
+using Lib.data.ef;
 
 namespace Hiwjcn.Web
 {

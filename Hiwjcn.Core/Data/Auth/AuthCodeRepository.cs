@@ -7,6 +7,7 @@ using Lib.data;
 using Lib.helper;
 using Lib.extension;
 using Hiwjcn.Core.Domain.Auth;
+using Lib.data.ef;
 
 namespace Hiwjcn.Core.Data.Auth
 {

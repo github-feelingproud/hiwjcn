@@ -12,33 +12,34 @@ using WebLogic.Model.User;
 using Model.User;
 using Lib.extension;
 using WebLogic.Model.Tag;
+using Lib.data.ef;
 
 namespace Hiwjcn.Bll
 {
     public class ClearDataBaseService : IClearDataBaseService
     {
-        private readonly IRepository<AuthClient> _AuthClientRepo;
-        private readonly IRepository<AuthScope> _AuthScopeRepo;
-        private readonly IRepository<AuthToken> _AuthTokenRepo;
-        private readonly IRepository<AuthCode> _AuthCodeRepo;
-        private readonly IRepository<AuthTokenScope> _AuthTokenScopeRepo;
+        private readonly IEFRepository<AuthClient> _AuthClientRepo;
+        private readonly IEFRepository<AuthScope> _AuthScopeRepo;
+        private readonly IEFRepository<AuthToken> _AuthTokenRepo;
+        private readonly IEFRepository<AuthCode> _AuthCodeRepo;
+        private readonly IEFRepository<AuthTokenScope> _AuthTokenScopeRepo;
 
-        private readonly IRepository<ReqLogModel> _ReqLogModelRepo;
-        private readonly IRepository<CacheHitLog> _CacheHitLogRepo;
+        private readonly IEFRepository<ReqLogModel> _ReqLogModelRepo;
+        private readonly IEFRepository<CacheHitLog> _CacheHitLogRepo;
 
-        private readonly IRepository<LoginErrorLogModel> _LoginErrorLogModelRepo;
+        private readonly IEFRepository<LoginErrorLogModel> _LoginErrorLogModelRepo;
 
         public ClearDataBaseService(
-            IRepository<AuthClient> _AuthClientRepo,
-            IRepository<AuthScope> _AuthScopeRepo,
-            IRepository<AuthToken> _AuthTokenRepo,
-            IRepository<AuthCode> _AuthCodeRepo,
-            IRepository<AuthTokenScope> _AuthTokenScopeRepo,
+            IEFRepository<AuthClient> _AuthClientRepo,
+            IEFRepository<AuthScope> _AuthScopeRepo,
+            IEFRepository<AuthToken> _AuthTokenRepo,
+            IEFRepository<AuthCode> _AuthCodeRepo,
+            IEFRepository<AuthTokenScope> _AuthTokenScopeRepo,
 
-            IRepository<ReqLogModel> _ReqLogModelRepo,
-            IRepository<CacheHitLog> _CacheHitLogRepo,
+            IEFRepository<ReqLogModel> _ReqLogModelRepo,
+            IEFRepository<CacheHitLog> _CacheHitLogRepo,
 
-            IRepository<LoginErrorLogModel> _LoginErrorLogModelRepo)
+            IEFRepository<LoginErrorLogModel> _LoginErrorLogModelRepo)
         {
             this._AuthClientRepo = _AuthClientRepo;
             this._AuthScopeRepo = _AuthScopeRepo;

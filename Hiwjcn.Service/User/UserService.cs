@@ -12,6 +12,7 @@ using Lib.data;
 using Lib.cache;
 using Lib.ioc;
 using Lib.mvc.user;
+using Lib.data.ef;
 
 namespace Hiwjcn.Bll.User
 {
@@ -30,13 +31,13 @@ namespace Hiwjcn.Bll.User
         public UserService(
             ICacheProvider _cache,
 
-            IRepository<UserModel> _userRepo,
-            IRepository<UserAvatar> _userAvatarRepo,
-            IRepository<UserOneTimeCode> _oneTimeCodeRepo,
-            IRepository<RoleModel> _roleRepo,
-            IRepository<PermissionModel> _permissionRepo,
-            IRepository<RolePermissionModel> _rolePermissionRepo,
-            IRepository<UserRoleModel> _userRoleRepo) :
+            IEFRepository<UserModel> _userRepo,
+            IEFRepository<UserAvatar> _userAvatarRepo,
+            IEFRepository<UserOneTimeCode> _oneTimeCodeRepo,
+            IEFRepository<RoleModel> _roleRepo,
+            IEFRepository<PermissionModel> _permissionRepo,
+            IEFRepository<RolePermissionModel> _rolePermissionRepo,
+            IEFRepository<UserRoleModel> _userRoleRepo) :
             base(_userRepo, _userAvatarRepo, _oneTimeCodeRepo, _roleRepo, _permissionRepo, _rolePermissionRepo, _userRoleRepo)
         {
             this._cache = _cache;

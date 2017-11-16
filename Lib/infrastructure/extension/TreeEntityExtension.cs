@@ -9,6 +9,7 @@ using Lib.mvc;
 using Lib.helper;
 using Lib.extension;
 using System.Data.Entity;
+using Lib.data.ef;
 
 namespace Lib.infrastructure.extension
 {
@@ -139,7 +140,7 @@ namespace Lib.infrastructure.extension
             throw new Exception("添加菜单失败");
         }
 
-        public static async Task<List<T>> QueryNodeList<T>(this IRepository<T> repo,
+        public static async Task<List<T>> QueryNodeList<T>(this ILinqRepository<T> repo,
             string parent = null, int max = 5000)
             where T : TreeEntityBase
         {

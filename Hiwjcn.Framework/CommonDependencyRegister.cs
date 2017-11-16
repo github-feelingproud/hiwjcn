@@ -16,13 +16,12 @@ using Hiwjcn.Bll.Auth;
 using Lib.mvc.auth;
 using Lib.data;
 using Lib.infrastructure;
+using Lib.data.ef;
 
 namespace Hiwjcn.Framework
 {
     public class CommonDependencyRegister : DependencyRegistrarBase
     {
-        public override bool Intercept => true;
-
         public override void Register(ref ContainerBuilder builder)
         {
             var tps = new
@@ -56,7 +55,7 @@ namespace Hiwjcn.Framework
             #region 注册Data
             //注册数据访问层
             RegDataRepository_(ref builder, tps.core);
-            RegDataRepositoryProvider(ref builder, typeof(EFRepository<>));
+            RegEFDataRepositoryProvider(ref builder, typeof(EFRepository<>));
             #endregion
 
             #region 注册service

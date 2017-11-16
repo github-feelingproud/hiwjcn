@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Lib.extension;
+using Lib.data.ef;
 
 namespace Lib.data.mongodb
 {

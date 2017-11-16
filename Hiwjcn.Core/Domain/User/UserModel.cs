@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using WebLogic.Model.User;
 using Lib.core;
 using Lib.infrastructure.entity;
+using Lib.data.ef;
 
 namespace Model.User
 {

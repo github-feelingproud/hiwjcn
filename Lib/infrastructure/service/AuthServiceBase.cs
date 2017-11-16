@@ -11,6 +11,7 @@ using Lib.helper;
 using Lib.extension;
 using System.Data.Entity;
 using Lib.core;
+using Lib.data.ef;
 
 namespace Lib.infrastructure.service
 {
@@ -47,19 +48,19 @@ namespace Lib.infrastructure.service
     {
         protected readonly ICacheProvider _cache;
 
-        protected readonly IRepository<ClientBase> _clientRepo;
-        protected readonly IRepository<ScopeBase> _scopeRepo;
-        protected readonly IRepository<TokenBase> _tokenRepo;
-        protected readonly IRepository<CodeBase> _codeRepo;
-        protected readonly IRepository<TokenScopeBase> _tokenScopeRepo;
+        protected readonly IEFRepository<ClientBase> _clientRepo;
+        protected readonly IEFRepository<ScopeBase> _scopeRepo;
+        protected readonly IEFRepository<TokenBase> _tokenRepo;
+        protected readonly IEFRepository<CodeBase> _codeRepo;
+        protected readonly IEFRepository<TokenScopeBase> _tokenScopeRepo;
 
         public AuthServiceBase(
             ICacheProvider _cache,
-            IRepository<ClientBase> _clientRepo,
-            IRepository<ScopeBase> _scopeRepo,
-            IRepository<TokenBase> _tokenRepo,
-            IRepository<CodeBase> _codeRepo,
-            IRepository<TokenScopeBase> _tokenScopeRepo)
+            IEFRepository<ClientBase> _clientRepo,
+            IEFRepository<ScopeBase> _scopeRepo,
+            IEFRepository<TokenBase> _tokenRepo,
+            IEFRepository<CodeBase> _codeRepo,
+            IEFRepository<TokenScopeBase> _tokenScopeRepo)
         {
             this._cache = _cache;
             this._clientRepo = _clientRepo;

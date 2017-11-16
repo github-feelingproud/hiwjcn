@@ -17,27 +17,28 @@ using Lib.mvc;
 using Lib.cache;
 using Hiwjcn.Core;
 using Lib.infrastructure.entity;
+using Lib.data.ef;
 
 namespace Hiwjcn.Bll.Auth
 {
     public class AuthTokenService : ServiceBase<AuthToken>, IAuthTokenService
     {
-        private readonly IRepository<AuthToken> _AuthTokenRepository;
-        private readonly IRepository<AuthTokenScope> _AuthTokenScopeRepository;
-        private readonly IRepository<AuthScope> _AuthScopeRepository;
-        private readonly IRepository<AuthCode> _AuthCodeRepository;
-        private readonly IRepository<AuthClient> _AuthClientRepository;
+        private readonly IEFRepository<AuthToken> _AuthTokenRepository;
+        private readonly IEFRepository<AuthTokenScope> _AuthTokenScopeRepository;
+        private readonly IEFRepository<AuthScope> _AuthScopeRepository;
+        private readonly IEFRepository<AuthCode> _AuthCodeRepository;
+        private readonly IEFRepository<AuthClient> _AuthClientRepository;
         private readonly ICacheProvider _cache;
 
         private readonly IEventPublisher _publisher;
 
         public AuthTokenService(
             IEventPublisher _publisher,
-            IRepository<AuthToken> _AuthTokenRepository,
-            IRepository<AuthTokenScope> _AuthTokenScopeRepository,
-            IRepository<AuthScope> _AuthScopeRepository,
-            IRepository<AuthCode> _AuthCodeRepository,
-            IRepository<AuthClient> _AuthClientRepository,
+            IEFRepository<AuthToken> _AuthTokenRepository,
+            IEFRepository<AuthTokenScope> _AuthTokenScopeRepository,
+            IEFRepository<AuthScope> _AuthScopeRepository,
+            IEFRepository<AuthCode> _AuthCodeRepository,
+            IEFRepository<AuthClient> _AuthClientRepository,
             ICacheProvider _cache)
         {
             this._publisher = _publisher;

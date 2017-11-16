@@ -5,6 +5,7 @@ using Lib.helper;
 using Model.User;
 using System;
 using Lib.extension;
+using Lib.data.ef;
 
 namespace Dal.User
 {

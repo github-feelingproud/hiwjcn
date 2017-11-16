@@ -11,6 +11,7 @@ using Lib.extension;
 using System.Data.Entity;
 using Lib.core;
 using Lib.infrastructure.extension;
+using Lib.data.ef;
 
 namespace Lib.infrastructure.service
 {
@@ -40,12 +41,12 @@ namespace Lib.infrastructure.service
         where MenuBase : MenuEntityBase, new()
         where MenuGroupBase : MenuGroupEntityBase, new()
     {
-        private readonly IRepository<MenuBase> _menuRepo;
-        private readonly IRepository<MenuGroupBase> _menuGroupRepo;
+        private readonly IEFRepository<MenuBase> _menuRepo;
+        private readonly IEFRepository<MenuGroupBase> _menuGroupRepo;
 
         public MenuServiceBase(
-            IRepository<MenuBase> _menuRepo,
-            IRepository<MenuGroupBase> _menuGroupRepo)
+            IEFRepository<MenuBase> _menuRepo,
+            IEFRepository<MenuGroupBase> _menuGroupRepo)
         {
             this._menuRepo = _menuRepo;
             this._menuGroupRepo = _menuGroupRepo;
