@@ -9,10 +9,12 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using Lib.extension;
 using Lib.data.ef;
+using Lib.helper;
+using Lib.core;
 
 namespace Lib.data.mongodb
 {
-    public class MongoRepository<T, Context>
+    public class MongoRepository<T, Context> : IMongoRepository<T>
         where T : MongoEntityBase
         where Context : MongoContextBase, new()
     {
@@ -149,36 +151,6 @@ namespace Lib.data.mongodb
             return callback.Invoke(q);
         }
 
-        public void PrepareSession(Func<DbContext, bool> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PrepareSession(Action<DbContext> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task PrepareSessionAsync(Func<DbContext, Task> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<R> PrepareSessionAsync_<R>(Func<DbContext, Task<R>> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public R PrepareSession_<R>(Func<DbContext, R> callback)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<T> QueryList<OrderByColumnType>(Expression<Func<T, bool>> where, Expression<Func<T, OrderByColumnType>> orderby = null, bool Desc = true, int? start = null, int? count = null)
         {
             throw new NotImplementedException();
@@ -195,6 +167,37 @@ namespace Lib.data.mongodb
         }
 
         public Task<int> UpdateAsync(params T[] models)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PrepareMongoCollection(Action<IMongoCollection<T>> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PrepareMongoCollectionAsync(Func<IMongoCollection<T>, Task> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public R PrepareMongoCollection<R>(Action<IMongoCollection<T>, R> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<R> PrepareMongoCollectionAsync<R>(Func<IMongoCollection<T>, Task<R>> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetByKeys(params object[] keys)
+        {
+            if (!ValidateHelper.IsPlumpList(keys) || keys.Count() != 1) { throw new Exception("只能有一个主键"); }
+            throw new NotImplementedException();
+        }
+
+        public Task<T> GetByKeysAsync(params object[] keys)
         {
             throw new NotImplementedException();
         }

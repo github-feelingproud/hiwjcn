@@ -24,6 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
 using System.Text;
+using Lib.data.elasticsearch;
 
 namespace ConsoleApp
 {

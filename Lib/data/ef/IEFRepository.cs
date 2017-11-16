@@ -14,11 +14,13 @@ namespace Lib.data.ef
         /// <summary>
         /// 获取session
         /// </summary>
+        [Obsolete("返回bool无意义")]
         void PrepareSession(Func<DbContext, bool> callback);
 
         /// <summary>
         /// 获取session
         /// </summary>
+        [Obsolete("返回bool无意义")]
         Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback);
 
         /// <summary>

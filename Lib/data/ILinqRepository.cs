@@ -11,13 +11,15 @@ namespace Lib.data
         /// <summary>
         /// 获取IQueryable对象，用于linq查询
         /// </summary>
+        [Obsolete("返回bool无意义")]
         void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false);
 
         /// <summary>
         /// 获取IQueryable对象，用于linq查询
         /// </summary>
+        [Obsolete("返回bool无意义")]
         Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false);
-        
+
         /// <summary>
         /// 不用return true
         /// </summary>

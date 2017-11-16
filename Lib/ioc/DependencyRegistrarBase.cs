@@ -34,7 +34,6 @@ namespace Lib.ioc
         public abstract void Register(ref ContainerBuilder builder);
 
         private readonly IDictionary<Assembly, List<Type>> _cache = new Dictionary<Assembly, List<Type>>();
-        //private readonly IDictionary<Type, (bool intercept, bool single_instance)> _cache_p = new Dictionary<Type, (bool intercept, bool single_instance)>();
 
         private List<Type> CachedClass(Assembly a)
         {

@@ -26,6 +26,8 @@ using Nest;
 using Hiwjcn.Bll;
 using QPL.WebService.Product.Core.Models;
 using Hiwjcn.Core.Domain.Auth;
+using Lib.data.elasticsearch;
+using Lib.data.redis;
 
 namespace Hiwjcn.Web.Controllers
 {
