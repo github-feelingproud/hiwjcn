@@ -5,150 +5,147 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using Lib.extension;
 
 namespace Lib.data.mongodb
 {
-    /*
-                var mongo = new MongoClient("mongodb://127.0.0.1:27017");
-                var db = mongo.GetDatabase("hiwjcn");
-                var users = db.GetCollection<Users>("users");
-
-                var delete = users.DeleteMany(x => true);
-
-                users.InsertMany(Com.Range(5000).Select(x => new Users() { Name = $"user:{x}" }));
-
-                var query = users.AsQueryable();
-                var list = query.Take(500).ToList();
-
-                list = query.Where(x => x.Name.Contains("1")).ToList();
-         */
-
-    public class MongoRepository<T> : IRepository<T>
+    public class MongoRepository<T, Context>
         where T : MongoEntityBase
+        where Context : MongoContextBase, new()
     {
+        private IMongoCollection<T> Set() => new Context().Set<T>();
+
         public int Add(params T[] models)
         {
-            throw new NotImplementedException();
+            this.Set().InsertMany(models);
+            return models.Count();
         }
 
-        public Task<int> AddAsync(params T[] models)
+        public async Task<int> AddAsync(params T[] models)
         {
-            throw new NotImplementedException();
+            await this.Set().InsertManyAsync(models);
+            return models.Count();
         }
 
         public int Delete(params T[] models)
         {
-            throw new NotImplementedException();
+            var uids = models.Select(x => x._id);
+            var filter = Builders<T>.Filter.Where(x => uids.Contains(x._id));
+            return (int)this.Set().DeleteMany(filter).DeletedCount;
         }
 
-        public Task<int> DeleteAsync(params T[] models)
+        public async Task<int> DeleteAsync(params T[] models)
         {
-            throw new NotImplementedException();
+            var uids = models.Select(x => x._id);
+            var filter = Builders<T>.Filter.Where(x => uids.Contains(x._id));
+            return (int)(await this.Set().DeleteManyAsync(filter)).DeletedCount;
         }
 
         public int DeleteWhere(Expression<Func<T, bool>> where)
         {
-            throw new NotImplementedException();
+            return (int)this.Set().DeleteMany(where).DeletedCount;
         }
 
-        public Task<int> DeleteWhereAsync(Expression<Func<T, bool>> where)
+        public async Task<int> DeleteWhereAsync(Expression<Func<T, bool>> where)
         {
-            throw new NotImplementedException();
+            return (int)(await this.Set().DeleteManyAsync(where)).DeletedCount;
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //
         }
 
         public bool Exist(Expression<Func<T, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Set().Find(where).Limit(1).FirstOrDefault() != null;
         }
 
-        public Task<bool> ExistAsync(Expression<Func<T, bool>> where)
+        public async Task<bool> ExistAsync(Expression<Func<T, bool>> where)
         {
-            throw new NotImplementedException();
-        }
-
-        public T GetByKeys(params object[] keys)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<T> GetByKeysAsync(params object[] keys)
-        {
-            throw new NotImplementedException();
+            return (await this.Set().FindAsync(where)).FirstOrDefault() != null;
         }
 
         public int GetCount(Expression<Func<T, bool>> where)
         {
-            throw new NotImplementedException();
+            return (int)this.Set().Count(where);
         }
 
-        public Task<int> GetCountAsync(Expression<Func<T, bool>> where)
+        public async Task<int> GetCountAsync(Expression<Func<T, bool>> where)
         {
-            throw new NotImplementedException();
+            return (int)(await this.Set().CountAsync(where));
         }
 
         public T GetFirst(Expression<Func<T, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.GetList(where, 1).FirstOrDefault();
         }
 
-        public Task<T> GetFirstAsync(Expression<Func<T, bool>> where)
+        public async Task<T> GetFirstAsync(Expression<Func<T, bool>> where)
         {
-            throw new NotImplementedException();
+            return (await this.GetListAsync(where, 1)).FirstOrDefault();
         }
 
         public List<T> GetList(Expression<Func<T, bool>> where, int? count = null)
         {
-            throw new NotImplementedException();
+            return this.QueryList<object>(where: where, start: 0, count: count);
         }
 
-        public Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int? count = null)
+        public async Task<List<T>> GetListAsync(Expression<Func<T, bool>> where, int? count = null)
         {
-            throw new NotImplementedException();
+            return await this.QueryListAsync<object>(where: where, start: 0, count: count);
         }
 
         public List<T> GetListEnsureMaxCount(Expression<Func<T, bool>> where, int count, string error_msg)
         {
-            throw new NotImplementedException();
+            var list = this.GetList(where, count);
+            if (list.Count >= count) { throw new Exception(error_msg); }
+            return list;
         }
 
-        public Task<List<T>> GetListEnsureMaxCountAsync(Expression<Func<T, bool>> where, int count, string error_msg)
+        public async Task<List<T>> GetListEnsureMaxCountAsync(Expression<Func<T, bool>> where, int count, string error_msg)
         {
-            throw new NotImplementedException();
+            var list = await this.GetListAsync(where, count);
+            if (list.Count >= count) { throw new Exception(error_msg); }
+            return list;
         }
 
         public void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
         {
-            throw new NotImplementedException();
+            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            callback.Invoke(q);
         }
 
         public void PrepareIQueryable(Action<IQueryable<T>> callback, bool track = false)
         {
-            throw new NotImplementedException();
+            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            callback.Invoke(q);
         }
 
-        public Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
+        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
         {
-            throw new NotImplementedException();
+            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            await callback.Invoke(q);
         }
 
-        public Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback, bool track = false)
+        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback, bool track = false)
         {
-            throw new NotImplementedException();
+            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            await callback.Invoke(q);
         }
 
-        public Task<R> PrepareIQueryableAsync_<R>(Func<IQueryable<T>, Task<R>> callback, bool track = false)
+        public async Task<R> PrepareIQueryableAsync_<R>(Func<IQueryable<T>, Task<R>> callback, bool track = false)
         {
-            throw new NotImplementedException();
+            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            return await callback.Invoke(q);
         }
 
         public R PrepareIQueryable_<R>(Func<IQueryable<T>, R> callback, bool track = false)
         {
-            throw new NotImplementedException();
+            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            return callback.Invoke(q);
         }
 
         public void PrepareSession(Func<DbContext, bool> callback)

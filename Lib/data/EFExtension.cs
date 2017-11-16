@@ -110,7 +110,7 @@ namespace Lib.data
         /// <typeparam name="T"></typeparam>
         /// <param name="set"></param>
         /// <returns></returns>
-        public static IQueryable<T> AsNoTrackingQueryable<T>(this DbSet<T> set) where T : class
+        public static IQueryable<T> AsNoTrackingQueryable<T>(this IQueryable<T> set) where T : class
         {
             return set.AsQueryableTrackingOrNot(false);
         }
@@ -118,7 +118,7 @@ namespace Lib.data
         /// <summary>
         /// 获取追踪或者不追踪的查询对象
         /// </summary>
-        public static IQueryable<T> AsQueryableTrackingOrNot<T>(this DbSet<T> set, bool tracking) where T : class
+        public static IQueryable<T> AsQueryableTrackingOrNot<T>(this IQueryable<T> set, bool tracking) where T : class
         {
             if (tracking)
             {

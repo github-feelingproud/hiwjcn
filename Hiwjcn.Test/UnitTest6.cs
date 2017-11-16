@@ -73,8 +73,12 @@ namespace Hiwjcn.Test
                 var list = query.Take(500).ToList();
 
                 list = query.Where(x => x.Name.Contains("1")).ToList();
-                
+
                 //near
+                var filter = Builders<Users>.Filter.Near(x => x.Name, 320, 320.42, maxDistance: 4343);
+                var sort = Builders<Users>.Sort.Descending(x => x.Name);
+
+                users.Find(filter, new FindOptions() { }).Skip(0).Sort(sort).Limit(10).ToList();
             }
             catch (Exception e)
             {
