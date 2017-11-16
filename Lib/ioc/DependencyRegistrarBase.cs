@@ -26,6 +26,11 @@ namespace Lib.ioc
     /// </summary>
     public abstract class DependencyRegistrarBase : IDependencyRegistrar
     {
+        private readonly List<string> repeat_checker = new List<string>();
+        private readonly string GROUP_DATA_REPO = "db_repo";
+        private readonly string GROUP_SERVICE = "service";
+
+
         public abstract void Register(ref ContainerBuilder builder);
 
         private readonly IDictionary<Assembly, List<Type>> _cache = new Dictionary<Assembly, List<Type>>();
@@ -66,21 +71,12 @@ namespace Lib.ioc
         }
 
         /// <summary>
-        /// 注册仓库
-        /// </summary>
-        [Obsolete("使用" + nameof(RegEFDataRepositoryProvider) + "和" + nameof(RegDataRepository_) + "替代")]
-        protected virtual void RegDataRepository(ref ContainerBuilder builder, params Assembly[] ass)
-        {
-            //注册泛型
-            this.RegEFDataRepositoryProvider(ref builder, typeof(EFRepository<>));
-            this.RegDataRepository_(ref builder, ass);
-        }
-
-        /// <summary>
         /// 使用EF仓储实现
         /// </summary>
         protected virtual void RegEFDataRepositoryProvider(ref ContainerBuilder builder, Type t)
         {
+            this.repeat_checker.AddOnceOrThrow(GROUP_DATA_REPO, "只能选择一种数据存储方案");
+
             if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
             builder.RegisterGeneric(t).AsSelf()
                 .As(typeof(IEFRepository<>)).As(typeof(ILinqRepository<>)).As(typeof(IRepository<>));
@@ -91,6 +87,8 @@ namespace Lib.ioc
         /// </summary>
         protected virtual void RegMongoDataRepositoryProvider(ref ContainerBuilder builder, Type t)
         {
+            this.repeat_checker.AddOnceOrThrow(GROUP_DATA_REPO, "只能选择一种数据存储方案");
+
             if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
             builder.RegisterGeneric(t).AsSelf()
                 .As(typeof(IMongoRepository<>)).As(typeof(ILinqRepository<>)).As(typeof(IRepository<>));
@@ -143,17 +141,6 @@ namespace Lib.ioc
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// 注册服务
-        /// </summary>
-        [Obsolete("使用" + nameof(RegServiceProvider) + "和" + nameof(RegService_) + "替代")]
-        protected virtual void RegService(ref ContainerBuilder builder, params Assembly[] ass)
-        {
-            //注册泛型
-            this.RegServiceProvider(ref builder, typeof(ServiceBase<>));
-            this.RegService_(ref builder, ass);
         }
 
         /// <summary>
@@ -226,6 +213,7 @@ namespace Lib.ioc
         public void Clean()
         {
             this._cache.Clear();
+            this.repeat_checker.Clear();
         }
     }
 }

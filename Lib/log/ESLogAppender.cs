@@ -14,6 +14,7 @@ using Akka;
 using Akka.Actor;
 using Lib.events;
 using Lib.distributed.akka;
+using Lib.data.elasticsearch;
 
 namespace Lib.log
 {

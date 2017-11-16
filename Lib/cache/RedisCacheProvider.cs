@@ -6,6 +6,7 @@ using Lib.core;
 using Lib.helper;
 using Lib.data;
 using System.Configuration;
+using Lib.data.redis;
 
 namespace Lib.cache
 {

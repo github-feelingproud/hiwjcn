@@ -219,11 +219,18 @@
     <Compile Include="data\DataSourceContextBase.cs" />
     <Compile Include="data\ef\EFRepositoryBase.cs" />
     <Compile Include="data\ef\IEFRepository.cs" />
+    <Compile Include="data\elasticsearch\ElasticsearchClientManager.cs" />
+    <Compile Include="data\elasticsearch\EsExample.cs" />
+    <Compile Include="data\elasticsearch\IElasticSearchIndex.cs" />
     <Compile Include="data\ILinqRepository.cs" />
     <Compile Include="data\mongodb\IMongoRepository.cs" />
     <Compile Include="data\mongodb\MongoContextBase.cs" />
     <Compile Include="data\mongodb\MongoRepository.cs" />
     <Compile Include="data\mongodb\MongoEntityBase.cs" />
+    <Compile Include="data\redis\RedisClientManager.cs" />
+    <Compile Include="data\redis\RedisExtension.cs" />
+    <Compile Include="data\redis\RedisHelper.cs" />
+    <Compile Include="data\redis\RedisManager.cs" />
     <Compile Include="distributed\akka\ActorTest.cs" />
     <Compile Include="distributed\akka\AkkaHelper.cs" />
     <Compile Include="distributed\zookeeper\AlwaysOnZooKeeperClient.cs" />
@@ -265,7 +272,6 @@
     <Compile Include="data\ef\EFMappingBase.cs" />
     <Compile Include="data\ef\EFRepository.cs" />
     <Compile Include="data\ef\EFManager.cs" />
-    <Compile Include="data\RedisManager.cs" />
     <Compile Include="data\SerializeBase.cs" />
     <Compile Include="distributed\CrossProcessLock.cs" />
     <Compile Include="distributed\zookeeper\ZooKeeperDistributedLock.cs" />
@@ -452,9 +458,6 @@
     <None Include="ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="data\elasticsearch\" />
-    <Folder Include="data\orm\" />
-    <Folder Include="data\redis\" />
     <Folder Include="distributed\orleans\" />
     <Folder Include="infrastructure\contract\" />
   </ItemGroup>

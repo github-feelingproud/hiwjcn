@@ -9,6 +9,8 @@ using Lib.net;
 using System;
 using Lib.distributed.akka;
 using Lib.mq.rabbitmq;
+using Lib.data.redis;
+using Lib.data.elasticsearch;
 
 namespace Lib.core
 {

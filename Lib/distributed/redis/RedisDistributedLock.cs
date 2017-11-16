@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Lib.data;
 using StackExchange.Redis;
 using System.Threading;
+using Lib.data.redis;
 
 namespace Lib.distributed.redis
 {
