@@ -20,9 +20,9 @@ namespace Lib.data.mongodb
     {
         private IMongoCollection<T> Set() => new Context().Set<T>();
 
-        public List<T> QueryNearBy(Expression<Func<T, object>> field,
-            GeoInfo point, int page, int pagesize, double? max_distance, double? min_distance,
-            Expression<Func<T, bool>> where = null)
+        public List<T> QueryNearBy(Expression<Func<T, bool>> where, int page, int pagesize,
+            Expression<Func<T, object>> field, GeoInfo point, 
+            double? max_distance = null, double? min_distance = null)
         {
             var near = Builders<T>.Filter.Near(field, point.Lat, point.Lon, max_distance, min_distance);
             if (where != null)
