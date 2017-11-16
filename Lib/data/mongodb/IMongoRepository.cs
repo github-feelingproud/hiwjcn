@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB;
+using System.Linq.Expressions;
 
 namespace Lib.data.mongodb
 {
@@ -19,5 +20,6 @@ namespace Lib.data.mongodb
         R PrepareMongoCollection<R>(Action<IMongoCollection<T>, R> callback);
 
         Task<R> PrepareMongoCollectionAsync<R>(Func<IMongoCollection<T>, Task<R>> callback);
+
     }
 }

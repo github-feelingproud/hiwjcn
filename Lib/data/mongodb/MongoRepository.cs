@@ -20,6 +20,19 @@ namespace Lib.data.mongodb
     {
         private IMongoCollection<T> Set() => new Context().Set<T>();
 
+        public List<T> QueryNearBy(Expression<Func<T, object>> field,
+            GeoInfo point, int page, int pagesize, double? max_distance, double? min_distance,
+            Expression<Func<T, bool>> where = null)
+        {
+            var near = Builders<T>.Filter.Near(field, point.Lat, point.Lon, max_distance, min_distance);
+            if (where != null)
+            {
+                near = near & Builders<T>.Filter.Where(where);
+            }
+            var range = PagerHelper.GetQueryRange(page, pagesize);
+            return this.Set().Find(near).Skip(range.skip).Limit(range.take).ToList();
+        }
+
         public int Add(params T[] models)
         {
             this.Set().InsertMany(models);
