@@ -21,32 +21,36 @@ namespace Lib.data.mongodb
         private IMongoCollection<T> Set() => new Context().Set<T>();
 
         public List<T> QueryNearBy(Expression<Func<T, bool>> where, int page, int pagesize,
-            Expression<Func<T, object>> field, GeoInfo point, 
+            Expression<Func<T, object>> field, GeoInfo point,
             double? max_distance = null, double? min_distance = null)
         {
-            var near = Builders<T>.Filter.Near(field, point.Lat, point.Lon, max_distance, min_distance);
+            var condition = Builders<T>.Filter.Empty;
+            condition &= Builders<T>.Filter.Near(field, point.Lat, point.Lon, max_distance, min_distance);
             if (where != null)
             {
-                near = near & Builders<T>.Filter.Where(where);
+                condition &= Builders<T>.Filter.Where(where);
             }
             var range = PagerHelper.GetQueryRange(page, pagesize);
-            return this.Set().Find(near).Skip(range.skip).Limit(range.take).ToList();
+            return this.Set().Find(condition).Skip(range.skip).Limit(range.take).ToList();
         }
 
         public int Add(params T[] models)
         {
+            if (!ValidateHelper.IsPlumpList(models)) { throw new ArgumentNullException(nameof(models)); }
             this.Set().InsertMany(models);
             return models.Count();
         }
 
         public async Task<int> AddAsync(params T[] models)
         {
+            if (!ValidateHelper.IsPlumpList(models)) { throw new ArgumentNullException(nameof(models)); }
             await this.Set().InsertManyAsync(models);
             return models.Count();
         }
 
         public int Delete(params T[] models)
         {
+            if (!ValidateHelper.IsPlumpList(models)) { throw new ArgumentNullException(nameof(models)); }
             var uids = models.Select(x => x._id);
             var filter = Builders<T>.Filter.Where(x => uids.Contains(x._id));
             return (int)this.Set().DeleteMany(filter).DeletedCount;
@@ -54,6 +58,7 @@ namespace Lib.data.mongodb
 
         public async Task<int> DeleteAsync(params T[] models)
         {
+            if (!ValidateHelper.IsPlumpList(models)) { throw new ArgumentNullException(nameof(models)); }
             var uids = models.Select(x => x._id);
             var filter = Builders<T>.Filter.Where(x => uids.Contains(x._id));
             return (int)(await this.Set().DeleteManyAsync(filter)).DeletedCount;
@@ -61,11 +66,13 @@ namespace Lib.data.mongodb
 
         public int DeleteWhere(Expression<Func<T, bool>> where)
         {
+            where = where ?? throw new ArgumentNullException(nameof(where));
             return (int)this.Set().DeleteMany(where).DeletedCount;
         }
 
         public async Task<int> DeleteWhereAsync(Expression<Func<T, bool>> where)
         {
+            where = where ?? throw new ArgumentNullException(nameof(where));
             return (int)(await this.Set().DeleteManyAsync(where)).DeletedCount;
         }
 
@@ -164,9 +171,32 @@ namespace Lib.data.mongodb
             return callback.Invoke(q);
         }
 
-        public List<T> QueryList<OrderByColumnType>(Expression<Func<T, bool>> where, Expression<Func<T, OrderByColumnType>> orderby = null, bool Desc = true, int? start = null, int? count = null)
+        public List<T> QueryList<OrderByColumnType>(Expression<Func<T, bool>> where,
+            Expression<Func<T, OrderByColumnType>> orderby = null, bool Desc = true,
+            int? start = null, int? count = null)
         {
-            throw new NotImplementedException();
+            var condition = Builders<T>.Filter.Empty;
+            if (where != null)
+            {
+                condition &= where;
+            }
+
+            var query = this.Set().Find(condition);
+            if (orderby != null)
+            {
+                var sort = Builders<T>.Sort.Sort_(orderby, Desc);
+                query = query.Sort(sort);
+            }
+
+            if (start != null)
+            {
+                query = query.Skip(start.Value);
+            }
+            if (count != null)
+            {
+                query = query.Limit(count.Value);
+            }
+            return query.ToList();
         }
 
         public Task<List<T>> QueryListAsync<OrderByColumnType>(Expression<Func<T, bool>> where, Expression<Func<T, OrderByColumnType>> orderby = null, bool Desc = true, int? start = null, int? count = null)

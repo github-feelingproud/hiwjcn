@@ -225,6 +225,7 @@
     <Compile Include="data\ILinqRepository.cs" />
     <Compile Include="data\mongodb\IMongoRepository.cs" />
     <Compile Include="data\mongodb\MongoContextBase.cs" />
+    <Compile Include="data\mongodb\MongoExtension.cs" />
     <Compile Include="data\mongodb\MongoRepository.cs" />
     <Compile Include="data\mongodb\MongoEntityBase.cs" />
     <Compile Include="data\redis\RedisClientManager.cs" />

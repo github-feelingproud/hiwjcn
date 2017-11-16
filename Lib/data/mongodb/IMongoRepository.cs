@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB;
 using System.Linq.Expressions;
+using Lib.helper;
 
 namespace Lib.data.mongodb
 {
@@ -21,5 +22,8 @@ namespace Lib.data.mongodb
 
         Task<R> PrepareMongoCollectionAsync<R>(Func<IMongoCollection<T>, Task<R>> callback);
 
+        List<T> QueryNearBy(Expression<Func<T, bool>> where, int page, int pagesize,
+            Expression<Func<T, object>> field, GeoInfo point,
+            double? max_distance = null, double? min_distance = null);
     }
 }
