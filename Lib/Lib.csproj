@@ -217,6 +217,8 @@
   <ItemGroup>
     <Compile Include="core\StaticData.cs" />
     <Compile Include="data\DataSourceContextBase.cs" />
+    <Compile Include="data\ef\IEFRepository.cs" />
+    <Compile Include="data\ILinqRepository.cs" />
     <Compile Include="data\mongodb\MongoContextBase.cs" />
     <Compile Include="data\mongodb\MongoRepository.cs" />
     <Compile Include="data\mongodb\MongoEntityBase.cs" />

@@ -12,6 +12,9 @@ namespace Lib.data
     /// 
     /// //这样ef的多次add一次提交就没用了
     /// 
+    /// 建一个base repository
+    /// ef的repository继承base repository
+    /// 
     /// </summary>
     public interface IDataCollection<T>
     {
@@ -24,17 +27,10 @@ namespace Lib.data
     public interface IDataSourceContext
     {
         IDataCollection<T> Set<T>() where T : class;
-
-        int SaveChanges();
     }
 
     public class EfDataSourceContext : IDataSourceContext
     {
-        public int SaveChanges()
-        {
-            throw new Exception();
-        }
-
         public IDataCollection<T> Set<T>() where T : class
         {
             return new EfDataCollection<T>(() => null);
