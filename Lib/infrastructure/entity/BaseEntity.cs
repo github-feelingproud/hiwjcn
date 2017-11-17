@@ -14,6 +14,28 @@ using System.Data.Entity;
 
 namespace Lib.infrastructure.entity
 {
+    [Serializable]
+    public abstract class VersionBaseEntity : BaseEntity
+    {
+        /// <summary>
+        /// 记录的版本
+        /// 用一个uuid来标识此次数据更新，以后ES就可以用这个字段判断数据是否是最新的
+        /// </summary>
+        public virtual string UpdateFlag { get; set; }
+
+        /// <summary>
+        /// 版本，每次更新+1，不在EF中使用
+        /// </summary>
+        public virtual int VersionID { get; set; }
+
+        public override void Update()
+        {
+            base.Update();
+            this.UpdateFlag = Com.GetUUID();
+            ++this.VersionID;
+        }
+    }
+
     /// <summary>
     /// 实体基类
     /// </summary>
@@ -38,10 +60,6 @@ namespace Lib.infrastructure.entity
 
         [Index(IsUnique = false)]
         public virtual DateTime UpdateTime { get; set; }
-
-        [Obsolete("用一个uuid来标识此次数据更新，以后ES就可以用这个字段判断数据是否是最新的")]
-        [NotMapped]
-        public virtual string UpdateFlag { get; set; }
 
         /// <summary>
         /// 第一次写库初始化
@@ -76,7 +94,6 @@ namespace Lib.infrastructure.entity
         {
             var now = DateTime.Now;
             this.UpdateTime = now;
-            this.UpdateFlag = Com.GetUUID();
         }
 
         /// <summary>
