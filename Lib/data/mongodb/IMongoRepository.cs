@@ -18,7 +18,7 @@ namespace Lib.data.mongodb
 
         Task PrepareMongoCollectionAsync(Func<IMongoCollection<T>, Task> callback);
 
-        R PrepareMongoCollection<R>(Action<IMongoCollection<T>, R> callback);
+        R PrepareMongoCollection<R>(Func<IMongoCollection<T>, R> callback);
 
         Task<R> PrepareMongoCollectionAsync<R>(Func<IMongoCollection<T>, Task<R>> callback);
 

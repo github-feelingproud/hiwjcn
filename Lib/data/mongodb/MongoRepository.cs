@@ -199,50 +199,67 @@ namespace Lib.data.mongodb
             return query.ToList();
         }
 
-        public Task<List<T>> QueryListAsync<OrderByColumnType>(Expression<Func<T, bool>> where, Expression<Func<T, OrderByColumnType>> orderby = null, bool Desc = true, int? start = null, int? count = null)
+        public async Task<List<T>> QueryListAsync<OrderByColumnType>(Expression<Func<T, bool>> where, Expression<Func<T, OrderByColumnType>> orderby = null, bool Desc = true, int? start = null, int? count = null)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(this.QueryList(where, orderby, Desc, start, count));
         }
 
         public int Update(params T[] models)
         {
-            throw new NotImplementedException();
+            var count = 0;
+            var set = this.Set();
+            foreach (var m in models)
+            {
+                var res = set.ReplaceOne(x => x._id == m._id, m);
+                count += (int)res.ModifiedCount;
+            }
+            return count;
         }
 
-        public Task<int> UpdateAsync(params T[] models)
+        public async Task<int> UpdateAsync(params T[] models)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(this.Update(models));
         }
 
         public void PrepareMongoCollection(Action<IMongoCollection<T>> callback)
         {
-            throw new NotImplementedException();
+            callback.Invoke(this.Set());
         }
 
-        public Task PrepareMongoCollectionAsync(Func<IMongoCollection<T>, Task> callback)
+        public async Task PrepareMongoCollectionAsync(Func<IMongoCollection<T>, Task> callback)
         {
-            throw new NotImplementedException();
+            await callback.Invoke(this.Set());
         }
 
-        public R PrepareMongoCollection<R>(Action<IMongoCollection<T>, R> callback)
+        public R PrepareMongoCollection<R>(Func<IMongoCollection<T>, R> callback)
         {
-            throw new NotImplementedException();
+            return callback.Invoke(this.Set());
         }
 
-        public Task<R> PrepareMongoCollectionAsync<R>(Func<IMongoCollection<T>, Task<R>> callback)
+        public async Task<R> PrepareMongoCollectionAsync<R>(Func<IMongoCollection<T>, Task<R>> callback)
         {
-            throw new NotImplementedException();
+            return await callback.Invoke(this.Set());
+        }
+
+        private ObjectId ParseID(params object[] keys)
+        {
+            if (keys == null || keys.Count() != 1) { throw new Exception("mongodb只能传入一个id"); }
+            var pid = keys.FirstOrDefault()?.ToString();
+            if (!ValidateHelper.IsPlumpString(pid)) { throw new Exception("id不能为空"); }
+            var id = new ObjectId(pid);
+            return id;
         }
 
         public T GetByKeys(params object[] keys)
         {
-            if (!ValidateHelper.IsPlumpList(keys) || keys.Count() != 1) { throw new Exception("只能有一个主键"); }
-            throw new NotImplementedException();
+            var id = ParseID(keys);
+            return this.Set().Find(x => x._id == id).FirstOrDefault();
         }
 
-        public Task<T> GetByKeysAsync(params object[] keys)
+        public async Task<T> GetByKeysAsync(params object[] keys)
         {
-            throw new NotImplementedException();
+            var id = ParseID(keys);
+            return await this.Set().Find(x => x._id == id).FirstOrDefaultAsync();
         }
     }
 }
