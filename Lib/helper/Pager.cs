@@ -253,9 +253,6 @@ namespace Lib.helper
         /// <summary>
         /// 计算总页数
         /// </summary>
-        /// <param name="item_count"></param>
-        /// <param name="page_size"></param>
-        /// <returns></returns>
         public static int GetPageCount(int item_count, int page_size)
         {
             if (item_count <= 0) { return 0; }
@@ -266,15 +263,12 @@ namespace Lib.helper
         /// <summary>
         /// 计算mysql 的limit参数
         /// </summary>
-        /// <param name="current_page"></param>
-        /// <param name="page_size"></param>
-        /// <returns></returns>
-        public static (int skip, int take) GetQueryRange(int current_page, int page_size)
+        public static (int skip, int take) GetQueryRange(int page, int page_size)
         {
-            if (current_page < 1) { throw new Exception("页码不能小于1"); }
+            if (page < 1) { throw new Exception("页码不能小于1"); }
             if (page_size < 1) { throw new Exception("pagesize不能小于1"); }
 
-            var skip = (current_page - 1) * page_size;
+            var skip = (page - 1) * page_size;
             var take = page_size;
 
             return (skip, take);

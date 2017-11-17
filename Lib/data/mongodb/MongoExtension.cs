@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Lib.helper;
 
 namespace Lib.data.mongodb
 {
@@ -30,5 +31,15 @@ namespace Lib.data.mongodb
                 throw new Exception("不支持的排序lambda表达式");
             }
         }
+
+        public static IFindFluent<T, T> Take<T>(this IFindFluent<T, T> finder, int take) =>
+            finder.Limit(take);
+
+        public static IFindFluent<T, T> QueryPage<T>(this IFindFluent<T, T> finder, int page, int pagesize)
+        {
+            var range = PagerHelper.GetQueryRange(page, pagesize);
+            return finder.Skip(range.skip).Take(range.take);
+        }
+
     }
 }

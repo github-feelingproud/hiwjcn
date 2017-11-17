@@ -20,6 +20,26 @@ namespace Lib.data.mongodb
     {
         private IMongoCollection<T> Set() => new Context().Set<T>();
 
+        [Obsolete]
+        public void indexsfsd()
+        {
+            var set = this.Set();
+
+            var index = Builders<T>.IndexKeys.Geo2D(x => x._id).Geo2DSphere(x => x._id);
+            set.Indexes.CreateOne(index, new CreateIndexOptions() { Unique = true, Background = true });
+        }
+
+        [Obsolete]
+        public void Agg()
+        {
+            var set = this.Set();
+
+            var filter = Builders<T>.Filter.Where(x => x._id == null);
+
+            var group = Builders<T>.Projection.Exclude(x => x._id).Include(x => x._id);
+            var agg = set.Aggregate().Match(filter).Group(group).SortByCount(x => x.AsObjectId).ToList();
+        }
+
         public List<T> QueryNearBy(Expression<Func<T, bool>> where, int page, int pagesize,
             Expression<Func<T, object>> field, GeoInfo point,
             double? max_distance = null, double? min_distance = null)
@@ -31,7 +51,7 @@ namespace Lib.data.mongodb
                 condition &= Builders<T>.Filter.Where(where);
             }
             var range = PagerHelper.GetQueryRange(page, pagesize);
-            return this.Set().Find(condition).Skip(range.skip).Limit(range.take).ToList();
+            return this.Set().Find(condition).QueryPage(page, pagesize).ToList();
         }
 
         public int Add(params T[] models)
@@ -83,7 +103,7 @@ namespace Lib.data.mongodb
 
         public bool Exist(Expression<Func<T, bool>> where)
         {
-            return this.Set().Find(where).Limit(1).FirstOrDefault() != null;
+            return this.Set().Find(where).Take(1).FirstOrDefault() != null;
         }
 
         public async Task<bool> ExistAsync(Expression<Func<T, bool>> where)
@@ -194,7 +214,7 @@ namespace Lib.data.mongodb
             }
             if (count != null)
             {
-                query = query.Limit(count.Value);
+                query = query.Take(count.Value);
             }
             return query.ToList();
         }
