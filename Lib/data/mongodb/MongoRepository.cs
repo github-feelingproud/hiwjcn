@@ -21,6 +21,17 @@ namespace Lib.data.mongodb
         private IMongoCollection<T> Set() => new Context().Set<T>();
 
         [Obsolete]
+        public void indexfsfsd()
+        {
+            var set = this.Set();
+
+            set.MapReduce<Lib.mvc.user.LoginUserInfo>(
+                new BsonJavaScript("function(){emit(this.user_id,this.age);}"),
+                new BsonJavaScript("function(user_id,age){return Array.avg(age);}"), 
+                new MapReduceOptions<T, mvc.user.LoginUserInfo>() { });
+        }
+
+        [Obsolete]
         public void indexsfsd()
         {
             var set = this.Set();
