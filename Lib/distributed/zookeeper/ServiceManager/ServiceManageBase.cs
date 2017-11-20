@@ -11,6 +11,12 @@ using Polly;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
+    /// <summary>
+    /// /QPL/WCF/ORDER/m-1
+    /// /QPL/WCF/ORDER/m-2
+    /// /QPL/WCF/ORDER/m-3
+    /// /QPL/WCF/ORDER/m-4
+    /// </summary>
     public class ServiceManageBase : AlwaysOnZooKeeperClient
     {
         private readonly string base_path;
@@ -40,10 +46,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             var client = this.GetClientManager();
             Task.Factory.StartNew(async () =>
             {
-                if (!await client.Client.ExistAsync_(this.base_path))
-                {
-                    await client.Client.CreatePersistentPathIfNotExist_(this.base_path);
-                }
+                await client.Client.CreatePersistentPathIfNotExist_(this.base_path);
             });
         }
 
