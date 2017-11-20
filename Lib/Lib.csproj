@@ -235,6 +235,7 @@
     <Compile Include="distributed\akka\ActorTest.cs" />
     <Compile Include="distributed\akka\AkkaHelper.cs" />
     <Compile Include="distributed\zookeeper\AlwaysOnZooKeeperClient.cs" />
+    <Compile Include="distributed\zookeeper\ServiceManager\ServiceManageBase.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceManagerExtension.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceRegister.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceSubscribe.cs" />

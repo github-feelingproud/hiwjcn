@@ -116,7 +116,7 @@ namespace Lib.distributed.zookeeper
             this.OnRecconected.Invoke();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.CloseClient();
             this._client_lock.Dispose();
