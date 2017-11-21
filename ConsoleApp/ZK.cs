@@ -40,9 +40,9 @@ namespace ConsoleApp
             {
                 //docker run --name some-zookeeper --restart always -p 2181:2181 -d zookeeper
                 var client = new ServiceSubscribe("es.qipeilong.net:2181");
+                client.OnRecconected += () => { Console.WriteLine("重新链接"); };
 
                 await Task.FromResult(1);
-                Console.ReadLine();
             }
             catch (Exception e)
             {

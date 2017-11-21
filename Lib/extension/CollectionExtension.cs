@@ -112,7 +112,9 @@ namespace Lib.extension
         /// <returns></returns>
         public static List<T> Reverse_<T>(this IEnumerable<T> list)
         {
-            return Com.ReversalList(list.ToList());
+            var data = list.ToList();
+            Com.ReversalList(ref data);
+            return data;
         }
 
         public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> source, int batchSize)

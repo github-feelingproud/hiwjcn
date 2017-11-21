@@ -21,97 +21,13 @@ using Lib.distributed.zookeeper.watcher;
 
 namespace Lib.distributed.zookeeper
 {
-    public class AlwaysOnZooKeeperClient : IDisposable
+    public class AlwaysOnZooKeeperClient : ZooKeeperClient
     {
-        private bool IsDisposing = false;
-        private ZooKeeperClient _client;
-
-        private readonly string Host;
-
-        private readonly ManualResetEvent _client_lock = new ManualResetEvent(false);
-        private readonly object _create_client_lock = new object();
-
-        public event Action Connected;
-        public event Action UnConnected;
         public event Action OnRecconected;
-        public event Action<Exception> OnError;
 
-        public AlwaysOnZooKeeperClient(string host)
+        public AlwaysOnZooKeeperClient(string host) : base(host)
         {
-            this.Host = host ?? throw new ArgumentNullException(nameof(host));
-            this.CreateClient();
-        }
-
-        protected virtual void CreateClient()
-        {
-            if (this._client == null)
-            {
-                lock (this._create_client_lock)
-                {
-                    if (this._client == null)
-                    {
-                        var reconnect_watcher = new ReconnectionWatcher(() =>
-                        {
-                            //服务可用
-                            this._client_lock.Set();
-                            this.Connected?.Invoke();
-                        }, () =>
-                        {
-                            this._client_lock.Reset();
-                            this.UnConnected?.Invoke();
-                            //重新创建链接
-                            this.ReConnect();
-                        });
-                        this._client = new ZooKeeperClient(this.Host, TimeSpan.FromSeconds(60), reconnect_watcher);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 等待可用链接，默认30秒超时
-        /// </summary>
-        /// <returns></returns>
-        public virtual ZooKeeperClient GetClientManager(TimeSpan? timeout = null)
-        {
-            try
-            {
-                this._client_lock.WaitOneOrThrow(timeout ?? TimeSpan.FromSeconds(30));
-
-                if (this._client == null) { throw new Exception("zookeeper client is not prepared"); }
-
-                return this._client;
-            }
-            catch (KeeperException.ConnectionLossException e)
-            {
-                this.OnError?.Invoke(e);
-                //链接断开
-                throw e;
-            }
-            catch (KeeperException.SessionExpiredException e)
-            {
-                this.OnError?.Invoke(e);
-                //链接断开
-                throw e;
-            }
-            catch (Exception e)
-            {
-                this.OnError?.Invoke(e);
-                throw e;
-            }
-        }
-
-        protected virtual void CloseClient()
-        {
-            try
-            {
-                this._client?.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-            this._client = null;
+            this.OnUnConnected += () => this.ReConnect();
         }
 
         protected virtual void ReConnect()
@@ -124,12 +40,9 @@ namespace Lib.distributed.zookeeper
             this.OnRecconected.Invoke();
         }
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
-            this.IsDisposing = true;
-
-            this.CloseClient();
-            this._client_lock.Dispose();
+            base.Dispose();
         }
     }
 }

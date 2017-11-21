@@ -80,6 +80,21 @@ namespace Lib.distributed.zookeeper
         public static async Task<Stat> SetDataAsync_<T>(this ZooKeeper client, string path, T data) =>
             await client.setDataAsync(path, data.ToJson().GetBytes());
 
+        public static async Task<byte[]> GetDataOrThrow_(this ZooKeeper client, string path, Watcher watcher = null)
+        {
+            DataResult res = null;
+            if (watcher == null)
+            {
+                res = await client.getDataAsync(path);
+            }
+            else
+            {
+                res = await client.getDataAsync(path, watcher);
+            }
+            if (res.Stat == null) { throw new Exception(res.ToJson()); }
+            return res.Data;
+        }
+
         public static async Task DeleteNodeRecursively_(this ZooKeeper client, string path)
         {
             var handlered_list = new List<string>();

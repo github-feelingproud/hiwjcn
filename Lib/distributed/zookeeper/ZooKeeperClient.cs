@@ -24,49 +24,131 @@ namespace Lib.distributed.zookeeper
     /// <summary>
     /// 资料：邮箱搜索“zookeeper资料”
     /// </summary>
-    public class ZooKeeperClient : SerializeBase, IDisposable
+    public class ZooKeeperClient : IDisposable
     {
-        protected readonly ZooKeeper _zookeeper;
+        protected bool IsDisposing = false;
+        private ZooKeeper _client;
 
-        public ZooKeeperClient(string configurationName) : this(ZooKeeperConfigSection.FromSection(configurationName))
-        {
-            //
-        }
+        protected readonly string _host;
+        protected readonly TimeSpan _timeout;
+        protected readonly Watcher _connection_status_watcher;
 
+        private readonly ManualResetEvent _client_lock = new ManualResetEvent(false);
+        private readonly object _create_client_lock = new object();
+
+        public event Action OnConnected;
+        public event Action OnUnConnected;
+        public event Action<Exception> OnError;
+        
         public ZooKeeperClient(ZooKeeperConfigSection configuration) :
-            this(configuration.Server, TimeSpan.FromMilliseconds(configuration.SessionTimeOut), null)
+            this(configuration.Server, TimeSpan.FromMilliseconds(configuration.SessionTimeOut))
         {
             //
         }
 
-        public ZooKeeperClient(string host, TimeSpan timeout, Watcher watcher)
+        public ZooKeeperClient(string host, TimeSpan? timeout = null)
         {
-            this._zookeeper = new ZooKeeper(host, (int)timeout.TotalMilliseconds, watcher ?? new EmptyWatcher());
+            this._host = host ?? throw new ArgumentNullException(nameof(host));
+            this._timeout = timeout ?? TimeSpan.FromSeconds(30);
+            this._connection_status_watcher = new ReconnectionWatcher(() =>
+            {
+                //服务可用
+                this._client_lock.Set();
+                this.OnConnected?.Invoke();
+            }, () =>
+            {
+                //服务不可用
+                this._client_lock.Reset();
+                this.OnUnConnected?.Invoke();
+            });
+
+            this.CreateClient();
+
+            this._client_lock.WaitOneOrThrow(TimeSpan.FromSeconds(30), "无法链接zk");
+        }
+
+        protected virtual void CreateClient()
+        {
+            if (this._client == null)
+            {
+                lock (this._create_client_lock)
+                {
+                    if (this._client == null)
+                    {
+                        this._client = new ZooKeeper(
+                            this._host,
+                            (int)this._timeout.TotalMilliseconds,
+                            this._connection_status_watcher);
+                    }
+                }
+            }
         }
 
         public bool IsAlive
         {
-            get => this._zookeeper?.getState() == ZooKeeper.States.CONNECTED;
+            get => this._client?.getState() == ZooKeeper.States.CONNECTED;
         }
 
-        public ZooKeeper Client
-        {
-            get => this._zookeeper;
-        }
+        public ZooKeeper Client { get => this.GetClientManager(); }
 
-        public void Dispose()
+        /// <summary>
+        /// 等待可用链接，默认30秒超时
+        /// </summary>
+        /// <returns></returns>
+        public virtual ZooKeeper GetClientManager(TimeSpan? timeout = null)
         {
             try
             {
-                if (this._zookeeper != null)
+                this._client_lock.WaitOneOrThrow(timeout ?? TimeSpan.FromSeconds(30));
+
+                if (this._client == null) { throw new Exception("zookeeper client is not prepared"); }
+
+                return this._client;
+            }
+            catch (KeeperException.ConnectionLossException e)
+            {
+                this.OnError?.Invoke(e);
+                //链接断开
+                throw e;
+            }
+            catch (KeeperException.SessionExpiredException e)
+            {
+                this.OnError?.Invoke(e);
+                //链接断开
+                throw e;
+            }
+            catch (Exception e)
+            {
+                this.OnError?.Invoke(e);
+                throw e;
+            }
+        }
+
+        protected virtual void CloseClient()
+        {
+            try
+            {
+                if (this._client != null)
                 {
-                    Task.Factory.StartNew(async () => await this._zookeeper.closeAsync()).Wait();
+                    Task.Factory.StartNew(async () => await this._client.closeAsync()).Wait();
                 }
             }
             catch (Exception e)
             {
                 e.AddErrorLog();
             }
+            finally
+            {
+                this._client = null;
+            }
+        }
+
+        public virtual void Dispose()
+        {
+            this.IsDisposing = true;
+
+            this.CloseClient();
+            this._client_lock.Dispose();
         }
     }
 }

@@ -776,9 +776,10 @@ namespace Lib.helper
         /// <summary>
         /// 反转list
         /// </summary>
-        public static List<T> ReversalList<T>(List<T> list)
+        public static void ReversalList<T>(ref List<T> list)
         {
-            if (list?.Count < 2) { return list; }
+            if (list == null) { throw new ArgumentNullException(nameof(list)); }
+            if (list.Count < 2) { return; }
             for (int i = 0; i < list.Count / 2; ++i)
             {
                 var temp = list[i];
@@ -787,7 +788,6 @@ namespace Lib.helper
                 list[i] = list[second_index];
                 list[second_index] = temp;
             }
-            return list;
         }
 
         /// <summary>

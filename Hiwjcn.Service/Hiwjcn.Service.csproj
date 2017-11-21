@@ -165,7 +165,6 @@
     <Compile Include="User\UserEventHandler.cs" />
     <Compile Include="User\UserRoleBll.cs" />
     <Compile Include="User\UserService.cs" />
-    <Compile Include="WcfClientSet.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
