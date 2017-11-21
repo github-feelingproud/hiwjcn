@@ -23,7 +23,7 @@ namespace Lib.distributed.zookeeper
 {
     public class AlwaysOnZooKeeperClient : IDisposable
     {
-        private bool IsClosing = false;
+        private bool IsDisposing = false;
         private ZooKeeperClient _client;
 
         private readonly string Host;
@@ -31,6 +31,8 @@ namespace Lib.distributed.zookeeper
         private readonly ManualResetEvent _client_lock = new ManualResetEvent(false);
         private readonly object _create_client_lock = new object();
 
+        public event Action Connected;
+        public event Action UnConnected;
         public event Action OnRecconected;
         public event Action<Exception> OnError;
 
@@ -48,15 +50,15 @@ namespace Lib.distributed.zookeeper
                 {
                     if (this._client == null)
                     {
-                        this.IsClosing = false;
-
                         var reconnect_watcher = new ReconnectionWatcher(() =>
                         {
                             //服务可用
                             this._client_lock.Set();
+                            this.Connected?.Invoke();
                         }, () =>
                         {
                             this._client_lock.Reset();
+                            this.UnConnected?.Invoke();
                             //重新创建链接
                             this.ReConnect();
                         });
@@ -97,7 +99,6 @@ namespace Lib.distributed.zookeeper
 
         protected virtual void CloseClient()
         {
-            this.IsClosing = true;
             try
             {
                 this._client?.Dispose();
@@ -111,6 +112,9 @@ namespace Lib.distributed.zookeeper
 
         protected virtual void ReConnect()
         {
+            //销毁的时候取消重试链接
+            if (this.IsDisposing) { return; }
+
             this.CloseClient();
             this.CreateClient();
             this.OnRecconected.Invoke();
@@ -118,6 +122,8 @@ namespace Lib.distributed.zookeeper
 
         public virtual void Dispose()
         {
+            this.IsDisposing = true;
+
             this.CloseClient();
             this._client_lock.Dispose();
         }

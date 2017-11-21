@@ -144,6 +144,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Proto\TestProto.proto" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\Lib.csproj">

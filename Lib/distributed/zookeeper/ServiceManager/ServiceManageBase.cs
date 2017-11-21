@@ -47,7 +47,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             Task.Factory.StartNew(async () =>
             {
                 await client.Client.CreatePersistentPathIfNotExist_(this.base_path);
-            });
+            }).Wait();
         }
 
         public override void Dispose()
