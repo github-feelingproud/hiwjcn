@@ -9,49 +9,62 @@ using System.Diagnostics;
 using Lib.helper;
 using Polly;
 using Polly.Retry;
+using org.apache.zookeeper;
 
 namespace Lib.distributed.zookeeper
 {
-    public class ZooKeeperDistributedLock : IDistributedLock
+    public class ZooKeeperDistributedLock : ZooKeeperClient, IDistributedLock
     {
-        private readonly ZooKeeperClient _client;
         private readonly string _path;
         private string _no;
 
-        private RetryPolicy retry = Policy.Handle<Exception>()
+        private readonly RetryPolicy retry = Policy.Handle<Exception>()
                 .WaitAndRetryAsync(5, i => TimeSpan.FromMilliseconds(i * 50));
 
-        public ZooKeeperDistributedLock(string key, string configName)
+        public ZooKeeperDistributedLock(string key, string configName) :
+            this(key, ZooKeeperConfigSection.FromSection(configName))
         {
-            var config = ZooKeeperConfigSection.FromSection(configName);
-            _client = new ZooKeeperClient(config);
-            _path = config.DistributedLockPath + "/" + key.ToMD5();
-
-            //抢锁
-            Task.Factory.StartNew(async () =>
-            {
-                await this.retry.ExecuteAsync(async () =>
-                {
-                    await this._client.Client.CreatePersistentPathIfNotExist_(_path);
-                    _no = await this._client.Client.CreateSequential_(_path + "/", null, false);
-                });
-            }).Wait();
+            //
         }
 
-        public void Dispose()
+        public ZooKeeperDistributedLock(string key, ZooKeeperConfigSection config) :
+            this(config.Server, config.DistributedLockPath, key)
         {
-            if (ValidateHelper.IsPlumpString(_no))
+            //
+        }
+
+        public ZooKeeperDistributedLock(string host, string lock_path, string key) : base(host)
+        {
+            _path = lock_path + "/" + key.ToMD5();
+
+            retry.Execute(() =>
             {
                 Task.Factory.StartNew(async () =>
                 {
-                    await this.retry.ExecuteAsync(async () =>
+                    await this.Client.CreatePersistentPathIfNotExist_(this._path);
+                    var pt = await this.Client.CreateNode_(this._path + "/", CreateMode.EPHEMERAL_SEQUENTIAL);
+                    this._no = pt.SplitZookeeperPath().Reverse_().Take(1).FirstOrDefault() ?? throw new Exception("创建序列节点失败");
+
+                    //最小值拿到锁
+                    var children = await this.Client.GetChildrenOrThrow_(this._path);
+                    var preNo = children.Where(x => string.CompareOrdinal(x, this._no) < 0).OrderByDescending(x => x).FirstOrDefault();
+                    if (preNo != null)
                     {
-                        await this._client.Client.DeleteSingleNode_(this._path + "/" + this._no);
-                        await this._client.Client.DeleteSingleNode_(this._path);
-                    });
+                        throw new Exception("获取锁失败");
+                    }
+
                 }).Wait();
-            }
-            _client.Dispose();
+            });
+        }
+
+        public override void Dispose()
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                await this.Client.DeleteSingleNode_(this._path + "/" + this._no);
+            }).Wait();
+
+            base.Dispose();
         }
     }
 }

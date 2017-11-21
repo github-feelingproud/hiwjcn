@@ -39,7 +39,7 @@ namespace Lib.distributed.zookeeper
         public event Action OnConnected;
         public event Action OnUnConnected;
         public event Action<Exception> OnError;
-        
+
         public ZooKeeperClient(ZooKeeperConfigSection configuration) :
             this(configuration.Server, TimeSpan.FromMilliseconds(configuration.SessionTimeOut))
         {
@@ -62,9 +62,8 @@ namespace Lib.distributed.zookeeper
                 this.OnUnConnected?.Invoke();
             });
 
+            //connect
             this.CreateClient();
-
-            this._client_lock.WaitOneOrThrow(TimeSpan.FromSeconds(30), "无法链接zk");
         }
 
         protected virtual void CreateClient()
@@ -79,6 +78,8 @@ namespace Lib.distributed.zookeeper
                             this._host,
                             (int)this._timeout.TotalMilliseconds,
                             this._connection_status_watcher);
+                        //等待连上
+                        this._client_lock.WaitOneOrThrow(TimeSpan.FromSeconds(30), "无法链接zk");
                     }
                 }
             }
