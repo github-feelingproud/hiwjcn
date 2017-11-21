@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
-    public static class ServiceManagerExtension
+    public static class ServiceManageExtension
     {
     }
 }

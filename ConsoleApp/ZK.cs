@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.distributed.zookeeper.ServiceManager;
 
 namespace ConsoleApp
 {
@@ -24,6 +25,21 @@ namespace ConsoleApp
                 {
                     Console.WriteLine(e.GetInnerExceptionAsJson());
                 };
+
+                await Task.FromResult(1);
+                Console.ReadLine();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+        public static async Task sub()
+        {
+            try
+            {
+                //docker run --name some-zookeeper --restart always -p 2181:2181 -d zookeeper
+                var client = new ServiceSubscribe("es.qipeilong.net:2181");
 
                 await Task.FromResult(1);
                 Console.ReadLine();

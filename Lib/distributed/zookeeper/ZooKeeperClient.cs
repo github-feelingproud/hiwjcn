@@ -17,34 +17,11 @@ using System.Net;
 using System.Net.Http;
 using Lib.net;
 using Lib.rpc;
+using Lib.distributed.zookeeper.watcher;
 
 namespace Lib.distributed.zookeeper
 {
-    public class EmptyWatcher : Watcher
-    {
-        public override async Task process(WatchedEvent @event)
-        {
-            await Task.FromResult(1);
-        }
-    }
-
-    public class CallBackWatcher : Watcher
-    {
-        private readonly Func<WatchedEvent, Task> callback;
-
-        public CallBackWatcher(Func<WatchedEvent, Task> callback)
-        {
-            this.callback = callback ?? throw new ArgumentNullException(nameof(callback));
-        }
-
-        public override async Task process(WatchedEvent @event)
-        {
-            await this.callback.Invoke(@event);
-        }
-    }
-
     /// <summary>
-    /// 
     /// 资料：邮箱搜索“zookeeper资料”
     /// </summary>
     public class ZooKeeperClient : SerializeBase, IDisposable
@@ -65,11 +42,6 @@ namespace Lib.distributed.zookeeper
         public ZooKeeperClient(string host, TimeSpan timeout, Watcher watcher)
         {
             this._zookeeper = new ZooKeeper(host, (int)timeout.TotalMilliseconds, watcher ?? new EmptyWatcher());
-        }
-
-        public virtual async Task WatchedChange(WatchedEvent @event)
-        {
-            await Task.FromResult(1);
         }
 
         public bool IsAlive

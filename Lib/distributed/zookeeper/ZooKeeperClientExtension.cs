@@ -31,7 +31,7 @@ namespace Lib.distributed.zookeeper
         public static async Task<string> CreateNode_(this ZooKeeper client, string path, CreateMode mode, byte[] data = null) =>
                 await client.createAsync(path, data, Ids.OPEN_ACL_UNSAFE, mode);
 
-        public static async Task<bool> Watch_(this ZooKeeper client, string path, Watcher watcher) =>
+        public static async Task<bool> WatchNode_(this ZooKeeper client, string path, Watcher watcher) =>
             await client.ExistAsync_(path, watcher ?? throw new ArgumentNullException(nameof(watcher)));
 
         public static async Task<bool> ExistAsync_(this ZooKeeper client, string path, Watcher watcher = null)
@@ -138,5 +138,8 @@ namespace Lib.distributed.zookeeper
 
             return res.Children ?? new List<string>() { };
         }
+
+        public static async Task WatchChildren_(this ZooKeeper client, string path, Watcher watcher) =>
+            await client.GetChildrenOrThrow_(path, watcher ?? throw new ArgumentNullException(nameof(watcher)));
     }
 }

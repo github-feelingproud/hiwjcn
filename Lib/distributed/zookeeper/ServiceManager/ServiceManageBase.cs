@@ -17,9 +17,9 @@ namespace Lib.distributed.zookeeper.ServiceManager
     /// /QPL/WCF/ORDER/m-3
     /// /QPL/WCF/ORDER/m-4
     /// </summary>
-    public class ServiceManageBase : AlwaysOnZooKeeperClient
+    public abstract class ServiceManageBase : AlwaysOnZooKeeperClient
     {
-        private readonly string base_path;
+        protected readonly string base_path;
 
         public ServiceManageBase(string host) : this(host, "/QPL/WCF") { }
 
@@ -33,9 +33,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
             try
             {
-                Policy.Handle<Exception>()
-                    .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(i * 100))
-                    .Execute(() => this.InitBasePath());
+                this.Retry().Execute(() => this.InitBasePath());
             }
             catch (Exception e)
             {
@@ -51,6 +49,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 await client.Client.CreatePersistentPathIfNotExist_(this.base_path);
             }).Wait();
         }
+
+        protected Policy Retry() => ServiceManageHelper.RetryPolicy();
 
         public override void Dispose()
         {

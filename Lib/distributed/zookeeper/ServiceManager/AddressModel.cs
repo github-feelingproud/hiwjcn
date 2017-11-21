@@ -12,6 +12,6 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
         public virtual string Ip { get; set; }
 
-        public virtual DateTime OnLineTime { get; set; }
+        public virtual DateTime? OnLineTime { get; set; }
     }
 }

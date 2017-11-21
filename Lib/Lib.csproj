@@ -237,9 +237,12 @@
     <Compile Include="distributed\zookeeper\AlwaysOnZooKeeperClient.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\AddressModel.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceManageBase.cs" />
-    <Compile Include="distributed\zookeeper\ServiceManager\ServiceManagerExtension.cs" />
+    <Compile Include="distributed\zookeeper\ServiceManager\ServiceManageHelper.cs" />
+    <Compile Include="distributed\zookeeper\ServiceManager\ServiceManageExtension.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceRegister.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceSubscribe.cs" />
+    <Compile Include="distributed\zookeeper\watcher\CallBackWatcher.cs" />
+    <Compile Include="distributed\zookeeper\watcher\EmptyWatcher.cs" />
     <Compile Include="distributed\zookeeper\watcher\NodeMonitorWatcher.cs" />
     <Compile Include="distributed\zookeeper\watcher\ReconnectionWatcher.cs" />
     <Compile Include="distributed\zookeeper\watcher\WatcherBase.cs" />
