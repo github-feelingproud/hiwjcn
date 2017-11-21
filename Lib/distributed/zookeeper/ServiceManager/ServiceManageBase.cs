@@ -52,6 +52,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
         protected Policy Retry() => ServiceManageHelper.RetryPolicy();
 
+        protected Policy RetryAsync() => ServiceManageHelper.RetryAsyncPolicy();
+
         public override void Dispose()
         {
             base.Dispose();

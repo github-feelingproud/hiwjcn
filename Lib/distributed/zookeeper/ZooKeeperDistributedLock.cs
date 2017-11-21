@@ -18,9 +18,6 @@ namespace Lib.distributed.zookeeper
         private readonly string _path;
         private string _no;
 
-        private readonly RetryPolicy retry = Policy.Handle<Exception>()
-                .WaitAndRetryAsync(5, i => TimeSpan.FromMilliseconds(i * 50));
-
         public ZooKeeperDistributedLock(string key, string configName) :
             this(key, ZooKeeperConfigSection.FromSection(configName))
         {
@@ -35,34 +32,43 @@ namespace Lib.distributed.zookeeper
 
         public ZooKeeperDistributedLock(string host, string lock_path, string key) : base(host)
         {
-            _path = lock_path + "/" + key.ToMD5();
+            this._path = lock_path + "/" + key.ToMD5();
+        }
 
-            retry.Execute(() =>
+        public async Task LockOrThrow()
+        {
+            await this.Client.CreatePersistentPathIfNotExist_(this._path);
+            var pt = await this.Client.CreateNode_(this._path + "/", CreateMode.EPHEMERAL_SEQUENTIAL);
+            this._no = pt.SplitZookeeperPath().Reverse_().Take(1).FirstOrDefault() ?? throw new Exception("创建序列节点失败");
+
+            //最小值拿到锁
+            var children = await this.Client.GetChildrenOrThrow_(this._path);
+            var preNo = children.Where(x => string.CompareOrdinal(x, this._no) < 0).OrderByDescending(x => x).FirstOrDefault();
+            if (preNo != null)
             {
-                Task.Factory.StartNew(async () =>
-                {
-                    await this.Client.CreatePersistentPathIfNotExist_(this._path);
-                    var pt = await this.Client.CreateNode_(this._path + "/", CreateMode.EPHEMERAL_SEQUENTIAL);
-                    this._no = pt.SplitZookeeperPath().Reverse_().Take(1).FirstOrDefault() ?? throw new Exception("创建序列节点失败");
+                throw new Exception("获取锁失败");
+            }
+        }
 
-                    //最小值拿到锁
-                    var children = await this.Client.GetChildrenOrThrow_(this._path);
-                    var preNo = children.Where(x => string.CompareOrdinal(x, this._no) < 0).OrderByDescending(x => x).FirstOrDefault();
-                    if (preNo != null)
-                    {
-                        throw new Exception("获取锁失败");
-                    }
-
-                }).Wait();
-            });
+        public async Task ReleaseLock()
+        {
+            try
+            {
+                await this.Client.DeleteSingleNode_(this._path + "/" + this._no);
+                this._no = null;
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
         }
 
         public override void Dispose()
         {
-            Task.Factory.StartNew(async () =>
+            if (ValidateHelper.IsPlumpString(this._no))
             {
-                await this.Client.DeleteSingleNode_(this._path + "/" + this._no);
-            }).Wait();
+                AsyncHelper_.RunSync(() => this.ReleaseLock());
+            }
 
             base.Dispose();
         }

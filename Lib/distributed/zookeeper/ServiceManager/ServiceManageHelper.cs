@@ -11,5 +11,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
     {
         public static Policy RetryPolicy() =>
             Policy.Handle<Exception>().WaitAndRetry(3, i => TimeSpan.FromMilliseconds(i * 100));
+
+        public static Policy RetryAsyncPolicy() =>
+            Policy.Handle<Exception>().WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(i * 100));
     }
 }

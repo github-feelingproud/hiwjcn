@@ -50,10 +50,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             {
                 this.Retry().Execute(() =>
                 {
-                    Task.Factory.StartNew(async () =>
-                    {
-                        await this.NodeChildrenChanged(this.base_path);
-                    }).Wait();
+                    AsyncHelper_.RunSync(() => this.NodeChildrenChanged(this.base_path));
                 });
             }
             catch (Exception e)
