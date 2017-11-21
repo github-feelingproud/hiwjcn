@@ -33,7 +33,9 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
             try
             {
-                Policy.Handle<Exception>().Retry(3).Execute(() => this.InitBasePath());
+                Policy.Handle<Exception>()
+                    .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(i * 100))
+                    .Execute(() => this.InitBasePath());
             }
             catch (Exception e)
             {

@@ -68,11 +68,15 @@ namespace Lib.distributed.zookeeper
             }
         }
 
-        public virtual ZooKeeperClient GetClientManager()
+        /// <summary>
+        /// 等待可用链接，默认30秒超时
+        /// </summary>
+        /// <returns></returns>
+        public virtual ZooKeeperClient GetClientManager(TimeSpan? timeout = null)
         {
             try
             {
-                this._client_lock.WaitOneOrThrow(TimeSpan.FromSeconds(30));
+                this._client_lock.WaitOneOrThrow(timeout ?? TimeSpan.FromSeconds(30));
 
                 if (this._client == null) { throw new Exception("zookeeper client is not prepared"); }
 
