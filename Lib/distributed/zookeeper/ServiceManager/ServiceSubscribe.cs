@@ -183,7 +183,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 $"节点无法被处理{path}".AddBusinessInfoLog();
             }
 
-            Console.WriteLine($"{path}:{event_type}");
+            Console.WriteLine($"节点事件：{path}:{event_type}");
 
             switch (event_type)
             {
