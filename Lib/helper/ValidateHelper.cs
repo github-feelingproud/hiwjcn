@@ -360,18 +360,12 @@ namespace Lib.helper
         /// <summary>
         /// 判断是否是有值的list
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static bool IsPlumpList<T>(IList<T> list) => list?.Count > 0;
+        public static bool IsPlumpList<T>(IEnumerable<T> list) => list?.Count() > 0;
 
         /// <summary>
         /// 包含长度大于0的item，并把他们找出来
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="filtered"></param>
-        /// <returns></returns>
-        public static bool IsPlumpListAfterFilterMeaninglessData(IList<string> list, out List<string> filtered)
+        public static bool IsPlumpListAfterFilterMeaninglessData(IEnumerable<string> list, out List<string> filtered)
         {
             filtered = ConvertHelper.NotNullList(list).Where(x => IsPlumpString(x)).ToList();
             return filtered.Count > 0;

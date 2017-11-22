@@ -367,7 +367,7 @@ Console.WriteLine(Convert.ToBase64String(buffer)); //这是把字节数组当作
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static List<T> NotNullList<T>(IList<T> list) => NotNullEnumerable(list);
+        public static List<T> NotNullList<T>(IEnumerable<T> list) => NotNullEnumerable(list);
         public static List<T> NotNullEnumerable<T>(IEnumerable<T> list)
         {
             if (list == null) { return new List<T>(); }
