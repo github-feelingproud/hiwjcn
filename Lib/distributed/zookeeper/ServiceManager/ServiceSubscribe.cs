@@ -34,11 +34,11 @@ namespace Lib.distributed.zookeeper.ServiceManager
         {
             this._children_watcher = new CallBackWatcher(e =>
             {
-                return this.NodeChanges(e);
+                return this.WatchNodeChanges(e);
             });
             this._node_watcher = new CallBackWatcher(e =>
             {
-                return this.NodeChanges(e);
+                return this.WatchNodeChanges(e);
             });
 
             this.StartWatch();
@@ -66,7 +66,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             {
                 this.Retry().Execute(() =>
                 {
-                    AsyncHelper_.RunSync(() => this.NodeChildrenChanged(this.base_path));
+                    AsyncHelper_.RunSync(() => this.NodeChildrenChanged(this._base_path));
                 });
             }
             catch (Exception e)
@@ -79,32 +79,33 @@ namespace Lib.distributed.zookeeper.ServiceManager
         {
             try
             {
-                var base_path_level = this.base_path.SplitZookeeperPath().Count;
                 var path_level = path.SplitZookeeperPath().Count;
-                if (path_level < base_path_level || path_level > base_path_level + 1) { return; }
 
-                if (path_level == base_path_level)
+                if (path_level == this._base_path_level)
                 {
                     //qpl/wcf
+                    foreach (var service in await this.Client.GetChildrenOrThrow_(path, this._children_watcher))
+                    {
+                        foreach (var endpoint in await this.Client.GetChildrenOrThrow_(path + "/" + service, this._children_watcher))
+                        {
+                            //处理节点
+                            await this.HandleEndpointNode(path + "/" + service + "/" + endpoint);
+                        }
+                    }
                 }
-                else if (path_level == base_path_level + 1)
+                else if (path_level == this._service_path_level)
                 {
                     //qpl/wcf/order
+                    foreach (var endpoint in await this.Client.GetChildrenOrThrow_(path, this._children_watcher))
+                    {
+                        //处理节点
+                        await this.HandleEndpointNode(path + "/" + endpoint);
+                    }
                 }
                 else
                 {
                     $"不能处理的节点{path}".AddBusinessInfoLog();
                 }
-
-                var client = this.GetClientManager();
-                var children = await client.GetChildrenOrThrow_(path, this._children_watcher);
-
-                Console.WriteLine(children.AsSteps());
-
-                foreach (var child in children)
-                {
-                    //
-                }
             }
             catch (Exception e)
             {
@@ -112,23 +113,12 @@ namespace Lib.distributed.zookeeper.ServiceManager
             }
         }
 
-        private async Task EndpointNodeChildrenChanged()
-        { }
-
-        private async Task NodeDataChanged(string path)
+        private async Task HandleEndpointNode(string path)
         {
+            if (!this.IsEndpointLevel(path)) { return; }
             try
             {
-                var client = this.GetClientManager();
-                var bs = await client.GetDataOrThrow_(path, this._node_watcher);
-                if (ValidateHelper.IsPlumpList(bs))
-                {
-                    var data = Encoding.UTF8.GetString(bs).JsonToEntity<List<AddressModel>>();
-
-                    var parent = path.SplitZookeeperPath().Reverse_().Skip(1).Take(1).FirstOrDefault();
-
-                    Console.WriteLine($"{parent}修改了数据：{data.ToJson()}");
-                }
+                await EndpointDataChanged(path);
             }
             catch (Exception e)
             {
@@ -136,20 +126,70 @@ namespace Lib.distributed.zookeeper.ServiceManager
             }
         }
 
-        private async Task NodeChanges(WatchedEvent e)
+        private async Task EndpointDataChanged(string path)
+        {
+            if (!this.IsEndpointLevel(path)) { return; }
+            try
+            {
+                var bs = await this.Client.GetDataOrThrow_(path, this._node_watcher);
+                if (!ValidateHelper.IsPlumpList(bs))
+                {
+                    await this.Client.DeleteNodeRecursively_(path);
+                    return;
+                }
+                var data = Encoding.UTF8.GetString(bs).JsonToEntity<AddressModel>();
+                if (!ValidateHelper.IsAllPlumpString(data.Id, data.Url)) { return; }
+                var service_info = this.GetServiceAndEndpointNodeName(path);
+                data.ServiceNodeName = service_info.service_name;
+                data.EndpointNodeName = service_info.endpoint_name;
+                data.OnLineTime = DateTime.Now;
+
+                this._endpoints.RemoveWhere_(x => x.Id == data.Id);
+                this._endpoints.Add(data);
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+        }
+
+        private async Task EndpointDeleted(string path)
+        {
+            if (!this.IsEndpointLevel(path)) { return; }
+            var data = this.GetServiceAndEndpointNodeName(path);
+
+            this._endpoints.RemoveWhere_(
+                x => x.ServiceNodeName == data.service_name && x.EndpointNodeName == data.endpoint_name);
+
+            await Task.FromResult(1);
+        }
+
+        private async Task WatchNodeChanges(WatchedEvent e)
         {
             var event_type = e.get_Type();
             var path = e.getPath();
 
+            var path_level = path.SplitZookeeperPath().Count;
+            if (path_level < this._base_path_level || path_level > this._endpoint_path_level)
+            {
+                $"节点无法被处理{path}".AddBusinessInfoLog();
+            }
+
+            Console.WriteLine($"{path}:{event_type}");
+
             switch (event_type)
             {
                 case Watcher.Event.EventType.NodeChildrenChanged:
-                    //注册节点发生改变
+                    //子节点发生更改
                     await this.NodeChildrenChanged(path);
                     break;
+
                 case Watcher.Event.EventType.NodeDataChanged:
                     //单个节点数据发生修改
-                    await this.NodeDataChanged(path);
+                    await this.EndpointDataChanged(path);
+                    break;
+                case Watcher.Event.EventType.NodeDeleted:
+                    await this.EndpointDeleted(path);
                     break;
                 default:
                     break;

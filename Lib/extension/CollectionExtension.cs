@@ -19,6 +19,18 @@ namespace Lib.extension
             }
         }
 
+        public static void RemoveWhere_<T>(this List<T> list, Func<T, bool> where)
+        {
+            for (var i = list.Count - 1; i >= 0; --i)
+            {
+                var item = list[i];
+                if (where.Invoke(item))
+                {
+                    list.Remove(item);
+                }
+            }
+        }
+
         /// <summary>
         /// 在list中添加item，遇到重复就抛异常
         /// </summary>

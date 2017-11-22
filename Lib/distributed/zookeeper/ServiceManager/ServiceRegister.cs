@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Lib.distributed.zookeeper;
 using Polly;
+using Lib.rpc;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
@@ -18,6 +19,9 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
         public async Task RegisterService(params Assembly[] ass)
         {
+            foreach (var a in ass)
+            { }
+
             using (var lk = new ZooKeeperDistributedLock(this._host, "/QPL/LOCK", "service_name"))
             {
                 await this.RetryAsync().ExecuteAsync(async () => await lk.LockOrThrow());
