@@ -16,6 +16,7 @@ using org.apache.zookeeper.data;
 using System.Net;
 using System.Net.Http;
 using Lib.net;
+using System.Text;
 using Lib.rpc;
 
 namespace Lib.distributed.zookeeper
@@ -76,9 +77,9 @@ namespace Lib.distributed.zookeeper
             var p = await client.CreateNode_(path, mode, data);
             return p.Substring(path.Length);
         }
-
-        public static async Task<Stat> SetDataAsync_<T>(this ZooKeeper client, string path, T data) =>
-            await client.setDataAsync(path, data.ToJson().GetBytes());
+        
+        public static async Task<Stat> SetDataAsync_(this ZooKeeper client, string path, byte[] data) =>
+            await client.setDataAsync(path, data);
 
         public static async Task<byte[]> GetDataOrThrow_(this ZooKeeper client, string path, Watcher watcher = null)
         {

@@ -446,6 +446,8 @@
     <Compile Include="helper\JsonHelper.cs" />
     <Compile Include="io\QrCode.cs" />
     <Compile Include="helper\XmlHelper.cs" />
+    <Compile Include="rpc\ServiceClientExtension.cs" />
+    <Compile Include="rpc\ServiceCore.cs" />
     <Compile Include="rpc\WcfInterception.cs" />
     <Compile Include="rpc\WebApiHelper.cs" />
     <Compile Include="task\QuartzJobBase.cs" />
@@ -453,7 +455,7 @@
     <Compile Include="task\TaskLogger.cs" />
     <Compile Include="task\TaskManager.cs" />
     <Compile Include="TestFile.cs" />
-    <Compile Include="rpc\WcfClient.cs" />
+    <Compile Include="rpc\ServiceClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
