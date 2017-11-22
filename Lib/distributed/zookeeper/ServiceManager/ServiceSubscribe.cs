@@ -30,6 +30,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
         private readonly List<AddressModel> _endpoints = new List<AddressModel>();
         private readonly Random _ran = new Random((int)DateTime.Now.Ticks);
 
+        public event Action OnServiceChanged;
+
         public ServiceSubscribe(string host) : base(host)
         {
             this._children_watcher = new CallBackWatcher(e =>
@@ -84,9 +86,11 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 if (path_level == this._base_path_level)
                 {
                     //qpl/wcf
-                    foreach (var service in await this.Client.GetChildrenOrThrow_(path, this._children_watcher))
+                    var services = await this.Client.GetChildrenOrThrow_(path, this._children_watcher);
+                    foreach (var service in services)
                     {
-                        foreach (var endpoint in await this.Client.GetChildrenOrThrow_(path + "/" + service, this._children_watcher))
+                        var endpoints = await this.Client.GetChildrenOrThrow_(path + "/" + service, this._children_watcher);
+                        foreach (var endpoint in endpoints)
                         {
                             //处理节点
                             await this.HandleEndpointNode(path + "/" + service + "/" + endpoint);
@@ -96,7 +100,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 else if (path_level == this._service_path_level)
                 {
                     //qpl/wcf/order
-                    foreach (var endpoint in await this.Client.GetChildrenOrThrow_(path, this._children_watcher))
+                    var endpoints = await this.Client.GetChildrenOrThrow_(path, this._children_watcher);
+                    foreach (var endpoint in endpoints)
                     {
                         //处理节点
                         await this.HandleEndpointNode(path + "/" + endpoint);
@@ -146,6 +151,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
                 this._endpoints.RemoveWhere_(x => x.Id == data.Id);
                 this._endpoints.Add(data);
+                this.OnServiceChanged?.Invoke();
             }
             catch (Exception e)
             {
@@ -160,6 +166,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
             this._endpoints.RemoveWhere_(
                 x => x.ServiceNodeName == data.service_name && x.EndpointNodeName == data.endpoint_name);
+
+            this.OnServiceChanged?.Invoke();
 
             await Task.FromResult(1);
         }

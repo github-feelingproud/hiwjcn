@@ -34,9 +34,10 @@ namespace Lib.distributed.zookeeper.ServiceManager
                         Id = node_id,
                         Url = base_url + attr.RelativePath,
                         ServiceNodeName = ServiceManageHelper.ParseServiceName(t),
-                        EndpointNodeName = $"node_{node_id}",
+                        EndpointNodeName = ServiceManageHelper.EndpointNodeName(node_id),
                         OnLineTime = now,
                     };
+                    list.Add(model);
                 }
             }
             foreach (var m in list)
