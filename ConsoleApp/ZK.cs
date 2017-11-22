@@ -58,19 +58,9 @@ namespace ConsoleApp
                     Console.WriteLine("服务发生更改");
                     client.AllService().Select(x => x.FullName).ToList().ForEach(Console.WriteLine);
                 };
-
-                //foreach (var i in Com.Range(1000))
-                //{
-                //    using (var reg = new ServiceRegister(host))
-                //    {
-                //        await reg.RegisterService("http://www.qpl.com/service/", "3", typeof(ZK).Assembly);
-                //        Console.WriteLine(client.AllService().ToJson());
-
-                //        await Task.Delay((int)TimeSpan.FromSeconds(20).TotalMilliseconds);
-                //    }
-                //}
-
+                
                 await Task.FromResult(1);
+                Console.ReadLine();
             }
             catch (Exception e)
             {

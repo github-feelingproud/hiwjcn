@@ -23,6 +23,9 @@ using System.Text;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
+    /// <summary>
+    /// 应该作为静态类
+    /// </summary>
     public class ServiceSubscribe : ServiceManageBase
     {
         private readonly Watcher _children_watcher;
@@ -142,7 +145,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                     await this.Client.DeleteNodeRecursively_(path);
                     return;
                 }
-                var data = Encoding.UTF8.GetString(bs).JsonToEntity<AddressModel>();
+                var data = this._serializer.Deserialize<AddressModel>(bs);
                 if (!ValidateHelper.IsAllPlumpString(data.Id, data.Url)) { return; }
                 var service_info = this.GetServiceAndEndpointNodeName(path);
                 data.ServiceNodeName = service_info.service_name;

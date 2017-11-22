@@ -9,6 +9,8 @@ using System.Reflection;
 using Lib.extension;
 using Polly;
 using Lib.core;
+using Lib.data;
+using Lib.helper;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
@@ -24,9 +26,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
         protected readonly int _base_path_level;
         protected readonly int _service_path_level;
         protected readonly int _endpoint_path_level;
-
-        protected Encoding _encoding { get => ConfigHelper.Instance.SystemEncoding; }
-
+        
+        protected readonly SerializeHelper _serializer = new SerializeHelper();
 
         public ServiceManageBase(string host) : this(host, "/QPL/WCF") { }
 

@@ -47,12 +47,11 @@ namespace Lib.distributed.zookeeper
             }
         }
 
-        public static async Task<string> CreatePersistentPathIfNotExist_(this ZooKeeper client,
-            string path, byte[] data = null)
+        public static async Task EnsurePath(this ZooKeeper client, string path)
         {
             if (await client.ExistAsync_(path))
             {
-                return path;
+                return;
             }
 
             var sp = path.SplitZookeeperPath();
@@ -65,19 +64,30 @@ namespace Lib.distributed.zookeeper
                     continue;
                 }
 
-                await client.CreateNode_(p, CreateMode.PERSISTENT, data);
+                await client.CreateNode_(p, CreateMode.PERSISTENT);
             }
-            return sp.AsZookeeperPath();
         }
 
-        public static async Task<string> CreateSequential_(this ZooKeeper client,
+        public static async Task<string> CreatePersistentPathIfNotExist_(this ZooKeeper client,
+            string path, byte[] data = null)
+        {
+            await client.EnsurePath(path);
+            if (ValidateHelper.IsPlumpList(data))
+            {
+                await client.SetDataAsync_(path, data);
+            }
+            return path.SplitZookeeperPath().AsZookeeperPath();
+        }
+
+        [Obsolete("还有问题")]
+        public static async Task<string> CreateSequentialPath_(this ZooKeeper client,
             string path, byte[] data = null, bool persistent = true)
         {
             var mode = persistent ? CreateMode.PERSISTENT_SEQUENTIAL : CreateMode.EPHEMERAL_SEQUENTIAL;
             var p = await client.CreateNode_(path, mode, data);
             return p.Substring(path.Length);
         }
-        
+
         public static async Task<Stat> SetDataAsync_(this ZooKeeper client, string path, byte[] data) =>
             await client.setDataAsync(path, data);
 
@@ -102,15 +112,15 @@ namespace Lib.distributed.zookeeper
 
             async Task __DeleteNode(string pre_path, string p)
             {
-                var node_sp = pre_path.SplitZookeeperPath();
-                var node_path = p.SplitZookeeperPath();
-                if (!ValidateHelper.IsPlumpList(node_path))
+                var pre_node = pre_path.SplitZookeeperPath();
+                var cur_node = p.SplitZookeeperPath();
+                if (!ValidateHelper.IsPlumpList(cur_node))
                 {
                     throw new Exception($"不能删除：{p}");
                 }
-                node_sp.AddRange(node_path);
+                pre_node.AddRange(cur_node);
 
-                var current_node = node_sp.AsZookeeperPath();
+                var current_node = pre_node.AsZookeeperPath();
                 //检查死循环
                 handlered_list.AddOnceOrThrow(current_node,
                     $"递归发生错误，已处理节点：{handlered_list.ToJson()}，再次处理：{current_node}");
@@ -119,10 +129,10 @@ namespace Lib.distributed.zookeeper
                 {
                     return;
                 }
-                var res = await client.getChildrenAsync(current_node, false);
-                if (ValidateHelper.IsPlumpList(res.Children))
+                var children = await client.GetChildrenOrThrow_(current_node);
+                if (ValidateHelper.IsPlumpList(children))
                 {
-                    foreach (var child in res.Children.Where(x => ValidateHelper.IsPlumpString(x)))
+                    foreach (var child in children.Where(x => ValidateHelper.IsPlumpString(x)))
                     {
                         //递归
                         await __DeleteNode(current_node, child);

@@ -16,7 +16,7 @@ hiwjcn@live.com
 
 ### 1.0.0.43 待发布
 `完善用户体系` `完善base menu` `完善tree extension` `完善base controller` 
-`ioc重复注册检查` `MongoRepository`
+`ioc重复注册检查` `MongoRepository` `基于zookeeper的服务注册和发现` `删除autofac多余的注册操作`
 
 ### 1.0.0.42 仓促发布
 `auth作为组件包含在lib中` `加入一个简单的用户体系` `CRUD Base Controller` 
