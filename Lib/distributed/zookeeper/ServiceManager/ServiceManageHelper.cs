@@ -14,5 +14,11 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
         public static Policy RetryAsyncPolicy() =>
             Policy.Handle<Exception>().WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(i * 100));
+
+        public static string ParseServiceName<T>()
+        {
+            var t = typeof(T);
+            return $"{t.Assembly.FullName}-{t.FullName}";
+        }
     }
 }

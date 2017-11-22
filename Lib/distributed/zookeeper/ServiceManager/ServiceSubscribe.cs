@@ -27,7 +27,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
     {
         private readonly Watcher _children_watcher;
         private readonly Watcher _node_watcher;
-        private readonly Dictionary<string, string> _endpoints = new Dictionary<string, string>();
+        private readonly List<AddressModel> _endpoints = new List<AddressModel>();
+        private readonly Random _ran = new Random((int)DateTime.Now.Ticks);
 
         public ServiceSubscribe(string host) : base(host)
         {
@@ -43,6 +44,21 @@ namespace Lib.distributed.zookeeper.ServiceManager
             this.StartWatch();
             this.OnConnected += () => this.StartWatch();
         }
+
+        public IReadOnlyList<AddressModel> AllService() => this._endpoints.AsReadOnly();
+
+        public AddressModel Resolve<T>()
+        {
+            var name = ServiceManageHelper.ParseServiceName<T>();
+            var list = this._endpoints.Where(x => x.ServiceNodeName == name).ToList();
+            if (ValidateHelper.IsPlumpList(list))
+            {
+                return this._ran.Choice(list);
+            }
+            return null;
+        }
+
+        public string ResolveSvc<T>() => this.Resolve<T>()?.Url;
 
         private void StartWatch()
         {
@@ -63,6 +79,23 @@ namespace Lib.distributed.zookeeper.ServiceManager
         {
             try
             {
+                var base_path_level = this.base_path.SplitZookeeperPath().Count;
+                var path_level = path.SplitZookeeperPath().Count;
+                if (path_level < base_path_level || path_level > base_path_level + 1) { return; }
+
+                if (path_level == base_path_level)
+                {
+                    //qpl/wcf
+                }
+                else if (path_level == base_path_level + 1)
+                {
+                    //qpl/wcf/order
+                }
+                else
+                {
+                    $"不能处理的节点{path}".AddBusinessInfoLog();
+                }
+
                 var client = this.GetClientManager();
                 var children = await client.GetChildrenOrThrow_(path, this._children_watcher);
 
@@ -70,12 +103,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
                 foreach (var child in children)
                 {
-                    var bs = await client.GetDataOrThrow_($"{path}/{child}", this._node_watcher);
-                    if (ValidateHelper.IsPlumpList(bs))
-                    {
-                        var data = Encoding.UTF8.GetString(bs).JsonToEntity<List<AddressModel>>();
-                        //Console.WriteLine(data.ToJson());
-                    }
+                    //
                 }
             }
             catch (Exception e)
@@ -83,6 +111,9 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 e.AddErrorLog();
             }
         }
+
+        private async Task EndpointNodeChildrenChanged()
+        { }
 
         private async Task NodeDataChanged(string path)
         {
