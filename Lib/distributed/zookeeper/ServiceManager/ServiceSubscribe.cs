@@ -86,9 +86,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
         {
             try
             {
-                var path_level = path.SplitZookeeperPath().Count;
-
-                if (path_level == this._base_path_level)
+                if (this.IsServiceRootLevel(path))
                 {
                     //qpl/wcf
                     var services = await this.Client.GetChildrenOrThrow_(path, this._children_watcher);
@@ -102,7 +100,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                         }
                     }
                 }
-                else if (path_level == this._service_path_level)
+                else if (this.IsServiceLevel(path))
                 {
                     //qpl/wcf/order
                     var endpoints = await this.Client.GetChildrenOrThrow_(path, this._children_watcher);
@@ -188,7 +186,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 $"节点无法被处理{path}".AddBusinessInfoLog();
             }
 
-            Console.WriteLine($"节点事件：{path}:{event_type}");
+            //Console.WriteLine($"节点事件：{path}:{event_type}");
 
             switch (event_type)
             {
@@ -202,6 +200,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                     await this.EndpointDataChanged(path);
                     break;
                 case Watcher.Event.EventType.NodeDeleted:
+                    //单个节点被删除
                     await this.EndpointDeleted(path);
                     break;
                 default:

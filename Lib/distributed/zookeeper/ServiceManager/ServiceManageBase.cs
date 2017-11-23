@@ -26,7 +26,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
         protected readonly int _base_path_level;
         protected readonly int _service_path_level;
         protected readonly int _endpoint_path_level;
-        
+
         protected readonly SerializeHelper _serializer = new SerializeHelper();
 
         public ServiceManageBase(string host) : this(host, "/QPL/WCF") { }
@@ -64,6 +64,9 @@ namespace Lib.distributed.zookeeper.ServiceManager
         protected Policy Retry() => ServiceManageHelper.RetryPolicy();
 
         protected Policy RetryAsync() => ServiceManageHelper.RetryAsyncPolicy();
+
+        protected bool IsServiceRootLevel(string path) =>
+            path.SplitZookeeperPath().Count == this._base_path_level;
 
         protected bool IsServiceLevel(string path) =>
             path.SplitZookeeperPath().Count == this._service_path_level;
