@@ -17,8 +17,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
         public static string ParseServiceName<T>() => ParseServiceName(typeof(T));
 
-        public static string ParseServiceName(Type t) =>
-            $"{t.Assembly.GetName()?.Name ?? "no-assembly-name"}-{t.FullName}";
+        public static string ParseServiceName(Type t) => $"{t.FullName}";
 
         public static string EndpointNodeName(string node_id) => $"node_{node_id}";
     }

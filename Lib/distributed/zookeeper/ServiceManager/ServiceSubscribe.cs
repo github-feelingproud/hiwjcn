@@ -58,7 +58,9 @@ namespace Lib.distributed.zookeeper.ServiceManager
             var list = this._endpoints.Where(x => x.ServiceNodeName == name).ToList();
             if (ValidateHelper.IsPlumpList(list))
             {
-                return this._ran.Choice(list);
+                var theone = this._ran.Choice(list);
+                Console.WriteLine($"选择了地址：{theone.Url}");
+                return theone;
             }
             return null;
         }
