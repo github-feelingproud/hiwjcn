@@ -43,9 +43,9 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
             foreach (var a in this._ass)
             {
-                foreach (var t in a.FindContracts())
+                foreach (var t in a.FindServiceContracts())
                 {
-                    var attr = t.GetCustomAttributes_<IsWcfContractAttribute>().FirstOrDefault() ??
+                    var attr = t.GetCustomAttributes_<ServiceContract_Attribute>().FirstOrDefault() ??
                         throw new Exception("不应该出现的错误");
                     var model = new AddressModel()
                     {

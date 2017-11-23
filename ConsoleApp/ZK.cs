@@ -10,13 +10,13 @@ using Lib.helper;
 
 namespace ConsoleApp
 {
-    [Lib.rpc.IsWcfContract(RelativePath = "jlk.svc")]
+    [Lib.rpc.ServiceContract_(RelativePath = "jlk.svc")]
     public interface fsadf { }
-    [Lib.rpc.IsWcfContract(RelativePath = "jflk.svc")]
+    [Lib.rpc.ServiceContract_(RelativePath = "jflk.svc")]
     public interface fsfasfadf { }
-    [Lib.rpc.IsWcfContract(RelativePath = "jlgk.svc")]
+    [Lib.rpc.ServiceContract_(RelativePath = "jlgk.svc")]
     public interface fsgsdadf { }
-    [Lib.rpc.IsWcfContract(RelativePath = "jalk.svc")]
+    [Lib.rpc.ServiceContract_(RelativePath = "jalk.svc")]
     public interface fsafasdfdf { }
 
     public class ZK

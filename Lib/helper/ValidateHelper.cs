@@ -374,31 +374,21 @@ namespace Lib.helper
         /// <summary>
         /// 判断是否是有值的字典
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
-        /// <param name="dict"></param>
-        /// <returns></returns>
         public static bool IsPlumpDict<K, V>(IDictionary<K, V> dict) => dict?.Count > 0;
 
         /// <summary>
         /// 去除两端空格后判断是否是非空字符串
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
         public static bool IsPlumpStringAfterTrim(string str) => str?.Trim()?.Length > 0;
 
         /// <summary>
         /// 判断是否是非空字符串
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
         public static bool IsPlumpString(string str) => str?.Length > 0;
 
         /// <summary>
         /// 判断是否都是非空字符串
         /// </summary>
-        /// <param name="strs"></param>
-        /// <returns></returns>
         public static bool IsAllPlumpString(params string[] strs)
         {
             if (!IsPlumpList(strs)) { throw new Exception("至少需要一个参数"); }
@@ -408,8 +398,6 @@ namespace Lib.helper
         /// <summary>
         /// 判断数组里至少有一个非空字符串
         /// </summary>
-        /// <param name="strs"></param>
-        /// <returns></returns>
         public static bool IsAnyPlumpString(params string[] strs)
         {
             if (!IsPlumpList(strs)) { throw new Exception("至少需要一个参数"); }
@@ -420,10 +408,6 @@ namespace Lib.helper
         /// <summary>
         /// 判断字符串的长度是否在范围之内，str可以为空
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
         public static bool IsLenInRange(string str, int min, int max)
         {
             var len = str?.Length ?? 0;
@@ -433,10 +417,6 @@ namespace Lib.helper
         /// <summary>
         /// 判断两个集合是否有交集
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
         public static bool HasInterSection<T>(IList<T> a, IList<T> b)
         {
             if (!IsPlumpList(a) || !IsPlumpList(b)) { return false; }
@@ -446,9 +426,6 @@ namespace Lib.helper
         /// <summary>
         /// 判断一个对象是否是某个类型
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
         public static bool Is<T>(object obj)
         {
             return obj != null && obj is T;
@@ -457,9 +434,6 @@ namespace Lib.helper
         /// <summary>
         /// 判断是相同引用
         /// </summary>
-        /// <param name="obj1"></param>
-        /// <param name="obj2"></param>
-        /// <returns></returns>
         public static bool IsReferenceEquals(object obj1, object obj2)
         {
             return object.ReferenceEquals(obj1, obj2);
@@ -468,9 +442,6 @@ namespace Lib.helper
         /// <summary>
         /// 根据attribute验证model
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="model"></param>
-        /// <returns></returns>
         [Obsolete("使用CheckEntity_")]
         public static List<string> CheckEntity<T>(T model) where T : IDBTable
         {
@@ -538,9 +509,6 @@ namespace Lib.helper
         /// <summary>
         /// 根据attribute验证model
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="model"></param>
-        /// <returns></returns>
         public static List<string> CheckEntity_<T>(T model) where T : IDBTable
         {
             var list = new List<string>();
@@ -553,7 +521,7 @@ namespace Lib.helper
             //checker
             bool CheckProp(IEnumerable<ValidationAttribute> validators, object data, PropertyInfo p)
             {
-                foreach (var validator in ConvertHelper.NotNullEnumerable(validators))
+                foreach (var validator in ConvertHelper.NotNullList(validators))
                 {
                     if (!validator.IsValid(data))
                     {

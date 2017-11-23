@@ -53,13 +53,11 @@ namespace Lib.rpc
         }
     }
 
-    public class IsWcfContractAttribute : Attribute
+    public class ServiceContract_Attribute : Attribute
     {
         /// <summary>
         /// not started with '/'
         /// </summary>
         public virtual string RelativePath { get; set; }
-
-        public virtual string Ip { get; set; }
     }
 }

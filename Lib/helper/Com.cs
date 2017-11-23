@@ -63,7 +63,7 @@ namespace Lib.helper
         /// <param name="strs"></param>
         /// <returns></returns>
         public static string FirstPlumpStrOrNot(params string[] strs) =>
-            ConvertHelper.NotNullEnumerable(strs).Where(x => ValidateHelper.IsPlumpString(x)).FirstOrDefault();
+            ConvertHelper.NotNullList(strs).Where(x => ValidateHelper.IsPlumpString(x)).FirstOrDefault();
 
         /// <summary>
         /// 获取动态类型

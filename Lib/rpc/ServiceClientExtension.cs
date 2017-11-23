@@ -22,13 +22,13 @@ namespace Lib.rpc
     /// </summary>
     public static class ServiceClientExtension
     {
-        public static List<Type> FindContracts(this Assembly ass) =>
-            ass.GetTypes().Where(x => x.IsInterface && x.GetCustomAttributes<IsWcfContractAttribute>().Any()).ToList();
+        public static List<Type> FindServiceContracts(this Assembly ass) =>
+            ass.GetTypes().Where(x => x.IsInterface && x.GetCustomAttributes<ServiceContract_Attribute>().Any()).ToList();
 
         public static void FindSvc(this Assembly ass)
         {
             var tps = ass.GetTypes();
-            var contracts = tps.Where(x => x.IsInterface && x.GetCustomAttributes<IsWcfContractAttribute>().Any()).ToList();
+            var contracts = tps.Where(x => x.IsInterface && x.GetCustomAttributes<ServiceContract_Attribute>().Any()).ToList();
 
             var svcTypes = new List<Type>();
             foreach (var con in contracts)
