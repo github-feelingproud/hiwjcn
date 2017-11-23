@@ -258,7 +258,7 @@ namespace Lib.helper
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static T[] CloneParams<T>(List<T> list) where T : DbParameter
+        public static T[] CloneParams<T>(IEnumerable<T> list) where T : DbParameter
         {
             return list.Select(x => (T)((ICloneable)x).Clone()).ToArray();
         }
@@ -630,11 +630,7 @@ namespace Lib.helper
         /// <summary>
         /// 获取交集(不返回null)
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static List<T> GetInterSection<T>(List<T> a, List<T> b)
+        public static List<T> GetInterSection<T>(IEnumerable<T> a, IEnumerable<T> b)
         {
             if (!ValidateHelper.IsPlumpList(a) || !ValidateHelper.IsPlumpList(b)) { return new List<T>(); }
             return a.Where(x => b.Contains(x)).ToList();

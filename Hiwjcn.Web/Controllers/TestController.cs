@@ -24,7 +24,6 @@ using Hiwjcn.Core.Data;
 using System.Text;
 using Nest;
 using Hiwjcn.Bll;
-using QPL.WebService.Product.Core.Models;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.data.elasticsearch;
 using Lib.data.redis;
@@ -81,19 +80,6 @@ namespace Hiwjcn.Web.Controllers
         {
             var data = this._clientRepo.GetListAsync(null).Result;
             return GetJson(data);
-        }
-
-        public async Task<ActionResult> ss()
-        {
-            using (var client = new ProductServiceClient())
-            {
-                var data = await client.Instance.SearchUserProducts(new SearchParam()
-                {
-                    ProvinceUID = "31",
-                    CityUID = "3101"
-                });
-            }
-            return Content("");
         }
 
         public ActionResult excel()

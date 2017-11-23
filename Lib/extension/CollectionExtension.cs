@@ -11,6 +11,9 @@ namespace Lib.extension
 {
     public static class CollectionExtension
     {
+        /// <summary>
+        /// 转为可迭代实体
+        /// </summary>
         public static IEnumerable<T> AsEnumerable_<T>(this IEnumerable collection)
         {
             foreach (T item in collection)
@@ -19,6 +22,9 @@ namespace Lib.extension
             }
         }
 
+        /// <summary>
+        /// 移除
+        /// </summary>
         public static void RemoveWhere_<T>(this List<T> list, Func<T, bool> where)
         {
             for (var i = list.Count - 1; i >= 0; --i)
@@ -30,6 +36,12 @@ namespace Lib.extension
                 }
             }
         }
+
+        /// <summary>
+        /// 获取两个集合的交集
+        /// </summary>
+        public static List<T> GetInterSection<T>(this IEnumerable<T> list, IEnumerable<T> data) =>
+            Com.GetInterSection(list, data);
 
         /// <summary>
         /// 在list中添加item，遇到重复就抛异常
@@ -168,11 +180,6 @@ namespace Lib.extension
         /// <summary>
         /// 获取成员，超过索引返回默认值
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="index"></param>
-        /// <param name="deft"></param>
-        /// <returns></returns>
         public static T GetItem<T>(this IList<T> list, int index, T deft = default(T))
         {
             if (index < 0 || index > list.Count - 1)
@@ -185,9 +192,6 @@ namespace Lib.extension
         /// <summary>
         /// 生成bootstrap的表格html，未完成
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
         public static string ToBootStrapTableHtml<T>(this IEnumerable<T> list) where T : class
         {
             var html = new StringBuilder();
@@ -228,9 +232,6 @@ namespace Lib.extension
         /// <summary>
         /// 迭代相邻两个item
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="func"></param>
         public static void IterateItems<T>(this IList<T> list, Action<T, T, int, int> func)
         {
             for (var i = 0; i < list.Count - 1; ++i)
@@ -242,10 +243,6 @@ namespace Lib.extension
         /// <summary>
         /// 判断两个list是否有相同的item
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
         public static bool SameItems<T>(this IList<T> list, IList<T> data)
         {
             if (list.Count != data.Count) { return false; }

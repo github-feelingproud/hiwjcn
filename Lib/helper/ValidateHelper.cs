@@ -417,11 +417,8 @@ namespace Lib.helper
         /// <summary>
         /// 判断两个集合是否有交集
         /// </summary>
-        public static bool HasInterSection<T>(IList<T> a, IList<T> b)
-        {
-            if (!IsPlumpList(a) || !IsPlumpList(b)) { return false; }
-            return a.Any(x => b.Contains(x));
-        }
+        public static bool HasInterSection<T>(IEnumerable<T> a, IEnumerable<T> b) => 
+            Com.GetInterSection(a, b).Count > 0;
 
         /// <summary>
         /// 判断一个对象是否是某个类型
