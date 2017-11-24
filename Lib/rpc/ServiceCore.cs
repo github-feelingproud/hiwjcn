@@ -53,6 +53,7 @@ namespace Lib.rpc
         }
     }
 
+    [AttributeUsage(AttributeTargets.Class)]
     public class ServiceContract_Attribute : Attribute
     {
         /// <summary>

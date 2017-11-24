@@ -22,9 +22,11 @@ namespace Lib.rpc
     /// </summary>
     public static class ServiceClientExtension
     {
+        [Obsolete]
         public static List<Type> FindServiceContracts(this Assembly ass) =>
             ass.GetTypes().Where(x => x.IsInterface && x.GetCustomAttributes<ServiceContract_Attribute>().Any()).ToList();
 
+        [Obsolete]
         public static void FindSvc(this Assembly ass)
         {
             var tps = ass.GetTypes();

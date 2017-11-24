@@ -22,13 +22,14 @@ namespace Lib.distributed.zookeeper.ServiceManager
         private readonly string _base_url;
         private readonly string _node_id;
         private readonly IReadOnlyList<Assembly> _ass;
-        
-        public ServiceRegister(string host, string service_base_url, string node_id, Assembly[] ass) : base(host)
+
+        public ServiceRegister(string host, string service_base_url, Assembly[] ass) : base(host)
         {
             this._base_url = service_base_url ?? throw new ArgumentNullException(nameof(service_base_url));
-            this._node_id = node_id ?? throw new ArgumentNullException(nameof(node_id));
             this._ass = (ass ?? throw new ArgumentNullException(nameof(ass))).ToList().AsReadOnly();
             if (this._ass.Count <= 0) { throw new Exception("至少注册一个程序集"); }
+
+            this._node_id = this.Client.getSessionId().ToString();
 
             this.Retry().Execute(() => this.Reg());
             this.OnRecconected += () => this.Reg();
@@ -43,19 +44,23 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
             foreach (var a in this._ass)
             {
-                foreach (var t in a.FindServiceContracts())
+                var contractImpl = a.GetTypes().Where(x => !x.IsInterface && !x.IsAbstract && x.IsPublic &&
+                x.GetCustomAttributes_<ServiceContract_Attribute>().Any());
+
+                foreach (var t in contractImpl)
                 {
-                    var attr = t.GetCustomAttributes_<ServiceContract_Attribute>().FirstOrDefault() ??
-                        throw new Exception("不应该出现的错误");
-                    var model = new AddressModel()
+                    var attr = t.GetCustomAttributes_<ServiceContract_Attribute>().First();
+                    foreach (var contract in t.GetAllInterfaces_())
                     {
-                        Id = this._node_id,
-                        Url = this._base_url + attr.RelativePath,
-                        ServiceNodeName = ServiceManageHelper.ParseServiceName(t),
-                        EndpointNodeName = ServiceManageHelper.EndpointNodeName(this._node_id),
-                        OnLineTime = now,
-                    };
-                    list.Add(model);
+                        var model = new AddressModel()
+                        {
+                            Url = this._base_url + attr.RelativePath,
+                            ServiceNodeName = ServiceManageHelper.ParseServiceName(contract),
+                            EndpointNodeName = ServiceManageHelper.EndpointNodeName(this._node_id),
+                            OnLineTime = now,
+                        };
+                        list.Add(model);
+                    }
                 }
             }
 

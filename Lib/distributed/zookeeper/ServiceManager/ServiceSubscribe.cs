@@ -26,12 +26,10 @@ namespace Lib.distributed.zookeeper.ServiceManager
     /// <summary>
     /// 应该作为静态类
     /// </summary>
-    public class ServiceSubscribe : ServiceManageBase
+    public class ServiceSubscribe : ServiceSubscribeBase
     {
         private readonly Watcher _children_watcher;
         private readonly Watcher _node_watcher;
-        private readonly List<AddressModel> _endpoints = new List<AddressModel>();
-        private readonly Random _ran = new Random((int)DateTime.Now.Ticks);
 
         public event Action OnServiceChanged;
 
@@ -49,23 +47,6 @@ namespace Lib.distributed.zookeeper.ServiceManager
             this.StartWatch();
             this.OnConnected += () => this.StartWatch();
         }
-
-        public IReadOnlyList<AddressModel> AllService() => this._endpoints.AsReadOnly();
-
-        public AddressModel Resolve<T>()
-        {
-            var name = ServiceManageHelper.ParseServiceName<T>();
-            var list = this._endpoints.Where(x => x.ServiceNodeName == name).ToList();
-            if (ValidateHelper.IsPlumpList(list))
-            {
-                var theone = this._ran.Choice(list);
-                Console.WriteLine($"选择了地址：{theone.Url}");
-                return theone;
-            }
-            return null;
-        }
-
-        public string ResolveSvc<T>() => this.Resolve<T>()?.Url;
 
         private void StartWatch()
         {
@@ -92,11 +73,12 @@ namespace Lib.distributed.zookeeper.ServiceManager
                     var services = await this.Client.GetChildrenOrThrow_(path, this._children_watcher);
                     foreach (var service in services)
                     {
-                        var endpoints = await this.Client.GetChildrenOrThrow_(path + "/" + service, this._children_watcher);
+                        var service_path = path + "/" + service;
+                        var endpoints = await this.Client.GetChildrenOrThrow_(service_path, this._children_watcher);
                         foreach (var endpoint in endpoints)
                         {
                             //处理节点
-                            await this.HandleEndpointNode(path + "/" + service + "/" + endpoint);
+                            await this.HandleEndpointNode(service_path + "/" + endpoint);
                         }
                     }
                 }
@@ -146,13 +128,13 @@ namespace Lib.distributed.zookeeper.ServiceManager
                     return;
                 }
                 var data = this._serializer.Deserialize<AddressModel>(bs);
-                if (!ValidateHelper.IsAllPlumpString(data.Id, data.Url)) { return; }
+                if (!ValidateHelper.IsAllPlumpString(data?.ServiceNodeName, data?.EndpointNodeName, data?.Url)) { return; }
                 var service_info = this.GetServiceAndEndpointNodeName(path);
                 data.ServiceNodeName = service_info.service_name;
                 data.EndpointNodeName = service_info.endpoint_name;
                 data.OnLineTime = DateTime.Now;
 
-                this._endpoints.RemoveWhere_(x => x.Id == data.Id);
+                this._endpoints.RemoveWhere_(x => x.FullPathName == data.FullPathName);
                 this._endpoints.Add(data);
                 this.OnServiceChanged?.Invoke();
             }

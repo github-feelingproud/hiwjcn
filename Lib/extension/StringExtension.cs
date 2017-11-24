@@ -14,10 +14,14 @@ namespace Lib.extension
     public static class StringExtension
     {
         /// <summary>
+        /// 去除空格
+        /// </summary>
+        public static string RemoveWhitespace(this string s) =>
+            s.ToArray().Where(x => x != ' ').AsString();
+
+        /// <summary>
         /// 后面加url的斜杠
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
         public static string EnsureTrailingSlash(this string input)
         {
             if (!input.EndsWith("/"))

@@ -54,7 +54,7 @@ namespace ConsoleApp
                     var s = client.AllService();
                     if (ValidateHelper.IsPlumpList(s))
                     {
-                        s.Select(x => $"{x.FullName}===={x.Url}").ToList().ForEach(Console.WriteLine);
+                        s.Select(x => $"{x.FullPathName}===={x.Url}").ToList().ForEach(Console.WriteLine);
                     }
                     else
                     {

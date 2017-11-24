@@ -257,6 +257,7 @@
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceManageExtension.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceRegister.cs" />
     <Compile Include="distributed\zookeeper\ServiceManager\ServiceSubscribe.cs" />
+    <Compile Include="distributed\zookeeper\ServiceManager\ServiceSubscribeBase.cs" />
     <Compile Include="distributed\zookeeper\watcher\CallBackWatcher.cs" />
     <Compile Include="distributed\zookeeper\watcher\EmptyWatcher.cs" />
     <Compile Include="distributed\zookeeper\watcher\NodeMonitorWatcher.cs" />

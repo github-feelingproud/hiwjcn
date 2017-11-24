@@ -134,12 +134,14 @@ namespace Lib.helper
         /// <summary>
         /// 是否是IP
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public static bool IsIP(string s)
-        {
-            return IsPlumpString(s) && RegexHelper.IsMatch(s, @"\d+\.\d+\.\d+\.\d+");
-        }
+        public static bool IsIP(string s) =>
+            IsPlumpString(s) && RegexHelper.IsMatch(s, @"\d+\.\d+\.\d+\.\d+");
+
+        public static bool IsIPv4(string s) =>
+            IsPlumpString(s) && RegexHelper.IsMatch(s, @"^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$");
+
+        public static bool IsIPv6(string s) =>
+            IsPlumpString(s) && RegexHelper.IsMatch(s, @"/^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i");
 
         /// <summary>
         /// 是否是时间
@@ -417,7 +419,7 @@ namespace Lib.helper
         /// <summary>
         /// 判断两个集合是否有交集
         /// </summary>
-        public static bool HasInterSection<T>(IEnumerable<T> a, IEnumerable<T> b) => 
+        public static bool HasInterSection<T>(IEnumerable<T> a, IEnumerable<T> b) =>
             Com.GetInterSection(a, b).Count > 0;
 
         /// <summary>

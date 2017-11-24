@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Polly;
+using Lib.extension;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
@@ -17,7 +18,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
         public static string ParseServiceName<T>() => ParseServiceName(typeof(T));
 
-        public static string ParseServiceName(Type t) => $"{t.FullName}";
+        public static string ParseServiceName(Type t) => $"{t.FullName}".RemoveWhitespace();
 
         public static string EndpointNodeName(string node_id) => $"node_{node_id}";
     }
