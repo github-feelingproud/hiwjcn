@@ -57,7 +57,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             var client = this.GetClientManager();
             Task.Factory.StartNew(async () =>
             {
-                await client.CreatePersistentPathIfNotExist_(this._base_path);
+                await client.EnsurePath(this._base_path);
             }).Wait();
         }
 

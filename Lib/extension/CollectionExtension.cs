@@ -43,6 +43,20 @@ namespace Lib.extension
         public static List<T> GetInterSection<T>(this IEnumerable<T> list, IEnumerable<T> data) =>
             Com.GetInterSection(list, data);
 
+        public static IEnumerable<T> Except_<T>(this IEnumerable<T> list, IEnumerable<T> data,
+            IEqualityComparer<T> comparer = null)
+        {
+            data = data ?? new List<T>() { };
+            if (comparer != null)
+            {
+                return list.Where(x => !data.Contains(x, comparer));
+            }
+            else
+            {
+                return list.Where(x => !data.Contains(x));
+            }
+        }
+
         /// <summary>
         /// 在list中添加item，遇到重复就抛异常
         /// </summary>
