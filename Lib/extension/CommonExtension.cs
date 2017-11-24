@@ -153,29 +153,33 @@ namespace Lib.extension
         /// <summary>
         /// 根据权重选择
         /// </summary>
-        public static T ChoiceByWeight<T>(this Random ran, Dictionary<T, int> source)
+        public static T ChoiceByWeight<T>(this Random ran, IEnumerable<T> source, Func<T, int> selector)
         {
-            if (source == null || source.Count <= 0) { throw new ArgumentException(nameof(source)); }
-            if (source.Count == 1) { return source.Keys.First(); }
+            if (source == null || source.Count() <= 0) { throw new ArgumentException(nameof(source)); }
+            if (source.Count() == 1) { return source.First(); }
 
-            if (source.Any(x => x.Value < 1)) { throw new ArgumentException("权重不能小于1"); }
+            if (source.Any(x => selector.Invoke(x) < 1)) { throw new ArgumentException("权重不能小于1"); }
 
-            var total_weight = source.Sum(x => x.Value);
+            var total_weight = source.Sum(x => selector.Invoke(x));
 
             var weight = ran.RealNext(total_weight - 1);
-
-            var len = 0;
+            
+            var cur = 0;
 
             foreach (var s in source)
             {
-                var start = len;
-                var end = start + s.Value;
-                if (start <= weight && weight < end)
+                //单个权重
+                var w = selector.Invoke(s);
+
+                var start = cur;
+                var end = start + w;
+
+                if (weight >= start && weight <= end)
                 {
-                    return s.Key;
+                    return s;
                 }
 
-                len = end;
+                cur += end;
             }
 
             throw new Exception("权重取值异常");

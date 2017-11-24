@@ -32,10 +32,9 @@ namespace Lib.rpc
         public WebApiHelper()
         {
             var server_set = new List<ServerSetting>();
-            var server_balance = server_set.ToDictionary(x => x, x => (int)x.Weight);
 
             var ran = new Random((int)DateTime.Now.Ticks);
-            var server = ran.ChoiceByWeight(server_balance).Server;
+            var server = ran.ChoiceByWeight(server_set, x => x.Weight).Server;
         }
 
         private void Send(ServerSetting server)
