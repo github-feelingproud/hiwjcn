@@ -12,6 +12,37 @@ namespace Lib.extension
     public static class CollectionExtension
     {
         /// <summary>
+        /// 更新集合，多加少补
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="old_list"></param>
+        /// <param name="new_list"></param>
+        /// <returns></returns>
+        public static (IEnumerable<T> WaitForDelete, IEnumerable<T> WaitForAdd) UpdateList<T>(this IEnumerable<T> old_list,
+            IEnumerable<T> new_list) =>
+            old_list.UpdateList(new_list, x => x);
+
+        /// <summary>
+        /// 更新集合，多加少补
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="Target"></typeparam>
+        /// <param name="old_list"></param>
+        /// <param name="new_list"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public static (IEnumerable<Target> WaitForDelete, IEnumerable<Target> WaitForAdd) UpdateList<T, Target>(this IEnumerable<T> old_list,
+            IEnumerable<T> new_list, Func<T, Target> selector)
+        {
+            new_list = new_list ?? throw new ArgumentNullException(nameof(new_list));
+            selector = selector ?? throw new ArgumentNullException(nameof(selector));
+
+            var delete_list = old_list.Select(selector).Except_(new_list.Select(selector));
+            var create_list = new_list.Select(selector).Except_(old_list.Select(selector));
+            return (delete_list, create_list);
+        }
+
+        /// <summary>
         /// 转为可迭代实体
         /// </summary>
         public static IEnumerable<T> AsEnumerable_<T>(this IEnumerable collection)
@@ -43,9 +74,14 @@ namespace Lib.extension
         public static List<T> GetInterSection<T>(this IEnumerable<T> list, IEnumerable<T> data) =>
             Com.GetInterSection(list, data);
 
+        /// <summary>
+        /// 除了（排除）
+        /// </summary>
         public static IEnumerable<T> Except_<T>(this IEnumerable<T> list, IEnumerable<T> data,
             IEqualityComparer<T> comparer = null)
         {
+            //list.Except(data, comparer);
+
             data = data ?? new List<T>() { };
             if (comparer != null)
             {
