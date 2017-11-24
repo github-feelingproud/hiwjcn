@@ -129,5 +129,12 @@ namespace Lib.extension
             var attrs = prop.GetCustomAttributes();
             return attrs.Where(x => x.GetType().IsAssignableTo_<T>()).Select(x => (T)x);
         }
+
+        /// <summary>
+        /// 有属性
+        /// </summary>
+        public static bool HasCustomAttributes_<T>(this MemberInfo prop)
+            where T : Attribute =>
+            prop.GetCustomAttributes_<T>().Any();
     }
 }

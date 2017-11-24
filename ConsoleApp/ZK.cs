@@ -22,13 +22,9 @@ namespace WangJunGatrWay.Service
 
 namespace ConsoleApp
 {
-    [Lib.rpc.ServiceContract_(RelativePath = "jlk.svc")]
     public interface fsadf { }
-    [Lib.rpc.ServiceContract_(RelativePath = "jflk.svc")]
     public interface fsfasfadf { }
-    [Lib.rpc.ServiceContract_(RelativePath = "jlgk.svc")]
     public interface fsgsdadf { }
-    [Lib.rpc.ServiceContract_(RelativePath = "jalk.svc")]
     public interface fsafasdfdf { }
 
     public class ZK

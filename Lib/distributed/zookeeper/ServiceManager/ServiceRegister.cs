@@ -11,6 +11,7 @@ using Lib.rpc;
 using Lib.helper;
 using org.apache.zookeeper;
 using Lib.extension;
+using System.ServiceModel;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
@@ -39,25 +40,22 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
         private async Task RegisterService()
         {
-            var now = DateTime.Now;
             var list = new List<AddressModel>();
 
             foreach (var a in this._ass)
             {
-                var contractImpl = a.GetTypes().Where(x => !x.IsInterface && !x.IsAbstract && x.IsPublic &&
-                x.GetCustomAttributes_<ServiceContract_Attribute>().Any());
+                var contractImpl = a.FindServiceContractsImpl();
 
                 foreach (var t in contractImpl)
                 {
-                    var attr = t.GetCustomAttributes_<ServiceContract_Attribute>().First();
-                    foreach (var contract in t.GetAllInterfaces_())
+                    var attr = t.GetCustomAttributes_<ServiceContractImplAttribute>().First();
+                    foreach (var contract in t.FindServiceContracts())
                     {
                         var model = new AddressModel()
                         {
                             Url = this._base_url + attr.RelativePath,
                             ServiceNodeName = ServiceManageHelper.ParseServiceName(contract),
                             EndpointNodeName = ServiceManageHelper.EndpointNodeName(this._node_id),
-                            OnLineTime = now,
                         };
                         list.Add(model);
                     }
@@ -77,6 +75,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 }
                 else
                 {
+                    //创建临时节点，服务端下线自动删除
                     await this.Client.CreateNode_(path, CreateMode.EPHEMERAL, data);
                 }
             }

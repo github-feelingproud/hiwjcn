@@ -22,15 +22,27 @@ namespace Lib.rpc
     /// </summary>
     public static class ServiceClientExtension
     {
-        [Obsolete]
-        public static List<Type> FindServiceContracts(this Assembly ass) =>
-            ass.GetTypes().Where(x => x.IsInterface && x.GetCustomAttributes<ServiceContract_Attribute>().Any()).ToList();
+        /// <summary>
+        /// 找到服务的实现
+        /// </summary>
+        /// <param name="ass"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> FindServiceContractsImpl(this Assembly ass) =>
+            ass.GetTypes().Where(x => x.IsNormalClass() && x.HasCustomAttributes_<ServiceContractImplAttribute>());
+
+        /// <summary>
+        /// 找到服务约束
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> FindServiceContracts(this Type t) =>
+            t.GetAllInterfaces_().Where(x => x.HasCustomAttributes_<ServiceContractAttribute>());
 
         [Obsolete]
         public static void FindSvc(this Assembly ass)
         {
             var tps = ass.GetTypes();
-            var contracts = tps.Where(x => x.IsInterface && x.GetCustomAttributes<ServiceContract_Attribute>().Any()).ToList();
+            var contracts = tps.Where(x => x.IsInterface && x.GetCustomAttributes<ServiceContractImplAttribute>().Any()).ToList();
 
             var svcTypes = new List<Type>();
             foreach (var con in contracts)

@@ -132,7 +132,6 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 var service_info = this.GetServiceAndEndpointNodeName(path);
                 data.ServiceNodeName = service_info.service_name;
                 data.EndpointNodeName = service_info.endpoint_name;
-                data.OnLineTime = DateTime.Now;
 
                 this._endpoints.RemoveWhere_(x => x.FullPathName == data.FullPathName);
                 this._endpoints.Add(data);
@@ -157,6 +156,11 @@ namespace Lib.distributed.zookeeper.ServiceManager
             await Task.FromResult(1);
         }
 
+        /// <summary>
+        /// 订阅
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
         private async Task WatchNodeChanges(WatchedEvent e)
         {
             var event_type = e.get_Type();

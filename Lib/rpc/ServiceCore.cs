@@ -53,8 +53,11 @@ namespace Lib.rpc
         }
     }
 
+    /// <summary>
+    /// 服务约束的实现
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class ServiceContract_Attribute : Attribute
+    public class ServiceContractImplAttribute : Attribute
     {
         /// <summary>
         /// not started with '/'
