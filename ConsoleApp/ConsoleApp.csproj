@@ -121,6 +121,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyServer.cs" />
+    <Compile Include="WCF.cs" />
     <Compile Include="ZK.cs" />
   </ItemGroup>
   <ItemGroup>

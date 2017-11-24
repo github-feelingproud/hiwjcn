@@ -37,8 +37,9 @@ namespace ConsoleApp
 
             //MQ.Consumer();
 
-            //ZK.zk().Wait();
-            ZK.call().Wait();
+            //ZK.call().Wait();
+
+            WCF.Serv();
 
             //JobManager.Start();
 
