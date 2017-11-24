@@ -12,33 +12,23 @@ namespace Lib.extension
     public static class CollectionExtension
     {
         /// <summary>
-        /// 更新集合，多加少补
+        /// 更新集合，多删少补
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="old_list"></param>
-        /// <param name="new_list"></param>
-        /// <returns></returns>
         public static (IEnumerable<T> WaitForDelete, IEnumerable<T> WaitForAdd) UpdateList<T>(this IEnumerable<T> old_list,
-            IEnumerable<T> new_list) =>
-            old_list.UpdateList(new_list, x => x);
+            IEnumerable<T> new_list, IEqualityComparer<T> comparer = null) =>
+            old_list.UpdateList(new_list, x => x, comparer);
 
         /// <summary>
-        /// 更新集合，多加少补
+        /// 更新集合，多删少补
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="Target"></typeparam>
-        /// <param name="old_list"></param>
-        /// <param name="new_list"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public static (IEnumerable<Target> WaitForDelete, IEnumerable<Target> WaitForAdd) UpdateList<T, Target>(this IEnumerable<T> old_list,
-            IEnumerable<T> new_list, Func<T, Target> selector)
+            IEnumerable<T> new_list, Func<T, Target> selector, IEqualityComparer<Target> comparer = null)
         {
             new_list = new_list ?? throw new ArgumentNullException(nameof(new_list));
             selector = selector ?? throw new ArgumentNullException(nameof(selector));
 
-            var delete_list = old_list.Select(selector).Except_(new_list.Select(selector));
-            var create_list = new_list.Select(selector).Except_(old_list.Select(selector));
+            var delete_list = old_list.Select(selector).Except_(new_list.Select(selector), comparer);
+            var create_list = new_list.Select(selector).Except_(old_list.Select(selector), comparer);
             return (delete_list, create_list);
         }
 
