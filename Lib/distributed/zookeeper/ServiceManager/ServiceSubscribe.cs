@@ -44,22 +44,50 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 return this.WatchNodeChanges(e);
             });
 
-            this.StartWatch();
-            this.OnConnected += () => this.StartWatch();
+            this.Init();
+            this.OnConnected += () => this.Init();
         }
 
-        private void StartWatch()
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        private void Init()
         {
             try
             {
-                this.Retry().Execute(() =>
-                {
-                    AsyncHelper_.RunSync(() => this.NodeChildrenChanged(this._base_path));
-                });
+                //清理无用节点
+                AsyncHelper_.RunSync(() => this.ClearDeadNodes());
+                //读取节点并添加监视
+                AsyncHelper_.RunSync(() => this.NodeChildrenChanged(this._base_path));
             }
             catch (Exception e)
             {
                 throw new Exception("订阅服务节点失败", e);
+            }
+        }
+
+        /// <summary>
+        /// 启动的时候清理一下无用节点
+        /// 这个方法里不要watch
+        /// </summary>
+        private async Task ClearDeadNodes()
+        {
+            var services = await this.Client.GetChildrenOrThrow_(this._base_path);
+            foreach (var service in services)
+            {
+                try
+                {
+                    var service_path = this._base_path + "/" + service;
+                    var endpoints = await this.Client.GetChildrenOrThrow_(service_path);
+                    if (!ValidateHelper.IsPlumpList(endpoints))
+                    {
+                        await this.Client.DeleteSingleNode_(service_path);
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.AddErrorLog();
+                }
             }
         }
 
