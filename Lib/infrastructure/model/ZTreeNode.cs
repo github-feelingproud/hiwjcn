@@ -38,6 +38,9 @@ namespace Lib.infrastructure.model
 
         public virtual bool chkDisabled { get; set; } = true;
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public virtual List<ZTreeNode> children { get; set; }
+
 
         public static implicit operator ZTreeNode(RoleEntityBase role) =>
             new ZTreeNode()
