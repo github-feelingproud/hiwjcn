@@ -22,10 +22,6 @@ namespace Lib.distributed.redis
         /// <summary>
         /// 分布式锁
         /// </summary>
-        /// <param name="key">key</param>
-        /// <param name="retry_count">尝试次数</param>
-        /// <param name="retry_delay_ms">尝试延迟，毫秒</param>
-        /// <param name="expiry_seconds">锁过期时间，秒</param>
         public RedisDistributedLock(string key, int timeout_ms = 1000 * 10, int expiry_seconds = 30)
         {
             this._key = key;
@@ -72,6 +68,16 @@ namespace Lib.distributed.redis
                 var res = db.ScriptEvaluate(UnlockScript, key, values);
                 return true;
             }, DB_NUM);
+        }
+
+        public Task LockOrThrow()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ReleaseLock()
+        {
+            throw new NotImplementedException();
         }
     }
 }

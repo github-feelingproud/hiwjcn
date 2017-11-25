@@ -13,6 +13,9 @@ using org.apache.zookeeper;
 
 namespace Lib.distributed.zookeeper
 {
+    /// <summary>
+    /// key节点不会被删除
+    /// </summary>
     public class ZooKeeperDistributedLock : ZooKeeperClient, IDistributedLock
     {
         private readonly string _path;
@@ -37,7 +40,7 @@ namespace Lib.distributed.zookeeper
 
         public async Task LockOrThrow()
         {
-            await this.Client.CreatePersistentPathIfNotExist_(this._path);
+            await this.Client.EnsurePath(this._path);
             var pt = await this.Client.CreateNode_(this._path + "/", CreateMode.EPHEMERAL_SEQUENTIAL);
             this._no = pt.SplitZookeeperPath().Reverse_().Take(1).FirstOrDefault() ?? throw new Exception("创建序列节点失败");
 
