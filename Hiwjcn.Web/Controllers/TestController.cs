@@ -26,7 +26,7 @@ using Nest;
 using Hiwjcn.Bll;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.data.elasticsearch;
-using Lib.data.redis;
+using Lib.distributed.redis;
 
 namespace Hiwjcn.Web.Controllers
 {

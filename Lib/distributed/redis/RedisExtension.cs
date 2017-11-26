@@ -12,7 +12,7 @@ using Polly.CircuitBreaker;
 using System.Configuration;
 using Polly;
 
-namespace Lib.data.redis
+namespace Lib.distributed.redis
 {
     public static class RedisExtension
     {

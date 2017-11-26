@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Lib.data;
 using StackExchange.Redis;
 using System.Threading;
-using Lib.data.redis;
+using Polly;
 
 namespace Lib.distributed.redis
 {
@@ -16,68 +16,45 @@ namespace Lib.distributed.redis
     /// </summary>
     public class RedisDistributedLock : IDistributedLock
     {
-        public int DB_NUM { get; set; } = 1;
-        private string _key { get; set; }
-        private byte[] _value { get; set; }
-        /// <summary>
-        /// 分布式锁
-        /// </summary>
-        public RedisDistributedLock(string key, int timeout_ms = 1000 * 10, int expiry_seconds = 30)
+        private readonly int DB_NUM;
+        private readonly string _key;
+        private readonly byte[] _value;
+
+        private readonly RedisHelper _redis;
+
+        private readonly Policy _retryAsync = Policy.Handle<Exception>()
+            .WaitAndRetryAsync(5, i => TimeSpan.FromMilliseconds(100 * 5));
+
+        public RedisDistributedLock(string key, int db = 1) : this(null, key, db)
+        { }
+
+        public RedisDistributedLock(string connection_string, string key, int db)
         {
-            this._key = key;
+            this.DB_NUM = db;
+            this._key = key ?? throw new ArgumentNullException(nameof(key));
             this._value = Guid.NewGuid().ToByteArray();
-            Retry(timeout_ms, () =>
+
+            this._redis = new RedisHelper(db, connection_string);
+        }
+
+        public async Task LockOrThrow()
+        {
+            await this._retryAsync.ExecuteAsync(async () =>
             {
-                var success = false;
-                RedisManager.PrepareDataBase(db =>
-                {
-                    success = db.StringSet(this._key, this._value, expiry: TimeSpan.FromSeconds(expiry_seconds), when: When.NotExists);
-                    return true;
-                }, DB_NUM);
-                return success;
+                var success = await this._redis.StringSetWhenNotExist(this._key, this._value, TimeSpan.FromMinutes(10));
+                if (!success) { throw new Exception("没有拿到redis锁，再试一次"); }
             });
         }
-        private void Retry(int timeout_ms, Func<bool> createLock)
+
+        public async Task ReleaseLock()
         {
-            var start = DateTime.Now;
-            while (true)
-            {
-                if (createLock())
-                {
-                    break;
-                }
-                if ((DateTime.Now - start).TotalMilliseconds > timeout_ms)
-                {
-                    throw new Exception($"尝试获取分布式锁失败，超时时间：{timeout_ms}ms");
-                }
-                Thread.Sleep(200);
-            }
+            await this._redis.DeleteKeyWithValueAsync(this._key, this._value);
         }
-        private const string UnlockScript = @"
-            if redis.call(""get"",KEYS[1]) == ARGV[1] then
-                return redis.call(""del"",KEYS[1])
-            else
-                return 0
-            end";
+
         public void Dispose()
         {
-            RedisManager.PrepareDataBase(db =>
-            {
-                RedisKey[] key = { this._key };
-                RedisValue[] values = { this._value };
-                var res = db.ScriptEvaluate(UnlockScript, key, values);
-                return true;
-            }, DB_NUM);
+            this._redis.Dispose();
         }
 
-        public Task LockOrThrow()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task ReleaseLock()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

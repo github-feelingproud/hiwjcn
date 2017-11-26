@@ -12,7 +12,7 @@ using Polly.CircuitBreaker;
 using System.Configuration;
 using Polly;
 
-namespace Lib.data.redis
+namespace Lib.distributed.redis
 {
     /// <summary>
     /// redis 链接管理

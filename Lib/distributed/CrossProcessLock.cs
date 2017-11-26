@@ -12,7 +12,7 @@ namespace Lib.distributed
     /// 使用Semaphore控制并发，SemaphoreSlim不能指定name，不能跨进程process控制并发
     /// https://stackoverflow.com/questions/4154480/how-do-i-choose-between-semaphore-and-semaphoreslim
     /// </summary>
-    public class CrossProcessLock : IDistributedLock
+    public class CrossProcessLock
     {
         private readonly Semaphore _mutex;
 

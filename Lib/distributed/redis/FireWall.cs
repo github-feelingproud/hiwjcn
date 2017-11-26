@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.data;
-using Lib.data.redis;
 
-namespace Lib.cache
+namespace Lib.distributed.redis
 {
     /// <summary>
     /// 目前只是思路

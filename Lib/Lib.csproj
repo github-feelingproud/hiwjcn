@@ -245,10 +245,10 @@
     <Compile Include="data\mongodb\MongoExtension.cs" />
     <Compile Include="data\mongodb\MongoRepository.cs" />
     <Compile Include="data\mongodb\MongoEntityBase.cs" />
-    <Compile Include="data\redis\RedisClientManager.cs" />
-    <Compile Include="data\redis\RedisExtension.cs" />
-    <Compile Include="data\redis\RedisHelper.cs" />
-    <Compile Include="data\redis\RedisManager.cs" />
+    <Compile Include="distributed\redis\RedisClientManager.cs" />
+    <Compile Include="distributed\redis\RedisExtension.cs" />
+    <Compile Include="distributed\redis\RedisHelper.cs" />
+    <Compile Include="distributed\redis\RedisManager.cs" />
     <Compile Include="distributed\akka\ActorTest.cs" />
     <Compile Include="distributed\akka\AkkaHelper.cs" />
     <Compile Include="distributed\zookeeper\AlwaysOnZooKeeperClient.cs" />
@@ -270,7 +270,7 @@
     <Compile Include="extra\api\UmengPushHelper.cs" />
     <Compile Include="cache\CacheExtension.cs" />
     <Compile Include="cache\CacheManager.cs" />
-    <Compile Include="cache\FireWall.cs" />
+    <Compile Include="distributed\redis\FireWall.cs" />
     <Compile Include="cache\HttpContextCacheProvider.cs" />
     <Compile Include="cache\ICacheProvider.cs" />
     <Compile Include="cache\MemoryCacheProvider.cs" />

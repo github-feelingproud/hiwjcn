@@ -11,42 +11,71 @@ using Lib.extension;
 using Polly.CircuitBreaker;
 using System.Configuration;
 using Polly;
+using System.Threading.Tasks;
+using Lib.data;
 
-namespace Lib.data.redis
+namespace Lib.distributed.redis
 {
     /// <summary>
     /// Redis操作
     /// https://github.com/qq1206676756/RedisHelp
+    /// 个人觉得对NoSql数据库的操作不要使用异步，因为本身响应就很快，不会阻塞
     /// </summary>
     public class RedisHelper : SerializeBase, IDisposable
     {
-        private int DbNum { get; }
-
+        private readonly int DbNum;
         private readonly ConnectionMultiplexer _conn;
 
-        public ConnectionMultiplexer Connection { get { return _conn; } }
+        public IDatabase Database => this._conn.SelectDatabase(this.DbNum);
+        public IConnectionMultiplexer Connection => this._conn;
 
         public RedisHelper(int dbNum = 1) : this(dbNum, null) { }
 
         public RedisHelper(int dbNum, string readWriteHosts)
         {
-            DbNum = dbNum;
-            _conn =
+            this.DbNum = dbNum;
+            this._conn =
                 string.IsNullOrWhiteSpace(readWriteHosts) ?
                 RedisClientManager.Instance.DefaultClient :
                 RedisClientManager.Instance.GetCachedClient(readWriteHosts);
         }
+
+        public const string DeleteKeyWithValueScript =
+            @"if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+
+        /// <summary>
+        /// key和value匹配的时候才删除
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public int DeleteKeyWithValue(string key, byte[] val) =>
+            this.Do(db => (int)db.ScriptEvaluate(DeleteKeyWithValueScript, new RedisKey[] { key }, new RedisValue[] { val }));
+
+        /// <summary>
+        /// key和value匹配的时候才删除
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public async Task<int> DeleteKeyWithValueAsync(string key, byte[] val) =>
+            await this.DoAsync(async db => (int)await db.ScriptEvaluateAsync(DeleteKeyWithValueScript, new RedisKey[] { key }, new RedisValue[] { val }));
+
+        /// <summary>
+        /// 如果key不存在时写入
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expire"></param>
+        /// <returns></returns>
+        public async Task<bool> StringSetWhenNotExist(string key, byte[] value, TimeSpan expire) =>
+            await this.DoAsync(async db => await db.StringSetAsync(key, value, expire, When.NotExists));
 
         #region String
 
         /// <summary>
         /// 保存一个对象
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="obj"></param>
-        /// <param name="expiry"></param>
-        /// <returns></returns>
         public bool StringSet(string key, object obj, TimeSpan? expiry = default(TimeSpan?))
         {
             return Do(db => db.StringSet(key, Serialize(obj), expiry));
@@ -189,9 +218,6 @@ namespace Lib.data.redis
         /// <summary>
         /// 入栈
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
         public long ListLeftPush(string key, object value)
         {
             return Do(db => db.ListLeftPush(key, Serialize(value)));
@@ -200,9 +226,6 @@ namespace Lib.data.redis
         /// <summary>
         /// 出栈
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public T ListLeftPop<T>(string key)
         {
             return Do(db =>
@@ -366,15 +389,13 @@ namespace Lib.data.redis
             return func(database);
         }
 
-        public ITransaction CreateTransaction()
+        public Task<T> DoAsync<T>(Func<IDatabase, Task<T>> func)
         {
-            return GetDatabase().CreateTransaction();
+            var database = _conn.GetDatabase(DbNum);
+            return func(database);
         }
 
-        public IDatabase GetDatabase()
-        {
-            return _conn.GetDatabase(DbNum);
-        }
+        public ITransaction CreateTransaction() => this.Database.CreateTransaction();
 
         public IServer GetServer(string hostAndPort)
         {

@@ -6,7 +6,8 @@ using Lib.core;
 using Lib.helper;
 using Lib.data;
 using System.Configuration;
-using Lib.data.redis;
+using Lib.distributed.redis;
+using Lib.extension;
 
 namespace Lib.cache
 {
@@ -17,8 +18,16 @@ namespace Lib.cache
     /// </summary>
     public class RedisCacheProvider : CacheBase, ICacheProvider
     {
-        private readonly int CACHE_DB =
-            Lib.helper.ConvertHelper.GetInt(ConfigurationManager.AppSettings["RedisCacheDB"], 1);
+        private readonly int CACHE_DB;
+        private readonly RedisHelper _redis;
+        private readonly IDatabase _db;
+
+        public RedisCacheProvider()
+        {
+            this.CACHE_DB = (ConfigurationManager.AppSettings["RedisCacheDB"] ?? "1").ToInt(1);
+            this._redis = new RedisHelper(this.CACHE_DB);
+            this._db = this._redis.Database;
+        }
 
         #region Methods
 
@@ -31,20 +40,18 @@ namespace Lib.cache
         public virtual CacheResult<T> Get<T>(string key)
         {
             var cache = new CacheResult<T>() { Success = false };
-            RedisManager.PrepareDataBase(_db =>
+
+            var rValue = _db.StringGet(key);
+            if (rValue.HasValue)
             {
-                var rValue = _db.StringGet(key);
-                if (rValue.HasValue)
+                var res = this.Deserialize<CacheResult<T>>(rValue);
+                if (res != null)
                 {
-                    var res = this.Deserialize<CacheResult<T>>(rValue);
-                    if (res != null)
-                    {
-                        res.Success = true;
-                        cache = res;
-                    }
+                    res.Success = true;
+                    cache = res;
                 }
-                return true;
-            }, CACHE_DB);
+            }
+
             return cache;
         }
 
@@ -53,14 +60,10 @@ namespace Lib.cache
         /// </summary>
         public virtual void Set(string key, object data, TimeSpan expire)
         {
-            RedisManager.PrepareDataBase(_db =>
-            {
-                var res = new CacheResult<object>() { Success = true, Result = data };
-                var entryBytes = this.Serialize(res);
+            var res = new CacheResult<object>() { Success = true, Result = data };
+            var entryBytes = this.Serialize(res);
 
-                _db.StringSet(key, entryBytes, expire);
-                return true;
-            }, CACHE_DB);
+            _db.StringSet(key, entryBytes, expire);
         }
 
         /// <summary>
@@ -70,12 +73,7 @@ namespace Lib.cache
         /// <returns>Result</returns>
         public virtual bool IsSet(string key)
         {
-            bool ret = false;
-            RedisManager.PrepareDataBase(_db =>
-            {
-                ret = _db.KeyExists(key);
-                return true;
-            }, CACHE_DB);
+            var ret = _db.KeyExists(key);
             return ret;
         }
 
@@ -85,11 +83,8 @@ namespace Lib.cache
         /// <param name="key">/key</param>
         public virtual void Remove(string key)
         {
-            RedisManager.PrepareDataBase(_db =>
-            {
-                _db.KeyDelete(key);
-                return true;
-            }, CACHE_DB);
+            var success = _db.KeyDelete(key);
+            if (!success) { throw new Exception($"É¾³ý»º´ækey£º{key}Ê§°Ü"); }
         }
 
         /// <summary>
@@ -98,18 +93,16 @@ namespace Lib.cache
         /// <param name="pattern">pattern</param>
         public virtual void RemoveByPattern(string pattern)
         {
-            RedisManager.PrepareConnection(_muxer =>
+            var _muxer = this._redis.Connection;
+            foreach (var ep in _muxer.GetEndPoints())
             {
-                var _db = _muxer.GetDatabase(CACHE_DB);
-                foreach (var ep in _muxer.GetEndPoints())
+                var server = _muxer.GetServer(ep);
+                var keys = server.Keys(pattern: "*" + pattern + "*");
+                foreach (var key in keys)
                 {
-                    var server = _muxer.GetServer(ep);
-                    var keys = server.Keys(pattern: "*" + pattern + "*");
-                    foreach (var key in keys)
-                        _db.KeyDelete(key);
+                    _db.KeyDelete(key);
                 }
-                return true;
-            });
+            }
         }
 
         /// <summary>
@@ -117,23 +110,21 @@ namespace Lib.cache
         /// </summary>
         public virtual void Clear()
         {
-            RedisManager.PrepareConnection(_muxer =>
+            var _muxer = this._redis.Connection;
+            foreach (var ep in _muxer.GetEndPoints())
             {
-                var _db = _muxer.GetDatabase(CACHE_DB);
-                foreach (var ep in _muxer.GetEndPoints())
-                {
-                    var server = _muxer.GetServer(ep);
-                    //we can use the code belwo (commented)
-                    //but it requires administration permission - ",allowAdmin=true"
-                    //server.FlushDatabase();
+                var server = _muxer.GetServer(ep);
+                //we can use the code belwo (commented)
+                //but it requires administration permission - ",allowAdmin=true"
+                //server.FlushDatabase();
 
-                    //that's why we simply interate through all elements now
-                    var keys = server.Keys();
-                    foreach (var key in keys)
-                        _db.KeyDelete(key);
+                //that's why we simply interate through all elements now
+                var keys = server.Keys();
+                foreach (var key in keys)
+                {
+                    _db.KeyDelete(key);
                 }
-                return true;
-            });
+            }
         }
 
         /// <summary>
