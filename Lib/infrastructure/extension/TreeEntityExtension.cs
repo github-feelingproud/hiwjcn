@@ -10,6 +10,7 @@ using Lib.helper;
 using Lib.extension;
 using System.Data.Entity;
 using Lib.data.ef;
+using Lib.core;
 
 namespace Lib.infrastructure.extension
 {
@@ -17,14 +18,13 @@ namespace Lib.infrastructure.extension
     {
         #region 递归相关逻辑
 
-        public static async Task<List<T>> FindNodeChildrenRecursively_<T>(this IQueryable<T> data_source, T first_node,
-            string tree_error = "树存在无限递归")
+        public static async Task FindNodeChildrenRecursively__<T>(this IQueryable<T> data_source,
+            T first_node, RefAction<T, List<T>> callback, string tree_error = "树存在无限递归")
             where T : TreeEntityBase
         {
             var repeat_check = new List<string>();
-            var list = new List<T>();
 
-            async Task FindRecursively(T node)
+            async Task FindChildrenRecursively(T node)
             {
                 if (node == null) { return; }
 
@@ -38,15 +38,25 @@ namespace Lib.infrastructure.extension
                     foreach (var child in children)
                     {
                         //递归
-                        await FindRecursively(child);
+                        await FindChildrenRecursively(child);
                     }
                 }
 
-                list.Add(node);
+                callback.Invoke(ref node, ref children);
             }
 
-            await FindRecursively(first_node);
+            await FindChildrenRecursively(first_node);
+        }
 
+        public static async Task<List<T>> FindNodeChildrenRecursively_<T>(this IQueryable<T> data_source, T first_node,
+            string tree_error = "树存在无限递归")
+            where T : TreeEntityBase
+        {
+            var list = new List<T>();
+            await data_source.FindNodeChildrenRecursively__(
+                first_node, 
+                (ref T node, ref List<T> children) => list.Add(node), 
+                tree_error);
             return list;
         }
 
@@ -171,5 +181,6 @@ namespace Lib.infrastructure.extension
 
             throw new Exception("删除节点错误");
         }
+
     }
 }

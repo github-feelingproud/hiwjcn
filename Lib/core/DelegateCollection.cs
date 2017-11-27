@@ -8,6 +8,7 @@ namespace Lib.core
 {
     public delegate TResult RefFunc<T, TResult>(ref T arg);
     public delegate void RefAction<T>(ref T arg);
+    public delegate void RefAction<T1, T2>(ref T1 arg1, ref T2 arg2);
 
     public delegate void VoidFunc();
     public delegate void VoidFunc<T>(T arg);
