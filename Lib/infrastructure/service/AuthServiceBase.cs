@@ -126,7 +126,7 @@ namespace Lib.infrastructure.service
                 if (await db.SaveChangesAsync() <= 0)
                 {
                     msg = "删除token失败";
-                    return false;
+                    return;
                 }
 
                 foreach (var token in token_uid_list)
@@ -137,7 +137,6 @@ namespace Lib.infrastructure.service
                 {
                     this._cache.Remove(this.AuthUserInfoCacheKey(user_uid));
                 }
-                return true;
             });
             return msg;
         }
@@ -187,7 +186,6 @@ namespace Lib.infrastructure.service
                 data.DataList = await query
                 .OrderByDescending(x => x.IsOfficial).OrderByDescending(x => x.CreateTime)
                 .QueryPage(page, pagesize).ToListAsync();
-                return true;
             });
 
             return data;
@@ -365,8 +363,6 @@ namespace Lib.infrastructure.service
 
                     success = await db.SaveChangesAsync() > 0;
                 }
-
-                return true;
             });
             return success;
         }
@@ -400,7 +396,6 @@ namespace Lib.infrastructure.service
                         }
                     }
                 }
-                return true;
             });
             return token;
         }
