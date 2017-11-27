@@ -350,7 +350,8 @@
     <Compile Include="infrastructure\entity\UserEntityBase.cs" />
     <Compile Include="infrastructure\extension\EntityExtension.cs" />
     <Compile Include="infrastructure\extension\TreeEntityExtension.cs" />
-    <Compile Include="infrastructure\helper\ZTreeHelper.cs" />
+    <Compile Include="infrastructure\helper\TreeHelper.cs" />
+    <Compile Include="infrastructure\model\IViewTreeNode.cs" />
     <Compile Include="infrastructure\model\ZTreeNode.cs" />
     <Compile Include="infrastructure\provider\UserLoginServiceBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
