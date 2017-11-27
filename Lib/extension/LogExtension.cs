@@ -9,14 +9,26 @@ using System.Diagnostics;
 
 namespace Lib.extension
 {
+    [Serializable]
+    public class LogTarget
+    {
+        private string _;
+        public LogTarget(string target)
+        {
+            this._ = target ?? throw new ArgumentNullException(nameof(target));
+        }
+
+        public static implicit operator LogTarget(Type t) => new LogTarget($"{t.Assembly.FullName}-{t.FullName}");
+
+        public override string ToString() => this._;
+    }
+
     public static class LogExtension
     {
         #region exception扩展
         /// <summary>
         /// 获取深层的异常信息
         /// </summary>
-        /// <param name="e"></param>
-        /// <returns></returns>
         public static string GetInnerExceptionAsJson(this Exception e)
         {
             return Com.GetExceptionMsgJson(e);
@@ -25,8 +37,6 @@ namespace Lib.extension
         /// <summary>
         /// 获取深层的异常信息
         /// </summary>
-        /// <param name="e"></param>
-        /// <returns></returns>
         public static List<string> GetInnerExceptionAsList(this Exception e)
         {
             return Com.GetExceptionMsgList(e);

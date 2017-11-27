@@ -270,7 +270,7 @@
     <Compile Include="extra\api\UmengPushHelper.cs" />
     <Compile Include="cache\CacheExtension.cs" />
     <Compile Include="cache\CacheManager.cs" />
-    <Compile Include="distributed\redis\FireWall.cs" />
+    <Compile Include="distributed\redis\RedisFireWall.cs" />
     <Compile Include="cache\HttpContextCacheProvider.cs" />
     <Compile Include="cache\ICacheProvider.cs" />
     <Compile Include="cache\MemoryCacheProvider.cs" />

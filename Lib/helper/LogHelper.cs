@@ -39,9 +39,6 @@ namespace Lib.helper
         /// <summary>
         /// 记录错误
         /// </summary>
-        /// <param name="t"></param>
-        /// <param name="msg"></param>
-        /// <returns></returns>
         public static void Error(Type t, string msg, Exception err = null)
         {
             try
@@ -63,11 +60,10 @@ namespace Lib.helper
                 Debug.Write(Com.GetExceptionMsgJson(e));
             }
         }
+
         /// <summary>
         /// 记录错误
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="msg"></param>
         public static void Error(string name, string msg, Exception err = null)
         {
             try
@@ -89,12 +85,10 @@ namespace Lib.helper
                 Debug.Write(Com.GetExceptionMsgJson(e));
             }
         }
+
         /// <summary>
         /// 记录日常信息
         /// </summary>
-        /// <param name="t"></param>
-        /// <param name="msg"></param>
-        /// <returns></returns>
         public static void Info(Type t, string msg)
         {
             try
@@ -109,11 +103,10 @@ namespace Lib.helper
                 Debug.Write(Com.GetExceptionMsgJson(e));
             }
         }
+
         /// <summary>
         /// 记录日常信息
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="msg"></param>
         public static void Info(string name, string msg)
         {
             try
@@ -128,12 +121,10 @@ namespace Lib.helper
                 Debug.Write(Com.GetExceptionMsgJson(e));
             }
         }
+
         /// <summary>
         /// 记录警告
         /// </summary>
-        /// <param name="t"></param>
-        /// <param name="msg"></param>
-        /// <returns></returns>
         public static void Warn(Type t, string msg)
         {
             try
@@ -148,11 +139,10 @@ namespace Lib.helper
                 Debug.Write(Com.GetExceptionMsgJson(e));
             }
         }
+
         /// <summary>
         /// 记录警告
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="msg"></param>
         public static void Warn(string name, string msg)
         {
             try

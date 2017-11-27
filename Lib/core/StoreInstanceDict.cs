@@ -84,11 +84,16 @@ namespace Lib.core
         /// <summary>
         /// 创建string key
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public virtual string CreateStringKey(Key key)
         {
-            return key.ToJson().ToSHA1();
+            if (key.GetType().IsValueType)
+            {
+                return key.ToString().RemoveWhitespace();
+            }
+            else
+            {
+                return key.ToJson().RemoveWhitespace();
+            }
         }
 
         /// <summary>

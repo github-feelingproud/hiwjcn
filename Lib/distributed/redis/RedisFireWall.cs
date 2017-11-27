@@ -10,18 +10,18 @@ namespace Lib.distributed.redis
     /// <summary>
     /// 目前只是思路
     /// </summary>
-    public class FireWall
+    public class RedisFireWall
     {
-        private RedisHelper redis;
-        private TimeSpan expire;
-        private double limit;
+        private readonly RedisHelper redis;
+        private readonly TimeSpan expire;
+        private readonly double limit;
 
-        public FireWall() : this(TimeSpan.FromMinutes(1), 30)
+        public RedisFireWall() : this(null, 1, TimeSpan.FromMinutes(1), 30)
         { }
 
-        public FireWall(TimeSpan expire, double limit)
+        public RedisFireWall(string connection_string, int db, TimeSpan expire, double limit)
         {
-            this.redis = new RedisHelper();
+            this.redis = new RedisHelper(db, connection_string);
             this.expire = expire;
             this.limit = limit;
             if (this.limit <= 0) { throw new Exception("limit不能小于1"); }

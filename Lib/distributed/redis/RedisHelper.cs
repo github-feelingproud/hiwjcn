@@ -13,6 +13,7 @@ using System.Configuration;
 using Polly;
 using System.Threading.Tasks;
 using Lib.data;
+using Lib.helper;
 
 namespace Lib.distributed.redis
 {
@@ -34,10 +35,10 @@ namespace Lib.distributed.redis
         public RedisHelper(int dbNum, string readWriteHosts)
         {
             this.DbNum = dbNum;
-            this._conn =
-                string.IsNullOrWhiteSpace(readWriteHosts) ?
-                RedisClientManager.Instance.DefaultClient :
-                RedisClientManager.Instance.GetCachedClient(readWriteHosts);
+            this._conn = 
+                ValidateHelper.IsPlumpString(readWriteHosts) ? 
+                RedisClientManager.Instance.GetCachedClient(readWriteHosts) : 
+                RedisClientManager.Instance.DefaultClient;
         }
 
         public const string DeleteKeyWithValueScript =
