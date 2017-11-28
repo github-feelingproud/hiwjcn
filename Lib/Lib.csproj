@@ -362,7 +362,6 @@
     <Compile Include="infrastructure\service\MenuServiceBase.cs" />
     <Compile Include="infrastructure\service\PermissionServiceBase.cs" />
     <Compile Include="infrastructure\service\RoleServiceBase.cs" />
-    <Compile Include="infrastructure\service\TreeServiceBase.cs" />
     <Compile Include="infrastructure\service\UserServiceBase.cs" />
     <Compile Include="ioc\AppContextExtension.cs" />
     <Compile Include="ioc\BaseDependencyRegistrar.cs" />

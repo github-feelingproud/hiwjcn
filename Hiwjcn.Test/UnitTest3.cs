@@ -16,12 +16,6 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest3
     {
-        class tm : TreeEntityBase
-        { }
-
-        class trr : TreeServiceBase<tm>
-        { }
-
         [TestMethod]
         public void lkhkjhafdsafasdkgf()
         {

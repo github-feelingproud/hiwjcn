@@ -41,7 +41,7 @@ namespace Lib.cache
         {
             var cache = new CacheResult<T>() { Success = false };
 
-            var rValue = _db.StringGet(key);
+            var rValue = this._db.StringGet(key);
             if (rValue.HasValue)
             {
                 var res = this.Deserialize<CacheResult<T>>(rValue);
@@ -63,7 +63,7 @@ namespace Lib.cache
             var res = new CacheResult<object>() { Success = true, Result = data };
             var entryBytes = this.Serialize(res);
 
-            _db.StringSet(key, entryBytes, expire);
+            this._db.StringSet(key, entryBytes, expire);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Lib.cache
         /// <returns>Result</returns>
         public virtual bool IsSet(string key)
         {
-            var ret = _db.KeyExists(key);
+            var ret = this._db.KeyExists(key);
             return ret;
         }
 
@@ -83,8 +83,7 @@ namespace Lib.cache
         /// <param name="key">/key</param>
         public virtual void Remove(string key)
         {
-            var success = _db.KeyDelete(key);
-            if (!success) { throw new Exception($"É¾³ý»º´ækey£º{key}Ê§°Ü"); }
+            this._db.KeyDelete(key);
         }
 
         /// <summary>
@@ -100,7 +99,7 @@ namespace Lib.cache
                 var keys = server.Keys(pattern: "*" + pattern + "*");
                 foreach (var key in keys)
                 {
-                    _db.KeyDelete(key);
+                    this._db.KeyDelete(key);
                 }
             }
         }
@@ -122,7 +121,7 @@ namespace Lib.cache
                 var keys = server.Keys();
                 foreach (var key in keys)
                 {
-                    _db.KeyDelete(key);
+                    this._db.KeyDelete(key);
                 }
             }
         }

@@ -18,49 +18,46 @@ namespace Lib.infrastructure.extension
     {
         #region 递归相关逻辑
 
-        public static async Task FindNodeChildrenRecursively__<T>(this IQueryable<T> data_source,
-            T first_node, RefAction<T, List<T>> callback, string tree_error = "树存在无限递归")
+        public static void FindNodeChildrenRecursively__<T>(this IEnumerable<T> data_source,
+            T first_node, Action<T, List<T>> callback, string tree_error = "树存在无限递归")
             where T : TreeEntityBase
         {
             var repeat_check = new List<string>();
 
-            async Task FindChildrenRecursively(T node)
+            void FindChildren(ref IEnumerable<T> nodes)
             {
-                if (node == null) { return; }
-
-                repeat_check.AddOnceOrThrow(node.UID, error_msg: tree_error);
-
-                var child_parent_uid = node.UID;
-                var child_level = node.Level + 1;
-                var children = await data_source.Where(x => x.ParentUID == child_parent_uid && x.Level == child_level).ToListAsync();
-                if (ValidateHelper.IsPlumpList(children))
+                foreach (var m in nodes)
                 {
-                    foreach (var child in children)
-                    {
-                        //递归
-                        await FindChildrenRecursively(child);
-                    }
-                }
+                    repeat_check.AddOnceOrThrow(m.UID, error_msg: tree_error);
 
-                callback.Invoke(ref node, ref children);
+                    var level = m.Level + 1;
+                    var children = data_source.Where(x => x.ParentUID == m.UID && x.Level == level);
+                    if (ValidateHelper.IsPlumpList(children))
+                    {
+                        FindChildren(ref children);
+                    }
+
+                    callback.Invoke(m, children.ToList());
+                }
             }
 
-            await FindChildrenRecursively(first_node);
+            var start = new List<T>() { first_node }.AsEnumerable();
+            FindChildren(ref start);
         }
 
-        public static async Task<List<T>> FindNodeChildrenRecursively_<T>(this IQueryable<T> data_source, T first_node,
+        public static List<T> FindNodeChildrenRecursively_<T>(this IEnumerable<T> data_source, T first_node,
             string tree_error = "树存在无限递归")
             where T : TreeEntityBase
         {
             var list = new List<T>();
-            await data_source.FindNodeChildrenRecursively__(
-                first_node, 
-                (ref T node, ref List<T> children) => list.Add(node), 
+            data_source.FindNodeChildrenRecursively__(
+                first_node,
+                (node, children) => list.Add(node),
                 tree_error);
             return list;
         }
 
-        public static async Task<(bool success, List<T> node_path)> CheckNodeIfCanFindRoot<T>(this IQueryable<T> data_source, T first_node)
+        public static (bool success, List<T> node_path) CheckNodeIfCanFindRoot<T>(this IEnumerable<T> data_source, T first_node)
             where T : TreeEntityBase
         {
             var repeat_check = new List<string>();
@@ -75,7 +72,7 @@ namespace Lib.infrastructure.extension
 
             while (true)
             {
-                node = await data_source.Where(x => x.UID == current_uid).FirstOrDefaultAsync();
+                node = data_source.Where(x => x.UID == current_uid).FirstOrDefault();
                 if (node == null) { break; }
 
                 repeat_check.AddOnceOrThrow(node.UID, error_msg: "存在无限循环");
@@ -93,10 +90,10 @@ namespace Lib.infrastructure.extension
             return (success, node_path);
         }
 
-        public static async Task<List<T>> FindTreeBadNodes<T>(this IQueryable<T> data_source)
+        public static List<T> FindTreeBadNodes<T>(this IEnumerable<T> data_source)
             where T : TreeEntityBase
         {
-            var list = await data_source.ToListAsync();
+            var list = data_source.ToList();
             var error_list = new List<string>();
 
             foreach (var node in list.OrderByDescending(x => x.Level))
@@ -108,7 +105,7 @@ namespace Lib.infrastructure.extension
                     //计算了node1到node5为错误节点之后将跳过1,2,3,4的检查
                     continue;
                 }
-                var check = await data_source.CheckNodeIfCanFindRoot(node);
+                var check = data_source.CheckNodeIfCanFindRoot(node);
                 if (!check.success)
                 {
                     error_list.AddRange(check.node_path.Select(x => x.UID));
@@ -120,8 +117,7 @@ namespace Lib.infrastructure.extension
 
         #endregion
 
-        public static async Task<_<string>> AddTreeNode<T>(this IRepository<T> repo,
-            T model, string model_flag)
+        public static async Task<_<string>> AddTreeNode<T>(this IRepository<T> repo, T model, string model_flag)
             where T : TreeEntityBase
         {
             var data = new _<string>();
@@ -150,8 +146,7 @@ namespace Lib.infrastructure.extension
             throw new Exception("添加菜单失败");
         }
 
-        public static async Task<List<T>> QueryNodeList<T>(this ILinqRepository<T> repo,
-            string parent = null, int max = 5000)
+        public static async Task<List<T>> QueryNodeList<T>(this ILinqRepository<T> repo, string parent = null, int max = 5000)
             where T : TreeEntityBase
         {
             return await repo.PrepareIQueryableAsync_(async query =>
@@ -171,7 +166,7 @@ namespace Lib.infrastructure.extension
             var list = await repo.GetListEnsureMaxCountAsync(null, 5000, "树节点数量达到上线");
             var permission = list.Where(x => x.UID == node_uid).FirstOrThrow($"节点不存在{node_uid}");
 
-            var dead_nodes = await list.AsQueryable().FindNodeChildrenRecursively_(permission);
+            var dead_nodes = list.FindNodeChildrenRecursively_(permission);
 
             if (await repo.DeleteAsync(dead_nodes.ToArray()) > 0)
             {
