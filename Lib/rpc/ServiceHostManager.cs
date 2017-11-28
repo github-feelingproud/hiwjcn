@@ -79,7 +79,7 @@ namespace Lib.rpc
                         var dataContractBehavior = host.Description.Behaviors.Find<DataContractSerializerOperationBehavior>();
                         if (dataContractBehavior != null)
                         {
-                            dataContractBehavior.MaxItemsInObjectGraph = 100000;
+                            dataContractBehavior.MaxItemsInObjectGraph = 65536000;
                         }
 
                         var debugBehavior = host.Description.Behaviors.Find<ServiceDebugBehavior>();
