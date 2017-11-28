@@ -39,6 +39,8 @@ namespace Lib.rpc
 
         public static void StartService(string base_url, params Assembly[] ass)
         {
+            if (ValidateHelper.IsPlumpList(_hosts)) { throw new Exception("服务已经启动"); }
+
             base_url = base_url ?? string.Empty;
             if (!base_url.EndsWith("/")) { throw new Exception("base_url必须以/结尾"); }
             if (!ValidateHelper.IsPlumpList(ass)) { throw new ArgumentNullException(nameof(ass)); }
@@ -58,23 +60,37 @@ namespace Lib.rpc
                             host.AddServiceEndpoint(c, new BasicHttpBinding(), c.Name);
                         }
 
-                        var smb = new ServiceMetadataBehavior();
-                        smb.HttpGetEnabled = true;
-                        smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
-                        host.Description.Behaviors.Add(smb);
-
-                        host.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
-
-                        foreach (var ep in host.Description.Endpoints)
+                        var metaBehavior = host.Description.Behaviors.Find<ServiceMetadataBehavior>();
+                        if (metaBehavior != null)
                         {
-                            foreach (var op in ep.Contract.Operations)
-                            {
-                                var dataContractBehavior = op.Behaviors.Find<DataContractSerializerOperationBehavior>();
-                                if (dataContractBehavior != null)
-                                {
-                                    dataContractBehavior.MaxItemsInObjectGraph = 100000;
-                                }
-                            }
+                            metaBehavior.HttpGetEnabled = true;
+                            metaBehavior.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
+                        }
+                        else
+                        {
+                            metaBehavior = new ServiceMetadataBehavior();
+
+                            metaBehavior.HttpGetEnabled = true;
+                            metaBehavior.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
+
+                            host.Description.Behaviors.Add(metaBehavior);
+                        }
+
+                        var dataContractBehavior = host.Description.Behaviors.Find<DataContractSerializerOperationBehavior>();
+                        if (dataContractBehavior != null)
+                        {
+                            dataContractBehavior.MaxItemsInObjectGraph = 100000;
+                        }
+
+                        var debugBehavior = host.Description.Behaviors.Find<ServiceDebugBehavior>();
+                        if (debugBehavior != null)
+                        {
+                            debugBehavior.IncludeExceptionDetailInFaults = true;
+                        }
+                        else
+                        {
+                            debugBehavior = new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true };
+                            host.Description.Behaviors.Add(debugBehavior);
                         }
 
                         host.Open();

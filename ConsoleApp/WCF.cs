@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using Lib.extension;
+using Lib.rpc;
 
 namespace ConsoleApp
 {
@@ -16,6 +17,7 @@ namespace ConsoleApp
         DateTime Time();
     }
 
+    [ServiceContractImpl]
     public class xxImpl : xx
     {
         public DateTime Time() => DateTime.Now;
@@ -28,6 +30,7 @@ namespace ConsoleApp
         DateTime Date();
     }
 
+    [ServiceContractImpl]
     public class mmImpl : mm
     {
         public DateTime Date() => DateTime.Now;
@@ -37,35 +40,9 @@ namespace ConsoleApp
     {
         public static void Serv()
         {
-            var list = new List<ServiceHost>();
-
             try
             {
-                {
-                    var host = new ServiceHost(typeof(xxImpl), new Uri("http://localhost:10000/xx/"));
-                    host.AddServiceEndpoint(typeof(xx), new BasicHttpBinding(), "xx");
-
-                    var smb = new ServiceMetadataBehavior();
-                    smb.HttpGetEnabled = true;
-                    smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
-                    host.Description.Behaviors.Add(smb);
-
-                    host.Open();
-                    list.Add(host);
-                }
-
-                {
-                    var host = new ServiceHost(typeof(mmImpl), new Uri("http://localhost:10000/mm/"));
-                    host.AddServiceEndpoint(typeof(mm), new BasicHttpBinding(), "mm");
-
-                    var smb = new ServiceMetadataBehavior();
-                    smb.HttpGetEnabled = true;
-                    smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
-                    host.Description.Behaviors.Add(smb);
-
-                    host.Open();
-                    list.Add(host);
-                }
+                ServiceHostManager.StartService("http://localhost:10000/", typeof(WCF).Assembly);
                 Console.WriteLine("服务已启动");
                 Console.ReadKey();
             }
@@ -75,11 +52,7 @@ namespace ConsoleApp
             }
             finally
             {
-                foreach (var s in list)
-                {
-                    s.Close();
-                    ((IDisposable)s).Dispose();
-                }
+                Lib.core.LibReleaseHelper.DisposeAll();
             }
         }
     }
