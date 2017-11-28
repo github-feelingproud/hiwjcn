@@ -9,6 +9,28 @@ using System.Web.Mvc;
 
 namespace Lib.mvc.user
 {
+    /*
+     
+    <!--SSO登录地址-->
+    <add key="SSOLoginUrl" value="http://localhost:51735/sso/login/" />
+    <!--SSO退出地址-->
+    <add key="SSOLogoutUrl" value="http://localhost:51735/sso/logout/" />
+    <!--SSO中用来检查登录信息的接口-->
+    <add key="CheckLoginInfoUrl" value="http://sso.qipeilong.cn/sso/CheckLoginInfo/" />
+    <!--在SSO中配置的tokenID-->
+    <add key="WebToken" value="***" />
+    <!--默认跳转地址-->
+    <add key="DefaultRedirectUrl" value="http://sso.qipeilong.cn/user/userlist/" />
+    <!--指定跳回地址-->
+    <add key="SSO_CONTINUE_URL" value="" />
+    <!--指定服务器跳转，还是把跳转地址返回给前端跳转-->
+    <add key="SSO_NO_LOGIN_RESULT_FOR_INTERFACE" value="" />
+
+         */
+
+    /// <summary>
+    /// sso
+    /// </summary>
     public static class SSOClientHelper
     {
         /// <summary>

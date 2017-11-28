@@ -9,6 +9,15 @@ using Polly;
 
 namespace Lib.net
 {
+    /*
+     <add key="SmptServer" value="smtp.epcservices.com.cn" />
+    <add key="SmptLoginName" value="r*****@epcservices.com.cn" />
+    <add key="SmptPassWord" value="**********" />
+    <add key="SmptSenderName" value="EPC_WEBSITE" />
+    <add key="SmptEmailAddress" value="reception@epcservices.com.cn" />
+    <add key="FeedBackEmail" value="reception@epcservices.com.cn" />
+         */
+
     public class EmailModel
     {
         public EmailModel()
