@@ -20,16 +20,10 @@ namespace Lib.distributed.zookeeper.ServiceManager
     /// </summary>
     public class ServiceRegister : ServiceManageBase
     {
-        private readonly string _base_url;
         private readonly string _node_id;
-        private readonly IReadOnlyList<Assembly> _ass;
 
-        public ServiceRegister(string host, string service_base_url, Assembly[] ass) : base(host)
+        public ServiceRegister(string host) : base(host)
         {
-            this._base_url = service_base_url ?? throw new ArgumentNullException(nameof(service_base_url));
-            this._ass = (ass ?? throw new ArgumentNullException(nameof(ass))).ToList().AsReadOnly();
-            if (this._ass.Count <= 0) { throw new Exception("至少注册一个程序集"); }
-
             this._node_id = this.Client.getSessionId().ToString();
 
             this.Retry().Execute(() => this.Reg());
@@ -41,25 +35,15 @@ namespace Lib.distributed.zookeeper.ServiceManager
         private async Task RegisterService()
         {
             var list = new List<AddressModel>();
-
-            foreach (var a in this._ass)
+            foreach (var m in ServiceHostManager.GetContractInfo())
             {
-                var contractImpl = a.FindServiceContractsImpl();
-
-                foreach (var t in contractImpl)
+                var model = new AddressModel()
                 {
-                    var attr = t.GetCustomAttributes_<ServiceContractImplAttribute>().First();
-                    foreach (var contract in t.FindServiceContracts())
-                    {
-                        var model = new AddressModel()
-                        {
-                            Url = this._base_url + attr.RelativePath,
-                            ServiceNodeName = ServiceManageHelper.ParseServiceName(contract),
-                            EndpointNodeName = ServiceManageHelper.EndpointNodeName(this._node_id),
-                        };
-                        list.Add(model);
-                    }
-                }
+                    Url = m.url,
+                    ServiceNodeName = ServiceManageHelper.ParseServiceName(m.contract),
+                    EndpointNodeName = ServiceManageHelper.EndpointNodeName(this._node_id),
+                };
+                list.Add(model);
             }
 
             foreach (var m in list)

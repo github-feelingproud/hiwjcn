@@ -467,6 +467,7 @@
     <Compile Include="helper\XmlHelper.cs" />
     <Compile Include="rpc\ServiceClientExtension.cs" />
     <Compile Include="rpc\ServiceCore.cs" />
+    <Compile Include="rpc\ServiceHostManager.cs" />
     <Compile Include="rpc\WcfInterception.cs" />
     <Compile Include="rpc\WebApiHelper.cs" />
     <Compile Include="task\QuartzJobBase.cs" />

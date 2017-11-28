@@ -11,6 +11,7 @@ using Lib.distributed.akka;
 using Lib.mq.rabbitmq;
 using Lib.distributed.redis;
 using Lib.data.elasticsearch;
+using Lib.rpc;
 
 namespace Lib.core
 {
@@ -25,6 +26,16 @@ namespace Lib.core
             {
                 //startup tasks
                 LibStartUpHelper.Dispose();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+
+            try
+            {
+                //wcf service host
+                ServiceHostManager.DisposeService();
             }
             catch (Exception e)
             {
