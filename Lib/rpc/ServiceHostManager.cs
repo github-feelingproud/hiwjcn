@@ -37,7 +37,7 @@ namespace Lib.rpc
             return data;
         }
 
-        public static void StartService(string base_url, params Assembly[] ass)
+        public static bool StartService(string base_url, params Assembly[] ass)
         {
             if (ValidateHelper.IsPlumpList(_hosts)) { throw new Exception("服务已经启动"); }
 
@@ -97,6 +97,7 @@ namespace Lib.rpc
                         _hosts.Add(host);
                     }
                 }
+                return ValidateHelper.IsPlumpList(_hosts);
             }
             catch (Exception e)
             {
