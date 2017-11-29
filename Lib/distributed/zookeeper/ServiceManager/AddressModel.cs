@@ -15,5 +15,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
         public virtual string FullPathName { get => $"{this.ServiceNodeName}/{this.EndpointNodeName}"; }
 
         public virtual string Url { get; set; }
+
+        public virtual int Weight { get; set; } = 1;
     }
 }
