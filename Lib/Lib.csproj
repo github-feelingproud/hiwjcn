@@ -287,7 +287,6 @@
     <Compile Include="core\ResultBase.cs" />
     <Compile Include="core\StepLog.cs" />
     <Compile Include="core\StoreInstanceDict.cs" />
-    <Compile Include="core\ThreadWrapper.cs" />
     <Compile Include="data\AntiBadRetry.cs" />
     <Compile Include="data\DapperLinq.cs" />
     <Compile Include="data\DBHelper.cs" />
@@ -476,6 +475,8 @@
     <Compile Include="task\TaskManager.cs" />
     <Compile Include="TestFile.cs" />
     <Compile Include="rpc\ServiceClient.cs" />
+    <Compile Include="threading\ThreadWrapper.cs" />
+    <Compile Include="threading\WriteLockDisposable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

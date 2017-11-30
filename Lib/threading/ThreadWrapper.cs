@@ -6,30 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Lib.core
+namespace Lib.threading
 {
-    /// <summary>
-    /// 来自nop的方法
-    /// </summary>
-    public class WriteLockDisposable : IDisposable
-    {
-        private readonly ReaderWriterLockSlim _rwLock;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WriteLockDisposable"/> class.
-        /// </summary>
-        /// <param name="rwLock">The rw lock.</param>
-        public WriteLockDisposable(ReaderWriterLockSlim rwLock)
-        {
-            _rwLock = rwLock;
-            _rwLock.EnterWriteLock();
-        }
-
-        void IDisposable.Dispose()
-        {
-            _rwLock.ExitWriteLock();
-        }
-    }
     /// <summary>
     /// 对线程的一个封装，方便安全结束线程
     /// </summary>
@@ -93,8 +71,6 @@ namespace Lib.core
         /// <summary>
         /// 请捕捉异常
         /// </summary>
-        /// <param name="func"></param>
-        /// <param name="background"></param>
         public void Run(Func<Func<bool>, bool> func, string ThreadName = null, bool background = false)
         {
             if (tt != null) { throw new Exception("当前有线程在执行"); }
