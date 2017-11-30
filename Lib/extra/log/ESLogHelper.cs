@@ -10,7 +10,7 @@ using Nest;
 using System.Configuration;
 using Lib.data.elasticsearch;
 
-namespace Lib.log
+namespace Lib.extra.log
 {
     /// <summary>
     /// nest用法搜索邮箱

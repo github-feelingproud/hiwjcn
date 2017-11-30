@@ -4,7 +4,7 @@ using log4net.Appender;
 using log4net.Core;
 using System;
 
-namespace Lib.log
+namespace Lib.extra.log
 {
     public class LogLine
     {

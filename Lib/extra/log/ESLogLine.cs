@@ -9,7 +9,7 @@ using Lib.helper;
 using Lib.extension;
 using Lib.data.elasticsearch;
 
-namespace Lib.log
+namespace Lib.extra.log
 {
     [ElasticsearchType(IdProperty = nameof(UID), Name = nameof(ESLogLine))]
     public class ESLogLine : IElasticSearchIndex

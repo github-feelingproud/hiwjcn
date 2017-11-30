@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Web;
 using Lib.helper;
 using Lib.extension;
-using Lib.log;
 
 namespace Lib.cache
 {

@@ -16,7 +16,7 @@ using Lib.events;
 using Lib.distributed.akka;
 using Lib.data.elasticsearch;
 
-namespace Lib.log
+namespace Lib.extra.log
 {
     /// <summary>
     /// 使用redis存储日志

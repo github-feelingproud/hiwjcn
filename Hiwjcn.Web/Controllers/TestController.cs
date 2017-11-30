@@ -17,7 +17,6 @@ using System.Web.Mvc;
 using System.Linq;
 using Lib.mvc;
 using Lib.mvc.attr;
-using Lib.log;
 using Lib.storage;
 using WebCore.MvcLib.Controller;
 using Hiwjcn.Core.Data;
@@ -27,6 +26,7 @@ using Hiwjcn.Bll;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.data.elasticsearch;
 using Lib.distributed.redis;
+using Lib.extra.log;
 
 namespace Hiwjcn.Web.Controllers
 {

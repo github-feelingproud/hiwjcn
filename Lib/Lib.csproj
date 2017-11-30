@@ -296,7 +296,7 @@
     <Compile Include="data\ef\EFRepository.cs" />
     <Compile Include="data\ef\EFManager.cs" />
     <Compile Include="data\SerializeBase.cs" />
-    <Compile Include="distributed\CrossProcessLock.cs" />
+    <Compile Include="threading\CrossProcessLock.cs" />
     <Compile Include="distributed\zookeeper\ZooKeeperDistributedLock.cs" />
     <Compile Include="distributed\IDistributedLock.cs" />
     <Compile Include="distributed\redis\RedisDistributedLock.cs" />
@@ -323,6 +323,10 @@
     <Compile Include="extension\ReflectionExtension.cs" />
     <Compile Include="extension\TaskExtension.cs" />
     <Compile Include="extension\ValidateExtension.cs" />
+    <Compile Include="extra\log\ESLogAppender.cs" />
+    <Compile Include="extra\log\ESLogHelper.cs" />
+    <Compile Include="extra\log\ESLogLine.cs" />
+    <Compile Include="extra\log\RedisLogAppender.cs" />
     <Compile Include="helper\EncodingHelper.cs" />
     <Compile Include="helper\GeoHelper.cs" />
     <Compile Include="helper\LanguageHelper.cs" />
@@ -370,9 +374,6 @@
     <Compile Include="ioc\Interceptors.cs" />
     <Compile Include="io\GZipHelper.cs" />
     <Compile Include="io\INIFile.cs" />
-    <Compile Include="log\ESLogAppender.cs" />
-    <Compile Include="log\ESLogLine.cs" />
-    <Compile Include="log\ESLogHelper.cs" />
     <Compile Include="mq\IMessageQueueConsumer.cs" />
     <Compile Include="mq\IMessageQueueProducer.cs" />
     <Compile Include="mq\RabbitMQSection.cs" />
@@ -426,7 +427,6 @@
     <Compile Include="io\FileDownload.cs" />
     <Compile Include="io\FileUpload.cs" />
     <Compile Include="io\ZipHelper.cs" />
-    <Compile Include="log\RedisLogAppender.cs" />
     <Compile Include="io\FileModel.cs" />
     <Compile Include="data\IDBTable.cs" />
     <Compile Include="mvc\AutoFacControllerFactory.cs" />
