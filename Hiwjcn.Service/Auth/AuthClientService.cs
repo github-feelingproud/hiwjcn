@@ -150,7 +150,6 @@ namespace Hiwjcn.Bll.Auth
                 data.DataList = await query
                 .OrderByDescending(x => x.IsOfficial).OrderByDescending(x => x.CreateTime)
                 .QueryPage(page, pagesize).ToListAsync();
-                return true;
             });
 
             return data;
