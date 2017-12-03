@@ -1,0 +1,44 @@
+﻿@{
+    Layout = null;
+
+    int page = 1;
+    int page_count = 1;
+    string url = string.Empty;
+}
+
+<ul class="pagination">
+    <li class="first-li@(page==1?" active":"")">
+        <a href="@(string.Format(url,1))" data-page="1" target="_self">1</a>
+    </li>
+    @{
+        var cur_start = page - 3;
+        var cur_end = page + 3;
+        var has_before = cur_start > 2;
+        var has_next = cur_end < page_count - 1;
+        if (!has_before) { cur_start = 2; }
+        if (!has_next) { cur_end = page_count - 1; }
+    }
+    @if (has_before)
+    {
+        <li>
+            <a href="@(string.Format(url,cur_start-1))" data-page="@(cur_start-1)" target="_self">«</a>
+        </li>
+    }
+
+    @for (var i = cur_start; i <= cur_end; ++i)
+    {
+        <li class="p@(page==i?" active":"")">
+            <a href="@(string.Format(url, i))" data-page="@(i)" target="_self">@(i)</a>
+        </li>
+    }
+
+    @if (has_next)
+    {
+        <li>
+            <a href="@(string.Format(url,cur_end+1))" data-page="@(cur_end+1)" target="_self">»</a>
+        </li>
+    }
+    <li class="last-li@(page==page_count?" active":"")">
+        <a href="@(string.Format(url,page_count))" data-page="@(page_count)" target="_self">@(page_count)</a>
+    </li>
+</ul>

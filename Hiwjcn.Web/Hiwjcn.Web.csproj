@@ -854,6 +854,7 @@
     <Content Include="Views\AuthManage\EditScope.cshtml" />
     <Content Include="Views\AuthManage\Users.cshtml" />
     <Content Include="Views\SSO\Login.cshtml" />
+    <Content Include="Views\Shared\pager.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
