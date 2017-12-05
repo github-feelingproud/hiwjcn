@@ -14,11 +14,11 @@ namespace Lib.infrastructure.entity
 {
     public static class TokenConfig
     {
-        public static readonly int TokenExpireDays = 
+        public static readonly int TokenExpireDays =
             (ConfigurationManager.AppSettings["AuthExpireDays"] ?? "30").ToInt(30);
-        public static readonly int CodeExpireMinutes = 
+        public static readonly int CodeExpireMinutes =
             (ConfigurationManager.AppSettings["CodeExpireMinutes"] ?? "5").ToInt(5);
-        public static readonly int MaxCodeCreatedDaily = 
+        public static readonly int MaxCodeCreatedDaily =
             (ConfigurationManager.AppSettings["MaxCodeCreatedDaily"] ?? "2000").ToInt(2000);
     }
 
@@ -180,5 +180,21 @@ namespace Lib.infrastructure.entity
         [DataType(DataType.Text)]
         [Required(ErrorMessage = "scopes为空")]
         public virtual string ScopesJson { get; set; }
+    }
+
+    [Serializable]
+    public class ExternalLoginBase : BaseEntity
+    {
+        [Required]
+        public virtual string UserUID { get; set; }
+
+        [Required]
+        public virtual string AccessToken { get; set; }
+
+        [Required]
+        public virtual string OpenID { get; set; }
+
+        [Required]
+        public virtual string ProviderKey { get; set; }
     }
 }

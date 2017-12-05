@@ -106,6 +106,9 @@ namespace Lib.infrastructure.service
             var data = new _<string>();
             var menu = await this._menuRepo.GetFirstAsync(x => x.UID == model.UID);
             Com.AssertNotNull(menu, "菜单不存在");
+
+            this.UpdateMenuEntity(ref menu, ref model);
+
             menu.Update();
             if (!menu.IsValid(out var msg))
             {
