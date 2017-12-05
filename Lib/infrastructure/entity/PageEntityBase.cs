@@ -1,47 +1,77 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Lib.mvc.user;
-using Lib.extension;
 using Lib.helper;
+using Lib.data;
+using Lib.core;
+using Lib.extension;
+using Lib.infrastructure;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using System.Data.Entity;
 
 namespace Lib.infrastructure.entity
 {
     [Serializable]
+    public enum PageStatusEnum : int
+    {
+        草稿 = 0,
+        发布 = 1
+    }
+
+    [Serializable]
+    public enum PageTypeEnum : int
+    {
+        //
+    }
+
+    [Serializable]
     public class PageEntityBase : BaseEntity
     {
+        [Required]
         public virtual string UserUID { get; set; }
 
-        public virtual string PostTitle { get; set; }
+        [Required]
+        public virtual string PageTitle { get; set; }
 
-        public virtual string PostDescription { get; set; }
+        [Required]
+        public virtual string PageDescription { get; set; }
 
-        public virtual string PostMetaJson { get; set; }
+        public virtual string PageMetaJson { get; set; }
 
-        public virtual string PostContent { get; set; }
+        public virtual string PageContent { get; set; }
 
-        public virtual string PostContentMarkdown { get; set; }
+        public virtual string PageContentMarkdown { get; set; }
 
-        public virtual DateTime? PostStartTime { get; set; }
+        public virtual DateTime? PageStartTime { get; set; }
 
-        public virtual DateTime? PostEndTime { get; set; }
+        public virtual DateTime? PageEndTime { get; set; }
 
-        public virtual int PostStatus { get; set; }
+        public virtual int PageStatus { get; set; }
+
+        public virtual int PageType { get; set; }
 
         public virtual int CommentStatus { get; set; }
 
-        public virtual string PostPassword { get; set; }
+        public virtual string PagePassword { get; set; }
 
-        public virtual string PostName { get; set; }
+        [Required]
+        [Index(IsUnique = true)]
+        public virtual string PageName { get; set; }
 
         public virtual int CommentCount { get; set; }
 
         public virtual int Sort { get; set; }
 
-        public virtual string PostGroup { get; set; }
+        [Required]
+        public virtual string PageGroup { get; set; } = string.Empty;
 
         public virtual int PageLanguage { get; set; }
+
+        public virtual bool ShowWhen(DateTime time) =>
+            (this.PageStartTime == null || this.PageStartTime < time) &&
+            (this.PageEndTime == null || this.PageEndTime > time);
     }
 }

@@ -296,6 +296,7 @@
     <Compile Include="data\ef\EFRepository.cs" />
     <Compile Include="data\ef\EFManager.cs" />
     <Compile Include="data\SerializeBase.cs" />
+    <Compile Include="infrastructure\entity\OrganizationEntityBase.cs" />
     <Compile Include="infrastructure\entity\PageEntityBase.cs" />
     <Compile Include="infrastructure\service\PageServiceBase.cs" />
     <Compile Include="threading\CrossProcessLock.cs" />

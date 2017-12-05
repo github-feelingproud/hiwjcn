@@ -48,7 +48,7 @@ namespace Lib.infrastructure.service
                 return data;
             }
 
-            if (await this._pageRepo.ExistAsync(x => x.PostName == page.PostName))
+            if (await this._pageRepo.ExistAsync(x => x.PageName == page.PageName))
             {
                 data.SetErrorMsg("页面名称已存在");
                 return data;
@@ -97,12 +97,95 @@ namespace Lib.infrastructure.service
             throw new Exception("删除页面错误");
         }
 
+        public virtual async Task<_<string>> HideOrShowPages(bool show, params string[] page_uids)
+        {
+            if (!ValidateHelper.IsPlumpList(page_uids)) { throw new Exception("参数错误"); }
+            var data = new _<string>();
+            var pages = show ?
+                await this._pageRepo.GetListAsync(x => page_uids.Contains(x.UID) && x.IsRemove > 0) :
+                await this._pageRepo.GetListAsync(x => page_uids.Contains(x.UID) && x.IsRemove <= 0);
+
+            if (ValidateHelper.IsPlumpList(pages))
+            {
+                foreach (var m in pages)
+                {
+                    m.IsRemove = show.ToBoolInt();
+                }
+                await this._pageRepo.UpdateAsync(pages.ToArray());
+            }
+
+            data.SetSuccessData(string.Empty);
+            return data;
+        }
+
         public virtual async Task<List<PageBase>> GetPagesByGroup(string group)
         {
             if (!ValidateHelper.IsPlumpString(group)) { throw new Exception("参数错误"); }
-            return await this._pageRepo.GetListAsync(x => x.PostGroup == group && x.IsRemove <= 0);
+            return await this._pageRepo.PrepareIQueryableAsync_(async query =>
+            {
+                query = query.Where(x => x.IsRemove <= 0);
+                query = query.OrderByDescending(x => x.Sort).OrderByDescending(x => x.UpdateTime);
+                return await query.Take(1000).ToListAsync();
+            });
         }
 
+        public virtual async Task<PageBase> GetPageByName(string name)
+        {
+            if (!ValidateHelper.IsPlumpString(name)) { return null; }
+            var page = await this._pageRepo.GetFirstAsync(x => x.PageName == name && x.IsRemove <= 0);
+            return page;
+        }
+
+        public virtual async Task<PageBase> GetPageByUID(string uid)
+        {
+            if (!ValidateHelper.IsPlumpString(uid)) { return null; }
+            var page = await this._pageRepo.GetFirstAsync(x => x.UID == uid && x.IsRemove <= 0);
+            return page;
+        }
+
+        public virtual async Task<PagerData<PageBase>> RemovedPages(
+            string user_uid, int page = 1, int pagesize = 10)
+        {
+            return await this._pageRepo.PrepareIQueryableAsync_(async query =>
+            {
+                var data = new PagerData<PageBase>();
+                var now = DateTime.Now;
+
+                query = query.Where(x => x.IsRemove > 0);
+                query = query.Where(x => x.UserUID == user_uid);
+
+                data.ItemCount = await query.CountAsync();
+                data.DataList = await query.OrderByDescending(x => x.CreateTime).QueryPage(page, pagesize).ToListAsync();
+                return data;
+            });
+        }
+
+        public virtual async Task<PagerData<PageBase>> QueryPages(
+            string user_uid = null, bool enforce_date_range = true,
+            int page = 1, int pagesize = 10)
+        {
+            return await this._pageRepo.PrepareIQueryableAsync_(async query =>
+            {
+                var data = new PagerData<PageBase>();
+                var now = DateTime.Now;
+
+                query = query.Where(x => x.IsRemove <= 0);
+                if (enforce_date_range)
+                {
+                    query = query.Where(x => x.PageStartTime == null || x.PageStartTime < now);
+                    query = query.Where(x => x.PageEndTime == null || x.PageEndTime > now);
+                }
+
+                if (ValidateHelper.IsPlumpString(user_uid))
+                {
+                    query = query.Where(x => x.UserUID == user_uid);
+                }
+
+                data.ItemCount = await query.CountAsync();
+                data.DataList = await query.OrderByDescending(x => x.CreateTime).QueryPage(page, pagesize).ToListAsync();
+                return data;
+            });
+        }
 
     }
 }
