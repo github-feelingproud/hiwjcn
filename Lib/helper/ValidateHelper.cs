@@ -362,7 +362,7 @@ namespace Lib.helper
         /// <summary>
         /// 判断是否是有值的list
         /// </summary>
-        public static bool IsPlumpList<T>(IEnumerable<T> list) => list?.Count() > 0;
+        public static bool IsPlumpList<T>(IEnumerable<T> list) => list?.Any() ?? false;
 
         /// <summary>
         /// 包含长度大于0的item，并把他们找出来
@@ -370,23 +370,23 @@ namespace Lib.helper
         public static bool IsPlumpListAfterFilterMeaninglessData(IEnumerable<string> list, out List<string> filtered)
         {
             filtered = ConvertHelper.NotNullList(list).Where(x => IsPlumpString(x)).ToList();
-            return filtered.Count > 0;
+            return filtered.Any();
         }
 
         /// <summary>
         /// 判断是否是有值的字典
         /// </summary>
-        public static bool IsPlumpDict<K, V>(IDictionary<K, V> dict) => dict?.Count > 0;
+        public static bool IsPlumpDict<K, V>(IDictionary<K, V> dict) => dict?.Any() ?? false;
 
         /// <summary>
         /// 去除两端空格后判断是否是非空字符串
         /// </summary>
-        public static bool IsPlumpStringAfterTrim(string str) => str?.Trim()?.Length > 0;
+        public static bool IsPlumpStringAfterTrim(string str) => (str?.Trim().Length ?? 0) > 0;
 
         /// <summary>
         /// 判断是否是非空字符串
         /// </summary>
-        public static bool IsPlumpString(string str) => str?.Length > 0;
+        public static bool IsPlumpString(string str) => (str?.Length ?? 0) > 0;
 
         /// <summary>
         /// 判断是否都是非空字符串
