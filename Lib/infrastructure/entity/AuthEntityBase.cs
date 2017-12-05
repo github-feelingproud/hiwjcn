@@ -186,15 +186,21 @@ namespace Lib.infrastructure.entity
     public class ExternalLoginBase : BaseEntity
     {
         [Required]
+        [Index]
         public virtual string UserUID { get; set; }
 
         [Required]
         public virtual string AccessToken { get; set; }
 
         [Required]
+        public virtual DateTime AccessTokenExpireAt { get; set; }
+
+        [Required]
+        [Index]
         public virtual string OpenID { get; set; }
 
         [Required]
+        [Index]
         public virtual string ProviderKey { get; set; }
     }
 }
