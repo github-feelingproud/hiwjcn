@@ -56,9 +56,9 @@ namespace Lib.cache
                 }
                 catch (Exception ex)
                 {
-                    ex.AddErrorLog($"读取缓存异常，删除相关缓存key异常，缓存key:{key}");
+                    ex.AddErrorLog($"删除错误缓存key异常-缓存key:{key}");
                 }
-                e.AddErrorLog($"读取缓存异常，缓存key:{key}");
+                e.AddErrorLog($"读取缓存异常-缓存key:{key}");
                 //缓存错误
                 return dataSource.Invoke();
             }
@@ -90,9 +90,9 @@ namespace Lib.cache
                 }
                 catch (Exception ex)
                 {
-                    ex.AddErrorLog($"读取缓存异常，删除相关缓存key异常，缓存key:{key}");
+                    ex.AddErrorLog($"删除错误缓存key异常-缓存key:{key}");
                 }
-                e.AddErrorLog($"读取缓存异常，缓存key:{key}");
+                e.AddErrorLog($"读取缓存异常-缓存key:{key}");
                 //缓存错误
                 return await dataSource.Invoke();
             }
