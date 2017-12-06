@@ -1022,6 +1022,21 @@ namespace Lib.helper
         }
 
         /// <summary>
+        /// 包括开头，不包括结尾
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="span"></param>
+        /// <returns></returns>
+        public static IEnumerable<DateTime> Range(DateTime start, DateTime end, TimeSpan span)
+        {
+            for (var i = start; i < end; i = i + span)
+            {
+                yield return i;
+            }
+        }
+
+        /// <summary>
         /// 实现python中的range
         /// </summary>
         public static IEnumerable<int> Range(int a, int? b = null, int step = 1)

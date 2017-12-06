@@ -296,9 +296,12 @@
     <Compile Include="data\ef\EFRepository.cs" />
     <Compile Include="data\ef\EFManager.cs" />
     <Compile Include="data\SerializeBase.cs" />
+    <Compile Include="infrastructure\entity\CalendarEventTimeEntity.cs" />
     <Compile Include="infrastructure\entity\OrganizationEntityBase.cs" />
     <Compile Include="infrastructure\entity\PageEntityBase.cs" />
+    <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\service\PageServiceBase.cs" />
+    <Compile Include="task\TaskHelper.cs" />
     <Compile Include="threading\CrossProcessLock.cs" />
     <Compile Include="distributed\zookeeper\ZooKeeperDistributedLock.cs" />
     <Compile Include="distributed\IDistributedLock.cs" />
