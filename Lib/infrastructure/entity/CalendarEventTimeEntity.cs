@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Lib.infrastructure.entity
 {
+    /// <summary>
+    /// 搜索邮箱：
+    /// 【终极解决方案】calendar周期性事件，可以高效查询的数据库设计和存储方案
+    /// </summary>
     public class CalendarEventTimeEntity : BaseEntity
     {
         public virtual string EventUID { get; set; }
