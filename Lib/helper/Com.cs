@@ -933,22 +933,35 @@ namespace Lib.helper
         /// <summary>
         /// 监听目录文件变化
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="filter"></param>
-        public static void WatcherStrat(string path, string filter = "*.*")
+        public static FileSystemWatcher WatcherFileSystem(string path, Action<object, FileSystemEventArgs> change, string filter = "*.*")
         {
             var watcher = new FileSystemWatcher();
-            watcher.Path = path;
-            watcher.Filter = filter;
-            watcher.Changed += (source, e) => { };
-            //watcher.Created += new FileSystemEventHandler(OnProcess);
-            //watcher.Deleted += new FileSystemEventHandler(OnProcess);
-            //watcher.Renamed += new RenamedEventHandler(OnRenamed);
-            watcher.EnableRaisingEvents = true;
-            watcher.NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime
-                | NotifyFilters.DirectoryName | NotifyFilters.FileName | NotifyFilters.LastAccess
-                | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size;
-            watcher.IncludeSubdirectories = true;
+
+            try
+            {
+                watcher.Path = path ?? throw new ArgumentNullException(nameof(path));
+                watcher.Filter = filter ?? throw new ArgumentNullException(nameof(filter));
+
+                watcher.Changed += (source, e) => change.Invoke(source, e);
+                watcher.Created += (source, e) => change.Invoke(source, e);
+                watcher.Deleted += (source, e) => change.Invoke(source, e);
+                watcher.Renamed += (source, e) => change.Invoke(source, e);
+
+                watcher.NotifyFilter =
+                    NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
+                    NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite |
+                    NotifyFilters.Security | NotifyFilters.Size;
+
+                watcher.EnableRaisingEvents = true;
+                watcher.IncludeSubdirectories = true;
+
+                return watcher;
+            }
+            catch (Exception e)
+            {
+                watcher.Dispose();
+                throw e;
+            }
         }
 
         /// <summary>
@@ -1024,10 +1037,6 @@ namespace Lib.helper
         /// <summary>
         /// 包括开头，不包括结尾
         /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="span"></param>
-        /// <returns></returns>
         public static IEnumerable<DateTime> Range(DateTime start, DateTime end, TimeSpan span)
         {
             for (var i = start; i < end; i = i + span)
@@ -1054,19 +1063,14 @@ namespace Lib.helper
         {
             if (step == 0) { throw new Exception($"{nameof(step)}不可以为0"); }
 
-            var start = default(double);
-            var end = default(double);
+            var list = new List<double?>() { a, b }.Where(x => x != null).ToList();
+            if (list.Count != 2)
+            {
+                list.Insert(0, 0);
+            }
 
-            if (b == null)
-            {
-                start = 0;
-                end = a;
-            }
-            else
-            {
-                start = a;
-                end = b.Value;
-            }
+            var start = list[0].Value;
+            var end = list[1].Value;
 
             for (var i = start; i < end; i = i + step)
             {
@@ -1074,7 +1078,8 @@ namespace Lib.helper
             }
         }
 
-        public static void testYield()
+        [Obsolete]
+        public static void TestYield()
         {
             foreach (var i in Range(10, 78))
             {
