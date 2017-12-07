@@ -49,10 +49,10 @@ namespace Hiwjcn.Test
         /// <param name="context"></param>
         public override void Execute(IJobExecutionContext context)
         {
-            AsyncHelper.RunSync(() => Task.Delay(3000));
-            var i = 0;
+            System.Diagnostics.Debug.WriteLine("job running");
         }
     }
+    
     [TestClass]
     public class UnitTest11
     {
@@ -71,9 +71,10 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void fasdfasg()
         {
-            using (var con = new TaskContainer(this.GetType().Assembly))
+            using (var con = new TaskContainer())
             {
-
+                con.AddJobFromAssembly(this.GetType().Assembly);
+                con.Start();
             }
         }
 

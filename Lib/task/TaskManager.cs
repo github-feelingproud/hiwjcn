@@ -15,6 +15,7 @@ namespace Lib.task
     /// <summary>
     /// 任务调度
     /// </summary>
+    [Obsolete("用" + nameof(TaskContainer))]
     public static class TaskManager
     {
         private static readonly object locker = new object();
@@ -28,43 +29,7 @@ namespace Lib.task
         /// 获取task信息
         /// </summary>
         /// <returns></returns>
-        public static List<ScheduleJobModel> GetAllTasks()
-        {
-            if (manager == null) { throw new Exception("请先开启服务"); }
-            //所有任务
-            var jobKeys = manager.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
-            //正在运行的任务
-            var runningJobs = manager.GetCurrentlyExecutingJobs();
-
-            var list = new List<ScheduleJobModel>();
-            foreach (var jobKey in jobKeys)
-            {
-                var triggers = manager.GetTriggersOfJob(jobKey);
-                if (!ValidateHelper.IsPlumpList(triggers)) { continue; }
-                foreach (var trigger in triggers)
-                {
-                    var job = new ScheduleJobModel();
-
-                    job.JobName = jobKey.Name;
-                    job.JobGroup = jobKey.Group;
-
-                    job.TriggerName = trigger.Key.Name;
-                    job.TriggerGroup = trigger.Key.Group;
-
-                    //trigger information
-                    job.StartTime = trigger.StartTimeUtc.LocalDateTime;
-                    job.PreTriggerTime = trigger.GetPreviousFireTimeUtc()?.LocalDateTime;
-                    job.NextTriggerTime = trigger.GetNextFireTimeUtc()?.LocalDateTime;
-                    job.JobStatus = manager.GetTriggerState(trigger.Key).GetTriggerState();
-
-                    //判断是否在运行
-                    job.IsRunning = runningJobs?.Any(x => x.JobDetail.Key == jobKey) ?? false;
-
-                    list.Add(job);
-                }
-            }
-            return list;
-        }
+        public static List<ScheduleJobModel> GetAllTasks() => manager.GetAllTasks_();
         #endregion
 
         #region 开启和关闭任务
@@ -80,7 +45,7 @@ namespace Lib.task
             var jobs = new List<QuartzJobBase>();
             foreach (var a in ass)
             {
-                jobs.AddRange(a.FindJobTypes().Select(x => (QuartzJobBase)Activator.CreateInstance(x)));
+                jobs.AddRange(a.FindJobTypes_().Select(x => (QuartzJobBase)Activator.CreateInstance(x)));
             }
 
             StartAllTasks(jobs);
@@ -153,7 +118,7 @@ namespace Lib.task
         /// <summary>
         /// 关闭所有任务，请关闭task manager
         /// </summary>
-        public static void Dispose() => manager?.ShutdownIfStarted(_WaitForJobsToComplete ?? false);
+        public static void Dispose() => manager?.ShutdownIfStarted_(_WaitForJobsToComplete ?? false);
         #endregion
 
         #region 任务的手动干预

@@ -15,82 +15,82 @@ namespace Lib.task
     public class TaskContainer : IDisposable
     {
         [Obsolete]
-        public IScheduler TaskScheduler { get => manager ?? throw new Exception("job容器没有生成"); }
+        public IScheduler TaskScheduler { get => _manager ?? throw new Exception("job容器没有生成"); }
 
-        private readonly IScheduler manager;
+        private readonly IScheduler _manager;
 
-        public TaskContainer(params Assembly[] ass) : this(ass.FindAllJobsAndCreateInstance()) { }
-
-        public TaskContainer(IEnumerable<QuartzJobBase> jobs)
+        public TaskContainer()
         {
-            this.manager = StdSchedulerFactory.GetDefaultScheduler();
-            this.manager.StartIfNotStarted();
+            this._manager = StdSchedulerFactory.GetDefaultScheduler();
+        }
 
-            jobs = jobs?.Where(x => x != null && x.AutoStart).ToList();
-            if (!ValidateHelper.IsPlumpList(jobs))
-            {
-                "没有需要启动的任务".AddBusinessInfoLog();
-                return;
-            }
-            //任务检查
-            if (jobs.Select(x => x.Name).Distinct().Count() != jobs.Count())
-            {
-                throw new Exception("注册的任务中存在重名");
-            }
-            if (jobs.Any(x => x.CachedTrigger == null))
-            {
-                throw new Exception("注册的任务中有些Trigger没有定义");
-            }
+        public void AddJobFromAssembly(params Assembly[] ass)
+        {
+            var jobs = ass.FindAllJobsAndCreateInstance_();
+            this.AddJob(jobs.ToArray());
+        }
 
+        public void AddJob(params QuartzJobBase[] jobs)
+        {
+            if (!ValidateHelper.IsPlumpList(jobs)) { return; }
             foreach (var job in jobs)
             {
-                this.manager.AddJob(job);
+                this._manager.AddJob_(job);
             }
         }
 
-        public List<ScheduleJobModel> GetAllTasks() => this.manager.GetAllTasks();
+        /// <summary>
+        /// 开启
+        /// </summary>
+        public void Start() => this._manager.StartIfNotStarted_();
 
-        public void AddJobManually(QuartzJobBase job)
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        public void Stop(bool wait = false) => this._manager.ShutdownIfStarted_(wait);
+
+        public List<ScheduleJobModel> GetAllTasks() => this._manager.GetAllTasks_();
+
+        public void PauseAll() => this._manager.PauseAll();
+
+        public void ResumeAll() => this._manager.ResumeAll();
+
+        public void PauseJob(string jobName, string groupName)
         {
-            this.manager.AddJob(job);
+            var key = JobKey.Create(jobName, groupName);
+            this._manager.PauseJob(key);
         }
+
+        public void ResumeJob(string jobName, string groupName)
+        {
+            var key = JobKey.Create(jobName, groupName);
+            this._manager.ResumeJob(key);
+        }
+
+        public void DeleteJob(string jobName, string groupName)
+        {
+            var key = JobKey.Create(jobName, groupName);
+            this._manager.DeleteJob(key);
+        }
+
+        public void TriggerJob(string jobName, string groupName)
+        {
+            var key = JobKey.Create(jobName, groupName);
+            this._manager.TriggerJob(key);
+        }
+
+        private bool _disposed = false;
 
         /// <summary>
         /// 关闭所有任务，请关闭task manager
         /// </summary>
         public void Dispose() => this.Dispose(false);
 
-        public void Dispose(bool _WaitForJobsToComplete)
+        public void Dispose(bool wait)
         {
-            this.manager?.ShutdownIfStarted(_WaitForJobsToComplete);
-        }
-
-        public void PauseAll() => manager.PauseAll();
-
-        public void ResumeAll() => manager.ResumeAll();
-
-        public void PauseJob(string jobName, string groupName)
-        {
-            var key = JobKey.Create(jobName, groupName);
-            manager.PauseJob(key);
-        }
-
-        public void ResumeJob(string jobName, string groupName)
-        {
-            var key = JobKey.Create(jobName, groupName);
-            manager.ResumeJob(key);
-        }
-
-        public void DeleteJob(string jobName, string groupName)
-        {
-            var key = JobKey.Create(jobName, groupName);
-            manager.DeleteJob(key);
-        }
-
-        public void TriggerJob(string jobName, string groupName)
-        {
-            var key = JobKey.Create(jobName, groupName);
-            manager.TriggerJob(key);
+            if (this._disposed) { return; }
+            this.Stop(wait);
+            this._disposed = true;
         }
     }
 }

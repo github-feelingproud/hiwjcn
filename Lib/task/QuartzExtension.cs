@@ -20,10 +20,10 @@ namespace Lib.task
         /// 获取task信息
         /// </summary>
         /// <returns></returns>
-        public static List<ScheduleJobModel> GetAllTasks(this IScheduler manager)
+        public static List<ScheduleJobModel> GetAllTasks_(this IScheduler manager)
         {
             //所有任务
-            var jobKeys = manager.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
+            var jobKeys = manager.GetAllJobKeys_();
             //正在运行的任务
             var runningJobs = manager.GetCurrentlyExecutingJobs();
 
@@ -49,7 +49,7 @@ namespace Lib.task
                     job.JobStatus = manager.GetTriggerState(trigger.Key).GetTriggerState();
 
                     //判断是否在运行
-                    job.IsRunning = runningJobs?.Any(x => x.JobDetail.Key == jobKey) ?? false;
+                    job.IsRunning = runningJobs.Any(x => x.JobDetail.Key == jobKey);
 
                     list.Add(job);
                 }
@@ -57,16 +57,50 @@ namespace Lib.task
             return list;
         }
 
-        public static void CheckJobs(this IEnumerable<QuartzJobBase> jobs)
-        { }
+        public static IEnumerable<JobKey> GetAllJobKeys_(this IScheduler manager) =>
+            manager.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).AsEnumerable();
 
-        public static void AddJob(this IScheduler manager, QuartzJobBase job)
+        public static void AddJob_(this IScheduler manager, QuartzJobBase job, bool throw_if_exist = true) =>
+            manager.AddJob_(job.GetType(), job.CachedTrigger, job.Name, job.Group, throw_if_exist);
+
+        public static void AddJob_<T>(this IScheduler manager,
+            ITrigger trigger, string name, string group = null, bool throw_if_exist = true) =>
+            manager.AddJob_(typeof(T), trigger, name, group, throw_if_exist);
+
+        public static void AddJob_(this IScheduler manager,
+            Type t, ITrigger trigger, string name, string group = null, bool throw_if_exist = true)
         {
-            var job_to_run = JobBuilder.Create(job.GetType()).WithIdentity(job.Name, job.Group).Build();
-            manager.ScheduleJob(job_to_run, job.CachedTrigger);
+            Com.AssertNotNull(t, nameof(t));
+            Com.AssertNotNull(t, nameof(trigger));
+            Com.AssertNotNull(t, nameof(name));
+
+            var builder = JobBuilder.Create(t);
+            if (ValidateHelper.IsPlumpString(group))
+            {
+                builder = builder.WithIdentity(name, group);
+            }
+            else
+            {
+                builder = builder.WithIdentity(name);
+            }
+            var job = builder.Build();
+
+            if (manager.GetAllJobKeys_().Contains(job.Key))
+            {
+                if (throw_if_exist)
+                {
+                    throw new Exception("job已经存在");
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            manager.ScheduleJob(job, trigger);
         }
 
-        public static void StartIfNotStarted(this IScheduler manager, TimeSpan? delay = null)
+        public static void StartIfNotStarted_(this IScheduler manager, TimeSpan? delay = null)
         {
             if (!manager.IsStarted)
             {
@@ -86,7 +120,7 @@ namespace Lib.task
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="waitForJobsToComplete"></param>
-        public static void ShutdownIfStarted(this IScheduler manager, bool waitForJobsToComplete = false)
+        public static void ShutdownIfStarted_(this IScheduler manager, bool waitForJobsToComplete = false)
         {
             if (!waitForJobsToComplete)
             {
@@ -103,12 +137,12 @@ namespace Lib.task
         /// </summary>
         /// <param name="a"></param>
         /// <returns></returns>
-        public static Type[] FindJobTypes(this Assembly a)
+        public static Type[] FindJobTypes_(this Assembly a)
         {
             return a.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<QuartzJobBase>()).ToArray();
         }
 
-        public static List<QuartzJobBase> FindAllJobsAndCreateInstance(this IEnumerable<Assembly> ass)
+        public static List<QuartzJobBase> FindAllJobsAndCreateInstance_(this IEnumerable<Assembly> ass)
         {
             if (ass.Select(x => x.FullName).Distinct().Count() != ass.Count())
             {
@@ -117,7 +151,7 @@ namespace Lib.task
             var jobs = new List<QuartzJobBase>();
             foreach (var a in ass)
             {
-                jobs.AddRange(a.FindJobTypes().Select(x => (QuartzJobBase)Activator.CreateInstance(x)));
+                jobs.AddRange(a.FindJobTypes_().Select(x => (QuartzJobBase)Activator.CreateInstance(x)));
             }
 
             return jobs;
