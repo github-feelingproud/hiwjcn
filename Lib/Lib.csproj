@@ -301,6 +301,8 @@
     <Compile Include="infrastructure\entity\PageEntityBase.cs" />
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\service\PageServiceBase.cs" />
+    <Compile Include="task\QuartzExtension.cs" />
+    <Compile Include="task\TaskContainer.cs" />
     <Compile Include="task\TaskHelper.cs" />
     <Compile Include="threading\CrossProcessLock.cs" />
     <Compile Include="distributed\zookeeper\ZooKeeperDistributedLock.cs" />

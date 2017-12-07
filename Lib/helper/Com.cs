@@ -1061,7 +1061,7 @@ namespace Lib.helper
         /// </summary>
         public static IEnumerable<double> RangeDouble(double a, double? b = null, double step = 1)
         {
-            if (step == 0) { throw new Exception($"{nameof(step)}不可以为0"); }
+            if (step <= 0) { throw new Exception($"{nameof(step)}不可以为0"); }
 
             var list = new List<double?>() { a, b }.Where(x => x != null).ToList();
             if (list.Count != 2)

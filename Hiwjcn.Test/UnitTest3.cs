@@ -16,11 +16,6 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest3
     {
-        [TestMethod]
-        public void lkhkjhafdsafasdkgf()
-        {
-            var interfaces = typeof(trr).GetInterfaces();
-        }
 
         [TestMethod]
         public void strhide()

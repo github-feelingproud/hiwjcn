@@ -20,6 +20,11 @@ namespace Lib.task
         /// 任务名，不能重复
         /// </summary>
         public abstract string Name { get; }
+        
+        /// <summary>
+        /// 分组
+        /// </summary>
+        public virtual string Group { get => "默认分组"; }
 
         /// <summary>
         /// 是否自动启动
