@@ -15,7 +15,7 @@ namespace Lib.task
     public class TaskContainer : IDisposable
     {
         [Obsolete]
-        public IScheduler TaskScheduler { get => _manager ?? throw new Exception("job容器没有生成"); }
+        public IScheduler TaskScheduler { get => this._manager ?? throw new Exception("job容器没有生成"); }
 
         private readonly IScheduler _manager;
 

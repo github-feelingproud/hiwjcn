@@ -18,6 +18,15 @@ namespace Lib.task
     [Obsolete("用" + nameof(TaskContainer))]
     public static class TaskManager
     {
+        //private static readonly Lazy_<TaskContainer> _manager = new Lazy_<TaskContainer>(() =>
+        //{
+        //    var con = new TaskContainer();
+        //    con.AddJobFromAssembly();
+        //    con.Start();
+        //    return con;
+        //});
+
+
         private static readonly object locker = new object();
 
         private static IScheduler manager = null;
