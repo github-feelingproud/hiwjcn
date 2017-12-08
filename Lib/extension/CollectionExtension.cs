@@ -11,6 +11,9 @@ namespace Lib.extension
 {
     public static class CollectionExtension
     {
+        public static IEnumerable<string> NotEmptyAndDistinct<T>(this IEnumerable<T> list, Func<T, string> target) =>
+                list.Select(x => target.Invoke(x)).Where(x => ValidateHelper.IsPlumpString(x)).Distinct();
+
         /// <summary>
         /// 更新集合，多删少补
         /// </summary>

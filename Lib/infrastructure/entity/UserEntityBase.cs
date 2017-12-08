@@ -62,28 +62,22 @@ namespace Lib.infrastructure.entity
         public virtual int IsActive { get; set; }
 
         /// <summary>
+        /// 部门id
+        /// </summary>
+        [NotMapped]
+        public virtual List<string> DepartmentIds { get; set; }
+
+        /// <summary>
         /// 用户所有角色id
         /// </summary>
         [NotMapped]
-        public virtual List<string> RoleList { get; set; }
+        public virtual List<string> RoleIds { get; set; }
 
         /// <summary>
         /// 用户所有权限id（最终拿来验证用户行为是否有权限）
         /// </summary>
         [NotMapped]
-        public virtual List<string> PermissionList { get; set; }
-
-        /// <summary>
-        /// 用户角色模型
-        /// </summary>
-        [NotMapped]
-        public virtual List<RoleEntityBase> RoleModelList { get; set; }
-
-        [NotMapped]
-        public virtual List<DepartmentEntityBase> DepartmentModelList { get; set; }
-
-        [NotMapped]
-        public virtual List<DepartmentRoleEntityBase> DepartmentRoleModelList { get; set; }
+        public virtual List<string> PermissionIds { get; set; }
     }
 
     [Serializable]

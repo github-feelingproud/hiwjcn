@@ -106,7 +106,7 @@ namespace Model.User
             this.ToTable("wp_users").HasKey(x => x.IID);
             this.Property(x => x.IID).HasColumnName("user_id").HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             this.Property(x => x.NickName).HasColumnName("nick_name");
-            this.Ignore(x => x.RoleModelList);
+            this.Ignore(x => x.RoleIds);
         }
     }
 

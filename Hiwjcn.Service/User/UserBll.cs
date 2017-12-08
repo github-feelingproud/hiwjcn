@@ -464,9 +464,7 @@ namespace Bll.User
                 {
                     foreach (var model in list)
                     {
-                        var myroleidlist = userrolemaplist.Where(x => x.UserID == model.UID).Select(x => x.RoleID).Distinct().ToArray();
-                        if (!ValidateHelper.IsPlumpList(myroleidlist)) { continue; }
-                        model.RoleModelList = rolelist.Where(x => myroleidlist.Contains(x.UID)).Select(x => (RoleEntityBase)x).ToList();
+                        //
                     }
                 }
             }
@@ -481,8 +479,8 @@ namespace Bll.User
         /// <returns></returns>
         private UserModel LoadAllPermissionForUser(UserModel model)
         {
-            model.RoleList = new List<string>();
-            model.PermissionList = new List<string>();
+            model.RoleIds = new List<string>();
+            model.PermissionIds = new List<string>();
 
             _UserDal.PrepareSession(db =>
             {
@@ -495,8 +493,8 @@ namespace Bll.User
 
                 if (ValidateHelper.IsPlumpList(rolepermissionlist))
                 {
-                    model.RoleList.AddRange(rolepermissionlist.Select(x => x.role).Distinct());
-                    model.PermissionList.AddRange(rolepermissionlist.Select(x => x.permission).Distinct());
+                    model.RoleIds.AddRange(rolepermissionlist.Select(x => x.role).Distinct());
+                    model.PermissionIds.AddRange(rolepermissionlist.Select(x => x.permission).Distinct());
                 }
                 return true;
             });
