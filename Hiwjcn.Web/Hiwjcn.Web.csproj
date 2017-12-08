@@ -365,15 +365,6 @@
     <Content Include="Views\Shared\map.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\nav.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\Temp.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\AreaGroup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -384,21 +375,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\Error.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\User\Me.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\User\Msg.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\User\SendMessage.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\User\UpdateUserMask.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\User\UserInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Web.config" />
@@ -417,15 +393,11 @@
     <Content Include="App_Data\Config\elk_sentry.config" />
     <None Include="Properties\PublishProfiles\iis.pubxml" />
     <None Include="Properties\PublishProfiles\xx.pubxml" />
-    <Content Include="Views\Shared\slider.cshtml" />
     <Content Include="Views\Page\News.cshtml" />
     <Content Include="Views\Test\TB.cshtml" />
     <Content Include="Views\Test\FindAllActions.cshtml" />
-    <Content Include="Views\Account\Forgot.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\LogOut.cshtml" />
-    <Content Include="Views\Account\PostChildCallBack.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Simple_CRUD\SimpleList.cshtml" />
     <Content Include="Views\Shared\lang_select.cshtml" />
     <Content Include="Views\Test\Lang.cshtml" />
@@ -465,7 +437,6 @@
     <Content Include="ui\font-icon\scss\_screen-reader.scss" />
     <Content Include="ui\font-icon\scss\_stacked.scss" />
     <Content Include="ui\font-icon\scss\_variables.scss" />
-    <Content Include="Views\Shared\UserLayout.cshtml" />
     <Content Include="Views\Test\UView.cshtml" />
     <Content Include="Views\Shared\Limited.cshtml" />
     <Content Include="Views\Connect\MyClients.cshtml" />
