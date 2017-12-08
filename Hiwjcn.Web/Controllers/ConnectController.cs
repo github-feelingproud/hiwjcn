@@ -12,7 +12,6 @@ using Lib.extension;
 using Lib.net;
 using Lib.cache;
 using System.Threading.Tasks;
-using Hiwjcn.Core.Infrastructure.Auth;
 using Hiwjcn.Bll.Auth;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.mvc.auth;

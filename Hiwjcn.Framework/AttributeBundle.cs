@@ -1,70 +1,18 @@
-﻿using Bll.Category;
-using Hiwjcn.Bll.Sys;
+﻿using Akka.Actor;
 using Hiwjcn.Core.Model.Sys;
+using Hiwjcn.Framework.Actors;
+using Lib.cache;
+using Lib.distributed.akka;
 using Lib.extension;
 using Lib.helper;
-using Lib.events;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Web.Mvc;
 using Lib.ioc;
-using Lib.cache;
 using Lib.mvc;
-using Hiwjcn.Framework.Actors;
+using System;
 using System.Web;
-using Akka.Actor;
-using Lib.distributed.akka;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Framework
 {
-    /// <summary>
-    /// 在action之前加载导航数据
-    /// </summary>
-    public class LoadNavigationAttribute : ActionFilterAttribute
-    {
-        /// <summary>
-        /// 是否使用缓存
-        /// </summary>
-        public bool UseCache { get; set; }
-
-        /// <summary>
-        /// 在action之前加载导航数据
-        /// </summary>
-        /// <param name="cache"></param>
-        public LoadNavigationAttribute(bool cache = true)
-        {
-            UseCache = cache;
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-            var nav_key = "nav_list";
-
-            AppContext.Scope(x =>
-            {
-                if (UseCache)
-                {
-                    var cache = x.Resolve_<ICacheProvider>();
-                    var data = cache.GetOrSet("nav_list_cache".WithCacheKeyPrefix(), () =>
-                    {
-                        return new CategoryBll().GetCategoryByType(nav_key);
-                    }, TimeSpan.FromMinutes(3));
-                    filterContext.Controller.ViewData[nav_key] = data;
-                }
-                else
-                {
-                    var data = new CategoryBll().GetCategoryByType(nav_key);
-                    filterContext.Controller.ViewData[nav_key] = data;
-                }
-
-                return true;
-            });
-
-            base.OnActionExecuting(filterContext);
-        }
-    }
-
     /// <summary>
     /// 记录请求
     /// </summary>

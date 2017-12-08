@@ -1,58 +1,48 @@
-﻿using Hiwjcn.Core.Infrastructure.User;
+﻿using Hiwjcn.Bll.Auth;
+using Hiwjcn.Core;
+using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Framework;
+using Lib.cache;
 using Lib.core;
-using Lib.helper;
-using Lib.ioc;
-using Lib.mvc;
-using Lib.mvc.user;
-using Model.User;
-using System;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using WebLogic.Bll.User;
-using System.Linq;
-using WebLogic.Model.User;
 using Lib.data;
 using Lib.extension;
-using Hiwjcn.Core.Domain.Auth;
-using Lib.mvc.auth;
-using Lib.cache;
-using WebCore.MvcLib.Controller;
-using Hiwjcn.Core.Infrastructure.Auth;
-using Lib.mvc.auth.validation;
-using Hiwjcn.Core;
-using System.Collections.Generic;
+using Lib.helper;
 using Lib.infrastructure.service;
+using Lib.mvc;
+using Lib.mvc.auth;
+using Lib.mvc.auth.validation;
+using Lib.mvc.user;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using WebCore.MvcLib.Controller;
+using WebLogic.Model.User;
 
 namespace Hiwjcn.Web.Controllers
 {
     public class AccountController : UserBaseController
     {
         private readonly IAuthLoginService _IAuthLoginService;
-        private readonly IUserService _IUserService;
-        private readonly ILoginLogService _LoginErrorLogBll;
+        private readonly IAuthTokenService _IAuthTokenService;
         private readonly LoginStatus _LoginStatus;
         private readonly IRepository<AuthScope> _AuthScopeRepository;
-        private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthDataProvider _IValidationDataProvider;
         private readonly ICacheProvider _cache;
 
         public AccountController(
             IAuthLoginService _IAuthLoginService,
-            IUserService user,
-            ILoginLogService loginlog,
+            IAuthTokenService _IAuthTokenService,
             LoginStatus logincontext,
             IRepository<AuthScope> _AuthScopeRepository,
-            IAuthTokenService _IAuthTokenService,
             IAuthDataProvider _IValidationDataProvider,
             ICacheProvider _cache)
         {
             this._IAuthLoginService = _IAuthLoginService;
-            this._IUserService = user;
-            this._LoginErrorLogBll = loginlog;
+            this._IAuthTokenService = _IAuthTokenService;
             this._LoginStatus = logincontext;
             this._AuthScopeRepository = _AuthScopeRepository;
-            this._IAuthTokenService = _IAuthTokenService;
             this._IValidationDataProvider = _IValidationDataProvider;
             this._cache = _cache;
         }
@@ -98,25 +88,25 @@ namespace Hiwjcn.Web.Controllers
             {
                 return "登录信息未填写";
             }
-            if (await this._LoginErrorLogBll.GetRecentLoginErrorTimes(user_name) > 5)
-            {
-                return "你短时间内有多次错误登录记录，请稍后再试";
-            }
+            //if (await this._LoginErrorLogBll.GetRecentLoginErrorTimes(user_name) > 5)
+            //{
+            //    return "你短时间内有多次错误登录记录，请稍后再试";
+            //}
             var res = await func.Invoke();
             if (ValidateHelper.IsPlumpString(res))
             {
-                var errinfo = new LoginErrorLogModel()
-                {
-                    LoginKey = user_name,
-                    LoginPwd = password,
-                    LoginIP = this.X.IP,
-                    ErrorMsg = res
-                };
-                var logres = await this._LoginErrorLogBll.AddLoginErrorLog(errinfo);
-                if (ValidateHelper.IsPlumpString(logres))
-                {
-                    new Exception($"记录错误登录日志错误:{logres}").AddErrorLog();
-                }
+                //var errinfo = new LoginErrorLogModel()
+                //{
+                //    LoginKey = user_name,
+                //    LoginPwd = password,
+                //    LoginIP = this.X.IP,
+                //    ErrorMsg = res
+                //};
+                //var logres = await this._LoginErrorLogBll.AddLoginErrorLog(errinfo);
+                //if (ValidateHelper.IsPlumpString(logres))
+                //{
+                //    new Exception($"记录错误登录日志错误:{logres}").AddErrorLog();
+                //}
             }
             return res;
         }
@@ -273,91 +263,6 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        #endregion
-
-        #region 注册
-
-        /// <summary>
-        /// 注册账户
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Register()
-        {
-            return RunAction(() =>
-            {
-                return View();
-            });
-        }
-
-        /// <summary>
-        /// 处理注册
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [RequestLog]
-        public ActionResult RegisterAction(string email, string pass, string repass, string verify)
-        {
-            return RunAction(() =>
-            {
-                if (this.GetOption("can_reg").ToLower() != "true")
-                {
-                    return GetJsonRes("管理员关闭了注册功能");
-                }
-                if (!ValidateHelper.IsAllPlumpString(email, pass, repass, verify))
-                {
-                    return GetJsonRes("请输入所需内容");
-                }
-                if (!ValidateHelper.IsLenInRange(email, 5, 30)) { return GetJsonRes("邮箱长度错误"); }
-                if (!ValidateHelper.IsLenInRange(pass, 5, 20)) { return GetJsonRes("密码长度错误"); }
-                if (verify.Length != 4) { return GetJsonRes("验证码长度必须是4"); }
-                if (pass != repass)
-                {
-                    return GetJsonRes("两次输入密码不一样");
-                }
-                if (verify != this.X.context.Session.PopSession<string>("reg_verify"))
-                {
-                    return GetJsonRes("验证码错误");
-                }
-
-                var model = new UserModel();
-                model.NickName = "New User";
-                model.Email = email;
-                model.PassWord = SecureHelper.GetMD5(pass);
-                model.UserImg = "/static/image/moren.png";
-                model.Sex = (int)SexEnum.未知;
-                model.Flag = (int)(FunctionsEnum.普通用户 | FunctionsEnum.购物 | FunctionsEnum.发帖);
-
-                var res = _IUserService.Register(model);
-                return GetJsonRes(res);
-            });
-        }
-        #endregion
-
-        #region 忘记密码
-
-        /// <summary>
-        /// 获取临时登陆权限
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Forgot()
-        {
-            return RunAction(() =>
-            {
-                if (this.X.IsPostAjax)
-                {
-                    return Content("未能捕获的请求");
-                }
-                return View();
-            });
-        }
-
-        public ActionResult ForgotAction()
-        {
-            return RunAction(() =>
-            {
-                return View();
-            });
-        }
         #endregion
     }
 }

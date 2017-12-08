@@ -1,5 +1,4 @@
 ﻿using Hiwjcn.Core.Domain.Auth;
-using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.infrastructure;
 using System;
 using System.Collections.Generic;
@@ -16,6 +15,19 @@ using Lib.data.ef;
 
 namespace Hiwjcn.Bll.Auth
 {
+    public interface IAuthScopeService
+    {
+        Task<List<AuthScope>> GetScopesOrDefaultAsync(params string[] names);
+
+        Task<string> AddScopeAsync(AuthScope scope);
+
+        Task<string> DeleteScopeAsync(string scope_uid);
+
+        Task<string> UpdateScopeAsync(AuthScope updatemodel);
+
+        Task<PagerData<AuthScope>> QueryPagerAsync(string q = null, int page = 1, int pagesize = 10);
+    }
+
     public class AuthScopeService : ServiceBase<AuthScope>, IAuthScopeService
     {
         private readonly IEventPublisher _publisher;

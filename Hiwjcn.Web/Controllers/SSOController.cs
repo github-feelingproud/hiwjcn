@@ -1,31 +1,14 @@
-﻿using Hiwjcn.Core.Infrastructure.User;
+﻿using Hiwjcn.Core.Data;
 using Hiwjcn.Framework;
-using Lib.core;
+using Hiwjcn.Framework.Provider;
+using Lib.extension;
 using Lib.helper;
-using Lib.ioc;
 using Lib.mvc;
 using Lib.mvc.user;
-using Model.User;
-using System;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using WebLogic.Bll.User;
-using System.Linq;
-using WebLogic.Model.User;
-using Lib.data;
-using Lib.extension;
-using Hiwjcn.Core.Domain.Auth;
-using Lib.mvc.auth;
-using Lib.cache;
-using WebCore.MvcLib.Controller;
-using Hiwjcn.Core.Infrastructure.Auth;
-using Lib.mvc.auth.validation;
-using Hiwjcn.Core.Data;
-using System.Collections.Generic;
-using System.Net;
 using System.Data.Entity;
-using Hiwjcn.Framework.Provider;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Controllers
 {

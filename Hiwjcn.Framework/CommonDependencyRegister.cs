@@ -11,7 +11,6 @@ using System.Data.Entity;
 using WebCore.MvcLib.Controller;
 using Lib.helper;
 using System;
-using Bll.User;
 using Hiwjcn.Bll.Auth;
 using Lib.mvc.auth;
 using Lib.data;

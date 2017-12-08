@@ -1,25 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Lib.mvc;
-using Lib.mvc.user;
-using Lib.helper;
-using Lib.core;
+﻿using Hiwjcn.Framework;
 using Lib.extension;
-using Lib.net;
-using Lib.data;
-using Lib.cache;
-using System.Threading.Tasks;
-using Hiwjcn.Core.Infrastructure.Auth;
-using Hiwjcn.Bll.Auth;
-using Hiwjcn.Core.Domain.Auth;
-using Lib.events;
-using Hiwjcn.Core.Model.Sys;
-using Hiwjcn.Framework.Actors;
+using Lib.mvc;
 using Lib.mvc.auth;
-using Hiwjcn.Framework;
+using System;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Controllers
 {

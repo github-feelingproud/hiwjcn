@@ -4,24 +4,17 @@ using Hiwjcn.Core.Model.Sys;
 using Lib.core;
 using Lib.data;
 using Lib.helper;
-using Model;
-using Model.Category;
-using Model.Sys;
 using Model.User;
 using MySql.Data.Entity;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using WebLogic.Model.Page;
-using WebLogic.Model.Sys;
-using WebLogic.Model.Tag;
 using WebLogic.Model.User;
 using Hiwjcn.Core.Domain.Auth;
 using System.Data.Entity.SqlServer;
 using System.Configuration;
 using System.Reflection;
 using System;
-using Hiwjcn.Core.Domain.WCF;
 using Lib.data.ef;
 
 namespace Hiwjcn.Dal
@@ -92,18 +85,8 @@ namespace Hiwjcn.Dal
         public virtual DbSet<UserRoleModel> UserRoleModel { get; set; }
         public virtual DbSet<UserOneTimeCode> UserOneTimeCode { get; set; }
 
-        public virtual DbSet<CategoryModel> CategoryModel { get; set; }
-        public virtual DbSet<SectionModel> SectionModel { get; set; }
-        public virtual DbSet<AreaModel> AreaModel { get; set; }
-        public virtual DbSet<CommentModel> CommentModel { get; set; }
-        public virtual DbSet<LinkModel> LinkModel { get; set; }
-        public virtual DbSet<MessageModel> MessageModel { get; set; }
-        public virtual DbSet<OptionModel> OptionModel { get; set; }
         public virtual DbSet<ReqLogModel> ReqLogModel { get; set; }
         public virtual DbSet<CacheHitLog> CacheHitLog { get; set; }
-        public virtual DbSet<UpFileModel> UpFileModel { get; set; }
-        public virtual DbSet<TagMapModel> TagMapModel { get; set; }
-        public virtual DbSet<TagModel> TagModel { get; set; }
         #endregion
     }
 }

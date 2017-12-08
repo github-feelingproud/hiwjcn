@@ -1,18 +1,5 @@
 ﻿using Autofac;
-using Autofac.Integration.Mvc;
-using Hiwjcn.Bll;
-using Hiwjcn.Dal;
-using Lib.cache;
 using Lib.ioc;
-using Lib.core;
-using Lib.mvc.user;
-using MySql.Data.MySqlClient;
-using System.Data;
-using System.Data.Entity;
-using WebCore.MvcLib.Controller;
-using Lib.helper;
-using System;
-using Bll.User;
 
 namespace Hiwjcn.Web.App_Start
 {

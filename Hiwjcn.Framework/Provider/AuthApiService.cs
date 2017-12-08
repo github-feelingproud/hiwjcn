@@ -9,7 +9,6 @@ using Lib.core;
 using Lib.mvc.user;
 using Lib.mvc.auth;
 using Lib.mvc;
-using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.cache;
 using Lib.data;
 using Hiwjcn.Core.Domain.Auth;

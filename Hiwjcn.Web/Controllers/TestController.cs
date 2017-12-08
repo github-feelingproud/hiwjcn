@@ -1,32 +1,28 @@
-﻿using Dal.User;
-using Lib.extra.api;
-using Lib.data;
+﻿using Hiwjcn.Core.Data;
+using Hiwjcn.Core.Domain.Auth;
+using Lib.data.elasticsearch;
+using Lib.distributed.redis;
 using Lib.events;
 using Lib.extension;
+using Lib.extra.api;
+using Lib.extra.log;
 using Lib.helper;
+using Lib.mvc;
+using Lib.mvc.attr;
 using Lib.mvc.user;
+using Lib.storage;
 using Model.User;
+using Nest;
 using Polly;
 using Polly.CircuitBreaker;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Linq;
-using Lib.mvc;
-using Lib.mvc.attr;
-using Lib.storage;
 using WebCore.MvcLib.Controller;
-using Hiwjcn.Core.Data;
-using System.Text;
-using Nest;
-using Hiwjcn.Bll;
-using Hiwjcn.Core.Domain.Auth;
-using Lib.data.elasticsearch;
-using Lib.distributed.redis;
-using Lib.extra.log;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -383,45 +379,6 @@ namespace Hiwjcn.Web.Controllers
                 return 0;
             });
             return Content(count.ToString());
-        }
-
-        /// <summary>
-        /// 生成表结构
-        /// </summary>
-        /// <param name="tb"></param>
-        /// <returns></returns>
-        public ActionResult TB(string tb)
-        {
-            return RunAction(() =>
-            {
-                var not_allow = new string[] { "delete", "update", "alter", "create", "drop", ";", ">", "<", "-", " ", "," };
-                tb = ConvertHelper.GetString(tb).ToLower();
-                foreach (var s in not_allow)
-                {
-                    if (tb.IndexOf(s) >= 0)
-                    {
-                        return Content("!");
-                    }
-                }
-
-                List<TBColumns> list = null;
-                new UserDal().PrepareSession(db =>
-                {
-                    using (var con = db.Database.Connection)
-                    {
-                        var cmd = con.CreateCommand();
-                        cmd.CommandType = CommandType.Text;
-                        cmd.CommandText = "SHOW COLUMNS FROM " + ConvertHelper.GetString(tb);
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            list = reader.WholeList<TBColumns>();
-                        }
-                    }
-                    return true;
-                });
-                ViewData["list"] = list;
-                return View();
-            });
         }
 
         [PageAuth(Permission = "auth_manage.order,auth_manage.user", Scope = "order")]

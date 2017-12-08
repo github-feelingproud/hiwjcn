@@ -144,7 +144,6 @@
     <Compile Include="Tasks\ConcurrentTestTask.cs" />
     <Compile Include="Tasks\DataReportTask.cs" />
     <Compile Include="Tasks\UpdateEsIndexTask.cs" />
-    <Compile Include="Tasks\WcfHeartBeatTask.cs" />
     <Compile Include="UserController.cs" />
     <Compile Include="Simple_CRUD.cs" />
     <Compile Include="Tasks\WakeWebSiteTask.cs" />

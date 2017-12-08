@@ -6,7 +6,7 @@ using System;
 using System.Threading;
 using Lib.core;
 using Lib.ioc;
-using Hiwjcn.Core.Infrastructure;
+using Hiwjcn.Bll;
 
 namespace Hiwjcn.Framework.Tasks
 {

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.infrastructure;
-using Hiwjcn.Core.Infrastructure.Auth;
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Data.Auth;
 using Lib.data;
@@ -16,6 +15,25 @@ using Lib.data.ef;
 
 namespace Hiwjcn.Bll.Auth
 {
+    public interface IAuthClientService : IServiceBase<AuthClient>
+    {
+        Task<string> AddClientAsync(AuthClient client);
+
+        Task<string> DeleteClientAsync(string client_uid, string user_uid);
+
+        Task<string> EnableOrDisableClientAsync(string client_uid, string user_uid);
+
+        Task<AuthClient> GetByID(string uid);
+
+        Task<string> ApproveClient(string client_uid, bool active, string reason);
+
+        Task<PagerData<AuthClient>> QueryListAsync(
+            string user_uid = null, string q = null, bool? is_active = null, bool? is_remove = null,
+            int page = 1, int pagesize = 10);
+
+        Task<string> UpdateClientAsync(AuthClient updatemodel);
+    }
+
     public class AuthClientService : ServiceBase<AuthClient>, IAuthClientService
     {
         private readonly IEFRepository<AuthClient> _AuthClientRepository;

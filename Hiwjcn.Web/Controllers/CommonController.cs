@@ -1,5 +1,4 @@
-﻿using Hiwjcn.Core.Infrastructure.Common;
-using Lib.core;
+﻿using Lib.core;
 using Lib.helper;
 using Lib.io;
 using Lib.mvc;
@@ -20,15 +19,6 @@ namespace Hiwjcn.Web.Controllers
     /// </summary>
     public class CommonController : WebCore.MvcLib.Controller.UserBaseController
     {
-        private IAreaService _IAreaService { get; set; }
-        private IUpFileService _IUpFileService { get; set; }
-
-        public CommonController(IAreaService area, IUpFileService upfile)
-        {
-            this._IAreaService = area;
-            this._IUpFileService = upfile;
-        }
-
         [HttpPost]
         public ActionResult SetLang(string lang)
         {
@@ -43,52 +33,6 @@ namespace Hiwjcn.Web.Controllers
                     this.X.context.RemoveCookie(new string[] { LanguageHelper.CookieName });
                 }
                 return GetJsonRes("");
-            });
-        }
-
-        [HttpPost]
-        public ActionResult UploadImage()
-        {
-            return RunAction(() =>
-            {
-                if (this.X.LoginUser == null) { return GetJsonRes("请先登录"); }
-                if (this.X.context.Request.Files.Count == 0 || this.X.context.Request.Files[0] == null)
-                {
-                    return GetJsonRes("读取不到文件");
-                }
-                var file = this.X.context.Request.Files[0];
-
-                var uploader = new FileUpload();
-                uploader.AllowFileType = new string[] { ".gif", ".png", ".jpg", ".jpeg" };
-                uploader.MaxSize = Com.MbToB(0.5f);
-                var model = uploader.UploadSingleFile(file, this.X.context.Server.MapPath("~/static/upload/usermask/"));
-
-                if (!model.SuccessUpload || !System.IO.File.Exists(model.FilePath))
-                { return GetJsonRes(model.Info); }
-
-
-                var file_url = string.Empty;
-                var file_name = string.Empty;
-                var qiniumsg = _IUpFileService.UploadFileAfterCheckRepeat(new FileInfo(model.FilePath), this.X.LoginUser.UserID, ref file_url, ref file_name);
-
-                if (ValidateHelper.IsPlumpString(qiniumsg)) { return GetJsonRes(qiniumsg); }
-
-                return GetJson(new { success = true, file_url = file_url, file_name = file_name });
-            });
-        }
-
-        /// <summary>
-        /// 获取区域
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult GetAreas(int? level, string parent)
-        {
-            return RunAction(() =>
-            {
-                var list = _IAreaService.GetAreas(level ?? 0, parent);
-                return GetJson(new { success = ValidateHelper.IsPlumpList(list), data = list });
             });
         }
 

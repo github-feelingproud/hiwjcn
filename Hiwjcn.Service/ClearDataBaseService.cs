@@ -1,21 +1,38 @@
-﻿using Hiwjcn.Core.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.data;
-using Hiwjcn.Core.Domain.Auth;
-using Hiwjcn.Core.Domain;
+﻿using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Model.Sys;
-using WebLogic.Model.User;
-using Model.User;
-using Lib.extension;
-using WebLogic.Model.Tag;
 using Lib.data.ef;
+using Lib.extension;
+using Model.User;
+using System;
+using System.Linq;
+using WebLogic.Model.User;
+using Lib.ioc;
 
 namespace Hiwjcn.Bll
 {
+    public interface IClearDataBaseService : IAutoRegistered
+    {
+        void ClearCacheHitLog();
+
+        void ClearClient();
+
+        void ClearLoginLog();
+
+        void ClearPage();
+
+        void ClearPermission();
+
+        void ClearRequestLog();
+
+        void ClearRole();
+
+        void ClearScope();
+
+        void ClearToken();
+
+        void ClearUser();
+    }
+
     public class ClearDataBaseService : IClearDataBaseService
     {
         private readonly IEFRepository<AuthClient> _AuthClientRepo;
@@ -71,8 +88,6 @@ namespace Hiwjcn.Bll
                 client_set.RemoveRange(range);
 
                 db.SaveChanges();
-
-                return true;
             });
         }
 
@@ -102,8 +117,6 @@ namespace Hiwjcn.Bll
                 permission_map.RemoveRange(range);
 
                 db.SaveChanges();
-
-                return true;
             });
         }
 
@@ -127,8 +140,6 @@ namespace Hiwjcn.Bll
                 role_map_set.RemoveRange(range);
 
                 db.SaveChanges();
-
-                return true;
             });
         }
 
@@ -145,19 +156,6 @@ namespace Hiwjcn.Bll
                 scope_set.RemoveRange(range);
 
                 db.SaveChanges();
-
-                return true;
-            });
-        }
-
-        public void ClearTag()
-        {
-            this._ReqLogModelRepo.PrepareSession(db =>
-            {
-                var tag_set = db.Set<TagModel>();
-                var tag_map = db.Set<TagMapModel>();
-
-                return true;
             });
         }
 
@@ -176,8 +174,6 @@ namespace Hiwjcn.Bll
                 token_set.RemoveRange(range);
 
                 db.SaveChanges();
-
-                return true;
             });
         }
 

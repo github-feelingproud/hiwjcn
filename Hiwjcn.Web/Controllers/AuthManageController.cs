@@ -12,7 +12,6 @@ using Lib.extension;
 using Hiwjcn.Core;
 using Lib.net;
 using System.Threading.Tasks;
-using Hiwjcn.Core.Infrastructure.Auth;
 using Lib.mvc.auth.validation;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.data;
@@ -24,6 +23,7 @@ using Lib.task;
 using Hiwjcn.Framework.Provider;
 using Lib.infrastructure.service;
 using Lib.data.ef;
+using Hiwjcn.Bll.Auth;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -195,7 +195,6 @@ namespace Hiwjcn.Web.Controllers
 
                     ViewData[nameof(cachehit_groupbykey)] = cachehit_groupbykey;
                     #endregion
-                    return true;
                 });
                 return View();
             });

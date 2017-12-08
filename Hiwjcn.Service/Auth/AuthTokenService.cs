@@ -1,5 +1,4 @@
-﻿using Hiwjcn.Core.Infrastructure.Auth;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +20,22 @@ using Lib.data.ef;
 
 namespace Hiwjcn.Bll.Auth
 {
+    public interface IAuthTokenService
+    {
+        Task<_<AuthCode>> CreateCodeAsync(string client_uid, List<string> scopes, string user_uid);
+
+        Task<_<AuthToken>> CreateTokenAsync(
+            string client_id, string client_secret, string code_uid);
+
+        Task<string> DeleteUserTokensAsync(string client_uid, string user_uid);
+
+        Task<string> DeleteUserTokensAsync(string user_uid);
+
+        Task<AuthToken> FindTokenAsync(string client_uid, string token_uid);
+
+        Task<PagerData<AuthClient>> GetMyAuthorizedClientsAsync(string user_id, string q, int page, int pagesize);
+    }
+
     public class AuthTokenService : ServiceBase<AuthToken>, IAuthTokenService
     {
         private readonly IEFRepository<AuthToken> _AuthTokenRepository;
