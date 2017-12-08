@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Akka;
-using Akka.Actor;
-using Lib.core;
-using Lib.helper;
-using Lib.extension;
-using System.Threading;
-using Hiwjcn.Core.Model.Sys;
-using System.Diagnostics;
-using Lib.ioc;
+﻿using Akka.Actor;
+using Hiwjcn.Core.Domain.Sys;
 using Lib.data;
+using Lib.extension;
+using Lib.ioc;
+using System;
+using System.Threading;
 
 namespace Hiwjcn.Framework.Actors
 {
@@ -23,14 +15,14 @@ namespace Hiwjcn.Framework.Actors
     {
         public LogRequestActor()
         {
-            this.Receive<ReqLogModel>(x =>
+            this.Receive<ReqLogEntity>(x =>
             {
                 try
                 {
                     x.Init("reqlog");
                     AppContext.Scope(s =>
                     {
-                        return s.Resolve_<IRepository<ReqLogModel>>().Add(x);
+                        return s.Resolve_<IRepository<ReqLogEntity>>().Add(x);
                     });
                 }
                 catch (Exception e)

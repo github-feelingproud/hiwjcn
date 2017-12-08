@@ -1,13 +1,5 @@
-﻿using Lib.extension;
-using Lib.net;
-using Lib.ioc;
-using Lib.data;
-using Lib.task;
+﻿using Lib.task;
 using Quartz;
-using System;
-using System.Threading;
-using System.Diagnostics;
-using Hiwjcn.Core.Model.Sys;
 
 namespace Hiwjcn.Framework.Tasks
 {

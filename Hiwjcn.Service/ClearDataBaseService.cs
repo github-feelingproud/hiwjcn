@@ -1,12 +1,11 @@
 ﻿using Hiwjcn.Core.Domain.Auth;
-using Hiwjcn.Core.Model.Sys;
+using Hiwjcn.Core.Domain.Sys;
+using Hiwjcn.Core.Domain.User;
 using Lib.data.ef;
 using Lib.extension;
-using Model.User;
+using Lib.ioc;
 using System;
 using System.Linq;
-using WebLogic.Model.User;
-using Lib.ioc;
 
 namespace Hiwjcn.Bll
 {
@@ -41,10 +40,10 @@ namespace Hiwjcn.Bll
         private readonly IEFRepository<AuthCode> _AuthCodeRepo;
         private readonly IEFRepository<AuthTokenScope> _AuthTokenScopeRepo;
 
-        private readonly IEFRepository<ReqLogModel> _ReqLogModelRepo;
-        private readonly IEFRepository<CacheHitLog> _CacheHitLogRepo;
+        private readonly IEFRepository<ReqLogEntity> _ReqLogModelRepo;
+        private readonly IEFRepository<CacheHitLogEntity> _CacheHitLogRepo;
 
-        private readonly IEFRepository<LoginErrorLogModel> _LoginErrorLogModelRepo;
+        private readonly IEFRepository<LoginErrorLogEntity> _LoginErrorLogModelRepo;
 
         public ClearDataBaseService(
             IEFRepository<AuthClient> _AuthClientRepo,
@@ -53,10 +52,10 @@ namespace Hiwjcn.Bll
             IEFRepository<AuthCode> _AuthCodeRepo,
             IEFRepository<AuthTokenScope> _AuthTokenScopeRepo,
 
-            IEFRepository<ReqLogModel> _ReqLogModelRepo,
-            IEFRepository<CacheHitLog> _CacheHitLogRepo,
+            IEFRepository<ReqLogEntity> _ReqLogModelRepo,
+            IEFRepository<CacheHitLogEntity> _CacheHitLogRepo,
 
-            IEFRepository<LoginErrorLogModel> _LoginErrorLogModelRepo)
+            IEFRepository<LoginErrorLogEntity> _LoginErrorLogModelRepo)
         {
             this._AuthClientRepo = _AuthClientRepo;
             this._AuthScopeRepo = _AuthScopeRepo;
@@ -80,7 +79,7 @@ namespace Hiwjcn.Bll
         {
             this._AuthClientRepo.PrepareSession(db =>
             {
-                var user_set = db.Set<UserModel>();
+                var user_set = db.Set<UserEntity>();
                 var client_set = db.Set<AuthClient>();
 
                 var uids = user_set.Select(x => x.UID);
@@ -106,9 +105,9 @@ namespace Hiwjcn.Bll
         {
             this._LoginErrorLogModelRepo.PrepareSession(db =>
             {
-                var role_set = db.Set<RoleModel>();
-                var permission_set = db.Set<PermissionModel>();
-                var permission_map = db.Set<RolePermissionModel>();
+                var role_set = db.Set<RoleEntity>();
+                var permission_set = db.Set<PermissionEntity>();
+                var permission_map = db.Set<RolePermissionEntity>();
 
                 var role_uids = role_set.Select(x => x.UID);
                 var permission_uids = permission_set.Select(x => x.UID);
@@ -130,9 +129,9 @@ namespace Hiwjcn.Bll
         {
             this._LoginErrorLogModelRepo.PrepareSession(db =>
             {
-                var user_set = db.Set<UserModel>();
-                var role_set = db.Set<RoleModel>();
-                var role_map_set = db.Set<UserRoleModel>();
+                var user_set = db.Set<UserEntity>();
+                var role_set = db.Set<RoleEntity>();
+                var role_map_set = db.Set<UserRoleEntity>();
 
                 var user_uids = user_set.Select(x => x.UID);
                 var role_uids = role_set.Select(x => x.UID);
@@ -164,7 +163,7 @@ namespace Hiwjcn.Bll
             var now = DateTime.Now;
             this._AuthTokenRepo.PrepareSession(db =>
             {
-                var user_set = db.Set<UserModel>();
+                var user_set = db.Set<UserEntity>();
                 var token_set = db.Set<AuthToken>();
                 var client_set = db.Set<AuthClient>();
 

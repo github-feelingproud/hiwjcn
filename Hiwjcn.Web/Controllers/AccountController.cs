@@ -3,9 +3,7 @@ using Hiwjcn.Core;
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Framework;
 using Lib.cache;
-using Lib.core;
 using Lib.data;
-using Lib.extension;
 using Lib.helper;
 using Lib.infrastructure.service;
 using Lib.mvc;
@@ -18,7 +16,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebCore.MvcLib.Controller;
-using WebLogic.Model.User;
+using Lib.data.ef;
+using Hiwjcn.Core.Domain.User;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -27,7 +26,8 @@ namespace Hiwjcn.Web.Controllers
         private readonly IAuthLoginService _IAuthLoginService;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly LoginStatus _LoginStatus;
-        private readonly IRepository<AuthScope> _AuthScopeRepository;
+        private readonly IEFRepository<AuthScope> _AuthScopeRepo;
+        private readonly IEFRepository<LoginErrorLogEntity> _LogErrorRepo;
         private readonly IAuthDataProvider _IValidationDataProvider;
         private readonly ICacheProvider _cache;
 
@@ -35,14 +35,16 @@ namespace Hiwjcn.Web.Controllers
             IAuthLoginService _IAuthLoginService,
             IAuthTokenService _IAuthTokenService,
             LoginStatus logincontext,
-            IRepository<AuthScope> _AuthScopeRepository,
+            IEFRepository<AuthScope> _AuthScopeRepo,
+            IEFRepository<LoginErrorLogEntity> _LogErrorRepo,
             IAuthDataProvider _IValidationDataProvider,
             ICacheProvider _cache)
         {
             this._IAuthLoginService = _IAuthLoginService;
             this._IAuthTokenService = _IAuthTokenService;
             this._LoginStatus = logincontext;
-            this._AuthScopeRepository = _AuthScopeRepository;
+            this._AuthScopeRepo = _AuthScopeRepo;
+            this._LogErrorRepo = _LogErrorRepo;
             this._IValidationDataProvider = _IValidationDataProvider;
             this._cache = _cache;
         }
@@ -88,25 +90,25 @@ namespace Hiwjcn.Web.Controllers
             {
                 return "登录信息未填写";
             }
-            //if (await this._LoginErrorLogBll.GetRecentLoginErrorTimes(user_name) > 5)
-            //{
-            //    return "你短时间内有多次错误登录记录，请稍后再试";
-            //}
+            var now = DateTime.Now;
+            var moment_ago = now.AddMinutes(-3);
+            var error_log = await this._LogErrorRepo.GetListAsync(x => x.LoginKey == user_name && x.CreateTime > moment_ago);
+            if (error_log.Count > 5)
+            {
+                return "你短时间内有多次错误登录记录，请稍后再试";
+            }
             var res = await func.Invoke();
             if (ValidateHelper.IsPlumpString(res))
             {
-                //var errinfo = new LoginErrorLogModel()
-                //{
-                //    LoginKey = user_name,
-                //    LoginPwd = password,
-                //    LoginIP = this.X.IP,
-                //    ErrorMsg = res
-                //};
-                //var logres = await this._LoginErrorLogBll.AddLoginErrorLog(errinfo);
-                //if (ValidateHelper.IsPlumpString(logres))
-                //{
-                //    new Exception($"记录错误登录日志错误:{logres}").AddErrorLog();
-                //}
+                var errinfo = new LoginErrorLogEntity()
+                {
+                    LoginKey = user_name,
+                    LoginPwd = password,
+                    LoginIP = this.X.IP,
+                    ErrorMsg = res
+                };
+                errinfo.Init();
+                await this._LogErrorRepo.AddAsync(errinfo);
             }
             return res;
         }
@@ -124,7 +126,7 @@ namespace Hiwjcn.Web.Controllers
             var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
             var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
 
-            var allscopes = await this._AuthScopeRepository.GetListAsync(null);
+            var allscopes = await this._AuthScopeRepo.GetListAsync(null);
             var code = await this._IAuthTokenService.CreateCodeAsync(client_id, allscopes.Select(x => x.Name).ToList(), loginuser.UserID);
 
             if (ValidateHelper.IsPlumpString(code.msg))

@@ -1,21 +1,15 @@
 ﻿#define use_mysql
 
-using Hiwjcn.Core.Model.Sys;
-using Lib.core;
-using Lib.data;
-using Lib.helper;
-using Model.User;
+using Hiwjcn.Core.Domain.Auth;
+using Hiwjcn.Core.Domain.Sys;
+using Hiwjcn.Core.Domain.User;
+using Lib.data.ef;
 using MySql.Data.Entity;
+using System;
+using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Data.Entity.ModelConfiguration.Conventions;
-using WebLogic.Model.User;
-using Hiwjcn.Core.Domain.Auth;
 using System.Data.Entity.SqlServer;
-using System.Configuration;
-using System.Reflection;
-using System;
-using Lib.data.ef;
 
 namespace Hiwjcn.Dal
 {
@@ -63,9 +57,7 @@ namespace Hiwjcn.Dal
         }
 
         #region model对应的实体
-
-        //public virtual DbSet<WcfMap> WcfMap { get; set; }
-
+        
         public virtual DbSet<AuthClient> AuthClient { get; set; }
         public virtual DbSet<AuthScope> AuthScope { get; set; }
         public virtual DbSet<AuthToken> AuthToken { get; set; }
@@ -75,18 +67,25 @@ namespace Hiwjcn.Dal
         public virtual DbSet<AuthClientCheckLog> AuthClientCheckLog { get; set; }
         public virtual DbSet<AuthClientUseage> AuthClientUseage { get; set; }
 
-        public virtual DbSet<UserAvatar> UserAvatar { get; set; }
-        public virtual DbSet<UserModel> UserModel { get; set; }
+        public virtual DbSet<UserAvatarEntity> UserAvatar { get; set; }
+        public virtual DbSet<UserEntity> UserEntity { get; set; }
+        public virtual DbSet<UserOneTimeCodeEntity> UserOneTimeCode { get; set; }
 
-        public virtual DbSet<LoginErrorLogModel> LoginErrorLogModel { get; set; }
-        public virtual DbSet<RoleModel> RoleModel { get; set; }
-        public virtual DbSet<RolePermissionModel> RolePermissionModel { get; set; }
-        public virtual DbSet<PermissionModel> PermissionModel { get; set; }
-        public virtual DbSet<UserRoleModel> UserRoleModel { get; set; }
-        public virtual DbSet<UserOneTimeCode> UserOneTimeCode { get; set; }
+        public virtual DbSet<LoginErrorLogEntity> LoginErrorLogEntity { get; set; }
 
-        public virtual DbSet<ReqLogModel> ReqLogModel { get; set; }
-        public virtual DbSet<CacheHitLog> CacheHitLog { get; set; }
+        public virtual DbSet<RoleEntity> RoleEntity { get; set; }
+        public virtual DbSet<RolePermissionEntity> RolePermissionEntity { get; set; }
+        public virtual DbSet<UserRoleEntity> UserRoleEntity { get; set; }
+
+        public virtual DbSet<PermissionEntity> PermissionEntity { get; set; }
+
+        public virtual DbSet<DepartmentEntity> DepartmentEntity { get; set; }
+        public virtual DbSet<UserDepartmentEntity> UserDepartmentEntity { get; set; }
+        public virtual DbSet<DepartmentRoleEntity> DepartmenetRoleEntity { get; set; }
+
+        public virtual DbSet<ReqLogEntity> ReqLogEntity { get; set; }
+        public virtual DbSet<CacheHitLogEntity> CacheHitLogEntity { get; set; }
+
         #endregion
     }
 }

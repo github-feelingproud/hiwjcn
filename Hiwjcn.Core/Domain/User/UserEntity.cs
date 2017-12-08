@@ -1,34 +1,30 @@
-﻿using Lib.data;
+﻿using Lib.core;
+using Lib.data.ef;
 using Lib.helper;
-using Lib.mvc.user;
+using Lib.infrastructure.entity;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WebLogic.Model.User;
-using Lib.core;
-using Lib.infrastructure.entity;
-using Lib.data.ef;
 
-namespace Model.User
+namespace Hiwjcn.Core.Domain.User
 {
     [Serializable]
     [Table("account_user_avatar")]
-    public class UserAvatar : UserAvatarEntityBase { }
+    public class UserAvatarEntity : UserAvatarEntityBase { }
 
     /// <summary>
     /// 一次性登录用的code
     /// </summary>
     [Serializable]
     [Table("account_user_onetimecode")]
-    public class UserOneTimeCode : UserOneTimeCodeEntityBase { }
+    public class UserOneTimeCodeEntity : UserOneTimeCodeEntityBase { }
 
     /// <summary>
     ///用户的账户模型
     /// </summary>
     [Serializable]
     [Table("account_user")]
-    public class UserModel : UserEntityBase
+    public class UserEntity : UserEntityBase
     {
         /// <summary>
         /// 余额
@@ -99,7 +95,7 @@ namespace Model.User
         }
     }
     
-    public class UserModelMapping : EFMappingBase<UserModel>
+    public class UserModelMapping : EFMappingBase<UserEntity>
     {
         public UserModelMapping()
         {
@@ -118,7 +114,7 @@ namespace Model.User
         {
             get
             {
-                return UserModel.ParseSex(this.Sex);
+                return UserEntity.ParseSex(this.Sex);
             }
         }
 

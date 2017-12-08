@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Akka;
-using Akka.Actor;
-using Hiwjcn.Core.Model.Sys;
-using Lib.data;
-using Lib.helper;
-using Lib.extension;
+﻿using Akka.Actor;
+using Hiwjcn.Core.Domain.Sys;
 using Lib.core;
+using Lib.data;
+using Lib.extension;
 using Lib.ioc;
+using System;
 
 namespace Hiwjcn.Framework.Actors
 {
@@ -18,7 +12,7 @@ namespace Hiwjcn.Framework.Actors
     {
         public UserActivityLogActor()
         {
-            this.Receive<UserActivity>(x =>
+            this.Receive<UserActivityEntity>(x =>
             {
                 try
                 {
@@ -30,7 +24,7 @@ namespace Hiwjcn.Framework.Actors
                     }
                     AppContext.Scope(s =>
                     {
-                        s.Resolve_<IRepository<UserActivity>>().Add(x);
+                        s.Resolve_<IRepository<UserActivityEntity>>().Add(x);
                         return true;
                     });
                 }

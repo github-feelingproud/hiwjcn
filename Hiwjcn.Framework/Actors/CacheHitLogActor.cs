@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Akka;
-using Akka.Actor;
-using Hiwjcn.Core.Model.Sys;
+﻿using Akka.Actor;
+using Hiwjcn.Core.Domain.Sys;
 using Lib.data;
-using Lib.helper;
 using Lib.extension;
-using Lib.core;
 using Lib.ioc;
+using System;
 
 namespace Hiwjcn.Framework.Actors
 {
@@ -21,7 +14,7 @@ namespace Hiwjcn.Framework.Actors
     {
         public CacheHitLogActor()
         {
-            this.Receive<CacheHitLog>(x =>
+            this.Receive<CacheHitLogEntity>(x =>
             {
                 try
                 {
@@ -31,7 +24,7 @@ namespace Hiwjcn.Framework.Actors
 
                     AppContext.Scope(s =>
                     {
-                        s.Resolve_<IRepository<CacheHitLog>>().Add(x);
+                        s.Resolve_<IRepository<CacheHitLogEntity>>().Add(x);
                         return true;
                     });
                 }

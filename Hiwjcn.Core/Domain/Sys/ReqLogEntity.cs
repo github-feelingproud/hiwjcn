@@ -1,19 +1,15 @@
-﻿using Model;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.cache;
+﻿using Lib.cache;
 using Lib.core;
-using Lib.helper;
 using Lib.extension;
-using Newtonsoft.Json;
+using Lib.helper;
 using Lib.infrastructure.entity;
+using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
-namespace Hiwjcn.Core.Model.Sys
+namespace Hiwjcn.Core.Domain.Sys
 {
     public class ReqLogGroupModel
     {
@@ -70,7 +66,7 @@ namespace Hiwjcn.Core.Model.Sys
 
     [Serializable]
     [Table("sys_reqlog")]
-    public class ReqLogModel : TimeEntityBase
+    public class ReqLogEntity : TimeEntityBase
     {
         [MaxLength(100)]
         public virtual string ReqID { get; set; }
@@ -159,14 +155,14 @@ namespace Hiwjcn.Core.Model.Sys
     /// </summary>
     [Serializable]
     [Table("sys_cachehitlog")]
-    public class CacheHitLog : TimeEntityBase
+    public class CacheHitLogEntity : TimeEntityBase
     {
         /// <summary>
         /// 没有无参构造函数autofac会报错
         /// </summary>
-        public CacheHitLog() { }
+        public CacheHitLogEntity() { }
 
-        public CacheHitLog(string cacheKey, CacheHitStatusEnum hit)
+        public CacheHitLogEntity(string cacheKey, CacheHitStatusEnum hit)
         {
             this.CacheKey = cacheKey;
             this.HitValue = (int)hit;
@@ -193,7 +189,7 @@ namespace Hiwjcn.Core.Model.Sys
 
     [Serializable]
     [Table("sys_user_activity")]
-    public class UserActivity : TimeEntityBase
+    public class UserActivityEntity : TimeEntityBase
     {
         [MaxLength(100)]
         public virtual string ReqID { get; set; }

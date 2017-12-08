@@ -161,6 +161,7 @@
     <Compile Include="QiniuHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Auth\QPLUserLoginService.cs" />
+    <Compile Include="User\UserService.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

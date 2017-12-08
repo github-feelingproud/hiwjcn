@@ -1,14 +1,13 @@
-﻿using Model;
+﻿using Lib.infrastructure.entity;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Lib.infrastructure.entity;
 
-namespace WebLogic.Model.User
+namespace Hiwjcn.Core.Domain.User
 {
     [Serializable]
     [Table("account_login_log")]
-    public class LoginErrorLogModel : BaseEntity
+    public class LoginErrorLogEntity : BaseEntity
     {
         [MaxLength(200)]
         public virtual string LoginKey { get; set; }

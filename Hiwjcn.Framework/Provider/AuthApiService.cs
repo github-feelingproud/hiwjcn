@@ -1,27 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.extension;
-using Lib.helper;
-using Lib.core;
-using Lib.mvc.user;
-using Lib.mvc.auth;
-using Lib.mvc;
-using Lib.cache;
-using Lib.data;
-using Hiwjcn.Core.Domain.Auth;
-using Hiwjcn.Core.Model.Sys;
+﻿using Akka.Actor;
 using Hiwjcn.Core;
-using Lib.events;
+using Hiwjcn.Core.Domain.Auth;
+using Hiwjcn.Core.Domain.Sys;
 using Hiwjcn.Framework.Actors;
-using Akka;
-using Akka.Actor;
-using Lib.distributed.akka;
-using Lib.infrastructure.service;
-using Lib.infrastructure.provider;
+using Lib.cache;
 using Lib.data.ef;
+using Lib.distributed.akka;
+using Lib.infrastructure.provider;
+using Lib.infrastructure.service;
+using System;
+using System.Threading.Tasks;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -55,7 +43,7 @@ namespace Hiwjcn.Bll.Auth
 
         public override async Task CacheHitLog(string cache_key, CacheHitStatusEnum status)
         {
-            this.LogActor.Value?.Tell(new CacheHitLog(cache_key, status));
+            this.LogActor.Value?.Tell(new CacheHitLogEntity(cache_key, status));
             await Task.FromResult(1);
         }
     }

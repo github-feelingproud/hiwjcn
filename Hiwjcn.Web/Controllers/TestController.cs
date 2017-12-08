@@ -1,5 +1,9 @@
-﻿using Hiwjcn.Core.Data;
+﻿using Hiwjcn.Bll;
+using Hiwjcn.Bll.User;
+using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.Auth;
+using Hiwjcn.Core.Domain.User;
+using Lib.data.ef;
 using Lib.data.elasticsearch;
 using Lib.distributed.redis;
 using Lib.events;
@@ -11,7 +15,6 @@ using Lib.mvc;
 using Lib.mvc.attr;
 using Lib.mvc.user;
 using Lib.storage;
-using Model.User;
 using Nest;
 using Polly;
 using Polly.CircuitBreaker;
@@ -36,16 +39,25 @@ namespace Hiwjcn.Web.Controllers
     public class TestController : UserBaseController
     {
         private readonly IEventPublisher _IEventPublisher;
-        private readonly Lib.data.IRepository<AuthClient> _clientRepo;
+        private readonly IEFRepository<AuthClient> _clientRepo;
+        private readonly IUserService _IUserService;
 
         public TestController(
             IEventPublisher pub,
-            Lib.data.IRepository<AuthClient> _clientRepo)
+            IUserService _IUserService,
+            IEFRepository<AuthClient> _clientRepo)
         {
             this._IEventPublisher = pub;
+            this._IUserService = _IUserService;
             this._clientRepo = _clientRepo;
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
+        }
+
+        public async Task<ActionResult> left()
+        {
+            var data = await this._IUserService.LoadPermission(new UserEntity() { UID = "1" });
+            return Content(string.Empty);
         }
 
         /// <summary>
@@ -308,7 +320,7 @@ namespace Hiwjcn.Web.Controllers
         {
             var url = await Task.Run(() =>
             {
-                object obj = new { me = new UserModel() };
+                object obj = new { me = new UserEntity() };
                 var dy = obj as dynamic;
 
                 return this.X.context.Request.Url.ToString();

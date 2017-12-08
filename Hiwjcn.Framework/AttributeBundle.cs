@@ -1,11 +1,9 @@
 ﻿using Akka.Actor;
-using Hiwjcn.Core.Model.Sys;
+using Hiwjcn.Core.Domain.Sys;
 using Hiwjcn.Framework.Actors;
-using Lib.cache;
 using Lib.distributed.akka;
 using Lib.extension;
 using Lib.helper;
-using Lib.ioc;
 using Lib.mvc;
 using System;
 using System.Web;
@@ -32,7 +30,7 @@ namespace Hiwjcn.Framework
             {
                 var context = HttpContext.Current;
 
-                var model = new ReqLogModel();
+                var model = new ReqLogEntity();
 
                 model.ReqTime = (DateTime.Now - start).TotalMilliseconds;
                 model.ReqID = Com.GetRequestID();

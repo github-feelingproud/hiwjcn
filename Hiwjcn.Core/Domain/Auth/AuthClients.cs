@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.data;
+﻿using Lib.infrastructure.entity;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using Model.User;
-using System.Runtime.Serialization;
-using Model;
-using System.Configuration;
-using Lib.extension;
-using Lib.infrastructure.entity;
 
 namespace Hiwjcn.Core.Domain.Auth
 {

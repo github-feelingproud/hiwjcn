@@ -92,12 +92,12 @@
     <Compile Include="Data\SSODB.cs" />
     <Compile Include="Domain\Auth\AuthClients.cs" />
     <Compile Include="Domain\Page\PageEntity.cs" />
-    <Compile Include="Domain\Sys\ReqLogModel.cs" />
-    <Compile Include="Domain\User\LoginErrorLogModel.cs" />
-    <Compile Include="Domain\User\RoleModel.cs" />
-    <Compile Include="Domain\User\RolePermissionModel.cs" />
-    <Compile Include="Domain\User\UserModel.cs" />
-    <Compile Include="Domain\User\UserRoleModel.cs" />
+    <Compile Include="Domain\Sys\ReqLogEntity.cs" />
+    <Compile Include="Domain\User\DepartmentEntity.cs" />
+    <Compile Include="Domain\User\LoginErrorLogEntity.cs" />
+    <Compile Include="Domain\User\RoleEntity.cs" />
+    <Compile Include="Domain\User\PermissionEntity.cs" />
+    <Compile Include="Domain\User\UserEntity.cs" />
     <Compile Include="EnumsBundle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

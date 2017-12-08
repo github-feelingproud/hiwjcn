@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Lib.mvc;
-using Lib.mvc.auth;
-using Lib.mvc.user;
-using Lib.helper;
-using Lib.core;
-using Lib.extension;
+﻿using Hiwjcn.Bll.Auth;
 using Hiwjcn.Core;
-using Lib.net;
-using System.Threading.Tasks;
-using Lib.mvc.auth.validation;
 using Hiwjcn.Core.Domain.Auth;
-using Lib.data;
-using Hiwjcn.Core.Model.Sys;
-using System.Data.Entity;
+using Hiwjcn.Core.Domain.Sys;
 using Hiwjcn.Framework;
-using Lib.cache;
-using Lib.task;
 using Hiwjcn.Framework.Provider;
-using Lib.infrastructure.service;
+using Lib.cache;
+using Lib.core;
 using Lib.data.ef;
-using Hiwjcn.Bll.Auth;
+using Lib.extension;
+using Lib.helper;
+using Lib.infrastructure.service;
+using Lib.mvc;
+using Lib.mvc.auth.validation;
+using Lib.task;
+using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -41,8 +35,8 @@ namespace Hiwjcn.Web.Controllers
         private readonly IAuthClientService _IAuthClientService;
         private readonly IEFRepository<AuthScope> _AuthScopeRepository;
         private readonly IEFRepository<AuthClient> _AuthClientRepository;
-        private readonly IEFRepository<ReqLogModel> _ReqLogModelRepository;
-        private readonly IEFRepository<CacheHitLog> _CacheHitLogRepository;
+        private readonly IEFRepository<ReqLogEntity> _ReqLogModelRepository;
+        private readonly IEFRepository<CacheHitLogEntity> _CacheHitLogRepository;
         private readonly ICacheProvider _cache;
 
         public AuthManageController(
@@ -53,8 +47,8 @@ namespace Hiwjcn.Web.Controllers
             IAuthClientService _IAuthClientService,
             IEFRepository<AuthScope> _AuthScopeRepository,
             IEFRepository<AuthClient> _AuthClientRepository,
-            IEFRepository<ReqLogModel> _ReqLogModelRepository,
-            IEFRepository<CacheHitLog> _CacheHitLogRepository,
+            IEFRepository<ReqLogEntity> _ReqLogModelRepository,
+            IEFRepository<CacheHitLogEntity> _CacheHitLogRepository,
             ICacheProvider _cache)
         {
             this._IValidationDataProvider = _IValidationDataProvider;
@@ -83,8 +77,8 @@ namespace Hiwjcn.Web.Controllers
 
                 await this._ReqLogModelRepository.PrepareSessionAsync(async db =>
                 {
-                    var reqlog_query = db.Set<ReqLogModel>().AsNoTrackingQueryable();
-                    var cachehit_query = db.Set<CacheHitLog>().AsNoTrackingQueryable();
+                    var reqlog_query = db.Set<ReqLogEntity>().AsNoTrackingQueryable();
+                    var cachehit_query = db.Set<CacheHitLogEntity>().AsNoTrackingQueryable();
 
                     #region 今天请求频次
                     var border = now.GetDateBorder();
