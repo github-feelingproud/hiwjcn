@@ -35,29 +35,44 @@ namespace Lib.ioc
         /// <param name="reg"></param>
         public static void AddExtraRegistrar(IDependencyRegistrar reg)
         {
-            if (context != null)
+            if (_lazy.IsValueCreated)
             {
                 throw new Exception("依赖注入容器已经生成，请在生成前注册额外依赖");
             }
             ExtraRegistrars.Add(reg);
         }
 
-        /// <summary>
-        /// 创建容器线程锁
-        /// </summary>
-        private static readonly object LOCKER = new object();
+        private static readonly Lazy_<IContainer> _lazy = new Lazy_<IContainer>(() =>
+        {
+            //创建builder
+            var builder = new ContainerBuilder();
+            //注册依赖
+            new BaseDependencyRegistrar().Register(ref builder);
+            //注册额外依赖
+            if (ValidateHelper.IsPlumpList(ExtraRegistrars))
+            {
+                foreach (var reg in ExtraRegistrars)
+                {
+                    reg.Register(ref builder);
+                    reg.Clean();
+                }
+            }
 
-        /// <summary>
-        /// 容器对象
-        /// </summary>
-        private static IContainer context = null;
+            //额外的切入点
+            OnContainerBuilding?.Invoke(ref builder);
+
+            //创建容器
+            var context = builder.Build();
+
+            return context;
+        }).WhenDispose((ref IContainer x) => x.Dispose());
 
         /// <summary>
         /// 销毁容器
         /// </summary>
         public static void Dispose()
         {
-            context?.Dispose();
+            _lazy.Dispose();
         }
 
         public static RefAction<ContainerBuilder> OnContainerBuilding { get; set; }
@@ -68,38 +83,7 @@ namespace Lib.ioc
         /// <returns></returns>
         public static IContainer Container
         {
-            get
-            {
-                if (context == null)
-                {
-                    lock (LOCKER)
-                    {
-                        if (context == null)
-                        {
-                            //创建builder
-                            var builder = new ContainerBuilder();
-                            //注册依赖
-                            new BaseDependencyRegistrar().Register(ref builder);
-                            //注册额外依赖
-                            if (ValidateHelper.IsPlumpList(ExtraRegistrars))
-                            {
-                                foreach (var reg in ExtraRegistrars)
-                                {
-                                    reg.Register(ref builder);
-                                    reg.Clean();
-                                }
-                            }
-
-                            //额外的切入点
-                            OnContainerBuilding?.Invoke(ref builder);
-
-                            //创建容器
-                            context = builder.Build();
-                        }
-                    }
-                }
-                return context;
-            }
+            get => _lazy.Value;
         }
 
         /// <summary>
