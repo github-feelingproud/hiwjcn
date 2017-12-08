@@ -85,21 +85,20 @@ namespace Lib.infrastructure.service
 
         public override async Task<List<UserBase>> LoadPermission(List<UserBase> list)
         {
+            if (!ValidateHelper.IsPlumpList(list)) { return list; }
+
             //load user->role->permission
             list = await base.LoadPermission(list);
 
             //next load user->department->role->permission
-            var user_uids = list.Select(x => x.UID);
+            var user_uids = list.Select(x => x.UID).ToList();
 
             await this._userRepo.PrepareSessionAsync(async db =>
             {
                 var user_query = db.Set<UserBase>().AsNoTrackingQueryable();
                 var role_permission_map_query = db.Set<RolePermissionBase>().AsNoTrackingQueryable();
-                var role_query = db.Set<RoleBase>().AsNoTrackingQueryable();
                 var user_department_map_query = db.Set<UserDepartmentBase>().AsNoTrackingQueryable();
                 var department_role_map_query = db.Set<DepartmentRoleBase>().AsNoTrackingQueryable();
-                var department_query = db.Set<DepartmentBase>().AsNoTrackingQueryable();
-                var permission_query = db.Set<PermissionBase>().AsNoTrackingQueryable();
 
                 var query = from user in user_query.Where(x => user_uids.Contains(x.UID))
 
@@ -126,10 +125,13 @@ namespace Lib.infrastructure.service
                 {
                     var user_map = map.Where(x => x.user_uid == m.UID);
 
-                    m.DepartmentIds = new List<string>();
-                    m.DepartmentIds.AddRange(user_map.NotEmptyAndDistinct(x => x.department_uid));
+                    m.DepartmentIds = user_map.NotEmptyAndDistinct(x => x.department_uid).ToList();
+
                     m.RoleIds.AddRange(user_map.NotEmptyAndDistinct(x => x.role_uid));
                     m.PermissionIds.AddRange(user_map.NotEmptyAndDistinct(x => x.permission_uid));
+
+                    m.RoleIds = m.RoleIds.Distinct().ToList();
+                    m.PermissionIds = m.PermissionIds.Distinct().ToList();
                 }
             });
 

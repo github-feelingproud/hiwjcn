@@ -274,6 +274,8 @@ namespace Lib.infrastructure.service
 
         public virtual async Task<List<UserBase>> LoadPermission(List<UserBase> list)
         {
+            if (!ValidateHelper.IsPlumpList(list)) { return list; }
+
             var user_uids = list.Select(x => x.UID).ToList();
 
             await this._userRepo.PrepareSessionAsync(async db =>
