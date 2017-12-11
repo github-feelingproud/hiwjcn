@@ -9,6 +9,7 @@ namespace Lib.infrastructure.entity
     /// <summary>
     /// 组织，公司
     /// </summary>
+    [Serializable]
     public class OrganizationEntityBase
     {
     }

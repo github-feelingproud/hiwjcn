@@ -27,6 +27,11 @@ namespace Lib.infrastructure.entity
         //
     }
 
+    /// <summary>
+    /// /page/show/name_123
+    /// /page/show/id_123
+    /// /page/group/news
+    /// </summary>
     [Serializable]
     public class PageEntityBase : BaseEntity
     {

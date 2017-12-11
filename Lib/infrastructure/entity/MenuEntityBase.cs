@@ -4,16 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lib.mvc.user;
+using Lib.core;
 using Lib.extension;
 using Lib.helper;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lib.infrastructure.entity
 {
     /// <summary>
     /// 导航/边栏/轮播都属于菜单
     /// </summary>
+    [Serializable]
     public class MenuEntityBase : TreeEntityBase
     {
+        private readonly Lazy_<List<string>> PermissionValues;
+        public MenuEntityBase()
+        {
+            this.PermissionValues = new Lazy_<List<string>>(() => this.PermissionJson?.JsonToEntity<List<string>>(throwIfException: false));
+        }
+
         public virtual string MenuName { get; set; }
 
         public virtual string Description { get; set; }
@@ -38,9 +47,12 @@ namespace Lib.infrastructure.entity
 
         public virtual string PermissionJson { get; set; }
 
+        [Required]
+        public virtual string MenuGroupKey { get; set; }
+        
         public virtual bool ShowForUser(LoginUserInfo loginuser)
         {
-            var pers = this.PermissionJson?.JsonToEntity<List<string>>();
+            var pers = this.PermissionValues.Value;
             if (ValidateHelper.IsPlumpList(pers))
             {
                 foreach (var p in pers)
@@ -55,6 +67,7 @@ namespace Lib.infrastructure.entity
         }
     }
 
+    [Serializable]
     public class MenuGroupEntityBase : BaseEntity
     {
         public virtual string GroupKey { get; set; }
