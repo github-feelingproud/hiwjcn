@@ -15,36 +15,37 @@ namespace Lib.infrastructure.service.user
     public abstract class PermissionServiceBase<PermissionBase>
         where PermissionBase : PermissionEntityBase
     {
-        private readonly IEFRepository<PermissionBase> _perRepo;
+        private readonly IEFRepository<PermissionBase> _permissionRepo;
 
-        public PermissionServiceBase(IEFRepository<PermissionBase> _perRepo)
+        public PermissionServiceBase(IEFRepository<PermissionBase> _permissionRepo)
         {
-            this._perRepo = _perRepo;
+            this._permissionRepo = _permissionRepo;
         }
 
         public virtual async Task<_<string>> AddPermission(PermissionBase model) =>
-            await this._perRepo.AddTreeNode(model, "per");
+            await this._permissionRepo.AddTreeNode(model, "per");
 
         public virtual async Task<_<string>> DeletePermissionWhenNoChildren(string permission_uid) =>
-            await this._perRepo.DeleteSingleNodeWhenNoChildren(permission_uid);
+            await this._permissionRepo.DeleteSingleNodeWhenNoChildren(permission_uid);
 
-        public abstract void UpdatePermissionEntity(ref PermissionBase old_per, ref PermissionBase new_per);
+        public virtual async Task<List<PermissionBase>> QueryPermissionList(string parent = null) =>
+            await this._permissionRepo.QueryNodeList(parent);
+
+        public abstract void UpdatePermissionEntity(ref PermissionBase old_permission, ref PermissionBase new_permission);
 
         public virtual async Task<_<string>> UpdatePermission(PermissionBase model)
         {
             var data = new _<string>();
-            var per = await this._perRepo.GetFirstAsync(x => x.UID == model.UID);
-            Com.AssertNotNull(per, "权限不存在");
-            this.UpdatePermissionEntity(ref per, ref model);
-            per.Update();
-
-            if (!per.IsValid(out var msg))
+            var permission = await this._permissionRepo.GetFirstAsync(x => x.UID == model.UID);
+            Com.AssertNotNull(permission, $"权限为空:{model.UID}");
+            this.UpdatePermissionEntity(ref permission, ref model);
+            permission.Update();
+            if (!permission.IsValid(out var msg))
             {
                 data.SetErrorMsg(msg);
                 return data;
             }
-
-            if (await this._perRepo.UpdateAsync(per) > 0)
+            if (await this._permissionRepo.UpdateAsync(permission) > 0)
             {
                 data.SetSuccessData(string.Empty);
                 return data;
@@ -52,5 +53,11 @@ namespace Lib.infrastructure.service.user
 
             throw new Exception("更新权限错误");
         }
+
+        public virtual async Task<_<string>> DeletePermissionRecursively(string permission_uid) =>
+            await this._permissionRepo.DeleteTreeNodeRecursively(permission_uid);
+
+        public virtual async Task<_<string>> DeletePermission(params string[] permission_uids) =>
+            await this._permissionRepo.DeleteByMultipleUIDS(permission_uids);
     }
 }

@@ -303,7 +303,6 @@
     <Compile Include="infrastructure\helper\UserLoginHelper.cs" />
     <Compile Include="infrastructure\service\PageServiceBase.cs" />
     <Compile Include="infrastructure\service\user\UserLoginServiceBase.cs" />
-    <Compile Include="infrastructure\service\user\UserServiceWithDepartmentBase.cs" />
     <Compile Include="task\QuartzExtension.cs" />
     <Compile Include="task\TaskContainer.cs" />
     <Compile Include="task\TaskHelper.cs" />

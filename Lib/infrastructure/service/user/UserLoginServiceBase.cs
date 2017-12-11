@@ -122,6 +122,24 @@ namespace Lib.infrastructure.service.user
             throw new Exception("注册失败");
         }
 
+        public virtual async Task<_<string>> AddOneTimeCode(OneTimeCodeBase code)
+        {
+            var data = new _<string>();
+            code.Init("code");
+            if (!code.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._oneTimeCodeRepo.AddAsync(code) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("添加验证码失败");
+        }
+
         public virtual async Task<List<UserBase>> LoadPermission(List<UserBase> list)
         {
             if (!ValidateHelper.IsPlumpList(list)) { return list; }

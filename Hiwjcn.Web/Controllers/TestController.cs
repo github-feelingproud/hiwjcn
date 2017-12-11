@@ -56,7 +56,7 @@ namespace Hiwjcn.Web.Controllers
 
         public async Task<ActionResult> left()
         {
-            var data = await this._IUserService.LoadPermission(new UserEntity() { UID = "1" });
+
             return Content(string.Empty);
         }
 
