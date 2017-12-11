@@ -44,8 +44,26 @@ namespace Hiwjcn.Core.Data
             //
         }
 
+        public virtual DbSet<Area> Area { get; set; }
         public virtual DbSet<UserInfo> UserInfo { get; set; }
         public virtual DbSet<Sms> Sms { get; set; }
+    }
+
+    [Serializable]
+    public class Area : Lib.data.IDBTable
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int IID { get; set; }
+        public string UID { get; set; }
+        public string PUID { get; set; }
+        public string AreaName { get; set; }
+        public Nullable<int> AreaLevel { get; set; }
+        public Nullable<int> DisplayOrder { get; set; }
+        public string CatalogParentId { get; set; }
+        public string CatalogId { get; set; }
+        public string BrandId { get; set; }
+        public Nullable<int> IsCOD { get; set; }
     }
 
     [Serializable]

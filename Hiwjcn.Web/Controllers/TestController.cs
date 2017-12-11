@@ -21,6 +21,7 @@ using Polly.CircuitBreaker;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,7 +54,23 @@ namespace Hiwjcn.Web.Controllers
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
+        
+        public async Task<ActionResult> AreaJson()
+        {
+            using (var db = new QPLEntityDB())
+            {
+                var list = await db.Area.ToListAsync();
 
+                return GetJson(list.Select(x => new
+                {
+                    x.UID,
+                    ParentUID = x.PUID,
+                    x.AreaLevel,
+                    x.AreaName
+                }));
+            }
+        }
+        
         public async Task<ActionResult> left()
         {
 
