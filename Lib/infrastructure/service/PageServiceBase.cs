@@ -15,7 +15,37 @@ using Lib.data.ef;
 
 namespace Lib.infrastructure.service
 {
-    public abstract class PageServiceBase<PageBase>
+    public interface IPageServiceBase<PageBase>
+        where PageBase : PageEntityBase
+    {
+        Task<bool> CheckPageOwner(string user_uid, string page_uid);
+
+        Task<bool> CheckPageOwner(string user_uid, List<string> page_uids);
+
+        Task<_<string>> AddPage(PageBase page);
+
+        Task<_<string>> UpdatePage(PageBase model);
+
+        Task<_<string>> DeletePage(params string[] page_uids);
+
+        Task<_<string>> HideOrShowPages(bool show, params string[] page_uids);
+
+        Task<List<PageBase>> GetPagesByGroup(string group);
+
+        Task<PageBase> GetPageByName(string name);
+
+        Task<PageBase> GetPageByUID(string uid);
+
+        Task<PagerData<PageBase>> RemovedPages(
+            string user_uid, int page = 1, int pagesize = 10);
+
+        Task<PagerData<PageBase>> QueryPages(
+            string user_uid = null, bool enforce_date_range = true,
+            int page = 1, int pagesize = 10);
+    }
+
+    public abstract class PageServiceBase<PageBase> :
+        IPageServiceBase<PageBase>
         where PageBase : PageEntityBase
     {
         protected readonly IEFRepository<PageBase> _pageRepo;

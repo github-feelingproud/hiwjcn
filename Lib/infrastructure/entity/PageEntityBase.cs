@@ -46,8 +46,10 @@ namespace Lib.infrastructure.entity
 
         public virtual string PageMetaJson { get; set; }
 
+        [DataType(DataType.Html)]
         public virtual string PageContent { get; set; }
 
+        [DataType(DataType.Text)]
         public virtual string PageContentMarkdown { get; set; }
 
         public virtual DateTime? PageStartTime { get; set; }
