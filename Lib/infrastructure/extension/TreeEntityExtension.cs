@@ -177,5 +177,21 @@ namespace Lib.infrastructure.extension
             throw new Exception("删除节点错误");
         }
 
+        public static async Task<_<string>> DeleteSingleNodeWhenNoChildren<T>(this IRepository<T> repo, string node_uid)
+            where T : TreeEntityBase
+        {
+            var data = new _<string>();
+            if (await repo.ExistAsync(x => x.ParentUID == node_uid))
+            {
+                data.SetErrorMsg("节点存在子节点，不能删除");
+                return data;
+            }
+
+            await repo.DeleteWhereAsync(x => x.UID == node_uid);
+
+            data.SetSuccessData(string.Empty);
+            return data;
+        }
+
     }
 }
