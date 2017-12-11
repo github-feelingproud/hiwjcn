@@ -8,6 +8,7 @@ using Lib.data.ef;
 using Lib.distributed.akka;
 using Lib.infrastructure.provider;
 using Lib.infrastructure.service;
+using Lib.infrastructure.service.user;
 using System;
 using System.Threading.Tasks;
 

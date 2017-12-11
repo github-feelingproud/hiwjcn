@@ -10,7 +10,7 @@ using Lib.data.ef;
 using Lib.helper;
 using Lib.extension;
 
-namespace Lib.infrastructure.service
+namespace Lib.infrastructure.service.user
 {
     public abstract class PermissionServiceBase<PermissionBase>
         where PermissionBase : PermissionEntityBase

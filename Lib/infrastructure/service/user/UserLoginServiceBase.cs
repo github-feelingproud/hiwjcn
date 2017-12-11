@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.mvc;
 
-namespace Lib.infrastructure.service
+namespace Lib.infrastructure.service.user
 {
     public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>
         where UserBase : UserEntityBase, new()

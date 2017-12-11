@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Lib.extension;
 using Lib.mvc;
 
-namespace Lib.infrastructure.service
+namespace Lib.infrastructure.service.user
 {
     public abstract class RoleServiceBase
     {

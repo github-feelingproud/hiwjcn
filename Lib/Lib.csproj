@@ -302,8 +302,8 @@
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\helper\UserLoginHelper.cs" />
     <Compile Include="infrastructure\service\PageServiceBase.cs" />
-    <Compile Include="infrastructure\service\UserLoginServiceBase.cs" />
-    <Compile Include="infrastructure\service\UserServiceWithDepartmentBase.cs" />
+    <Compile Include="infrastructure\service\user\UserLoginServiceBase.cs" />
+    <Compile Include="infrastructure\service\user\UserServiceWithDepartmentBase.cs" />
     <Compile Include="task\QuartzExtension.cs" />
     <Compile Include="task\TaskContainer.cs" />
     <Compile Include="task\TaskHelper.cs" />
@@ -370,13 +370,13 @@
     <Compile Include="infrastructure\provider\UserLoginServiceBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="infrastructure\provider\AuthApiServiceFromDbBase.cs" />
-    <Compile Include="infrastructure\service\AuthLoginService.cs" />
-    <Compile Include="infrastructure\service\AuthServiceBase.cs" />
-    <Compile Include="infrastructure\service\DepartmentServiceBase.cs" />
+    <Compile Include="infrastructure\service\user\AuthLoginService.cs" />
+    <Compile Include="infrastructure\service\user\AuthServiceBase.cs" />
+    <Compile Include="infrastructure\service\user\DepartmentServiceBase.cs" />
     <Compile Include="infrastructure\service\MenuServiceBase.cs" />
-    <Compile Include="infrastructure\service\PermissionServiceBase.cs" />
-    <Compile Include="infrastructure\service\RoleServiceBase.cs" />
-    <Compile Include="infrastructure\service\UserServiceBase.cs" />
+    <Compile Include="infrastructure\service\user\PermissionServiceBase.cs" />
+    <Compile Include="infrastructure\service\user\RoleServiceBase.cs" />
+    <Compile Include="infrastructure\service\user\UserServiceBase.cs" />
     <Compile Include="ioc\AppContextExtension.cs" />
     <Compile Include="ioc\BaseDependencyRegistrar.cs" />
     <Compile Include="ioc\DependencyRegistrarBase.cs" />
@@ -501,6 +501,7 @@
   <ItemGroup>
     <Folder Include="distributed\orleans\" />
     <Folder Include="infrastructure\contract\" />
+    <Folder Include="infrastructure\entity\user\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

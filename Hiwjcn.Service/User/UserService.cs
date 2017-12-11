@@ -10,6 +10,7 @@ using Lib.ioc;
 using Lib.data.ef;
 using Lib.mvc.user;
 using Lib.extension;
+using Lib.infrastructure.service.user;
 
 namespace Hiwjcn.Bll.User
 {

@@ -15,7 +15,7 @@ using Lib.cache;
 using Lib.infrastructure.extension;
 using Lib.data.ef;
 
-namespace Lib.infrastructure.service
+namespace Lib.infrastructure.service.user
 {
     public interface IUserServiceBase<UserBase, UserAvatarBase, OneTimeCodeBase, RoleBase, PermissionBase, RolePermissionBase, UserRoleBase>
         where UserBase : UserEntityBase, new()

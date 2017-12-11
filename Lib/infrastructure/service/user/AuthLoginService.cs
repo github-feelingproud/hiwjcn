@@ -8,7 +8,7 @@ using Lib.mvc;
 using Lib.helper;
 using Autofac;
 
-namespace Lib.infrastructure.service
+namespace Lib.infrastructure.service.user
 {
     public interface IAuthLoginService
     {

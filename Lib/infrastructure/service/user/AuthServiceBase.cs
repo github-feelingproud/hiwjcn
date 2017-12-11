@@ -13,7 +13,7 @@ using System.Data.Entity;
 using Lib.core;
 using Lib.data.ef;
 
-namespace Lib.infrastructure.service
+namespace Lib.infrastructure.service.user
 {
     /// <summary>
     /// auth相关帮助类

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lib.infrastructure.service
+namespace Lib.infrastructure.service.user
 {
     class DepartmentServiceBase
     {

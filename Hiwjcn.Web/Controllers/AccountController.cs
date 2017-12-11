@@ -18,6 +18,7 @@ using System.Web.Mvc;
 using WebCore.MvcLib.Controller;
 using Lib.data.ef;
 using Hiwjcn.Core.Domain.User;
+using Lib.infrastructure.service.user;
 
 namespace Hiwjcn.Web.Controllers
 {

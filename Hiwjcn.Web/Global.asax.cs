@@ -11,6 +11,7 @@ using Lib.data.ef;
 using Lib.extension;
 using Lib.helper;
 using Lib.infrastructure.service;
+using Lib.infrastructure.service.user;
 using Lib.ioc;
 using Lib.mvc;
 using Lib.mvc.auth;
