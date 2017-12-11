@@ -17,14 +17,21 @@ using Lib.data.ef;
 
 namespace Lib.infrastructure.service.user
 {
-    public abstract class RoleServiceBase<RoleBase, UserRoleBase, RolePermissionBase>
+    public interface IRoleServiceBase<RoleBase, UserRoleBase, RolePermissionBase>
+        where RoleBase : RoleEntityBase, new()
+        where RolePermissionBase : RolePermissionEntityBase, new()
+        where UserRoleBase : UserRoleEntityBase, new()
+    { }
+
+    public abstract class RoleServiceBase<RoleBase, UserRoleBase, RolePermissionBase> :
+        IRoleServiceBase<RoleBase, UserRoleBase, RolePermissionBase>
         where RoleBase : RoleEntityBase, new()
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
     {
-        private readonly IEFRepository<RoleBase> _roleRepo;
-        private readonly IEFRepository<UserRoleBase> _userRoleRepo;
-        private readonly IEFRepository<RolePermissionBase> _rolePermissionRepo;
+        protected readonly IEFRepository<RoleBase> _roleRepo;
+        protected readonly IEFRepository<UserRoleBase> _userRoleRepo;
+        protected readonly IEFRepository<RolePermissionBase> _rolePermissionRepo;
 
         public RoleServiceBase(
             IEFRepository<RoleBase> _roleRepo,

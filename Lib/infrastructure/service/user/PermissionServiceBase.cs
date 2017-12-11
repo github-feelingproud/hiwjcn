@@ -12,10 +12,27 @@ using Lib.extension;
 
 namespace Lib.infrastructure.service.user
 {
-    public abstract class PermissionServiceBase<PermissionBase>
+    public interface IPermissionServiceBase<PermissionBase>
         where PermissionBase : PermissionEntityBase
     {
-        private readonly IEFRepository<PermissionBase> _permissionRepo;
+        Task<_<string>> AddPermission(PermissionBase model);
+
+        Task<_<string>> DeletePermissionWhenNoChildren(string permission_uid);
+
+        Task<List<PermissionBase>> QueryPermissionList(string parent = null);
+
+        Task<_<string>> UpdatePermission(PermissionBase model);
+
+        Task<_<string>> DeletePermissionRecursively(string permission_uid);
+
+        Task<_<string>> DeletePermission(params string[] permission_uids);
+    }
+
+    public abstract class PermissionServiceBase<PermissionBase> :
+        IPermissionServiceBase<PermissionBase>
+        where PermissionBase : PermissionEntityBase
+    {
+        protected readonly IEFRepository<PermissionBase> _permissionRepo;
 
         public PermissionServiceBase(IEFRepository<PermissionBase> _permissionRepo)
         {

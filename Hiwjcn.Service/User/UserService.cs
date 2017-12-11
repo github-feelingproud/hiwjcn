@@ -15,11 +15,26 @@ using Lib.infrastructure.service.user;
 namespace Hiwjcn.Bll.User
 {
     public interface IUserService :
+        IUserServiceBase<UserEntity, UserAvatarEntity>,
         IAutoRegistered
     { }
 
-    public class UserService : IUserService
+    public class UserService : UserServiceBase<UserEntity, UserAvatarEntity>,
+        IUserService
     {
+        public UserService(
+            IEFRepository<UserEntity> _userRepo,
+            IEFRepository<UserAvatarEntity> _userAvatarRepo) :
+            base(_userRepo, _userAvatarRepo)
+        { }
 
+        public override void UpdateUserEntity(ref UserEntity old_user, ref UserEntity new_user)
+        {
+            old_user.Phone = new_user.Phone;
+            old_user.QQ = new_user.QQ;
+            old_user.UserImg = new_user.UserImg;
+            old_user.Email = new_user.Email;
+            old_user.Sex = new_user.Sex;
+        }
     }
 }

@@ -17,7 +17,28 @@ using Lib.data.ef;
 
 namespace Lib.infrastructure.service.user
 {
-    public abstract class DepartmentServiceBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase>
+    public interface IDepartmentServiceBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase>
+        where DepartmentBase : DepartmentEntityBase, new()
+        where UserDepartmentBase : UserDepartmentEntityBase, new()
+        where DepartmentRoleBase : DepartmentRoleEntityBase, new()
+    {
+        Task<_<string>> DeleteDepartment(params string[] department_uids);
+
+        Task<_<string>> DeleteDepartmentRecursively(string department_uid);
+
+        Task<_<string>> AddDepartment(DepartmentBase model);
+
+        Task<_<string>> UpdateDepartment(DepartmentBase model);
+
+        Task<List<DepartmentBase>> QueryDepartmentList(string parent = null);
+
+        Task<_<string>> SetUserDepartment(string user_uid, List<UserDepartmentBase> departments);
+
+        Task<_<string>> SetDepartmentRole(string department_uid, List<DepartmentRoleBase> roles);
+    }
+
+    public abstract class DepartmentServiceBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase> :
+        IDepartmentServiceBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase>
         where DepartmentBase : DepartmentEntityBase, new()
         where UserDepartmentBase : UserDepartmentEntityBase, new()
         where DepartmentRoleBase : DepartmentRoleEntityBase, new()

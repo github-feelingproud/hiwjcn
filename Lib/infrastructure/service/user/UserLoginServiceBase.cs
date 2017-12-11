@@ -140,11 +140,16 @@ namespace Lib.infrastructure.service.user
             throw new Exception("添加验证码失败");
         }
 
+        [Obsolete("暂时没有启用")]
+        public abstract Task<List<string>> GetAutoAssignRole();
+
         public virtual async Task<List<UserBase>> LoadPermission(List<UserBase> list)
         {
             if (!ValidateHelper.IsPlumpList(list)) { return list; }
 
             var user_uids = list.Select(x => x.UID).ToList();
+
+            var auto_assign_roles = await this.GetAutoAssignRole();
 
             await this._userRepo.PrepareSessionAsync(async db =>
             {
@@ -172,6 +177,7 @@ namespace Lib.infrastructure.service.user
                 {
                     var user_map = map.Where(x => x.user_uid == m.UID);
                     m.RoleIds = user_map.NotEmptyAndDistinct(x => x.role_uid).ToList();
+
                     m.PermissionIds = user_map.NotEmptyAndDistinct(x => x.permission_uid).ToList();
                 }
 
