@@ -7,6 +7,8 @@ using Lib.infrastructure.entity;
 using Lib.mvc;
 using Lib.infrastructure.extension;
 using Lib.data.ef;
+using Lib.helper;
+using Lib.extension;
 
 namespace Lib.infrastructure.service
 {
@@ -25,5 +27,30 @@ namespace Lib.infrastructure.service
 
         public virtual async Task<_<string>> DeletePermissionWhenNoChildren(string permission_uid) =>
             await this._perRepo.DeleteSingleNodeWhenNoChildren(permission_uid);
+
+        public abstract void UpdatePermissionEntity(ref PermissionBase old_per, ref PermissionBase new_per);
+
+        public virtual async Task<_<string>> UpdatePermission(PermissionBase model)
+        {
+            var data = new _<string>();
+            var per = await this._perRepo.GetFirstAsync(x => x.UID == model.UID);
+            Com.AssertNotNull(per, "权限不存在");
+            this.UpdatePermissionEntity(ref per, ref model);
+            per.Update();
+
+            if (!per.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+
+            if (await this._perRepo.UpdateAsync(per) > 0)
+            {
+                data.SetSuccessData(string.Empty);
+                return data;
+            }
+
+            throw new Exception("更新权限错误");
+        }
     }
 }
