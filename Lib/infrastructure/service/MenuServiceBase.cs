@@ -41,8 +41,8 @@ namespace Lib.infrastructure.service
         where MenuBase : MenuEntityBase, new()
         where MenuGroupBase : MenuGroupEntityBase, new()
     {
-        private readonly IEFRepository<MenuBase> _menuRepo;
-        private readonly IEFRepository<MenuGroupBase> _menuGroupRepo;
+        protected readonly IEFRepository<MenuBase> _menuRepo;
+        protected readonly IEFRepository<MenuGroupBase> _menuGroupRepo;
 
         public MenuServiceBase(
             IEFRepository<MenuBase> _menuRepo,

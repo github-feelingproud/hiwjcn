@@ -15,7 +15,8 @@ using Lib.infrastructure.service.user;
 namespace Hiwjcn.Bll.User
 {
     public interface IRoleService :
-        IRoleServiceBase<RoleEntity, UserRoleEntity, RolePermissionEntity>
+        IRoleServiceBase<RoleEntity, UserRoleEntity, RolePermissionEntity>,
+        IAutoRegistered
     { }
 
     public class RoleService :

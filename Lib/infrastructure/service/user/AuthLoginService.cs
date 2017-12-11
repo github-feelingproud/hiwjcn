@@ -25,6 +25,12 @@ namespace Lib.infrastructure.service.user
         Task<LoginUserInfo> GetUserInfoByUID(string uid);
     }
 
+    [Obsolete("还没完成")]
+    public abstract class AuthLoginServiceBase
+    {
+
+    }
+
     public static class LoginAccountSystemExtension
     {
         public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : IAuthLoginService

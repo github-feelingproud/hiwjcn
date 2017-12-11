@@ -9,5 +9,6 @@ namespace Hiwjcn.Core.Domain.Page
 {
     public class PageEntity : PageEntityBase
     {
+        //
     }
 }

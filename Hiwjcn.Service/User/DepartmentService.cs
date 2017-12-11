@@ -15,7 +15,8 @@ using Lib.infrastructure.service.user;
 namespace Hiwjcn.Bll.User
 {
     public interface IDepartmentService :
-        IDepartmentServiceBase<DepartmentEntity, UserDepartmentEntity, DepartmentRoleEntity>
+        IDepartmentServiceBase<DepartmentEntity, UserDepartmentEntity, DepartmentRoleEntity>,
+        IAutoRegistered
     {
         //
     }

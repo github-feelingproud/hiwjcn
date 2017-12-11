@@ -18,7 +18,7 @@ namespace Lib.infrastructure.service
     public abstract class PageServiceBase<PageBase>
         where PageBase : PageEntityBase
     {
-        private readonly IEFRepository<PageBase> _pageRepo;
+        protected readonly IEFRepository<PageBase> _pageRepo;
 
         public PageServiceBase(
             IEFRepository<PageBase> _pageRepo)

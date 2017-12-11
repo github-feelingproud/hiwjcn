@@ -191,6 +191,9 @@ namespace Lib.infrastructure.service.user
 
     }
 
+    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase>
+    { }
+
     /// <summary>
     /// 用户=部门=角色=权限
     /// </summary>
@@ -201,7 +204,8 @@ namespace Lib.infrastructure.service.user
     /// <typeparam name="UserDepartmentBase"></typeparam>
     /// <typeparam name="DepartmentRoleBase"></typeparam>
     public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase> :
-        UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>
+        UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>,
+        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase>
         where UserDepartmentBase : UserDepartmentEntityBase, new()
         where DepartmentRoleBase : DepartmentRoleEntityBase, new()
         where UserBase : UserEntityBase, new()

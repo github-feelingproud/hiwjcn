@@ -30,8 +30,12 @@ namespace Lib.extension
             new_list = new_list ?? throw new ArgumentNullException(nameof(new_list));
             selector = selector ?? throw new ArgumentNullException(nameof(selector));
 
-            var delete_list = old_list.Select(selector).Except_(new_list.Select(selector), comparer);
-            var create_list = new_list.Select(selector).Except_(old_list.Select(selector), comparer);
+            var old_target = old_list.Select(selector);
+            var new_target = new_list.Select(selector);
+
+            var delete_list = old_target.Except_(new_target, comparer).ToList();
+            var create_list = new_target.Except_(old_target, comparer).ToList();
+
             return (delete_list, create_list);
         }
 

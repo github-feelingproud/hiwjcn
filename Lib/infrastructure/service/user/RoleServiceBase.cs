@@ -21,7 +21,21 @@ namespace Lib.infrastructure.service.user
         where RoleBase : RoleEntityBase, new()
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
-    { }
+    {
+        Task<List<RoleBase>> QueryRoleList(string parent = null);
+
+        Task<_<string>> AddRole(RoleBase role);
+
+        Task<_<string>> DeleteRoleRecursively(string role_uid);
+
+        Task<_<string>> DeleteRole(params string[] role_uids);
+
+        Task<_<string>> UpdateRole(RoleBase model);
+
+        Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles);
+
+        Task<_<string>> SetRolePermissions(string role_uid, List<RolePermissionBase> permissions);
+    }
 
     public abstract class RoleServiceBase<RoleBase, UserRoleBase, RolePermissionBase> :
         IRoleServiceBase<RoleBase, UserRoleBase, RolePermissionBase>
@@ -46,7 +60,8 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<List<RoleBase>> QueryRoleList(string parent = null) =>
             await this._roleRepo.QueryNodeList(parent);
 
-        public virtual async Task<_<string>> AddRole(RoleBase role) => await this._roleRepo.AddTreeNode(role, "role");
+        public virtual async Task<_<string>> AddRole(RoleBase role) =>
+            await this._roleRepo.AddTreeNode(role, "role");
 
         public virtual async Task<_<string>> DeleteRoleRecursively(string role_uid) =>
             await this._roleRepo.DeleteTreeNodeRecursively(role_uid);
@@ -77,6 +92,7 @@ namespace Lib.infrastructure.service.user
 
             throw new Exception("更新角色失败");
         }
+
         public virtual async Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles)
         {
             var data = new _<string>();
@@ -113,19 +129,27 @@ namespace Lib.infrastructure.service.user
 
         public virtual async Task<_<string>> SetRolePermissions(string role_uid, List<RolePermissionBase> permissions)
         {
+            Com.AssertNotNull(permissions, "权限参数不能为空");
+
             var data = new _<string>();
-            if (ValidateHelper.IsPlumpList(permissions))
+            //检查参数
+            if (permissions.Any(x => x.RoleID != role_uid))
             {
-                if (permissions.Any(x => x.RoleID != role_uid))
-                {
-                    data.SetErrorMsg("角色ID错误");
-                    return data;
-                }
+                data.SetErrorMsg("角色ID错误");
+                return data;
             }
-            await this._rolePermissionRepo.DeleteWhereAsync(x => x.RoleID == role_uid);
-            if (ValidateHelper.IsPlumpList(permissions))
+
+            //旧的权限
+            var old_per = await this._rolePermissionRepo.GetListAsync(x => x.RoleID == role_uid);
+
+            //要更新的数据
+            var update = old_per.UpdateList(permissions, x => x.UID);
+
+            //等待添加
+            if (ValidateHelper.IsPlumpList(update.WaitForAdd))
             {
-                foreach (var m in permissions)
+                var add_list = permissions.Where(x => update.WaitForAdd.Contains(x.UID)).ToList();
+                foreach (var m in add_list)
                 {
                     m.Init("per");
                     if (!m.IsValid(out var msg))
@@ -134,34 +158,20 @@ namespace Lib.infrastructure.service.user
                         return data;
                     }
                 }
-                if (await this._rolePermissionRepo.AddAsync(permissions.ToArray()) <= 0)
-                {
-                    data.SetErrorMsg("保存权限错误");
-                    return data;
-                }
-            }
 
+                await this._rolePermissionRepo.AddAsync(add_list.ToArray());
+            }
+            //等待删除
+            if (ValidateHelper.IsPlumpList(update.WaitForDelete))
+            {
+                var delete_list = update.WaitForDelete.ToList();
+
+                await this._rolePermissionRepo.DeleteWhereAsync(x => delete_list.Contains(x.UID));
+            }
+            
             data.SetSuccessData(string.Empty);
             return data;
         }
-
-        public async Task<_<string>> SetRolePermissions(string role_uid, string[] permissions)
-        {
-            var data = new _<string>();
-
-            var old_permissions = new string[] { };
-
-            var update = old_permissions.UpdateList(permissions);
-
-            var dead_permissions = update.WaitForDelete;
-            var new_permissions = update.WaitForAdd;
-
-            //add new
-            //delete old
-
-            await Task.FromResult(1);
-
-            return data;
-        }
+        
     }
 }

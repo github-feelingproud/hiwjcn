@@ -15,7 +15,8 @@ using Lib.infrastructure.service.user;
 namespace Hiwjcn.Bll.User
 {
     public interface IUserLoginService :
-        IUserLoginServiceBase<UserEntity, UserOneTimeCodeEntity, RolePermissionEntity, UserRoleEntity>
+        IUserLoginServiceBase<UserEntity, UserOneTimeCodeEntity, RolePermissionEntity, UserRoleEntity, UserDepartmentEntity, DepartmentRoleEntity>,
+        IAutoRegistered
     { }
 
     public class UserLoginService :

@@ -14,7 +14,8 @@ using Lib.infrastructure.service.user;
 
 namespace Hiwjcn.Bll.User
 {
-    public interface IPermissionService : IPermissionServiceBase<PermissionEntity>
+    public interface IPermissionService : IPermissionServiceBase<PermissionEntity>,
+        IAutoRegistered
     { }
 
     public class PermissionService : PermissionServiceBase<PermissionEntity>,
