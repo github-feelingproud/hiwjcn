@@ -62,6 +62,12 @@ namespace Lib.infrastructure.entity
         public virtual DateTime UpdateTime { get; set; }
 
         /// <summary>
+        /// 状态正常
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool OK() => this.IsRemove <= 0;
+
+        /// <summary>
         /// 第一次写库初始化
         /// </summary>
         public virtual void Init(string flag = null)

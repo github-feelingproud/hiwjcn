@@ -301,6 +301,7 @@
     <Compile Include="infrastructure\entity\PageEntityBase.cs" />
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\helper\UserLoginHelper.cs" />
+    <Compile Include="infrastructure\service\organization\OrganizationServiceBase.cs" />
     <Compile Include="infrastructure\service\PageServiceBase.cs" />
     <Compile Include="infrastructure\service\user\UserLoginServiceBase.cs" />
     <Compile Include="task\QuartzExtension.cs" />

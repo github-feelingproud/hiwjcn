@@ -60,7 +60,7 @@ namespace Lib.infrastructure.service.user
 
 
         public virtual async Task<_<string>> DeleteDepartment(params string[] department_uids) =>
-            await this._departmentRepo.DeleteByMultipleUIDS(department_uids);
+            await this._departmentRepo.DeleteByMultipleUIDS_(department_uids);
 
         public virtual async Task<_<string>> DeleteDepartmentRecursively(string department_uid) =>
             await this._departmentRepo.DeleteTreeNodeRecursively(department_uid);

@@ -67,7 +67,7 @@ namespace Lib.infrastructure.service.user
             await this._roleRepo.DeleteTreeNodeRecursively(role_uid);
 
         public virtual async Task<_<string>> DeleteRole(params string[] role_uids) =>
-            await this._roleRepo.DeleteByMultipleUIDS(role_uids);
+            await this._roleRepo.DeleteByMultipleUIDS_(role_uids);
 
         public abstract void UpdateRoleEntity(ref RoleBase old_role, ref RoleBase new_role);
 

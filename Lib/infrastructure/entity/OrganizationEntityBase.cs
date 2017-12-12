@@ -37,6 +37,8 @@ namespace Lib.infrastructure.entity
 
         [Required]
         public virtual string OwnerUID { get; set; }
+
+        public virtual int MemeberCount { get; set; }
     }
 
     [Serializable]

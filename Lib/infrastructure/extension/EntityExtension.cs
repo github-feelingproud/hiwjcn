@@ -14,7 +14,7 @@ namespace Lib.infrastructure.extension
 {
     public static class EntityExtension
     {
-        public static async Task<_<string>> DeleteByMultipleUIDS<T>(this IRepository<T> repo, params string[] uids)
+        public static async Task<_<string>> DeleteByMultipleUIDS_<T>(this IRepository<T> repo, params string[] uids)
             where T : BaseEntity
         {
             var data = new _<string>();
@@ -32,7 +32,7 @@ namespace Lib.infrastructure.extension
             throw new Exception("删除数据错误");
         }
         
-        public static async Task<_<string>> AddEntity<T>(this IRepository<T> repo, T model, string model_flag)
+        public static async Task<_<string>> AddEntity_<T>(this IRepository<T> repo, T model, string model_flag)
             where T : BaseEntity
         {
             var data = new _<string>();

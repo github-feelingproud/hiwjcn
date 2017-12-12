@@ -82,7 +82,7 @@ namespace Lib.infrastructure.service
         }
 
         public virtual async Task<_<string>> DeleteMenus(params string[] menu_uids) =>
-            await this._menuRepo.DeleteByMultipleUIDS(menu_uids);
+            await this._menuRepo.DeleteByMultipleUIDS_(menu_uids);
 
         public virtual async Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null)
         {
@@ -125,10 +125,10 @@ namespace Lib.infrastructure.service
         }
 
         public virtual async Task<_<string>> AddMenuGroup(MenuGroupBase model) =>
-            await this._menuGroupRepo.AddEntity(model, "mn_group");
+            await this._menuGroupRepo.AddEntity_(model, "mn_group");
 
         public virtual async Task<_<string>> DeleteMenuGroup(params string[] group_uids) =>
-            await this._menuGroupRepo.DeleteByMultipleUIDS(group_uids);
+            await this._menuGroupRepo.DeleteByMultipleUIDS_(group_uids);
 
         public abstract void UpdateMenuGroupEntity(ref MenuGroupBase old_group, ref MenuGroupBase new_group);
 
