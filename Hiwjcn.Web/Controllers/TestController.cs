@@ -54,23 +54,23 @@ namespace Hiwjcn.Web.Controllers
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
-        
+
         public async Task<ActionResult> AreaJson()
         {
             using (var db = new QPLEntityDB())
             {
-                var list = await db.Area.ToListAsync();
+                var list = await db.Area.Where(x => x.AreaLevel != null).ToListAsync();
 
                 return GetJson(list.Select(x => new
                 {
                     x.UID,
                     ParentUID = x.PUID,
-                    x.AreaLevel,
+                    x.AreaLevel.Value,
                     x.AreaName
                 }));
             }
         }
-        
+
         public async Task<ActionResult> left()
         {
 

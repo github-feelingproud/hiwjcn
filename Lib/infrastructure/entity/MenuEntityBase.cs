@@ -18,11 +18,13 @@ namespace Lib.infrastructure.entity
     public class MenuEntityBase : TreeEntityBase
     {
         private readonly Lazy_<List<string>> PermissionValues;
+
         public MenuEntityBase()
         {
             this.PermissionValues = new Lazy_<List<string>>(() => this.PermissionJson?.JsonToEntity<List<string>>(throwIfException: false));
         }
 
+        [Required]
         public virtual string MenuName { get; set; }
 
         public virtual string Description { get; set; }
@@ -49,7 +51,7 @@ namespace Lib.infrastructure.entity
 
         [Required]
         public virtual string MenuGroupKey { get; set; }
-        
+
         public virtual bool ShowForUser(LoginUserInfo loginuser)
         {
             var pers = this.PermissionValues.Value;
@@ -70,8 +72,10 @@ namespace Lib.infrastructure.entity
     [Serializable]
     public class MenuGroupEntityBase : BaseEntity
     {
+        [Required]
         public virtual string GroupKey { get; set; }
 
+        [Required]
         public virtual string GroupName { get; set; }
 
         public virtual string Description { get; set; }
