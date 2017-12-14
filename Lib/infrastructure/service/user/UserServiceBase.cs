@@ -14,12 +14,11 @@ using Lib.mvc.user;
 using Lib.cache;
 using Lib.infrastructure.extension;
 using Lib.data.ef;
+using Lib.infrastructure.entity.user;
 
 namespace Lib.infrastructure.service.user
 {
     public interface IUserServiceBase<UserBase, UserAvatarBase>
-        where UserBase : UserEntityBase, new()
-        where UserAvatarBase : UserAvatarEntityBase, new()
     {
         Task<PagerData<UserBase>> QueryUserList(
             string name = null, string email = null, string keyword = null, int page = 1, int pagesize = 20);

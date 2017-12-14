@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Data.Entity;
 
-namespace Lib.infrastructure.entity
+namespace Lib.infrastructure.entity.user
 {
     /// <summary>
     /// 组织，公司

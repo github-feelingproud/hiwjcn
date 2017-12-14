@@ -16,6 +16,7 @@ using Lib.core;
 using System.Data.Entity;
 using Lib.data.ef;
 using Lib.infrastructure.service.user;
+using Lib.infrastructure.entity.auth;
 
 namespace Lib.infrastructure.provider
 {

@@ -13,14 +13,12 @@ using Lib.core;
 using Lib.mvc.user;
 using Lib.cache;
 using Lib.infrastructure.extension;
+using Lib.infrastructure.entity.user;
 using Lib.data.ef;
 
 namespace Lib.infrastructure.service.user
 {
     public interface IRoleServiceBase<RoleBase, UserRoleBase, RolePermissionBase>
-        where RoleBase : RoleEntityBase, new()
-        where RolePermissionBase : RolePermissionEntityBase, new()
-        where UserRoleBase : UserRoleEntityBase, new()
     {
         Task<List<RoleBase>> QueryRoleList(string parent = null);
 

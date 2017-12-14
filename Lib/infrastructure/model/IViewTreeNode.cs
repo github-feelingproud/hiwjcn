@@ -1,4 +1,5 @@
 ﻿using Lib.infrastructure.entity;
+using Lib.infrastructure.entity.user;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

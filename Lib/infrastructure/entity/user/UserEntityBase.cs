@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Lib.infrastructure.entity
+namespace Lib.infrastructure.entity.user
 {
     [Serializable]
     public class UserEntityBase : BaseEntity

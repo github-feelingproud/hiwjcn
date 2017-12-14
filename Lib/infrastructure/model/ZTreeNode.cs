@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Lib.infrastructure.entity;
 using Lib.extension;
 using Newtonsoft.Json;
+using Lib.infrastructure.entity.user;
 
 namespace Lib.infrastructure.model
 {

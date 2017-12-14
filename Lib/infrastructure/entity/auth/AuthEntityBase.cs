@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 using System.Configuration;
 using Lib.extension;
 
-namespace Lib.infrastructure.entity
+namespace Lib.infrastructure.entity.auth
 {
     public static class TokenConfig
     {

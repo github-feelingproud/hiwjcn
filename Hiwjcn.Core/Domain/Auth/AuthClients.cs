@@ -1,4 +1,5 @@
 ﻿using Lib.infrastructure.entity;
+using Lib.infrastructure.entity.auth;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 

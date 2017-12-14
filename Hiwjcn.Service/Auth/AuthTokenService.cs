@@ -17,6 +17,7 @@ using Lib.cache;
 using Hiwjcn.Core;
 using Lib.infrastructure.entity;
 using Lib.data.ef;
+using Lib.infrastructure.entity.auth;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -344,7 +345,7 @@ namespace Hiwjcn.Bll.Auth
                     var scope_uids = db.Set<AuthTokenScope>().AsNoTrackingQueryable().Where(x => x.TokenUID == token.UID).Select(x => x.ScopeUID);
                     var scope_query = db.Set<AuthScope>().AsNoTrackingQueryable();
                     token.Scopes = (await scope_query.Where(x => scope_uids.Contains(x.UID)).ToListAsync())
-                    .Select(x => (Lib.infrastructure.entity.AuthScopeBase)x).ToList();
+                    .Select(x => (AuthScopeBase)x).ToList();
 
                     //自动刷新过期时间
                     if ((token.ExpiryTime - now).TotalDays < (TokenConfig.TokenExpireDays / 2.0))
@@ -355,7 +356,6 @@ namespace Hiwjcn.Bll.Auth
                         }
                     }
                 }
-                return true;
             });
             return token;
         }

@@ -13,14 +13,12 @@ using Lib.core;
 using Lib.mvc.user;
 using Lib.cache;
 using Lib.infrastructure.extension;
+using Lib.infrastructure.entity.user;
 using Lib.data.ef;
 
 namespace Lib.infrastructure.service.user
 {
     public interface IDepartmentServiceBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase>
-        where DepartmentBase : DepartmentEntityBase, new()
-        where UserDepartmentBase : UserDepartmentEntityBase, new()
-        where DepartmentRoleBase : DepartmentRoleEntityBase, new()
     {
         Task<_<string>> DeleteDepartment(params string[] department_uids);
 

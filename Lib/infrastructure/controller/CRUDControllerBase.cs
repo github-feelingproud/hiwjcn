@@ -11,6 +11,7 @@ using Lib.helper;
 using Lib.extension;
 using Lib.cache;
 using Lib.infrastructure.entity;
+using Lib.infrastructure.entity.user;
 
 namespace Lib.infrastructure.controller
 {

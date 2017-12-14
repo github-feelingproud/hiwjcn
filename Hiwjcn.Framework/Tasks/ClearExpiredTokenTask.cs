@@ -11,6 +11,7 @@ using System.Linq;
 using Hiwjcn.Core.Domain.Auth;
 using Lib.infrastructure.entity;
 using Lib.data.ef;
+using Lib.infrastructure.entity.auth;
 
 namespace Hiwjcn.Framework.Tasks
 {
@@ -53,8 +54,7 @@ namespace Hiwjcn.Framework.Tasks
                         var scope_uids = scope_set.Select(x => x.UID);
                         scope_map_set.RemoveRange(scope_map_set.Where(x => !token_uids.Contains(x.TokenUID) || !scope_uids.Contains(x.ScopeUID)));
                         db.SaveChanges();
-
-                        return true;
+                        
                     });
                     return true;
                 });

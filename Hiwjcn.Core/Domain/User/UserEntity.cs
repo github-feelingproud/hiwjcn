@@ -2,6 +2,7 @@
 using Lib.data.ef;
 using Lib.helper;
 using Lib.infrastructure.entity;
+using Lib.infrastructure.entity.user;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

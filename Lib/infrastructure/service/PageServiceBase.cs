@@ -16,7 +16,6 @@ using Lib.data.ef;
 namespace Lib.infrastructure.service
 {
     public interface IPageServiceBase<PageBase>
-        where PageBase : PageEntityBase
     {
         Task<bool> CheckPageOwner(string user_uid, string page_uid);
 

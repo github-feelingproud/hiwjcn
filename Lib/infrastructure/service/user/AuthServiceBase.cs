@@ -11,6 +11,7 @@ using Lib.helper;
 using Lib.extension;
 using System.Data.Entity;
 using Lib.core;
+using Lib.infrastructure.entity.auth;
 using Lib.data.ef;
 
 namespace Lib.infrastructure.service.user
@@ -19,11 +20,6 @@ namespace Lib.infrastructure.service.user
     /// auth相关帮助类
     /// </summary>
     public interface IAuthServiceBase<ClientBase, ScopeBase, TokenBase, CodeBase, TokenScopeBase>
-        where ClientBase : AuthClientBase, new()
-        where ScopeBase : AuthScopeBase, new()
-        where TokenBase : AuthTokenBase, new()
-        where CodeBase : AuthCodeBase, new()
-        where TokenScopeBase : AuthTokenScopeBase, new()
     {
         Task<_<string>> DeleteUserTokensAsync(string user_uid);
 

@@ -9,11 +9,11 @@ using Lib.infrastructure.extension;
 using Lib.data.ef;
 using Lib.helper;
 using Lib.extension;
+using Lib.infrastructure.entity.user;
 
 namespace Lib.infrastructure.service.user
 {
     public interface IPermissionServiceBase<PermissionBase>
-        where PermissionBase : PermissionEntityBase
     {
         Task<_<string>> AddPermission(PermissionBase model);
 

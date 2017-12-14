@@ -12,13 +12,28 @@ using System.Data.Entity;
 using Lib.core;
 using Lib.infrastructure.extension;
 using Lib.data.ef;
+using Lib.infrastructure.entity.user;
 
 namespace Lib.infrastructure.service.organization
 {
     public interface IOrganizationServiceBase<OrgBase, OrgMemberBase>
-        where OrgBase : OrganizationEntityBase, new()
-        where OrgMemberBase : OrganizationMemberEntityBase, new()
-    { }
+    {
+        Task<_<string>> AddOrg(OrgBase model);
+
+        Task<_<string>> DeleteOrg(params string[] org_uids);
+
+        Task<_<string>> UpdateOrg(OrgBase model);
+
+        Task<bool> CheckOwner(string org_uid, string owner_uid);
+
+        Task<OrgBase> GetOrgByUID(string org_uid);
+
+        Task<PagerData<OrgBase>> QueryOrgPager(string q = null, int page = 1, int pagesize = 10);
+
+        Task<_<string>> AddMember(OrgMemberBase model);
+
+        Task<_<string>> RemoveMember(string org_uid, string user_uid);
+    }
 
     public abstract class OrganizationServiceBase<OrgBase, OrgMemberBase> :
         IOrganizationServiceBase<OrgBase, OrgMemberBase>

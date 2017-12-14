@@ -8,15 +8,12 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.infrastructure.entity.user;
 using Lib.mvc;
 
 namespace Lib.infrastructure.service.user
 {
     public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>
-        where UserBase : UserEntityBase, new()
-        where OneTimeCodeBase : UserOneTimeCodeEntityBase, new()
-        where RolePermissionBase : RolePermissionEntityBase, new()
-        where UserRoleBase : UserRoleEntityBase, new()
     {
         Task<_<UserBase>> LoginViaPassword(string user_name, string password);
 
