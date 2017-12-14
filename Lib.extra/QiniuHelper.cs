@@ -10,42 +10,6 @@ using Lib.extension;
 
 namespace Lib.extra
 {
-    public static class QiniuExtension
-    {
-        /// <summary>
-        /// 文件存在
-        /// </summary>
-        /// <param name="status"></param>
-        /// <returns></returns>
-        public static bool HasFile(this StatResult status)
-        {
-            return status.IsOk() &&
-                status.Result != null &&
-                status.Result.Fsize > 0 &&
-                status.Result.Hash?.Length > 0;
-        }
-
-        /// <summary>
-        /// 是否是200
-        /// </summary>
-        /// <param name="res"></param>
-        /// <returns></returns>
-        public static bool IsOk(this HttpResult res) => res.Code == 200;
-
-        /// <summary>
-        /// 有异常就抛出
-        /// </summary>
-        /// <param name="res"></param>
-        public static T ThrowIfException<T>(this T res) where T : HttpResult
-        {
-            if (!res.IsOk())
-            {
-                throw new Exception($"七牛服务器错误，返回数据：{res.ToJson()}");
-            }
-            return res;
-        }
-    }
-
     /// <summary>
     /// http://developer.qiniu.com/resource/official.html#sdk
     /// </summary>
@@ -153,4 +117,41 @@ namespace Lib.extra
         }
 
     }
+
+    public static class QiniuExtension
+    {
+        /// <summary>
+        /// 文件存在
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public static bool HasFile(this StatResult status)
+        {
+            return status.IsOk() &&
+                status.Result != null &&
+                status.Result.Fsize > 0 &&
+                status.Result.Hash?.Length > 0;
+        }
+
+        /// <summary>
+        /// 是否是200
+        /// </summary>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        public static bool IsOk(this HttpResult res) => res.Code == 200;
+
+        /// <summary>
+        /// 有异常就抛出
+        /// </summary>
+        /// <param name="res"></param>
+        public static T ThrowIfException<T>(this T res) where T : HttpResult
+        {
+            if (!res.IsOk())
+            {
+                throw new Exception($"七牛服务器错误，返回数据：{res.ToJson()}");
+            }
+            return res;
+        }
+    }
+
 }
