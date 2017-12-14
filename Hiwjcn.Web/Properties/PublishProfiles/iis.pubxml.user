@@ -13,7 +13,7 @@
       <publishTime>09/08/2017 10:33:54</publishTime>
     </File>
     <File Include="App_Data/Config/log4net.config">
-      <publishTime>09/07/2017 16:22:14</publishTime>
+      <publishTime>11/30/2017 16:38:32</publishTime>
     </File>
     <File Include="App_Data/Config/sentry.config">
       <publishTime>07/29/2017 17:30:34</publishTime>
@@ -124,10 +124,10 @@
       <publishTime>10/21/2017 02:50:06</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>11/28/2017 11:13:34</publishTime>
+      <publishTime>12/14/2017 14:57:34</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>11/28/2017 11:13:34</publishTime>
+      <publishTime>12/14/2017 14:57:34</publishTime>
     </File>
     <File Include="bin/Autofac.dll">
       <publishTime>10/16/2017 09:53:24</publishTime>
@@ -172,40 +172,40 @@
       <publishTime>10/23/2017 13:15:20</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.dll">
-      <publishTime>11/28/2017 11:13:12</publishTime>
+      <publishTime>12/14/2017 14:57:09</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.dll.config">
-      <publishTime>11/28/2017 11:11:10</publishTime>
+      <publishTime>12/14/2017 11:45:51</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Bll.pdb">
-      <publishTime>11/28/2017 11:13:12</publishTime>
+      <publishTime>12/14/2017 14:57:09</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.dll">
-      <publishTime>11/28/2017 11:13:10</publishTime>
+      <publishTime>12/14/2017 14:57:07</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.dll.config">
-      <publishTime>11/23/2017 15:56:33</publishTime>
+      <publishTime>12/14/2017 11:38:54</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Core.pdb">
-      <publishTime>11/28/2017 11:13:10</publishTime>
+      <publishTime>12/14/2017 14:57:07</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Dal.dll">
       <publishTime>02/22/2017 14:16:09</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.dll">
-      <publishTime>11/28/2017 11:13:14</publishTime>
+      <publishTime>12/14/2017 14:57:12</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.dll.config">
-      <publishTime>11/28/2017 11:11:11</publishTime>
+      <publishTime>12/14/2017 11:45:52</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Framework.pdb">
-      <publishTime>11/28/2017 11:13:14</publishTime>
+      <publishTime>12/14/2017 14:57:12</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Web.dll">
-      <publishTime>11/28/2017 11:13:23</publishTime>
+      <publishTime>12/14/2017 14:57:21</publishTime>
     </File>
     <File Include="bin/Hiwjcn.Web.pdb">
-      <publishTime>11/28/2017 11:13:23</publishTime>
+      <publishTime>12/14/2017 14:57:21</publishTime>
     </File>
     <File Include="bin/HtmlAgilityPack.dll">
       <publishTime>07/14/2016 11:01:16</publishTime>
@@ -220,13 +220,13 @@
       <publishTime>10/17/2017 14:46:56</publishTime>
     </File>
     <File Include="bin/Lib.dll">
-      <publishTime>11/28/2017 11:13:08</publishTime>
+      <publishTime>12/14/2017 14:57:05</publishTime>
     </File>
     <File Include="bin/Lib.dll.config">
-      <publishTime>11/23/2017 15:56:31</publishTime>
+      <publishTime>12/14/2017 11:38:52</publishTime>
     </File>
     <File Include="bin/Lib.pdb">
-      <publishTime>11/28/2017 11:13:08</publishTime>
+      <publishTime>12/14/2017 14:57:05</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>03/08/2017 19:26:22</publishTime>
@@ -430,7 +430,7 @@
       <publishTime>11/28/2017 11:11:57</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>11/28/2017 11:13:27</publishTime>
+      <publishTime>12/14/2017 14:57:26</publishTime>
     </File>
     <File Include="Service/AuthApiService.svc">
       <publishTime>09/03/2017 21:25:33</publishTime>
@@ -2170,7 +2170,7 @@
       <publishTime>08/21/2017 14:02:29</publishTime>
     </File>
     <File Include="Views/AuthManage/Statics.cshtml">
-      <publishTime>09/05/2017 10:56:06</publishTime>
+      <publishTime>12/14/2017 14:56:22</publishTime>
     </File>
     <File Include="Views/AuthManage/Tasks.cshtml">
       <publishTime>08/25/2017 10:07:02</publishTime>
@@ -2314,7 +2314,7 @@
       <publishTime>05/24/2016 19:19:40</publishTime>
     </File>
     <File Include="Views/Page/Home.cshtml">
-      <publishTime>03/04/2017 22:59:17</publishTime>
+      <publishTime>12/08/2017 15:34:29</publishTime>
     </File>
     <File Include="Views/Page/News.cshtml">
       <publishTime>03/13/2017 13:24:30</publishTime>
@@ -2410,10 +2410,13 @@
       <publishTime>03/04/2017 17:48:46</publishTime>
     </File>
     <File Include="Views/Shared/map.cshtml">
-      <publishTime>03/04/2017 17:48:46</publishTime>
+      <publishTime>12/08/2017 15:39:45</publishTime>
     </File>
     <File Include="Views/Shared/nav.cshtml">
       <publishTime>08/02/2017 18:28:27</publishTime>
+    </File>
+    <File Include="Views/Shared/pager.cshtml">
+      <publishTime>12/03/2017 22:43:26</publishTime>
     </File>
     <File Include="Views/Shared/seller_menu.cshtml">
       <publishTime>03/05/2017 00:19:27</publishTime>
@@ -2458,7 +2461,7 @@
       <publishTime>04/27/2016 17:26:00</publishTime>
     </File>
     <File Include="Views/SSO/Login.cshtml">
-      <publishTime>10/11/2017 11:11:08</publishTime>
+      <publishTime>12/08/2017 15:35:25</publishTime>
     </File>
     <File Include="Views/SSO/LogOut.cshtml">
       <publishTime>05/13/2016 16:45:50</publishTime>
@@ -2512,7 +2515,7 @@
       <publishTime>07/23/2017 22:06:10</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>11/28/2017 11:13:25</publishTime>
+      <publishTime>12/14/2017 14:57:22</publishTime>
     </File>
   </ItemGroup>
 </Project>

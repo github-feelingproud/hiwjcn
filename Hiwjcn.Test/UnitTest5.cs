@@ -3,8 +3,8 @@ using Lib.extension;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Castle.DynamicProxy;
 using Hiwjcn.Bll;
-using Model.User;
 using Lib.helper;
+using Hiwjcn.Core.Domain.User;
 
 namespace Hiwjcn.Test
 {
@@ -21,7 +21,7 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void CheckModel()
         {
-            var model = new UserModel();
+            var model = new UserEntity();
 
             model.UID = Com.GetUUID();
             model.NickName = "a";

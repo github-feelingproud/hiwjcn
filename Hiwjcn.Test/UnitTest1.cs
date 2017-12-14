@@ -1,33 +1,23 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Lib.helper;
+﻿using Autofac;
 using Lib.core;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using Model.User;
-using Bll;
-using Autofac;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using HtmlAgilityPack;
-using System.Threading.Tasks;
-using Lib.data;
-using MySql.Data.MySqlClient;
-using Hiwjcn.Dal;
+using Lib.distributed.redis;
 using Lib.extension;
-using Newtonsoft.Json;
-using Hiwjcn.Bll;
+using Lib.helper;
 using Lib.rpc;
-using System.ServiceModel;
-using System.Runtime.Serialization;
+using Lib.storage;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using QPL.WebService.Order.Core;
 using QPL.WebService.Order.Core.Models;
-using WebLogic.Model.Page;
-using Lib.distributed;
-using Lib.storage;
-using Lib.distributed.redis;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.Threading;
+using System.Threading.Tasks;
+using Hiwjcn.Core.Domain.User;
 
 namespace QPL.WebService.Order.Core.Models
 {
@@ -125,19 +115,19 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void fsdafasdfasdfasfasdf()
         {
-            var users = new List<UserModel>() { new UserModel() { Money = 2 }, new UserModel() { Money = 1 } };
+            var users = new List<UserEntity>() { new UserEntity() { Money = 2 }, new UserEntity() { Money = 1 } };
             var data = new { x = users.Where(x => x.Money == 2).ToList() };
             users.Where(x => x.Money == 2).ToList().ForEach(x => x.NickName = "12");
 
-            var sections = new List<SectionModel>();
+            var sections = new List<UserEntity>();
 
 
-            var d = users.Where(x => x.Email.Contains("")).Join(sections.Where(x => x.SectionTitle.Length > 0), x => x.UID, x => x.UID, (user, section) => new { });
+            var d = users.Where(x => x.Email.Contains("")).Join(sections.Where(x => x.NickName.Length > 0), x => x.UID, x => x.UID, (user, section) => new { });
 
             d = from user in users
                 join section in sections
 on user.UID equals section.UID
-                where user.Email.Contains("") && section.SectionTitle.Length > 0
+                where user.Email.Contains("") && section.NickName.Length > 0
                 select new { };
         }
 
@@ -278,7 +268,7 @@ on user.UID equals section.UID
         [TestMethod]
         public void kjlkjalkjlkj()
         {
-            var user = new UserModel();
+            var user = new UserEntity();
             var json = user.ToString();
         }
 

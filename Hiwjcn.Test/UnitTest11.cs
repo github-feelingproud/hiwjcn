@@ -52,7 +52,7 @@ namespace Hiwjcn.Test
             System.Diagnostics.Debug.WriteLine("job running");
         }
     }
-    
+
     [TestClass]
     public class UnitTest11
     {
@@ -76,6 +76,18 @@ namespace Hiwjcn.Test
                 con.AddJobFromAssembly(this.GetType().Assembly);
                 con.Start();
             }
+        }
+
+        [TestMethod]
+        public void lkjfsladhfasdkfhkj()
+        {
+            try
+            {
+                var a = typeof(Hiwjcn.Web.Controllers.AccountController).Assembly;
+                var tps = a.GetTypes();
+            }
+            catch (Exception e)
+            { }
         }
 
     }

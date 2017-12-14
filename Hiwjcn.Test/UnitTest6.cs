@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Lib.data;
 using System.Linq.Expressions;
-using Model.User;
+using Hiwjcn.Core.Domain.User;
 using Lib.extension;
 using StackExchange.Redis;
 using System.Linq;
@@ -25,6 +25,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Driver.Linq;
 using Lib.distributed.zookeeper;
+using Hiwjcn.Core.Domain.User;
 
 namespace Hiwjcn.Test
 {
@@ -297,7 +298,7 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void jklajlkjhsfasdfasf()
         {
-            var model = new UserModel() { };
+            var model = new UserEntity() { };
             var sql = model.GetInsertSql();
             sql = model.GetUpdateSql();
 
@@ -435,7 +436,7 @@ namespace Hiwjcn.Test
         {
             try
             {
-                Expression<Func<UserModel, bool>> ex = x => x.NickName == "wj";
+                Expression<Func<UserEntity, bool>> ex = x => x.NickName == "wj";
 
                 var sql = ExpressionToSql.Convert(ex);
             }

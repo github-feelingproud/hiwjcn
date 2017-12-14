@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using Hiwjcn.Core.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Model.User;
-using System.Diagnostics;
-using Lib.extension;
+using Hiwjcn.Core.Domain.User;
 
 namespace Hiwjcn.Test
 {
@@ -22,12 +20,12 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void TestMethod1()
         {
-            Expression<Func<UserModel, bool>> ex = x =>
+            Expression<Func<UserEntity, bool>> ex = x =>
             x.PassWord.Length == 16
             && (x.Email.Contains("gmail.com") || x.Flag > 0)
             && x.NickName == "wj";
 
-            Expression<Func<UserModel, object>> order = x => x.NickName;
+            Expression<Func<UserEntity, object>> order = x => x.NickName;
 
             var m = (System.Linq.Expressions.MemberExpression)order.Body;
 

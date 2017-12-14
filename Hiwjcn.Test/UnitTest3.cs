@@ -1,15 +1,9 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Bll.User;
-using Lib.extension;
-using Lib.infrastructure;
-using Hiwjcn.Core.Infrastructure.User;
-using Model.User;
-using System.Linq;
+﻿using Lib.extension;
 using Lib.helper;
-using Model;
-using Lib.infrastructure.service;
-using Lib.infrastructure.entity;
+using Lib.infrastructure;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
+using Hiwjcn.Core.Domain.User;
 
 namespace Hiwjcn.Test
 {
@@ -26,7 +20,7 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void TestMethod1()
         {
-            var userType = typeof(UserBll);
+            var userType = typeof(UserEntity);
             //false
             var a = userType.IsAssignableTo_(typeof(IServiceBase<>));
             //false
@@ -41,12 +35,12 @@ namespace Hiwjcn.Test
             //{Name = "ServiceBase`1" FullName = "Lib.infrastructure.ServiceBase`1"}
             var f = typeof(ServiceBase<>);
             //{Name = "ServiceBase`1" FullName = "Lib.infrastructure.ServiceBase`1[[Model.User.UserModel, Hiwjcn.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"}
-            var m = typeof(ServiceBase<UserModel>);
+            var m = typeof(ServiceBase<UserEntity>);
 
             //true
-            var g = userType.IsAssignableTo_<IUserService>();
+            var g = userType.IsAssignableTo_<UserEntity>();
             //true
-            var h = userType.IsAssignableTo_(typeof(IUserService));
+            var h = userType.IsAssignableTo_(typeof(UserEntity));
         }
     }
 }
