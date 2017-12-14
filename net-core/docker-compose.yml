@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  hiwjcn.api:
+    image: hiwjcn.api
+    build:
+      context: .
+      dockerfile: Hiwjcn.Api/Dockerfile
