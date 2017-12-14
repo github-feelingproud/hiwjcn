@@ -38,3 +38,4 @@ obj
 bin
 *.nupkg
 *.nupkg
+/Lib.extra/NuGet.exe
