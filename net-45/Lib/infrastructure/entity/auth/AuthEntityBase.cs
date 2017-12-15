@@ -202,5 +202,8 @@ namespace Lib.infrastructure.entity.auth
         [Required]
         [Index]
         public virtual string ProviderKey { get; set; }
+
+        [Required]
+        public virtual string ProviderName { get; set; }
     }
 }
