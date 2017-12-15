@@ -6,6 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ICanPay.Alipay" Version="1.1.7" />
+    <PackageReference Include="ICanPay.Unionpay" Version="1.1.7" />
+    <PackageReference Include="ICanPay.Wechatpay" Version="1.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
   </ItemGroup>
 
