@@ -30,7 +30,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             get
             {
-                return this.TriggerIntervalInSeconds(30);
+                return this.TriggerIntervalInMinutes(3);
             }
         }
 

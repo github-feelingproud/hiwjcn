@@ -23,12 +23,14 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace Hiwjcn.Bll.Auth
 {
     public class QPLUserLoginService : IAuthLoginService
     {
-        private readonly string[] sys_users = new string[] { "13915280232", "18101795560" };
+        private readonly IReadOnlyList<string> sys_users = 
+            (ConfigurationManager.AppSettings["system_user"] ?? string.Empty).Split(',').ToList().AsReadOnly();
 
         private LoginUserInfo Parse(UserInfo model)
         {
