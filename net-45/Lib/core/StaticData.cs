@@ -718,5 +718,313 @@ namespace Lib.core
 
             #endregion
         }
+
+        public static class HeaderNames
+        {
+            public const string Accept = "Accept";
+            public const string IfNoneMatch = "If-None-Match";
+            public const string IfRange = "If-Range";
+            public const string IfUnmodifiedSince = "If-Unmodified-Since";
+            public const string LastModified = "Last-Modified";
+            public const string Location = "Location";
+            public const string MaxForwards = "Max-Forwards";
+            public const string Pragma = "Pragma";
+            public const string ProxyAuthenticate = "Proxy-Authenticate";
+            public const string ProxyAuthorization = "Proxy-Authorization";
+            public const string Range = "Range";
+            public const string IfModifiedSince = "If-Modified-Since";
+            public const string Referer = "Referer";
+            public const string Server = "Server";
+            public const string SetCookie = "Set-Cookie";
+            public const string TE = "TE";
+            public const string Trailer = "Trailer";
+            public const string TransferEncoding = "Transfer-Encoding";
+            public const string Upgrade = "Upgrade";
+            public const string UserAgent = "User-Agent";
+            public const string Vary = "Vary";
+            public const string Via = "Via";
+            public const string Warning = "Warning";
+            public const string RetryAfter = "Retry-After";
+            public const string WebSocketSubProtocols = "Sec-WebSocket-Protocol";
+            public const string IfMatch = "If-Match";
+            public const string From = "From";
+            public const string AcceptCharset = "Accept-Charset";
+            public const string AcceptEncoding = "Accept-Encoding";
+            public const string AcceptLanguage = "Accept-Language";
+            public const string AcceptRanges = "Accept-Ranges";
+            public const string Age = "Age";
+            public const string Allow = "Allow";
+            public const string Authorization = "Authorization";
+            public const string CacheControl = "Cache-Control";
+            public const string Connection = "Connection";
+            public const string ContentDisposition = "Content-Disposition";
+            public const string Host = "Host";
+            public const string ContentEncoding = "Content-Encoding";
+            public const string ContentLength = "Content-Length";
+            public const string ContentLocation = "Content-Location";
+            public const string ContentMD5 = "Content-MD5";
+            public const string ContentRange = "Content-Range";
+            public const string ContentType = "Content-Type";
+            public const string Cookie = "Cookie";
+            public const string Date = "Date";
+            public const string ETag = "ETag";
+            public const string Expires = "Expires";
+            public const string Expect = "Expect";
+            public const string ContentLanguage = "Content-Language";
+            public const string WWWAuthenticate = "WWW-Authenticate";
+        }
+        
+        public static class ClaimTypes
+        {
+            //
+            // 摘要:
+            //     指定授权的实例实体；http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationinstant
+            //     的 URI 声明。
+            public const string AuthenticationInstant = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationinstant";
+            //
+            // 摘要:
+            //     为实体指定拒绝安全标识符 (SID) 要求，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/denyonlysid
+            //     的 URI 声明。deny-only SID 禁止指定的实体访问可保护对象。
+            public const string DenyOnlySid = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/denyonlysid";
+            //
+            // 摘要:
+            //     指定实体的电子邮件地址，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/email 的 URI
+            //     声明。
+            public const string Email = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress";
+            //
+            // 摘要:
+            //     指定实体的性别，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender 的 URI 声明。
+            public const string Gender = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender";
+            //
+            // 摘要:
+            //     指定实体的给定名称，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname 的 URI
+            //     声明。
+            public const string GivenName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
+            //
+            // 摘要:
+            //     指定哈希值，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/system/hash 的 URI
+            //     声明。
+            public const string Hash = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/hash";
+            //
+            // 摘要:
+            //     指定实体的住宅电话号码，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/homephone 的
+            //     URI 声明。
+            public const string HomePhone = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/homephone";
+            //
+            // 摘要:
+            //     指定区域实体驻留，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality 的 URI
+            //     声明。
+            public const string Locality = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality";
+            //
+            // 摘要:
+            //     指定实体的移动电话号码，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone
+            //     的 URI 声明。
+            public const string MobilePhone = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone";
+            //
+            // 摘要:
+            //     指定实体的名称，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name 的 URI 声明。
+            public const string Name = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
+            //
+            // 摘要:
+            //     指定实体的名称，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier
+            //     的 URI 声明。
+            public const string NameIdentifier = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+            //
+            // 摘要:
+            //     指定实体的备用电话号码，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/otherphone
+            //     的 URI 声明。
+            public const string OtherPhone = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/otherphone";
+            //
+            // 摘要:
+            //     指定实体的邮政编码，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/postalcode 的
+            //     URI 声明。
+            public const string PostalCode = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/postalcode";
+            //
+            // 摘要:
+            //     指定 RSA 密钥，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/rsa 的 URI 声明。
+            public const string Rsa = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/rsa";
+            //
+            // 摘要:
+            //     指定安全标识符 （SID），http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid 的URI
+            //     声明。
+            public const string Sid = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid";
+            //
+            // 摘要:
+            //     指定服务主体名称 (SPN) 声明，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/spn 的
+            //     URI 声明。
+            public const string Spn = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/spn";
+            //
+            // 摘要:
+            //     指定省/直辖市/自治区实体驻留，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/stateorprovince
+            //     的 URI 声明。
+            public const string StateOrProvince = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/stateorprovince";
+            //
+            // 摘要:
+            //     指定实体的街道地址，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress
+            //     的 URI 声明。
+            public const string StreetAddress = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress";
+            //
+            // 摘要:
+            //     指定实体的姓氏，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname 的 URI 声明。
+            public const string Surname = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
+            //
+            // 摘要:
+            //     确认系统实体，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/system 的声明 URI。
+            public const string System = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/system";
+            //
+            // 摘要:
+            //     指定指纹，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/thumbprint 的 URI 声明。指纹是
+            //     X.509 证书的全局唯一 SHA-1 哈希。
+            public const string Thumbprint = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/thumbprint";
+            //
+            // 摘要:
+            //     指定用户主体名称 (UPN)，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn 的 URI
+            //     声明。
+            public const string Upn = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn";
+            //
+            // 摘要:
+            //     指定 URI，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/uri 的 URI 声明。
+            public const string Uri = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/uri";
+            //
+            // 摘要:
+            //     指定实体的网页，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/webpage 的 URI 声明。
+            public const string Webpage = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/webpage";
+            //
+            // 摘要:
+            //     获取声明的 URI，该 URI 指定与计算机名称关联的 DNS 名称或者与 X.509 证书的使用者或颁发者的备用名称关联的 DNS 名称，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dns
+            //     。
+            public const string Dns = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dns";
+            //
+            // 摘要:
+            //     指定实体的备用电话号码，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/otherphone
+            //     URI 声明。
+            public const string DateOfBirth = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth";
+            //
+            // 摘要:
+            //     指定对于国家/地区实体驻留，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/authorizationdecision
+            //     的 URI 声明。
+            public const string Country = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/country";
+            //
+            // 摘要:
+            //     指定对于实体的授权决定，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/authorizationdecision
+            //     的 URI 声明。
+            public const string AuthorizationDecision = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/authorizationdecision";
+            //
+            // 摘要:
+            //     指定授权的实体方法；http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod
+            //     的 URI 声明。
+            public const string AuthenticationMethod = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod";
+            //
+            // 摘要:
+            //     指定 cookie 路径；http://schemas.microsoft.com/ws/2008/06/identity/claims/cookiepath
+            //     的 URI 声明。
+            public const string CookiePath = "http://schemas.microsoft.com/ws/2008/06/identity/claims/cookiepath";
+            //
+            // 摘要:
+            //     指定 deny-only 主要 SID 的实体；http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlyprimarysid
+            //     的 URI 声明。deny-only SID 禁止指定的实体访问可保护对象。
+            public const string DenyOnlyPrimarySid = "http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlyprimarysid";
+            //
+            // 摘要:
+            //     指定 deny-only 主要团队 SID 的实体；http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlyprimarygroupsid
+            //     的 URI 声明。deny-only SID 禁止指定的实体访问可保护对象。
+            public const string DenyOnlyPrimaryGroupSid = "http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlyprimarygroupsid";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlywindowsdevicegroup.
+            public const string DenyOnlyWindowsDeviceGroup = "http://schemas.microsoft.com/ws/2008/06/identity/claims/denyonlywindowsdevicegroup";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/dsa。
+            public const string Dsa = "http://schemas.microsoft.com/ws/2008/06/identity/claims/dsa";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/expiration。
+            public const string Expiration = "http://schemas.microsoft.com/ws/2008/06/identity/claims/expiration";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/expired。
+            public const string Expired = "http://schemas.microsoft.com/ws/2008/06/identity/claims/expired";
+            //
+            // 摘要:
+            //     为团队指定 SID 的实体，http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid
+            //     的 URI 声明。
+            public const string GroupSid = "http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/ispersistent。
+            public const string IsPersistent = "http://schemas.microsoft.com/ws/2008/06/identity/claims/ispersistent";
+            //
+            // 摘要:
+            //     指定实体主要团队 SID，http://schemas.microsoft.com/ws/2008/06/identity/claims/primarygroupsid
+            //     的 URI 声明。
+            public const string PrimaryGroupSid = "http://schemas.microsoft.com/ws/2008/06/identity/claims/primarygroupsid";
+            //
+            // 摘要:
+            //     X.509 证书的识别名名称，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/x500distinguishedname
+            //     的 URI 声明。X.500 标准规定了用于定义 X.509 证书所使用的可分辨名称的方法。
+            public const string X500DistinguishedName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/x500distinguishedname";
+            //
+            // 摘要:
+            //     指定实体的主要 SID，http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid
+            //     的 URI 声明。
+            public const string PrimarySid = "http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid";
+            //
+            // 摘要:
+            //     指定序列号，http://schemas.microsoft.com/ws/2008/06/identity/claims/serialnumber 的
+            //     URI 声明。
+            public const string SerialNumber = "http://schemas.microsoft.com/ws/2008/06/identity/claims/serialnumber";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata。
+            public const string UserData = "http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/version。
+            public const string Version = "http://schemas.microsoft.com/ws/2008/06/identity/claims/version";
+            //
+            // 摘要:
+            //     指定 Windows 域帐户名，http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname
+            //     的 URI 声明。
+            public const string WindowsAccountName = "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsdeviceclaim。
+            public const string WindowsDeviceClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsdeviceclaim";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsdevicegroup.
+            public const string WindowsDeviceGroup = "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsdevicegroup";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsuserclaim。
+            public const string WindowsUserClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsuserclaim";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsfqbnversion。
+            public const string WindowsFqbnVersion = "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsfqbnversion";
+            //
+            // 摘要:
+            //     http://schemas.microsoft.com/ws/2008/06/identity/claims/windowssubauthority。
+            public const string WindowsSubAuthority = "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowssubauthority";
+            //
+            // 摘要:
+            //     指定用户主体名称 (UPN)；http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn 的 URI
+            //     声明。
+            public const string Anonymous = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/anonymous";
+            //
+            // 摘要:
+            //     指定特定有关标识是否已授权的细节，http://schemas.xmlsoap.org/ws/2005/05/identity/claims/authenticated
+            //     的 URI 声明。
+            public const string Authentication = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/authentication";
+            //
+            // 摘要:
+            //     指定实体的角色，http://schemas.microsoft.com/ws/2008/06/identity/claims/role 的 URI 声明。
+            public const string Role = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+            //
+            // 摘要:
+            //     http://schemas.xmlsoap.org/ws/2009/09/identity/claims/actor。
+            public const string Actor = "http://schemas.xmlsoap.org/ws/2009/09/identity/claims/actor";
+        }
     }
 }

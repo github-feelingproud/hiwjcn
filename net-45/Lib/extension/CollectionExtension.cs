@@ -18,23 +18,33 @@ namespace Lib.extension
         /// 更新集合，多删少补
         /// </summary>
         public static (IEnumerable<T> WaitForDelete, IEnumerable<T> WaitForAdd) UpdateList<T>(this IEnumerable<T> old_list,
-            IEnumerable<T> new_list, IEqualityComparer<T> comparer = null) =>
-            old_list.UpdateList(new_list, x => x, comparer);
+            IEnumerable<T> new_list, IEqualityComparer<T> comparer = null)
+        {
+            new_list = new_list ?? throw new ArgumentNullException(nameof(new_list));
+
+            var delete_list = old_list.Except_(new_list, comparer).ToList();
+            var create_list = new_list.Except_(old_list, comparer).ToList();
+
+            return (delete_list, create_list);
+        }
 
         /// <summary>
         /// 更新集合，多删少补
         /// </summary>
         public static (IEnumerable<Target> WaitForDelete, IEnumerable<Target> WaitForAdd) UpdateList<T, Target>(this IEnumerable<T> old_list,
+            IEnumerable<T> new_list, Func<T, Target> selector, IEqualityComparer<Target> comparer = null) =>
+            old_list.Select(selector).UpdateList(new_list.Select(selector), comparer);
+
+        /// <summary>
+        /// 更新集合，多删少补
+        /// </summary>
+        public static (IEnumerable<T> WaitForDelete, IEnumerable<T> WaitForAdd) UpdateList_<T, Target>(this IEnumerable<T> old_list,
             IEnumerable<T> new_list, Func<T, Target> selector, IEqualityComparer<Target> comparer = null)
         {
-            new_list = new_list ?? throw new ArgumentNullException(nameof(new_list));
-            selector = selector ?? throw new ArgumentNullException(nameof(selector));
+            var change = old_list.UpdateList(new_list, selector, comparer);
 
-            var old_target = old_list.Select(selector);
-            var new_target = new_list.Select(selector);
-
-            var delete_list = old_target.Except_(new_target, comparer).ToList();
-            var create_list = new_target.Except_(old_target, comparer).ToList();
+            var delete_list = old_list.Where(x => change.WaitForDelete.Contains(selector.Invoke(x))).ToList();
+            var create_list = new_list.Where(x => change.WaitForAdd.Contains(selector.Invoke(x))).ToList();
 
             return (delete_list, create_list);
         }

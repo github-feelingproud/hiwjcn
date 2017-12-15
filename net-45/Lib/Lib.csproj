@@ -291,11 +291,13 @@
     <Compile Include="data\SerializeBase.cs" />
     <Compile Include="infrastructure\entity\CalendarEventTimeEntity.cs" />
     <Compile Include="infrastructure\entity\common\EventLogEntityBase.cs" />
+    <Compile Include="infrastructure\entity\common\SettingEntityBase.cs" />
     <Compile Include="infrastructure\entity\user\OrganizationEntityBase.cs" />
     <Compile Include="infrastructure\entity\PageEntityBase.cs" />
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\helper\UserLoginHelper.cs" />
     <Compile Include="infrastructure\service\common\EventLogServiceBase.cs" />
+    <Compile Include="infrastructure\service\common\SettingServiceBase.cs" />
     <Compile Include="infrastructure\service\organization\OrganizationServiceBase.cs" />
     <Compile Include="infrastructure\service\PageServiceBase.cs" />
     <Compile Include="infrastructure\service\user\UserLoginServiceBase.cs" />

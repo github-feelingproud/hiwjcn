@@ -4,10 +4,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Routing;
 using Lib.core;
+using Lib.extension;
+using Lib.helper;
 
 namespace Lib.mvc.plugin
 {
-    public class PluginRouteConfig
+    public static class PluginRouteConfig
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
@@ -17,12 +19,20 @@ namespace Lib.mvc.plugin
             var ass = AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.IndexOf("Plugin") >= 0).ToList();
             foreach (var a in ass)
             {
-                var r = a.GetTypes().Where(x => x.GetInterfaces().FirstOrDefault() == typeof(IRouteProvider)).FirstOrDefault();
-                if (r != null)
+                var tps = a.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<IRouteProvider>()).ToList();
+                if (!ValidateHelper.IsPlumpList(tps))
                 {
-                    var router = (IRouteProvider)a.CreateInstance(r.FullName);
-                    routelist.Add(router);
+                    continue;
                 }
+                if (tps.Count != 1)
+                {
+                    throw new Exception("每个插件中只能有一个路由配置");
+                }
+
+                var r = tps.FirstOrDefault();
+
+                var router = (IRouteProvider)Activator.CreateInstance(r);
+                routelist.Add(router);
             }
             //按照优先级注册路由
             routelist.OrderByDescending(x => x.Priority).ToList().ForEach(x =>

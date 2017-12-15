@@ -25,6 +25,16 @@ namespace Lib.mvc
         }
     }
 
+    public static class ResultExtension
+    {
+        public static T ThrowIfException<T, ResType>(this T res)
+            where T : ResJson<ResType>
+        {
+            if (res.error) { throw new Exception(res.msg); }
+            return res;
+        }
+    }
+
     /// <summary>
     /// 通用返回错误代码
     /// </summary>

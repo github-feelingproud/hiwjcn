@@ -11,7 +11,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Compilation;
 
-[assembly: PreApplicationStartMethod(typeof(PluginManager), "LoadPlugins")]
+[assembly: PreApplicationStartMethod(typeof(PluginManager), nameof(PluginManager.LoadPlugins))]
 namespace Lib.mvc.plugin
 {
     /// <summary>
@@ -42,21 +42,6 @@ namespace Lib.mvc.plugin
                 var dlls = Directory.GetFiles(PluginDir, "*.dll", SearchOption.AllDirectories).Select(x => new FileInfo(x)).ToList();
                 foreach (var dll in dlls)
                 {
-                    /*
-                    var allass = AppDomain.CurrentDomain.GetAssemblies().Select(x => x.FullName.Split(',').FirstOrDefault()).ToList();
-                    var fileNameWithoutExt = Path.GetFileNameWithoutExtension(dll.FullName);
-
-                    var nextDll = false;
-                    foreach (var a in allass)
-                    {
-                        if (fileNameWithoutExt?.ToLower()?.Trim() == a?.ToLower()?.Trim())
-                        {
-                            nextDll = true;
-                            break;
-                        }
-                    }
-                    if (nextDll) { continue; }
-                    */
                     if (IsAlreadyLoaded(dll)) { continue; }
 
                     var ass = Assembly.LoadFile(dll.FullName);
