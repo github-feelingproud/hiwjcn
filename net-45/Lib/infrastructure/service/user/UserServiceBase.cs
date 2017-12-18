@@ -20,6 +20,8 @@ namespace Lib.infrastructure.service.user
 {
     public interface IUserServiceBase<UserBase, UserAvatarBase>
     {
+        Task<UserBase> GetUserByUID(string uid);
+
         Task<PagerData<UserBase>> QueryUserList(
             string name = null, string email = null, string keyword = null, int page = 1, int pagesize = 20);
 
@@ -148,5 +150,7 @@ namespace Lib.infrastructure.service.user
             throw new Exception("操作失败");
         }
 
+        public async Task<UserBase> GetUserByUID(string uid) =>
+            await this._userRepo.GetFirstAsync(x => x.UID == uid && x.IsRemove <= 0);
     }
 }
