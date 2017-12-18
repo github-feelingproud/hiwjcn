@@ -17,7 +17,7 @@ namespace Lib.extra
     {
         public readonly string AK;
         public readonly string SK;
-        public readonly string bucket;
+        public readonly string Bucket;
         public readonly string BaseUrl;
 
         public QiniuHelper() : this(
@@ -25,42 +25,17 @@ namespace Lib.extra
             ConfigurationManager.AppSettings["QiniuSecretKey"],
             ConfigurationManager.AppSettings["QiniuBucketName"],
             ConfigurationManager.AppSettings["QiniuBaseUrl"])
-        { }
+        {
+            //
+        }
 
         public QiniuHelper(string ak, string sk, string bucket, string base_url)
         {
             this.AK = ak ?? throw new ArgumentNullException(nameof(ak));
             this.SK = sk ?? throw new ArgumentNullException(nameof(sk));
-            this.bucket = bucket ?? throw new ArgumentNullException(nameof(bucket));
-            this.BaseUrl = base_url ?? throw new ArgumentNullException(nameof(base_url));
+            this.Bucket = bucket ?? throw new ArgumentNullException(nameof(bucket));
+            this.BaseUrl = (base_url ?? throw new ArgumentNullException(nameof(base_url))).EnsureTrailingSlash();
         }
-
-        /// <summary>
-        /// 获取七牛的文件
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public StatResult FindEntry(string key)
-        {
-            var mac = new Mac(AK, SK);
-            var bm = new BucketManager(mac);
-            // 返回结果存储在result中
-            var res = bm.Stat(bucket, key).ThrowIfException();
-            return res;
-        }
-
-        /// <summary>
-        /// 删除七牛的文件
-        /// </summary>
-        /// <param name="key"></param>
-        public void Delete(string key)
-        {
-            var mac = new Mac(AK, SK);
-            var bm = new BucketManager(mac);
-            // 返回结果存储在result中
-            var res = bm.Delete(bucket, key).ThrowIfException();
-        }
-
 
         /// <summary>
         /// 创建上传token
@@ -71,14 +46,40 @@ namespace Lib.extra
             // 上传策略
             var putPolicy = new PutPolicy();
             // 设置要上传的目标空间
-            putPolicy.Scope = bucket;
+            putPolicy.Scope = this.Bucket;
             putPolicy.SetExpires(3600);
-            var mac = new Mac(AK, SK);
+            var mac = new Mac(this.AK, this.SK);
             // 生成上传凭证
             var uploadToken = new Qiniu.Util.Auth(mac).CreateUploadToken(putPolicy.ToJsonString());
             return uploadToken;
         }
 
+        /// <summary>
+        /// 获取七牛的文件
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public StatResult FindEntry(string key)
+        {
+            var mac = new Mac(this.AK, this.SK);
+            var bm = new BucketManager(mac);
+            // 返回结果存储在result中
+            var res = bm.Stat(this.Bucket, key).ThrowIfException();
+            return res;
+        }
+
+        /// <summary>
+        /// 删除七牛的文件
+        /// </summary>
+        /// <param name="key"></param>
+        public void Delete(string key)
+        {
+            var mac = new Mac(this.AK, this.SK);
+            var bm = new BucketManager(mac);
+            // 返回结果存储在result中
+            var res = bm.Delete(this.Bucket, key).ThrowIfException();
+        }
+        
         /// <summary>
         /// 上传文件到qiniu，返回访问链接
         /// </summary>
@@ -88,8 +89,8 @@ namespace Lib.extra
         {
             // 开始上传文件
             var um = new UploadManager();
-            var res = um.UploadFile(localFile, saveKey, CreateUploadToken()).ThrowIfException();
-            return GetUrl(saveKey);
+            var res = um.UploadFile(localFile, saveKey, this.CreateUploadToken()).ThrowIfException();
+            return this.GetUrl(saveKey);
         }
 
         /// <summary>
@@ -102,8 +103,8 @@ namespace Lib.extra
         {
             // 开始上传文件
             var um = new UploadManager();
-            var res = um.UploadData(bs, saveKey, CreateUploadToken()).ThrowIfException();
-            return GetUrl(saveKey);
+            var res = um.UploadData(bs, saveKey, this.CreateUploadToken()).ThrowIfException();
+            return this.GetUrl(saveKey);
         }
 
         /// <summary>
@@ -111,10 +112,7 @@ namespace Lib.extra
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string GetUrl(string key)
-        {
-            return BaseUrl + key;
-        }
+        public string GetUrl(string key) => $"{BaseUrl}{key}";
 
     }
 
