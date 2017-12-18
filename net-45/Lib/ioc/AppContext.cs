@@ -24,9 +24,16 @@ namespace Lib.ioc
     /// </summary>
     public class IocContext : IDisposable
     {
-        //public static readonly IocContext ioc = new IocContext();
+        /// <summary>
+        /// 默认实例
+        /// </summary>
+        public static readonly IocContext Instance = new IocContext();
 
         private readonly Lazy_<IContainer> _lazy;
+
+        /// <summary>
+        /// 创建之前调用
+        /// </summary>
         public event RefAction<ContainerBuilder> OnContainerBuilding;
 
         /// <summary>
@@ -169,7 +176,7 @@ namespace Lib.ioc
     [Obsolete("使用" + nameof(IocContext))]
     public static class AppContext
     {
-        private static readonly IocContext ioc = new IocContext();
+        private static readonly IocContext ioc = IocContext.Instance;
 
         /// <summary>
         /// 添加额外的注册（这个操作要尽量早执行）
