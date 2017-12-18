@@ -13,6 +13,10 @@ using System.Threading;
 
 namespace Lib.distributed.akka
 {
+    /// <summary>
+    /// akka系统管理
+    /// 邮箱里搜索akka
+    /// </summary>
     public class AkkaSystemManager : StaticClientManager<ActorSystem>
     {
         public static readonly AkkaSystemManager Instance = new AkkaSystemManager();
@@ -35,6 +39,10 @@ namespace Lib.distributed.akka
         }
     }
 
+    /// <summary>
+    /// akka actor管理
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ActorsManager<T> : StaticClientManager<IActorRef> where T : ActorBase, new()
     {
         public static readonly ActorsManager<T> Instance = new ActorsManager<T>();
