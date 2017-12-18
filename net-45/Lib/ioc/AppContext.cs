@@ -22,68 +22,75 @@ namespace Lib.ioc
     /// https://autofac.org/
     /// http://autofac.readthedocs.io/en/latest/getting-started/index.html
     /// </summary>
-    public static class AppContext
+    public class IocContext : IDisposable
     {
+        //public static readonly IocContext ioc = new IocContext();
+
+        private readonly Lazy_<IContainer> _lazy;
+        public event RefAction<ContainerBuilder> OnContainerBuilding;
+
         /// <summary>
         /// 再更高层添加数据
         /// </summary>
-        private static readonly List<IDependencyRegistrar> ExtraRegistrars = new List<IDependencyRegistrar>();
+        private readonly List<IDependencyRegistrar> ExtraRegistrars = new List<IDependencyRegistrar>();
+
+        public IocContext()
+        {
+            this._lazy = new Lazy_<IContainer>(() =>
+            {
+                //创建builder
+                var builder = new ContainerBuilder();
+                //注册依赖
+                new BaseDependencyRegistrar().Register(ref builder);
+                //注册额外依赖
+                if (ValidateHelper.IsPlumpList(this.ExtraRegistrars))
+                {
+                    foreach (var reg in this.ExtraRegistrars)
+                    {
+                        reg.Register(ref builder);
+                        reg.Clean();
+                    }
+                }
+
+                //额外的切入点
+                this.OnContainerBuilding?.Invoke(ref builder);
+
+                //创建容器
+                var context = builder.Build();
+
+                return context;
+            }).WhenDispose((ref IContainer x) => x.Dispose());
+        }
 
         /// <summary>
         /// 添加额外的注册（这个操作要尽量早执行）
         /// </summary>
         /// <param name="reg"></param>
-        public static void AddExtraRegistrar(IDependencyRegistrar reg)
+        public IocContext AddExtraRegistrar(IDependencyRegistrar reg)
         {
-            if (_lazy.IsValueCreated)
+            if (this._lazy.IsValueCreated)
             {
                 throw new Exception("依赖注入容器已经生成，请在生成前注册额外依赖");
             }
-            ExtraRegistrars.Add(reg);
+            this.ExtraRegistrars.Add(reg);
+            return this;
         }
-
-        private static readonly Lazy_<IContainer> _lazy = new Lazy_<IContainer>(() =>
-        {
-            //创建builder
-            var builder = new ContainerBuilder();
-            //注册依赖
-            new BaseDependencyRegistrar().Register(ref builder);
-            //注册额外依赖
-            if (ValidateHelper.IsPlumpList(ExtraRegistrars))
-            {
-                foreach (var reg in ExtraRegistrars)
-                {
-                    reg.Register(ref builder);
-                    reg.Clean();
-                }
-            }
-
-            //额外的切入点
-            OnContainerBuilding?.Invoke(ref builder);
-
-            //创建容器
-            var context = builder.Build();
-
-            return context;
-        }).WhenDispose((ref IContainer x) => x.Dispose());
 
         /// <summary>
         /// 销毁容器
         /// </summary>
-        public static void Dispose()
+        public void Dispose()
         {
-            _lazy.Dispose();
+            this._lazy.Dispose();
         }
-
-        public static RefAction<ContainerBuilder> OnContainerBuilding { get; set; }
 
         /// <summary>
         /// 获取ioc容器，第一次访问将创建容器
         /// </summary>
         /// <returns></returns>
-        public static IContainer Container
+        public IContainer Container
         {
-            get => _lazy.Value;
+            get => this._lazy.Value;
         }
 
         /// <summary>
@@ -91,7 +98,7 @@ namespace Lib.ioc
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static bool IsRegistered<T>() => Container.IsRegistered<T>();
+        public bool IsRegistered<T>() => this.Container.IsRegistered<T>();
 
         /// <summary>
         /// 是否在容器中注册
@@ -99,7 +106,7 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static bool IsRegisteredWithName<T>(string name) => Container.IsRegisteredWithName<T>(name);
+        public bool IsRegisteredWithName<T>(string name) => this.Container.IsRegisteredWithName<T>(name);
 
         /// <summary>
         /// 是否在容器中注册
@@ -107,7 +114,7 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static bool IsRegistered<T>(string name)
+        public bool IsRegistered<T>(string name)
         {
             if (ValidateHelper.IsPlumpString(name))
             {
@@ -118,6 +125,100 @@ namespace Lib.ioc
                 return IsRegistered<T>();
             }
         }
+
+        /// <summary>
+        /// 创建一个作用域
+        /// </summary>
+        /// <returns></returns>
+        public ILifetimeScope Scope() => this.Container.BeginLifetimeScope();
+
+        /// <summary>
+        /// 生命周期
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public T Scope<T>(Func<ILifetimeScope, T> func)
+        {
+            using (var scope = Scope())
+            {
+                return func.Invoke(scope);
+            }
+        }
+
+        /// <summary>
+        /// 生命周期
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public async Task<T> ScopeAsync<T>(Func<ILifetimeScope, Task<T>> func)
+        {
+            using (var scope = Scope())
+            {
+                return await func.Invoke(scope);
+            }
+        }
+    }
+
+    /// <summary>
+    /// IOC容器
+    /// https://autofac.org/
+    /// http://autofac.readthedocs.io/en/latest/getting-started/index.html
+    /// </summary>
+    [Obsolete("使用" + nameof(IocContext))]
+    public static class AppContext
+    {
+        private static readonly IocContext ioc = new IocContext();
+
+        /// <summary>
+        /// 添加额外的注册（这个操作要尽量早执行）
+        /// </summary>
+        /// <param name="reg"></param>
+        public static void AddExtraRegistrar(IDependencyRegistrar reg) => ioc.AddExtraRegistrar(reg);
+
+        /// <summary>
+        /// 销毁容器
+        /// </summary>
+        public static void Dispose() => ioc.Dispose();
+
+        public static RefAction<ContainerBuilder> OnContainerBuilding
+        {
+            set
+            {
+                ioc.OnContainerBuilding += value;
+            }
+        }
+
+        /// <summary>
+        /// 获取ioc容器，第一次访问将创建容器
+        /// </summary>
+        /// <returns></returns>
+        public static IContainer Container => ioc.Container;
+
+        /// <summary>
+        /// 是否在容器中注册
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool IsRegistered<T>() => ioc.IsRegistered<T>();
+
+        /// <summary>
+        /// 是否在容器中注册
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool IsRegisteredWithName<T>(string name) => ioc.IsRegisteredWithName<T>(name);
+
+        /// <summary>
+        /// 是否在容器中注册
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool IsRegistered<T>(string name) => ioc.IsRegistered<T>(name);
+
         /// <summary>
         /// 获取对象实例
         /// </summary>
@@ -152,7 +253,7 @@ namespace Lib.ioc
         /// 创建一个作用域
         /// </summary>
         /// <returns></returns>
-        public static ILifetimeScope Scope() => Container.BeginLifetimeScope();
+        public static ILifetimeScope Scope() => ioc.Scope();
 
         /// <summary>
         /// 生命周期
@@ -160,32 +261,7 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static T Scope<T>(Func<ILifetimeScope, T> func)
-        {
-            var catch_exception_and_create_scope = true;
-            try
-            {
-                //尝试使用httpscope
-                var context = HttpContext.Current;
-                if (context != null)
-                {
-                    var s = context.GetAutofacScope();
-                    //已经成功创建scope，没有必要继续尝试创建
-                    catch_exception_and_create_scope = false;
-                    return func.Invoke(s);
-                }
-            }
-            catch when (catch_exception_and_create_scope)
-            {
-                //do nothing
-            }
-
-            //httpcontext中没有scope，创建一次性scope
-            using (var scope = Scope())
-            {
-                return func.Invoke(scope);
-            }
-        }
+        public static T Scope<T>(Func<ILifetimeScope, T> func) => ioc.Scope(func);
 
         /// <summary>
         /// 生命周期
@@ -193,32 +269,7 @@ namespace Lib.ioc
         /// <typeparam name="T"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static async Task<T> ScopeAsync<T>(Func<ILifetimeScope, Task<T>> func)
-        {
-            var catch_exception_and_create_scope = true;
-            try
-            {
-                //尝试使用httpscope
-                var context = HttpContext.Current;
-                if (context != null)
-                {
-                    var s = context.GetAutofacScope();
-                    //已经成功创建scope，没有必要继续尝试创建
-                    catch_exception_and_create_scope = false;
-                    return await func.Invoke(s);
-                }
-            }
-            catch when (catch_exception_and_create_scope)
-            {
-                //do nothing
-            }
-
-            //httpcontext中没有scope，创建一次性scope
-            using (var scope = Scope())
-            {
-                return await func.Invoke(scope);
-            }
-        }
+        public static async Task<T> ScopeAsync<T>(Func<ILifetimeScope, Task<T>> func) => await ioc.ScopeAsync(func);
     }
 
     public class RequestScopeModule : IHttpModule
