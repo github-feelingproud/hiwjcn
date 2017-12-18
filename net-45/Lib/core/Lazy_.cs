@@ -11,7 +11,8 @@ namespace Lib.core
         private readonly object _lock = new object();
         private readonly Func<T> _creator;
 
-        private RefAction<T> _disposer;
+        private RefAction<T> _when_created;
+        private RefAction<T> _when_disposed;
         private T _value;
         private bool _created = false;
 
@@ -23,9 +24,15 @@ namespace Lib.core
             this._created = false;
         }
 
-        public Lazy_<T> WhenDispose(RefAction<T> _disposer)
+        public Lazy_<T> WhenCreated(RefAction<T> _when_created)
         {
-            this._disposer = _disposer ?? throw new ArgumentNullException(nameof(_disposer));
+            this._when_created = _when_created ?? throw new ArgumentNullException(nameof(_when_created));
+            return this;
+        }
+
+        public Lazy_<T> WhenDispose(RefAction<T> _when_disposed)
+        {
+            this._when_disposed = _when_disposed ?? throw new ArgumentNullException(nameof(_when_disposed));
             return this;
         }
 
@@ -41,6 +48,8 @@ namespace Lib.core
                         {
                             this._value = this._creator.Invoke();
                             this._created = true;
+                            //创建时调用
+                            this._when_created?.Invoke(ref this._value);
                         }
                     }
                 }
@@ -53,7 +62,8 @@ namespace Lib.core
         {
             if (this.IsValueCreated)
             {
-                this._disposer?.Invoke(ref this._value);
+                //销毁时调用
+                this._when_disposed?.Invoke(ref this._value);
             }
             this._value = default(T);
             this._created = false;
