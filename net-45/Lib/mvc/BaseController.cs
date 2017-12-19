@@ -94,18 +94,24 @@ namespace Lib.mvc
         /// <summary>
         /// 判断是否成功
         /// </summary>
-        /// <param name="msg"></param>
-        /// <returns></returns>
         [NonAction]
-        public bool IsSuccess(string msg) => !ValidateHelper.IsPlumpString(msg);
+        public bool IsSuccess(string msg) => !ValidateHelper.IsPlumpStringAfterTrim(msg);
 
         /// <summary>
         /// 获取默认的json
         /// </summary>
         [NonAction]
-        public ActionResult GetJsonRes(string errmsg, string code = default(string))
+        public ActionResult GetJsonRes(string errmsg = null,
+            string code = default(string),
+            object data = null)
         {
-            return GetJson(new _() { success = IsSuccess(errmsg), msg = errmsg, code = code });
+            return GetJson(new _()
+            {
+                success = IsSuccess(errmsg),
+                msg = errmsg,
+                code = code,
+                data = data
+            });
         }
 
         /// <summary>
