@@ -113,6 +113,19 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 空集合就抛异常
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> list, string msg = null)
+        {
+            if (!list.Any()) { throw new Exception(msg ?? "不允许的空集合"); }
+            return list;
+        }
+
+        /// <summary>
         /// 拼接item.tostring()
         /// </summary>
         public static string AsString<T>(this IEnumerable<T> list) =>
