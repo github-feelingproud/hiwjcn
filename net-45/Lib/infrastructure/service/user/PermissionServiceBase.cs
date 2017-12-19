@@ -43,7 +43,7 @@ namespace Lib.infrastructure.service.user
             await this._permissionRepo.AddTreeNode(model, "per");
 
         public virtual async Task<_<string>> DeletePermissionWhenNoChildren(string permission_uid) =>
-            await this._permissionRepo.DeleteSingleNodeWhenNoChildren(permission_uid);
+            await this._permissionRepo.DeleteSingleNodeWhenNoChildren_(permission_uid);
 
         public virtual async Task<List<PermissionBase>> QueryPermissionList(string parent = null) =>
             await this._permissionRepo.QueryNodeList(parent);

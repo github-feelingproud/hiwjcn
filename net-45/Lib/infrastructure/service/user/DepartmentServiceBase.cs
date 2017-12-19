@@ -24,6 +24,8 @@ namespace Lib.infrastructure.service.user
 
         Task<_<string>> DeleteDepartmentRecursively(string department_uid);
 
+        Task<_<string>> DeleteDepartmentWhenNoChildren(string uid);
+
         Task<_<string>> AddDepartment(DepartmentBase model);
 
         Task<_<string>> UpdateDepartment(DepartmentBase model);
@@ -157,5 +159,8 @@ namespace Lib.infrastructure.service.user
             data.SetSuccessData(string.Empty);
             return data;
         }
+
+        public virtual async Task<_<string>> DeleteDepartmentWhenNoChildren(string uid) =>
+            await this._departmentRepo.DeleteSingleNodeWhenNoChildren_(uid);
     }
 }

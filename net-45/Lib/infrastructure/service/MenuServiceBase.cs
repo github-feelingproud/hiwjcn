@@ -23,6 +23,8 @@ namespace Lib.infrastructure.service
 
         Task<_<string>> DeleteMenus(params string[] menu_uids);
 
+        Task<_<string>> DeleteMenuWhenNoChildren(string uid);
+
         Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null);
 
         Task<_<string>> UpdateMenu(MenuBase model);
@@ -171,5 +173,7 @@ namespace Lib.infrastructure.service
             return data;
         }
 
+        public async Task<_<string>> DeleteMenuWhenNoChildren(string uid) =>
+            await this._menuRepo.DeleteSingleNodeWhenNoChildren_(uid);
     }
 }

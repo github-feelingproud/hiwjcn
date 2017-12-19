@@ -146,11 +146,15 @@ namespace Lib.infrastructure.extension
             throw new Exception("添加菜单失败");
         }
 
-        public static async Task<List<T>> QueryNodeList<T>(this ILinqRepository<T> repo, string parent = null, int max = 5000)
+        public static async Task<List<T>> QueryNodeList<T>(this ILinqRepository<T> repo, string parent = null, string group = null, int max = 5000)
             where T : TreeEntityBase
         {
             return await repo.PrepareIQueryableAsync_(async query =>
             {
+                if (ValidateHelper.IsPlumpString(group))
+                {
+                    query = query.Where(x => x.GroupKey == group);
+                }
                 if (ValidateHelper.IsPlumpString(parent))
                 {
                     query = query.Where(x => x.ParentUID == parent);
@@ -177,7 +181,7 @@ namespace Lib.infrastructure.extension
             throw new Exception("删除节点错误");
         }
 
-        public static async Task<_<string>> DeleteSingleNodeWhenNoChildren<T>(this IRepository<T> repo, string node_uid)
+        public static async Task<_<string>> DeleteSingleNodeWhenNoChildren_<T>(this IRepository<T> repo, string node_uid)
             where T : TreeEntityBase
         {
             var data = new _<string>();

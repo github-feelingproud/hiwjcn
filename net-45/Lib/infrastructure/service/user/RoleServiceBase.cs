@@ -28,6 +28,8 @@ namespace Lib.infrastructure.service.user
 
         Task<_<string>> DeleteRole(params string[] role_uids);
 
+        Task<_<string>> DeleteRoleWhenNoChildren(string uid);
+
         Task<_<string>> UpdateRole(RoleBase model);
 
         Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles);
@@ -170,6 +172,8 @@ namespace Lib.infrastructure.service.user
             data.SetSuccessData(string.Empty);
             return data;
         }
-        
+
+        public async Task<_<string>> DeleteRoleWhenNoChildren(string uid) =>
+            await this._roleRepo.DeleteSingleNodeWhenNoChildren_(uid);
     }
 }

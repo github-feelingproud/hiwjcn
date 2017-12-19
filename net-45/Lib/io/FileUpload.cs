@@ -146,9 +146,9 @@ namespace Lib.io
         /// <returns>返回上传后的文件信息</returns>
         public List<UpLoadFileResult> UploadAllFile(HttpFileCollection http_files, string save_path)
         {
-            if (http_files == null || http_files.Count == 0) { return null; }
-
             var filelist = new List<UpLoadFileResult>();
+
+            if (http_files == null || http_files.Count == 0) { return filelist; }
 
             for (int i = 0; i < http_files.Count; ++i)
             {
