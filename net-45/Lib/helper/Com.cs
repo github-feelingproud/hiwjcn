@@ -646,19 +646,12 @@ namespace Lib.helper
         /// <returns></returns>
         public static List<T> GetInterSectionFromAny<T>(params List<T>[] lists)
         {
-            if (!ValidateHelper.IsPlumpList(lists) || lists.Length < 2) { return new List<T>(); }
-            var interSection = GetInterSection(lists[0], lists[1]);
-            //原来这里i从3开始
-            for (int i = 2; i < lists.Length; ++i)
+            if (!ValidateHelper.IsPlumpList(lists) || lists.Count() < 2)
             {
-                //发现有非交集的就中断
-                if (!ValidateHelper.IsPlumpList(interSection = GetInterSection(interSection, lists[i])))
-                {
-                    //原来这里如果没有找到焦急就break，最终返回一个空的list（interSection），现在直接返回
-                    return new List<T>();
-                }
+                throw new Exception("至少两个集合才能获取交集");
             }
-            return interSection;
+
+            return lists.Reduce((x, y) => Com.GetInterSection(x, y));
         }
 
         /// <summary>
@@ -764,7 +757,7 @@ namespace Lib.helper
         /// <summary>
         /// 字典变url格式(a=1&b=3)
         /// </summary>
-        public static string DictToUrlParams(Dictionary<string, string> data)
+        public static string DictToUrlParams(IDictionary<string, string> data)
         {
             if (!ValidateHelper.IsPlumpDict(data)) { return string.Empty; }
             var arr = data.Keys.Select(x => $"{x}={ConvertHelper.GetString(data[x])}");

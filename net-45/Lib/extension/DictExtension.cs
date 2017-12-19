@@ -14,11 +14,9 @@ namespace Lib.extension
         /// <summary>
         /// 字典变url格式(a=1&b=3)
         /// </summary>
-        /// <param name="dict"></param>
-        /// <returns></returns>
         public static string ToUrlParam(this IDictionary<string, string> dict)
         {
-            return Com.DictToUrlParams(dict.ToDictionary(x => x.Key, x => x.Value));
+            return Com.DictToUrlParams(dict);
         }
 
         /// <summary>

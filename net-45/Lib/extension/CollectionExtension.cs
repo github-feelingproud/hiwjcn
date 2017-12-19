@@ -11,6 +11,9 @@ namespace Lib.extension
 {
     public static class CollectionExtension
     {
+        /// <summary>
+        /// 排除空字符串并去重
+        /// </summary>
         public static IEnumerable<string> NotEmptyAndDistinct<T>(this IEnumerable<T> list, Func<T, string> target) =>
                 list.Select(x => target.Invoke(x)).Where(x => ValidateHelper.IsPlumpString(x)).Distinct();
 
@@ -313,7 +316,7 @@ namespace Lib.extension
         }
 
         /// <summary>
-        /// 执行Reduce（逻辑和python一样）
+        /// 执行Reduce（逻辑和python一样），至少2个item
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
@@ -321,11 +324,7 @@ namespace Lib.extension
         /// <returns></returns>
         public static T Reduce<T>(this IList<T> list, Func<T, T, T> func)
         {
-            if (!ValidateHelper.IsPlumpList(list))
-            {
-                throw new Exception($"空list无法执行{nameof(Reduce)}操作");
-            }
-            if (list.Count < 2)
+            if (!ValidateHelper.IsPlumpList(list) || list.Count < 2)
             {
                 throw new Exception($"item少于2的list无法执行{nameof(Reduce)}操作");
             }
