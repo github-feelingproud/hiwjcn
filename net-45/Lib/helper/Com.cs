@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using Lib.extension;
 
 namespace Lib.helper
 {
@@ -630,10 +631,11 @@ namespace Lib.helper
         /// <summary>
         /// 获取交集(不返回null)
         /// </summary>
-        public static List<T> GetInterSection<T>(IEnumerable<T> a, IEnumerable<T> b)
+        public static List<T> GetInterSection<T>(IEnumerable<T> a, IEnumerable<T> b, IEqualityComparer<T> comparer = null)
         {
             if (!ValidateHelper.IsPlumpList(a) || !ValidateHelper.IsPlumpList(b)) { return new List<T>(); }
-            return a.Where(x => b.Contains(x)).ToList();
+
+            return a.Where(x => b.ContainsItem_(x, comparer)).ToList();
         }
 
         /// <summary>

@@ -76,10 +76,55 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 包含
+        /// </summary>
+        public static bool ContainsItem_<T>(this IEnumerable<T> list, T data, IEqualityComparer<T> comparer = null)
+        {
+            if (list == null) { throw new ArgumentNullException(nameof(list)); }
+
+            return comparer == null ?
+                list.Contains(data) :
+                list.Contains(data, comparer);
+        }
+
+        /// <summary>
+        /// 全部包含
+        /// </summary>
+        public static bool ContainsMany_<T>(this IEnumerable<T> list, IEnumerable<T> data,
+            IEqualityComparer<T> comparer = null) =>
+            (data ?? throw new ArgumentNullException(nameof(data))).All(x => list.ContainsItem_(x, comparer));
+
+        /// <summary>
+        /// 是否在集合中
+        /// </summary>
+        [Obsolete("不推荐使用")]
+        public static bool In<T>(this T data, IEnumerable<T> list, IEqualityComparer<T> comparer = null)
+        {
+            if (list == null) { throw new ArgumentNullException(nameof(list)); }
+
+            return list.ContainsItem_(data, comparer);
+        }
+
+        /// <summary>
         /// 获取两个集合的交集
         /// </summary>
-        public static List<T> GetInterSection<T>(this IEnumerable<T> list, IEnumerable<T> data) =>
-            Com.GetInterSection(list, data);
+        public static List<T> GetInterSection<T>(this IEnumerable<T> list, IEnumerable<T> data,
+            IEqualityComparer<T> comparer = null) =>
+            Com.GetInterSection(list, data, comparer);
+
+        /// <summary>
+        /// 有交集
+        /// </summary>
+        public static bool AnyEqual<T>(this IEnumerable<T> list, IEnumerable<T> data,
+            IEqualityComparer<T> comparer = null) =>
+            list.GetInterSection(data, comparer).Count() > 0;
+
+        /// <summary>
+        /// 有相同的item
+        /// </summary>
+        public static bool AllEqual<T>(this IEnumerable<T> list, IEnumerable<T> data,
+            IEqualityComparer<T> comparer = null) =>
+            list.Count() == data.Count() && list.ContainsMany_(data, comparer);
 
         /// <summary>
         /// 除了（排除）
@@ -90,14 +135,8 @@ namespace Lib.extension
             //list.Except(data, comparer);
 
             data = data ?? new List<T>() { };
-            if (comparer != null)
-            {
-                return list.Where(x => !data.Contains(x, comparer));
-            }
-            else
-            {
-                return list.Where(x => !data.Contains(x));
-            }
+
+            return list.Where(x => !data.ContainsItem_(x, comparer));
         }
 
         /// <summary>
