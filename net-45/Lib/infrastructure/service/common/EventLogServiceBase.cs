@@ -23,6 +23,9 @@ namespace Lib.infrastructure.service.common
         void AddLog(LogBase model);
 
         void ClearOldLogs(DateTime before);
+
+        Task<PagerData<LogBase>> QueryPager(string q = null,
+             DateTime? start = null, DateTime? end = null, int page = 1, int pagesize = 10);
     }
 
     public abstract class EventLogServiceBase<LogBase> :
@@ -45,5 +48,28 @@ namespace Lib.infrastructure.service.common
         }
 
         public virtual void ClearOldLogs(DateTime before) => this._logRepo.DeleteWhere(x => x.CreateTime < before);
+
+        public async Task<PagerData<LogBase>> QueryPager(string q = null,
+            DateTime? start = null, DateTime? end = null, int page = 1, int pagesize = 10)
+        {
+            return await this._logRepo.PrepareIQueryableAsync_(async query =>
+            {
+                if (start != null)
+                {
+                    query = query.Where(x => x.CreateTime >= start.Value);
+                }
+                if (end != null)
+                {
+                    end = end.Value.Date.AddDays(1);
+                    query = query.Where(x => x.CreateTime < end.Value);
+                }
+                if (ValidateHelper.IsPlumpString(q))
+                {
+                    query = query.Where(x => x.Summary.Contains(q));
+                }
+
+                return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
+            });
+        }
     }
 }
