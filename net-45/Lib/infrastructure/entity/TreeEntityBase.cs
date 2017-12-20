@@ -32,5 +32,11 @@ namespace Lib.infrastructure.entity
         [Required]
         [StringLength(100, ErrorMessage = "分组长度错误")]
         public virtual string GroupKey { get; set; } = DEFAULT_GROUP;
+
+        public virtual void AsFirstLevel()
+        {
+            this.ParentUID = FIRST_PARENT_UID;
+            this.Level = FIRST_LEVEL;
+        }
     }
 }
