@@ -52,9 +52,7 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<PagerData<UserBase>> QueryUserList(
             string name = null, string email = null, string keyword = null, int page = 1, int pagesize = 20)
         {
-            var data = new PagerData<UserBase>();
-
-            await this._userRepo.PrepareIQueryableAsync(async query =>
+            return await this._userRepo.PrepareIQueryableAsync_(async query =>
             {
                 if (ValidateHelper.IsPlumpString(name))
                 {
@@ -72,11 +70,8 @@ namespace Lib.infrastructure.service.user
                     || x.Email.Contains(keyword));
                 }
 
-                data.ItemCount = await query.CountAsync();
-                data.DataList = await query.OrderByDescending(x => x.UpdateTime).QueryPage(page, pagesize).ToListAsync();
+                return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
             });
-
-            return data;
         }
 
         public virtual async Task<_<string>> AddUser(UserBase model)

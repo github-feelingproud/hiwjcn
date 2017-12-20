@@ -90,16 +90,12 @@ namespace Lib.infrastructure.service.organization
         {
             return await this._orgRepo.PrepareIQueryableAsync_(async query =>
             {
-                var data = new PagerData<OrgBase>();
-
                 if (ValidateHelper.IsPlumpString(q))
                 {
                     query = query.Where(x => x.OrgName.StartsWith(q));
                 }
 
-                data.ItemCount = await query.CountAsync();
-                data.DataList = await query.OrderByDescending(x => x.CreateTime).QueryPage(page, pagesize).ToListAsync();
-                return data;
+                return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
             });
         }
 
