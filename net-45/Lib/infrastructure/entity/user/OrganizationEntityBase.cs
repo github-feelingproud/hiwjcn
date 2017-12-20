@@ -50,7 +50,20 @@ namespace Lib.infrastructure.entity.user
         [Required]
         public virtual string UserUID { get; set; }
 
+        /// <summary>
+        /// 权限/角色
+        /// </summary>
         public virtual int Flag { get; set; }
+        
+        /// <summary>
+        /// 会员同意
+        /// </summary>
+        public virtual int MemberApproved { get; set; }
+
+        /// <summary>
+        /// 组织同意
+        /// </summary>
+        public virtual int OrgApproved { get; set; }
     }
 
 }

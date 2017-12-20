@@ -29,8 +29,9 @@ namespace Hiwjcn.Bll.Auth
 {
     public class QPLUserLoginService : IAuthLoginService
     {
-        private readonly IReadOnlyList<string> sys_users = 
+        private readonly IReadOnlyList<string> sys_users =
             (ConfigurationManager.AppSettings["system_user"] ?? string.Empty).Split(',').ToList().AsReadOnly();
+        private readonly string default_pass = ConfigurationManager.AppSettings["system_user_pass"] ?? "135790";
 
         private LoginUserInfo Parse(UserInfo model)
         {
@@ -162,7 +163,7 @@ namespace Hiwjcn.Bll.Auth
                 var sms = await db.Sms
                     .Where(x => x.Recipient == phoneOrEmail && x.CreatedDate >= time)
                     .OrderByDescending(x => x.CreatedDate).Take(1).FirstOrDefaultAsync();
-                if (!((sms != null && sms.MsgCode == code) || (sys_users.Contains(phoneOrEmail) && code == "0000")))
+                if (!((sms != null && sms.MsgCode == code) || (sys_users.Contains(phoneOrEmail) && code == this.default_pass)))
                 {
                     data.SetErrorMsg("验证码错误");
                     return data;
