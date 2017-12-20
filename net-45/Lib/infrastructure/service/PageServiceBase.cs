@@ -177,15 +177,12 @@ namespace Lib.infrastructure.service
         {
             return await this._pageRepo.PrepareIQueryableAsync_(async query =>
             {
-                var data = new PagerData<PageBase>();
                 var now = DateTime.Now;
 
                 query = query.Where(x => x.IsRemove > 0);
                 query = query.Where(x => x.UserUID == user_uid);
 
-                data.ItemCount = await query.CountAsync();
-                data.DataList = await query.OrderByDescending(x => x.CreateTime).QueryPage(page, pagesize).ToListAsync();
-                return data;
+                return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
             });
         }
 
@@ -195,7 +192,6 @@ namespace Lib.infrastructure.service
         {
             return await this._pageRepo.PrepareIQueryableAsync_(async query =>
             {
-                var data = new PagerData<PageBase>();
                 var now = DateTime.Now;
 
                 query = query.Where(x => x.IsRemove <= 0);
@@ -210,9 +206,7 @@ namespace Lib.infrastructure.service
                     query = query.Where(x => x.UserUID == user_uid);
                 }
 
-                data.ItemCount = await query.CountAsync();
-                data.DataList = await query.OrderByDescending(x => x.CreateTime).QueryPage(page, pagesize).ToListAsync();
-                return data;
+                return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
             });
         }
 

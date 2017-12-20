@@ -71,45 +71,10 @@ namespace Lib.extension
             }
             return query;
         }
-
-        /// <summary>
-        /// 自动分页
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="page"></param>
-        /// <param name="pagesize"></param>
-        /// <returns></returns>
-        public static (List<T> list, int rowcount, int pagecount) ToPagedList<T>(this IOrderedQueryable<T> query, int page, int pagesize)
-        {
-            var count = query.QueryRowCountAndPageCount(pagesize);
-            var list = query.QueryPage(page, pagesize).ToList();
-            return (list, count.item_count, count.page_count);
-        }
-
-        /// <summary>
-        /// 自动分页
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="page"></param>
-        /// <param name="pagesize"></param>
-        /// <returns></returns>
-        public static async Task<(List<T> list, int rowcount, int pagecount)> ToPagedListAsync<T>(this IOrderedQueryable<T> query, int page, int pagesize)
-        {
-            var count = await query.QueryRowCountAndPageCountAsync(pagesize);
-            var list = await query.QueryPage(page, pagesize).ToListAsync();
-            return (list, count.item_count, count.page_count);
-        }
-
+        
         /// <summary>
         /// 分页
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="page"></param>
-        /// <param name="pagesize"></param>
-        /// <returns></returns>
         public static IQueryable<T> QueryPage<T>(this IOrderedQueryable<T> query, int page, int pagesize)
         {
             var pager = PagerHelper.GetQueryRange(page, pagesize);
@@ -141,13 +106,46 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 自动分页
+        /// </summary>
+        public static PagerData<T> ToPagedList<T, SortColumn>(this IQueryable<T> query,
+            int page, int pagesize, Expression<Func<T, SortColumn>> orderby, bool desc = true)
+        {
+            var data = new PagerData<T>() { PageSize = pagesize };
+
+            data.ItemCount = query.Count();
+            data.DataList = query.OrderBy_(orderby, desc).QueryPage(page, pagesize).ToList();
+
+            return data;
+        }
+
+        /// <summary>
+        /// 自动分页
+        /// </summary>
+        public static async Task<PagerData<T>> ToPagedListAsync<T, SortColumn>(this IQueryable<T> query,
+            int page, int pagesize, Expression<Func<T, SortColumn>> orderby, bool desc = true)
+        {
+            var data = new PagerData<T>() { PageSize = pagesize };
+
+            data.ItemCount = await query.CountAsync();
+            data.DataList = await query.OrderBy_(orderby, desc).QueryPage(page, pagesize).ToListAsync();
+
+            return data;
+        }
+
+        /// <summary>
         /// take别名
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
         public static IQueryable<T> Limit<T>(this IQueryable<T> query, int count) => query.Take(count);
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        public static IOrderedQueryable<T> OrderBy_<T, SortColumn>(this IQueryable<T> query,
+            Expression<Func<T, SortColumn>> orderby, bool desc = true) =>
+            desc ?
+            query.OrderByDescending(orderby) :
+            query.OrderBy(orderby);
 
         /// <summary>
         /// 动态生成or条件

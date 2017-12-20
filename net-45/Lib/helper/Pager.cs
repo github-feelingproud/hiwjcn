@@ -43,7 +43,7 @@ namespace Lib.helper
         {
             get
             {
-                if (this.PageSize < 1) { return -1; }
+                if (this.PageSize <= 0) { return -1; }
                 return PagerHelper.GetPageCount(this.ItemCount, this.PageSize);
             }
         }

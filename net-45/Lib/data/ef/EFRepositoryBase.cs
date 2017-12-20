@@ -251,14 +251,7 @@ namespace Lib.data.ef
 
                 if (orderby != null)
                 {
-                    if (Desc)
-                    {
-                        query = query.OrderByDescending(orderby);
-                    }
-                    else
-                    {
-                        query = query.OrderBy(orderby);
-                    }
+                    query = query.OrderBy_(orderby, Desc);
                 }
                 if (start != null)
                 {
@@ -289,14 +282,7 @@ namespace Lib.data.ef
 
                 if (orderby != null)
                 {
-                    if (Desc)
-                    {
-                        query = query.OrderByDescending(orderby);
-                    }
-                    else
-                    {
-                        query = query.OrderBy(orderby);
-                    }
+                    query = query.OrderBy_(orderby, Desc);
                 }
                 if (start != null)
                 {
