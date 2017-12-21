@@ -38,5 +38,13 @@ namespace Lib.infrastructure.entity
             this.ParentUID = FIRST_PARENT_UID;
             this.Level = FIRST_LEVEL;
         }
+
+        public virtual void AsFirstLevelIfParentIsNotValid()
+        {
+            if (!ValidateHelper.IsPlumpStringAfterTrim(this.ParentUID) || this.ParentUID == FIRST_PARENT_UID)
+            {
+                this.AsFirstLevel();
+            }
+        }
     }
 }
