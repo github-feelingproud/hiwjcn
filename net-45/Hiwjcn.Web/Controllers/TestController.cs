@@ -55,6 +55,13 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        /// <summary>
+        /// 表结构
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult EntityJson() =>
+            GetJson(typeof(Hiwjcn.Core.CacheKeyManager).Assembly.FindEntityDefaultInstance());
+
         public async Task<ActionResult> AreaJson()
         {
             using (var db = new QPLEntityDB())

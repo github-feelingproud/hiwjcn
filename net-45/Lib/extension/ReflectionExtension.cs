@@ -16,6 +16,18 @@ namespace Lib.extension
     /// </summary>
     public static class ReflectionExtension
     {
+        /// <summary>
+        /// 找到表对象
+        /// </summary>
+        public static IEnumerable<Type> FindEntity_(this Assembly ass) =>
+            ass.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<IDBTable>());
+
+        /// <summary>
+        /// 生成表实例，用来生成json给前端使用
+        /// </summary>
+        public static Dictionary<string, object> FindEntityDefaultInstance(this Assembly ass) =>
+            ass.FindEntity_().ToDictionary(x => x.Name, x => Activator.CreateInstance(x));
+
         public static bool IsAsync(this MethodInfo method) =>
             method.ReturnType == typeof(Task) || method.ReturnType.IsGenericType_(typeof(Task<>));
 
