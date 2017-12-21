@@ -45,26 +45,29 @@ namespace Lib.extension
             return t.IsGenericType_(generic_type) || t.GetAllInterfaces_().Any(x => x.IsGenericType_(generic_type));
         }
 
+        [Obsolete]
         public static bool IsAssignableToGeneric_(this Type t, Type generic_type)
         {
             if (!generic_type.IsGenericType) { throw new Exception("必须是泛型"); }
-            if (t.GetAllInterfaces_().Any(x => x.IsGenericType_(generic_type)))
+            if (generic_type.IsInterface)
             {
-                return true;
+                return t.GetAllInterfaces_().Any(x => x.IsGenericType_(generic_type));
             }
-
-            var cur = t;
-            while (true)
+            else
             {
-                if (t == null || t == typeof(object)) { break; }
-                if (t.IsGenericType_(generic_type))
+                var cur = t;
+                while (true)
                 {
-                    return true;
+                    if (t == null || t == typeof(object)) { break; }
+                    if (t.IsGenericType_(generic_type))
+                    {
+                        return true;
+                    }
+                    cur = t.BaseType;
                 }
-                cur = t.BaseType;
-            }
 
-            return false;
+                return false;
+            }
         }
 
         /// <summary>
