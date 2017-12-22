@@ -18,7 +18,11 @@
     <PackageReference Include="Polly" Version="5.6.1" />
     <PackageReference Include="Quartz" Version="3.0.0-beta1" />
     <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
+    <PackageReference Include="SharpZipLib" Version="1.0.0-alpha2" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
+    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
     <PackageReference Include="System.Reactive" Version="3.1.1" />
+    <PackageReference Include="ZooKeeperNetEx" Version="3.4.10.1" />
   </ItemGroup>
 
 </Project>
