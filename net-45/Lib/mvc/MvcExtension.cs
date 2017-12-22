@@ -151,17 +151,15 @@ namespace Lib.mvc
         /// <returns></returns>
         public static Dictionary<string, string> PostToDict(this HttpContext context) =>
             context.Request.Form.ToDict();
-
+        
         /// <summary>
         /// 获取这个程序集中所用到的所有权限
-        /// </summary>
-        /// <param name="controller"></param>
-        /// <returns></returns>
-        public static (List<string> permissions, List<string> scopes) ScanAllAssignedPermissionOnThisAssembly(this Controller controller)
+        /// </summary>\
+        public static (List<string> permissions, List<string> scopes) ScanAllAssignedPermissionOnThisAssembly(this Assembly ass)
         {
             var permission_list = new List<string>();
             var scope_list = new List<string>();
-            var tps = controller.GetType().Assembly.GetTypes();
+            var tps = ass.GetTypes();
             tps = tps.Where(x => x.IsNormalClass() && x.IsAssignableTo_<Controller>()).ToArray();
             foreach (var t in tps)
             {
