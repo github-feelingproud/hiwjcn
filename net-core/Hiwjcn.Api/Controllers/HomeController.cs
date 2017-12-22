@@ -5,9 +5,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Hiwjcn.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hiwjcn.Api.Controllers
 {
+    public class ffasdfasdgdsafa : DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseMySQL("");
+            optionsBuilder.UseNpgsql("");
+            base.OnConfiguring(optionsBuilder);
+        }
+
+    }
+
     public class HomeController : Controller
     {
         public IActionResult Index()
