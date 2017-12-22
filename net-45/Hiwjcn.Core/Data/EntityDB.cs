@@ -14,18 +14,6 @@ using System.Data.Entity.SqlServer;
 namespace Hiwjcn.Dal
 {
     /// <summary>
-    /// mysql数据库
-    /// </summary>
-    public class MySqlConfiguration : DbConfiguration
-    {
-        public MySqlConfiguration()
-        {
-            this.SetExecutionStrategy(MySqlProviderInvariantName.ProviderName, () => new MySqlExecutionStrategy());
-            this.SetDefaultConnectionFactory(new MySqlConnectionFactory());
-        }
-    }
-
-    /// <summary>
     /// sqlserver数据库
     /// </summary>
     public class SqlServerConfiguration : DbConfiguration
@@ -43,7 +31,7 @@ namespace Hiwjcn.Dal
     /// 用attribute mapping测试成功，用fluent测试失败
     /// </summary>
 #if use_mysql_
-    [DbConfigurationType(typeof(MySqlConfiguration))]
+    [DbConfigurationType(typeof(MySqlEFConfiguration))]
 #else
     [DbConfigurationType(typeof(SqlServerConfiguration))]
 #endif
@@ -57,7 +45,7 @@ namespace Hiwjcn.Dal
         }
 
         #region model对应的实体
-        
+
         public virtual DbSet<AuthClient> AuthClient { get; set; }
         public virtual DbSet<AuthScope> AuthScope { get; set; }
         public virtual DbSet<AuthToken> AuthToken { get; set; }
