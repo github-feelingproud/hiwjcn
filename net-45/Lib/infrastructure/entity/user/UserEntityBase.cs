@@ -9,14 +9,14 @@ namespace Lib.infrastructure.entity.user
     public class UserEntityBase : BaseEntity
     {
         [Column("user_name")]
-        [StringLength(20, MinimumLength = 5, ErrorMessage = "用户名长度不匹配")]
+        [StringLength(20, MinimumLength = 1, ErrorMessage = "用户名长度不匹配")]
         public virtual string UserName { get; set; }
 
         /// <summary>
         /// 昵称
         /// </summary>
         [Column("nick_name")]
-        [StringLength(10, MinimumLength = 5, ErrorMessage = "昵称长度不匹配")]
+        [StringLength(10, MinimumLength = 1, ErrorMessage = "昵称长度不匹配")]
         public virtual string NickName { get; set; }
 
         /// <summary>

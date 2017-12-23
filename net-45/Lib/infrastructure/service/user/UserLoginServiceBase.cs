@@ -109,6 +109,7 @@ namespace Lib.infrastructure.service.user
                 data.SetErrorMsg(msg);
                 return data;
             }
+            model.PassWord = this.EncryptPassword(model.PassWord);
 
             if (await this._userRepo.AddAsync(model) > 0)
             {
