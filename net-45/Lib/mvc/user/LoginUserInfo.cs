@@ -9,6 +9,20 @@ using System.Runtime.Serialization;
 
 namespace Lib.mvc.user
 {
+    [Serializable]
+    [DataContract]
+    public class UserPermissions
+    {
+        [DataMember]
+        public virtual List<string> PermissionIds { get; set; }
+
+        [DataMember]
+        public virtual List<string> RoleIds { get; set; }
+
+        [DataMember]
+        public virtual List<string> DepartmentIds { get; set; }
+    }
+
     /// <summary>
     /// 为汽配龙业务提供的数据
     /// </summary>
