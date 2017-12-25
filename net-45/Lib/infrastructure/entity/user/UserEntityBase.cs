@@ -70,10 +70,16 @@ namespace Lib.infrastructure.entity.user
         public virtual List<string> RoleIds { get; set; }
 
         /// <summary>
-        /// 用户所有权限id（最终拿来验证用户行为是否有权限）
+        /// 用户所有权限id
         /// </summary>
         [NotMapped]
         public virtual List<string> PermissionIds { get; set; }
+
+        /// <summary>
+        /// 权限字符串（最终拿来验证用户行为是否有权限）
+        /// </summary>
+        [NotMapped]
+        public virtual List<string> PermissionNames { get; set; }
     }
 
     [Serializable]
