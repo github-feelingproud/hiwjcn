@@ -177,6 +177,7 @@ namespace Lib.infrastructure.entity.user
     [Serializable]
     public class DepartmentEntityBase : TreeEntityBase
     {
+        [Required]
         public virtual string DepartmentName { get; set; }
 
         public virtual string Description { get; set; }
@@ -185,16 +186,20 @@ namespace Lib.infrastructure.entity.user
     [Serializable]
     public class UserDepartmentEntityBase : BaseEntity
     {
+        [Required]
         public virtual string UserUID { get; set; }
 
+        [Required]
         public virtual string DepartmentUID { get; set; }
     }
 
     [Serializable]
     public class DepartmentRoleEntityBase : BaseEntity
     {
+        [Required]
         public virtual string DepartmentUID { get; set; }
 
+        [Required]
         public virtual string RoleUID { get; set; }
     }
 }
