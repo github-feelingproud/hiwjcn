@@ -19,7 +19,6 @@ namespace Lib.infrastructure.extension
             Func<IQueryable<T>, DateTime, IQueryable<T>> start_filter,
             Func<IQueryable<T>, DateTime, IQueryable<T>> end_filter,
             bool drop_time = true)
-            where T : BaseEntity
         {
             if (start != null)
             {

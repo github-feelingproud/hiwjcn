@@ -166,7 +166,7 @@ namespace Lib.infrastructure.service.user
                             {
                                 user_uid = user.UID,
                                 role_uid = role.UID,
-                                permission_uid = permission.UID
+                                permission_uid = permission.PermissionID
                             };
 
                 var map = await query.ToListAsync();
@@ -190,7 +190,9 @@ namespace Lib.infrastructure.service.user
     }
 
     public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase>
-    { }
+    {
+        //
+    }
 
     /// <summary>
     /// 用户=部门=角色=权限
