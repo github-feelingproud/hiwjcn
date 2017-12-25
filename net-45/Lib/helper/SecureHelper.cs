@@ -109,6 +109,21 @@ namespace Lib.helper
         }
 
         /// <summary>
+        /// 已测试
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string GetHMACSHA256(string str, string key)
+        {
+            using (var hmac_sha256 = new HMACSHA256(_encoding.GetBytes(key)))
+            {
+                var data = hmac_sha256.ComputeHash(_encoding.GetBytes(str));
+                return BitConverter.ToString(data);
+            }
+        }
+
+        /// <summary>
         /// 获取hmac sha1
         /// </summary>
         /// <param name="str"></param>
