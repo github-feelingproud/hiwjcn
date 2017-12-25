@@ -12,6 +12,7 @@ namespace Lib.infrastructure.service.user
 {
     public interface IAuthLoginService
     {
+        [Obsolete("去掉这个接口")]
         Task<PagerData<LoginUserInfo>> SearchUser(string q = null, int page = 1, int pagesize = 10);
 
         [Obsolete("出参，入参需要修改" + nameof(UserPermissions))]
@@ -35,7 +36,7 @@ namespace Lib.infrastructure.service.user
 
     public static class LoginAccountSystemExtension
     {
-        public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : IAuthLoginService
+        public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : class, IAuthLoginService
         {
             builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IAuthLoginService>().SingleInstance();
         }
