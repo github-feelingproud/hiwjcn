@@ -12,6 +12,7 @@ using Lib.helper;
 using Lib.infrastructure.service;
 using Lib.infrastructure.service.user;
 using Lib.mvc;
+using Lib.mvc.auth;
 using Lib.mvc.auth.validation;
 using Lib.task;
 using System;

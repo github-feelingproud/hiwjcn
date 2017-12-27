@@ -1,6 +1,7 @@
 ﻿using Lib.helper;
 using Lib.infrastructure.service.user;
 using Lib.mvc;
+using Lib.mvc.auth;
 using Lib.mvc.user;
 using System;
 using System.Collections.Generic;

@@ -20,6 +20,11 @@ namespace Lib.mvc.auth
 {
     public static class AuthExtension
     {
+        public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : class, IAuthLoginService
+        {
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IAuthLoginService>().SingleInstance();
+        }
+
         /// <summary>
         /// 获取当前登录用户
         /// </summary>

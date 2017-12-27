@@ -9,6 +9,7 @@ using Lib.distributed.akka;
 using Lib.infrastructure.provider;
 using Lib.infrastructure.service;
 using Lib.infrastructure.service.user;
+using Lib.mvc.auth;
 using System;
 using System.Threading.Tasks;
 

@@ -8,7 +8,7 @@ using Lib.mvc;
 using Lib.helper;
 using Autofac;
 
-namespace Lib.infrastructure.service.user
+namespace Lib.mvc.auth
 {
     public interface IAuthLoginService
     {
@@ -26,19 +26,5 @@ namespace Lib.infrastructure.service.user
         Task<string> SendOneTimeCode(string phoneOrEmail);
 
         Task<LoginUserInfo> GetUserInfoByUID(string uid);
-    }
-
-    [Obsolete("还没完成")]
-    public abstract class AuthLoginServiceBase
-    {
-
-    }
-
-    public static class LoginAccountSystemExtension
-    {
-        public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : class, IAuthLoginService
-        {
-            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IAuthLoginService>().SingleInstance();
-        }
     }
 }

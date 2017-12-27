@@ -367,7 +367,7 @@
     <Compile Include="infrastructure\provider\UserLoginServiceBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="infrastructure\provider\AuthApiServiceFromDbBase.cs" />
-    <Compile Include="infrastructure\service\user\AuthLoginService.cs" />
+    <Compile Include="mvc\auth\IAuthLoginService.cs" />
     <Compile Include="infrastructure\service\user\AuthServiceBase.cs" />
     <Compile Include="infrastructure\service\user\DepartmentServiceBase.cs" />
     <Compile Include="infrastructure\service\MenuServiceBase.cs" />
@@ -497,7 +497,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="distributed\orleans\" />
-    <Folder Include="infrastructure\contract\" />
+    <Folder Include="infrastructure\auth\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
