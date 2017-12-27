@@ -14,6 +14,33 @@ namespace Lib.infrastructure.extension
 {
     public static class EntityExtension
     {
+        /// <summary>
+        /// 初始化后返回自己
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        public static T InitSelf<T>(this T model, string flag = null)
+            where T : BaseEntity
+        {
+            model.Init(flag);
+            return model;
+        }
+
+        /// <summary>
+        /// 更新信息后返回自己
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static T UpdateSelf<T>(this T model)
+            where T : BaseEntity
+        {
+            model.Update();
+            return model;
+        }
+
         public static IQueryable<T> FilterDateRange<T>(this IQueryable<T> query,
             DateTime? start, DateTime? end,
             Func<IQueryable<T>, DateTime, IQueryable<T>> start_filter,
