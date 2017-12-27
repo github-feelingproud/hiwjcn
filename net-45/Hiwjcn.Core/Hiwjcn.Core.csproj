@@ -87,7 +87,6 @@
     <Compile Include="Data\Auth\AuthTokenRepository.cs" />
     <Compile Include="Data\Auth\AuthTokenScopeRepository.cs" />
     <Compile Include="Data\EntityDB.cs" />
-    <Compile Include="Data\QPLEntityDB.cs" />
     <Compile Include="Data\SSODB.cs" />
     <Compile Include="Domain\Auth\AuthClients.cs" />
     <Compile Include="Domain\Page\PageEntity.cs" />

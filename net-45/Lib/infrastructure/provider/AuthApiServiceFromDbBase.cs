@@ -21,7 +21,8 @@ using Lib.infrastructure.entity.auth;
 namespace Lib.infrastructure.provider
 {
     public abstract class AuthApiServiceFromDbBase<ClientBase, ScopeBase, TokenBase, CodeBase, TokenScopeBase> :
-        AuthServiceBase<ClientBase, ScopeBase, TokenBase, CodeBase, TokenScopeBase>, IAuthApi
+        AuthServiceBase<ClientBase, ScopeBase, TokenBase, CodeBase, TokenScopeBase>,
+        IAuthApi
         where ClientBase : AuthClientBase, new()
         where ScopeBase : AuthScopeBase, new()
         where TokenBase : AuthTokenBase, new()
@@ -46,13 +47,13 @@ namespace Lib.infrastructure.provider
         }
 
         public abstract Task CacheHitLog(string cache_key, CacheHitStatusEnum status);
-        
+
         public virtual async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
         {
             var res = new _<TokenModel>();
 
             var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAccessTokenAsync)}";
-            var p = new { client_id = client_id, client_secret = client_secret, code = code, grant_type = grant_type }.ToJson();
+            var p = new { client_id, client_secret, code, grant_type }.ToJson();
 
             var data = await this.CreateTokenAsync(client_id, client_secret, code);
             if (data.error)
@@ -81,7 +82,7 @@ namespace Lib.infrastructure.provider
             var data = new _<LoginUserInfo>();
 
             var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetLoginUserInfoByTokenAsync)}";
-            var p = new { client_id = client_id, access_token = access_token }.ToJson();
+            var p = new { client_id, access_token }.ToJson();
 
             if (!ValidateHelper.IsAllPlumpString(access_token, client_id))
             {
@@ -151,7 +152,7 @@ namespace Lib.infrastructure.provider
             var data = new _<string>();
 
             var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAuthCodeByOneTimeCodeAsync)}";
-            var p = new { client_id = client_id, scope = scopes, phone = phone, sms = sms }.ToJson();
+            var p = new { client_id, scopes, phone, sms }.ToJson();
 
             var loginuser = await this._loginService.LoginByCode(phone, sms);
             if (loginuser.error)
@@ -185,7 +186,7 @@ namespace Lib.infrastructure.provider
             var data = new _<string>();
 
             var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAuthCodeByPasswordAsync)}";
-            var p = new { client_id = client_id, scope = scopes, username = username, password = password }.ToJson();
+            var p = new { client_id, scopes, username, password }.ToJson();
 
             var loginuser = await this._loginService.LoginByPassword(username, password);
             if (loginuser.error)

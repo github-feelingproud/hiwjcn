@@ -148,12 +148,12 @@
     <Compile Include="Auth\AuthScopeService.cs" />
     <Compile Include="Auth\AuthTokenService.cs" />
     <Compile Include="Auth\TokenEventHandler.cs" />
+    <Compile Include="Auth\UserLoginService.cs" />
     <Compile Include="ClearDataBaseService.cs" />
     <Compile Include="MyService.cs" />
     <Compile Include="Page\PageService.cs" />
     <Compile Include="QiniuHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Auth\QPLUserLoginService.cs" />
     <Compile Include="User\DepartmentService.cs" />
     <Compile Include="User\PermissionService.cs" />
     <Compile Include="User\RoleService.cs" />

@@ -13,6 +13,7 @@ using System.Data.Entity;
 using Lib.core;
 using Lib.infrastructure.entity.auth;
 using Lib.data.ef;
+using Lib.infrastructure.extension;
 
 namespace Lib.infrastructure.service.user
 {
@@ -231,8 +232,7 @@ namespace Lib.infrastructure.service.user
                 UserUID = user_uid,
                 ClientUID = client_uid,
                 ScopesJson = scopes.ToJson()
-            };
-            code.Init("code");
+            }.InitSelf("code");
 
             if (await this._codeRepo.AddAsync(code) > 0)
             {
@@ -318,16 +318,11 @@ namespace Lib.infrastructure.service.user
                 return data;
             }
             //scope map
-            var scope_list = scopes.Select(x =>
+            var scope_list = scopes.Select(x => new TokenScopeBase()
             {
-                var s = new TokenScopeBase()
-                {
-                    ScopeUID = x.UID,
-                    TokenUID = token.UID,
-                };
-                s.Init("token-scope");
-                return s;
-            }).ToArray();
+                ScopeUID = x.UID,
+                TokenUID = token.UID,
+            }.InitSelf("ts")).ToArray();
             if (await this._tokenScopeRepo.AddAsync(scope_list) <= 0)
             {
                 data.SetErrorMsg("保存scope失败");
@@ -341,36 +336,32 @@ namespace Lib.infrastructure.service.user
             return data;
         }
 
-        private async Task<bool> RefreshToken(TokenBase tk)
+        private async Task RefreshToken(TokenBase tk)
         {
-            var success = false;
             await this._tokenRepo.PrepareSessionAsync(async db =>
             {
                 var now = DateTime.Now;
                 var token_query = db.Set<TokenBase>();
                 var token = await token_query.Where(x => x.UID == tk.UID && x.ExpiryTime > now && x.IsRemove <= 0).FirstOrDefaultAsync();
+                if (token == null) { return; }
+                if (token.ExpiryTime < now || token.IsRemove > 0) { return; }
 
-                if (token != null)
-                {
-                    //refresh expire time
-                    token.ExpiryTime = now.AddDays(TokenConfig.TokenExpireDays);
-                    token.UpdateTime = now;
-                    token.RefreshTime = now;
+                //refresh expire time
+                token.ExpiryTime = now.AddDays(TokenConfig.TokenExpireDays);
+                token.UpdateTime = now;
+                token.RefreshTime = now;
 
-                    success = await db.SaveChangesAsync() > 0;
-                }
+                await db.SaveChangesAsync();
             });
-            return success;
         }
 
         public virtual async Task<TokenBase> FindTokenAsync(string client_uid, string token_uid)
         {
-            var token = default(TokenBase);
-            await this._tokenRepo.PrepareSessionAsync(async db =>
+            return await this._tokenRepo.PrepareSessionAsync_(async db =>
             {
                 var now = DateTime.Now;
                 var token_query = db.Set<TokenBase>().AsNoTrackingQueryable();
-                token = await token_query.Where(x =>
+                var token = await token_query.Where(x =>
                 x.UID == token_uid &&
                 x.ClientUID == client_uid &&
                 x.ExpiryTime > now &&
@@ -386,14 +377,11 @@ namespace Lib.infrastructure.service.user
                     //自动刷新过期时间
                     if ((token.ExpiryTime - now).TotalDays < (TokenConfig.TokenExpireDays / 2.0))
                     {
-                        if (!await this.RefreshToken(token))
-                        {
-                            $"自动刷新token失败:{token.ToJson()}".AddBusinessInfoLog();
-                        }
+                        await this.RefreshToken(token);
                     }
                 }
+                return token;
             });
-            return token;
         }
     }
 }

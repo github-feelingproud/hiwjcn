@@ -182,8 +182,24 @@ namespace Lib.infrastructure.entity.auth
         public virtual string ScopesJson { get; set; }
     }
 
+    /// <summary>
+    /// open id
+    /// </summary>
     [Serializable]
-    public class ExternalLoginBase : BaseEntity
+    public class OpenIdBase : BaseEntity
+    {
+        [Required]
+        public virtual string ClientUID { get; set; }
+
+        [Required]
+        public virtual string UserUID { get; set; }
+    }
+
+    /// <summary>
+    /// 外部登录，账号关联
+    /// </summary>
+    [Serializable]
+    public class ExternalLoginMapBase : BaseEntity
     {
         [Required]
         [Index]

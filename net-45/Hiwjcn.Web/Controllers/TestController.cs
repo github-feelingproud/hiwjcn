@@ -62,22 +62,6 @@ namespace Hiwjcn.Web.Controllers
         public ActionResult EntityJson() =>
             GetJson(typeof(Hiwjcn.Core.CacheKeyManager).Assembly.FindEntityDefaultInstance());
 
-        public async Task<ActionResult> AreaJson()
-        {
-            using (var db = new QPLEntityDB())
-            {
-                var list = await db.Area.Where(x => x.AreaLevel != null).ToListAsync();
-
-                return GetJson(list.Select(x => new
-                {
-                    x.UID,
-                    ParentUID = x.PUID,
-                    x.AreaLevel.Value,
-                    x.AreaName
-                }));
-            }
-        }
-
         public async Task<ActionResult> left()
         {
 
@@ -118,9 +102,9 @@ namespace Hiwjcn.Web.Controllers
         {
             return RunAction(() =>
             {
-                using (var db = new QPLEntityDB())
+                using (var db = new SSODB())
                 {
-                    var list = db.UserInfo.Take(1000).ToList();
+                    var list = db.T_UserInfo.Take(1000).ToList();
                     var data = Lib.io.ExcelHelper.ObjectToExcel(list, "用户列表");
 
                     return File(data, Lib.io.ExcelHelper.ContentType, $"用户列表导出-{DateTime.Now.ToDateTimeString()}.xls");

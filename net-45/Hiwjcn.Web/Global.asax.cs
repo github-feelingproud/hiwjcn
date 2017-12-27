@@ -56,11 +56,7 @@ namespace Hiwjcn.Web
                     AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
                     AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
                     {
-                        //sso
-                        //builder.Register(_ => new LoginStatus("auth_sso_uid", "auth_sso_token", "auth_sso_session", "")).Named<LoginStatus>("sso").SingleInstance();
-                        //builder.RegisterType<SSOValidationProvider>().Named<TokenValidationProviderBase>("sso").SingleInstance();
-
-                        builder.UseAccountSystem<QPLUserLoginService>();
+                        builder.UseAccountSystem<UserLoginService>();
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
                         builder.AuthUseLoginStatus(() => new LoginStatus($"auth_user_uid", $"auth_user_token", $"auth_user_session"));
                         builder.AuthUseValidationDataProvider<AppOrWebAuthDataProvider>();
@@ -87,10 +83,8 @@ namespace Hiwjcn.Web
                             //加速首次启动EF
                             //EFManager.SelectDB(null).FastStart();
                             EFManager.FastStart<EntityDB>();
-                            //汽配龙数据库
-                            EFManager.FastStart<QPLEntityDB>();
                             //SSO数据库
-                            EFManager.FastStart<SSODB>();
+                            //EFManager.FastStart<SSODB>();
                         });
                     }
                     catch (Exception err)
