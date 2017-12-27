@@ -20,6 +20,21 @@ namespace Lib.extension
             s.ToArray().Where(x => x != ' ').AsString();
 
         /// <summary>
+        /// 有空字符就抛异常
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static string EnsureNoWhitespace(this string s, string msg = null)
+        {
+            if ((s ?? throw new ArgumentNullException(nameof(s))).ToArray().Contains(' '))
+            {
+                throw new Exception(msg ?? $"{s}存在空字符");
+            }
+            return s;
+        }
+
+        /// <summary>
         /// 后面加url的斜杠
         /// </summary>
         public static string EnsureTrailingSlash(this string input)
