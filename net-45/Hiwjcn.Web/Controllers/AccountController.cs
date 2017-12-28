@@ -6,6 +6,7 @@ using Lib.cache;
 using Lib.data;
 using Lib.helper;
 using Lib.infrastructure.service;
+using Lib.extension;
 using Lib.mvc;
 using Lib.mvc.auth;
 using Lib.mvc.auth.validation;
@@ -55,63 +56,36 @@ namespace Hiwjcn.Web.Controllers
         private string retry_count_cache_key(string key) => $"login.retry.count.{key}".WithCacheKeyPrefix();
 
         [NonAction]
-        private async Task<ActionResult> AntiRetry(string user_name, Func<Task<_>> func)
+        private async Task<string> AntiRetry(string user_name, Func<Task<string>> func)
         {
             if (!ValidateHelper.IsPlumpString(user_name)) { throw new Exception("username为空"); }
 
-            var threadhold = 5;
+            var cache_key = this.retry_count_cache_key(user_name);
+            var expire = 5;
+            var max_error = 3;
             var now = DateTime.Now;
 
-            var list = this._cache.Get<List<DateTime>>(this.retry_count_cache_key(user_name)).Result ?? new List<DateTime>() { };
-            list = list.Where(x => x > now.AddMinutes(-threadhold)).ToList();
+            var list = this._cache.Get<List<DateTime>>(cache_key).Result ?? new List<DateTime>() { };
+            list = list.Where(x => x > now.AddMinutes(-expire)).ToList();
 
             try
             {
-                if (list.Count > threadhold)
+                if (list.Count > max_error)
                 {
-                    return GetJson(new _() { success = false, msg = "错误尝试过多", code = "retry" });
+                    return "错误尝试过多";
                 }
+                //执行登录
                 var data = await func.Invoke();
-                if (!data.success)
+                if (ValidateHelper.IsPlumpString(data))
                 {
                     list.Add(now);
                 }
-                return GetJson(data);
+                return data;
             }
             finally
             {
-                this._cache.Set(this.retry_count_cache_key(user_name), list, TimeSpan.FromMinutes(threadhold));
+                this._cache.Set(cache_key, list, TimeSpan.FromMinutes(expire));
             }
-        }
-
-        [NonAction]
-        private async Task<string> LogLoginErrorInfo(string user_name, string password, Func<Task<string>> func)
-        {
-            if (!ValidateHelper.IsAllPlumpString(user_name, password))
-            {
-                return "登录信息未填写";
-            }
-            var now = DateTime.Now;
-            var moment_ago = now.AddMinutes(-3);
-            var error_log = await this._LogErrorRepo.GetListAsync(x => x.LoginKey == user_name && x.CreateTime > moment_ago);
-            if (error_log.Count > 5)
-            {
-                return "你短时间内有多次错误登录记录，请稍后再试";
-            }
-            var res = await func.Invoke();
-            if (ValidateHelper.IsPlumpString(res))
-            {
-                var errinfo = new LoginErrorLogEntity()
-                {
-                    LoginKey = user_name,
-                    LoginPwd = password,
-                    LoginIP = this.X.IP,
-                    ErrorMsg = res
-                };
-                errinfo.Init();
-                await this._LogErrorRepo.AddAsync(errinfo);
-            }
-            return res;
         }
 
         [NonAction]
@@ -157,7 +131,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var res = await this.LogLoginErrorInfo(username, password, async () =>
+                var res = await this.AntiRetry(username, async () =>
                 {
                     var data = await this._IAuthLoginService.LoginByPassword(username, password);
                     if (!data.success)
@@ -183,7 +157,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var res = await this.LogLoginErrorInfo(phone, code, async () =>
+                var res = await this.AntiRetry(phone, async () =>
                 {
                     var data = await this._IAuthLoginService.LoginByCode(phone, code);
                     if (!data.success)
@@ -224,8 +198,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback, "/");
-                //url = url ?? @continue ?? next ?? callback;
+                url = new string[] { url, @continue, next, callback, "/" }.FirstNotEmpty_();
 
                 var auth_user = await this.X.context.GetAuthUserAsync();
                 if (auth_user != null)
@@ -249,7 +222,7 @@ namespace Hiwjcn.Web.Controllers
             {
                 _LoginStatus.SetUserLogout();
 
-                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback, "/");
+                url = new string[] { url, @continue, next, callback, "/" }.FirstNotEmpty_();
 
                 return Redirect(url);
 
