@@ -9,6 +9,8 @@ using Lib.io;
 using System.IO;
 using System.Text;
 using System.Xml;
+using Lib.net;
+using System.Threading.Tasks;
 
 namespace Hiwjcn.Test
 {
@@ -20,6 +22,13 @@ namespace Hiwjcn.Test
         public void TestMfasdfasdfasdfasedfethod1()
         {
             var x = Lib.net.HttpClientHelper.Get("http://www.baidu.com/");
+        }
+
+        [TestMethod]
+        public async Task fasdfkaskdfhaskdfhajshdf()
+        {
+            var bs = await HttpClientManager.Instance.DefaultClient.DownloadBytes("http://hiwjcn.qiniudn.com/tools.png");
+            System.IO.File.WriteAllBytes("d:\\m.png", bs);
         }
 
         [TestMethod]

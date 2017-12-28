@@ -86,5 +86,19 @@ namespace Lib.net
 
         public static string GetMethodString(this RequestMethodEnum m) => m.ToString();
 
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static async Task<byte[]> DownloadBytes(this HttpClient client, string url)
+        {
+            using (var res = await client.GetAsync(url))
+            {
+                return await res.Content.ReadAsByteArrayAsync();
+            }
+        }
+
     }
 }
