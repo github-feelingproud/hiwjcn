@@ -189,7 +189,8 @@ namespace Lib.infrastructure.service.user
 
     }
 
-    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase>
+    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase> :
+        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>
     {
         //
     }
