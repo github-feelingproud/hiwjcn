@@ -12,6 +12,14 @@ namespace Lib.extension
     public static class CollectionExtension
     {
         /// <summary>
+        /// 取第一个非空
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static string FirstNotEmpty_(this IEnumerable<string> list) =>
+            list.Where(x => ValidateHelper.IsPlumpString(x)).FirstOrDefault();
+
+        /// <summary>
         /// 排除空字符串并去重
         /// </summary>
         public static IEnumerable<string> NotEmptyAndDistinct<T>(this IEnumerable<T> list, Func<T, string> target) =>

@@ -71,7 +71,7 @@ namespace Lib.infrastructure.service
             if (!ValidateHelper.IsPlumpString(group_key)) { throw new ArgumentNullException(nameof(group_key)); }
             var data = new _<string>();
             var list = await this._menuRepo.GetListEnsureMaxCountAsync(x => x.GroupKey == group_key, 5000, "树结构节点数量达到上限");
-            var node = list.Where(x => x.UID == menu_uid).FirstOrThrow("节点不存在");
+            var node = list.Where(x => x.UID == menu_uid).FirstOrThrow_("节点不存在");
             var dead_nodes = list.FindNodeChildrenRecursively_(node);
 
             if (await this._menuRepo.DeleteAsync(dead_nodes.ToArray()) > 0)

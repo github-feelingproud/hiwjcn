@@ -168,7 +168,7 @@ namespace Lib.infrastructure.extension
         {
             var data = new _<string>();
             var list = await repo.GetListEnsureMaxCountAsync(null, 5000, "树节点数量达到上线");
-            var permission = list.Where(x => x.UID == node_uid).FirstOrThrow($"节点不存在{node_uid}");
+            var permission = list.Where(x => x.UID == node_uid).FirstOrThrow_($"节点不存在{node_uid}");
 
             var dead_nodes = list.FindNodeChildrenRecursively_(permission);
 
