@@ -12,6 +12,20 @@ namespace Lib.extension
     public static class CollectionExtension
     {
         /// <summary>
+        /// 加入非空集合
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="data"></param>
+        public static void AddWhenNotEmpty<T>(this List<T> list, IEnumerable<T> data)
+        {
+            if (ValidateHelper.IsPlumpList(data))
+            {
+                list.AddRange(data);
+            }
+        }
+
+        /// <summary>
         /// 取第一个非空
         /// </summary>
         /// <param name="list"></param>

@@ -213,18 +213,23 @@ namespace Lib.infrastructure.service.user
                 return data;
             }
 
-            var border = now.GetDateBorder();
-
-            var count = await this._codeRepo.GetCountAsync(x =>
-              x.ClientUID == client_uid &&
-              x.UserUID == user_uid &&
-              x.CreateTime >= border.start &&
-              x.CreateTime < border.end);
-
-            if (count >= TokenConfig.MaxCodeCreatedDaily)
+            var check_auth_code_count = false;
+            if (check_auth_code_count)
             {
-                data.SetErrorMsg("授权过多");
-                return data;
+                //检查今天授权code数量，count太慢，这里不做检查
+                var border = now.GetDateBorder();
+
+                var count = await this._codeRepo.GetCountAsync(x =>
+                  x.ClientUID == client_uid &&
+                  x.UserUID == user_uid &&
+                  x.CreateTime >= border.start &&
+                  x.CreateTime < border.end);
+
+                if (count >= TokenConfig.MaxCodeCreatedDaily)
+                {
+                    data.SetErrorMsg("授权过多");
+                    return data;
+                }
             }
 
             var code = new CodeBase()
@@ -257,13 +262,9 @@ namespace Lib.infrastructure.service.user
             var now = DateTime.Now;
 
             //code
-            var expire = now.AddMinutes(-TokenConfig.CodeExpireMinutes);
-            var code = await this._codeRepo.GetFirstAsync(x =>
-            x.UID == code_uid &&
-            x.ClientUID == client_id &&
-            x.CreateTime > expire &&
-            x.IsRemove <= 0);
-            if (code == null)
+            var code = await this._codeRepo.GetFirstAsync(x => x.UID == code_uid);
+            if (code == null || code.ClientUID != client_id ||
+                code.ExpireAt(now, TimeSpan.FromMinutes(TokenConfig.CodeExpireMinutes)))
             {
                 data.SetErrorMsg("code已失效");
                 return data;
@@ -274,11 +275,8 @@ namespace Lib.infrastructure.service.user
                 return data;
             }
             //client
-            var client = await this._clientRepo.GetFirstAsync(x =>
-            x.UID == client_id &&
-            x.ClientSecretUID == client_secret &&
-            x.IsRemove <= 0);
-            if (client == null)
+            var client = await this._clientRepo.GetFirstAsync(x => x.UID == client_id);
+            if (client == null || client.ClientSecretUID != client_secret || client.IsRemove > 0)
             {
                 data.SetErrorMsg("应用不存在");
                 return data;
@@ -305,8 +303,8 @@ namespace Lib.infrastructure.service.user
                 ScopesInfoJson = scopes.Select(x => new { uid = x.UID, name = x.Name }).ToJson(),
                 ClientUID = code.ClientUID,
                 UserUID = code.UserUID
-            };
-            token.Init("token");
+            }.InitSelf("token");
+
             if (!token.IsValid(out var msg))
             {
                 data.SetErrorMsg(msg);
@@ -361,24 +359,22 @@ namespace Lib.infrastructure.service.user
             {
                 var now = DateTime.Now;
                 var token_query = db.Set<TokenBase>().AsNoTrackingQueryable();
-                var token = await token_query.Where(x =>
-                x.UID == token_uid &&
-                x.ClientUID == client_uid &&
-                x.ExpiryTime > now &&
-                x.IsRemove <= 0).FirstOrDefaultAsync();
+                var token = await token_query.Where(x => x.UID == token_uid).FirstOrDefaultAsync();
 
-                if (token != null)
+                if (token == null || token.ClientUID != client_uid || token.ExpiryTime < now)
                 {
-                    //对于scope不去排除isremove，这个条件在授权的时候已经拦截了
-                    var scope_uids = db.Set<TokenScopeBase>().AsNoTrackingQueryable().Where(x => x.TokenUID == token.UID).Select(x => x.ScopeUID);
-                    var scope_query = db.Set<ScopeBase>().AsNoTrackingQueryable();
-                    token.Scopes = (await scope_query.Where(x => scope_uids.Contains(x.UID)).ToListAsync()).Select(x => (AuthScopeBase)x).ToList();
+                    return null;
+                }
 
-                    //自动刷新过期时间
-                    if ((token.ExpiryTime - now).TotalDays < (TokenConfig.TokenExpireDays / 2.0))
-                    {
-                        await this.RefreshToken(token);
-                    }
+                //对于scope不去排除isremove，这个条件在授权的时候已经拦截了
+                var scope_uids = db.Set<TokenScopeBase>().AsNoTrackingQueryable().Where(x => x.TokenUID == token.UID).Select(x => x.ScopeUID);
+                var scope_query = db.Set<ScopeBase>().AsNoTrackingQueryable();
+                token.Scopes = (await scope_query.Where(x => scope_uids.Contains(x.UID)).ToListAsync()).Select(x => (AuthScopeBase)x).ToList();
+
+                //自动刷新过期时间
+                if ((token.ExpiryTime - now).TotalDays < (TokenConfig.TokenExpireDays / 2.0))
+                {
+                    await this.RefreshToken(token);
                 }
                 return token;
             });

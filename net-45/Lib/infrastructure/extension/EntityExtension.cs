@@ -29,6 +29,20 @@ namespace Lib.infrastructure.extension
         }
 
         /// <summary>
+        /// 判断数据是否已经过期
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <param name="time"></param>
+        /// <param name="span"></param>
+        /// <returns></returns>
+        public static bool ExpireAt<T>(this T model, DateTime time, TimeSpan span)
+            where T : BaseEntity
+        {
+            return (model.CreateTime + span) < time;
+        }
+
+        /// <summary>
         /// 更新信息后返回自己
         /// </summary>
         /// <typeparam name="T"></typeparam>

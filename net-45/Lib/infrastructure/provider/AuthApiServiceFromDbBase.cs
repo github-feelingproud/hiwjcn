@@ -124,7 +124,7 @@ namespace Lib.infrastructure.provider
                 hit_status = CacheHitStatusEnum.NotHit;
 
                 var user = await this._loginService.GetLoginUserInfoByUserUID(token.UserUID);
-                
+
                 return user;
             }, cache_expire);
 
@@ -227,26 +227,12 @@ namespace Lib.infrastructure.provider
             }
 
             var keys = new List<string>();
-            if (ValidateHelper.IsPlumpList(data.UserUID))
-            {
-                keys.AddRange(data.UserUID.Select(x => this.AuthUserInfoCacheKey(x)));
-            }
-            if (ValidateHelper.IsPlumpList(data.TokenUID))
-            {
-                keys.AddRange(data.TokenUID.Select(x => this.AuthTokenCacheKey(x)));
-            }
-            if (ValidateHelper.IsPlumpList(data.SSOUserUID))
-            {
-                keys.AddRange(data.SSOUserUID.Select(x => this.AuthSSOUserInfoCacheKey(x)));
-            }
-            if (ValidateHelper.IsPlumpList(data.ClientUID))
-            {
-                keys.AddRange(data.ClientUID.Select(x => this.AuthClientCacheKey(x)));
-            }
-            if (ValidateHelper.IsPlumpList(data.ScopeUID))
-            {
-                keys.AddRange(data.ScopeUID.Select(x => this.AuthScopeCacheKey(x)));
-            }
+
+            keys.AddWhenNotEmpty(data.UserUID?.Select(x => this.AuthUserInfoCacheKey(x)));
+            keys.AddWhenNotEmpty(data.TokenUID?.Select(x => this.AuthTokenCacheKey(x)));
+            keys.AddWhenNotEmpty(data.SSOUserUID?.Select(x => this.AuthSSOUserInfoCacheKey(x)));
+            keys.AddWhenNotEmpty(data.ClientUID?.Select(x => this.AuthClientCacheKey(x)));
+            keys.AddWhenNotEmpty(data.ScopeUID?.Select(x => this.AuthScopeCacheKey(x)));
 
             foreach (var key in keys.Distinct())
             {
