@@ -210,7 +210,8 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var data = await this._IAuthLoginService.SendOneTimeCode(phone);
-                return GetJsonRes(data);
+
+                return GetJsonRes(data.msg);
             });
         }
 

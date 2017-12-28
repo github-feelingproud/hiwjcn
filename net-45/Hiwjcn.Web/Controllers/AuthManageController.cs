@@ -306,10 +306,12 @@ namespace Hiwjcn.Web.Controllers
                 page = CheckPage(page);
                 var pagesize = 20;
 
-                var data = await this._IAuthLoginService.SearchUser(q, page.Value, pagesize);
+                /*
+                 var data = await this._IAuthLoginService.SearchUser(q, page.Value, pagesize);
                 ViewData["list"] = data.DataList;
                 ViewData["pager"] = data.GetPagerHtml(this, nameof(page), page.Value, pagesize);
                 ViewData["q"] = q;
+                 */
 
                 return View();
             });

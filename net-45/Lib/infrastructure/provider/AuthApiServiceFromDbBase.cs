@@ -123,14 +123,8 @@ namespace Lib.infrastructure.provider
             {
                 hit_status = CacheHitStatusEnum.NotHit;
 
-                var user = await this._loginService.GetUserInfoByUID(token.UserUID);
-                if (user != null)
-                {
-                    var pers = await this._loginService.GetUserRolePermission(user.UserID);
-                    user.Roles = pers.Roles;
-                    user.Permissions = pers.Permissions;
-                }
-
+                var user = await this._loginService.GetLoginUserInfoByUserUID(token.UserUID);
+                
                 return user;
             }, cache_expire);
 

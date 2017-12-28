@@ -13,21 +13,11 @@ namespace Hiwjcn.Bll.Auth
 {
     public class UserLoginService : IAuthLoginService
     {
-        public Task<LoginUserInfo> GetUserInfoByUID(string uid)
+        public Task<LoginUserInfo> GetLoginUserInfoByUserUID(string uid)
         {
             throw new NotImplementedException();
         }
-
-        public Task<UserRolePermission> GetUserRolePermission(string user_uid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<LoginUserInfo> LoadPermissions(LoginUserInfo model)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public Task<_<LoginUserInfo>> LoginByCode(string phoneOrEmail, string code)
         {
             throw new NotImplementedException();
@@ -38,12 +28,7 @@ namespace Hiwjcn.Bll.Auth
             throw new NotImplementedException();
         }
 
-        public Task<PagerData<LoginUserInfo>> SearchUser(string q = null, int page = 1, int pagesize = 10)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> SendOneTimeCode(string phoneOrEmail)
+        public Task<_<string>> SendOneTimeCode(string phoneOrEmail)
         {
             throw new NotImplementedException();
         }
