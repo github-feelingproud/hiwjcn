@@ -47,7 +47,7 @@ namespace Lib.mvc.auth.validation
 
                 var loginuser = await this.api.GetLoginUserInfoByTokenAsync(client_id: client_id, access_token: access_token);
 
-                if (!loginuser.success)
+                if (loginuser.error)
                 {
                     loginuser.msg?.AddBusinessInfoLog();
                     return null;

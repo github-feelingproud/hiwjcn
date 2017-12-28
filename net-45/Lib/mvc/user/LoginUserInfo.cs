@@ -124,6 +124,9 @@ namespace Lib.mvc.user
         public virtual List<string> Scopes { get; set; }
 
         [DataMember]
+        public virtual List<string> Roles { get; set; }
+
+        [DataMember]
         public virtual List<string> Permissions { get; set; }
 
         [DataMember]
@@ -165,9 +168,19 @@ namespace Lib.mvc.user
         /// </summary>
         public static void ClearPrivateInfo(this LoginUserInfo loginuser)
         {
+            loginuser.Roles?.Clear();
             loginuser.Permissions?.Clear();
             loginuser.Scopes?.Clear();
         }
+
+        /// <summary>
+        /// 判断用户是否有角色
+        /// </summary>
+        /// <param name="loginuser"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public static bool HasRole(this LoginUserInfo loginuser, string role) =>
+            ValidateHelper.IsPlumpList(loginuser.Roles) && loginuser.Roles.Contains(role);
 
         /// <summary>
         /// 判断用户是否有权限

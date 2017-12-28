@@ -18,6 +18,8 @@ namespace Lib.mvc.auth
         [Obsolete("出参，入参需要修改" + nameof(UserPermissions))]
         Task<LoginUserInfo> LoadPermissions(LoginUserInfo model);
 
+        Task<UserRolePermission> GetUserRolePermission(string user_uid);
+
         Task<_<LoginUserInfo>> LoginByPassword(string user_name, string password);
 
         Task<_<LoginUserInfo>> LoginByCode(string phoneOrEmail, string code);

@@ -18,6 +18,11 @@ namespace Hiwjcn.Bll.Auth
             throw new NotImplementedException();
         }
 
+        public Task<UserRolePermission> GetUserRolePermission(string user_uid)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<LoginUserInfo> LoadPermissions(LoginUserInfo model)
         {
             throw new NotImplementedException();
