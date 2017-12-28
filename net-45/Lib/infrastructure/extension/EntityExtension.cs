@@ -59,11 +59,11 @@ namespace Lib.infrastructure.extension
             DateTime? start, DateTime? end,
             Func<IQueryable<T>, DateTime, IQueryable<T>> start_filter,
             Func<IQueryable<T>, DateTime, IQueryable<T>> end_filter,
-            bool drop_time = true)
+            bool as_date = true)
         {
             if (start != null)
             {
-                if (drop_time)
+                if (as_date)
                 {
                     start = start.Value.Date;
                 }
@@ -71,7 +71,7 @@ namespace Lib.infrastructure.extension
             }
             if (end != null)
             {
-                if (drop_time)
+                if (as_date)
                 {
                     end = end.Value.Date.AddDays(1);
                 }
@@ -81,22 +81,22 @@ namespace Lib.infrastructure.extension
         }
 
         public static IQueryable<T> FilterCreateDateRange<T>(this IQueryable<T> query,
-            DateTime? start, DateTime? end, bool drop_time = true)
+            DateTime? start, DateTime? end, bool as_date = true)
             where T : BaseEntity =>
             query.FilterDateRange(
                 start, end,
                 (q, d) => q.Where(x => x.CreateTime >= d),
                 (q, d) => q.Where(x => x.CreateTime < d),
-                drop_time);
+                as_date);
 
         public static IQueryable<T> FilterUpdateDateRange<T>(this IQueryable<T> query,
-            DateTime? start, DateTime? end, bool drop_time = true)
+            DateTime? start, DateTime? end, bool as_date = true)
             where T : BaseEntity =>
             query.FilterDateRange(
                 start, end,
                 (q, d) => q.Where(x => x.UpdateTime >= d),
                 (q, d) => q.Where(x => x.UpdateTime < d),
-                drop_time);
+                as_date);
 
         public static async Task<_<string>> DeleteByMultipleUIDS_<T>(this IRepository<T> repo, params string[] uids)
             where T : BaseEntity
