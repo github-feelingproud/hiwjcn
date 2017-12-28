@@ -216,6 +216,9 @@ namespace Lib.infrastructure.entity.auth
         public virtual string OpenID { get; set; }
 
         [Required]
+        public virtual string RefreshToken { get; set; }
+
+        [Required]
         [Index]
         public virtual string ProviderKey { get; set; }
 
