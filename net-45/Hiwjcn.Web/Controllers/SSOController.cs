@@ -51,7 +51,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                url = Com.FirstPlumpStrOrNot(url, @continue, next, callback, "/");
+                url = new string[] { url, @continue, next, callback, "/" }.FirstNotEmpty_();
                 var loginuser = await this.X.context.GetSSOLoginUserAsync();
                 if (loginuser != null)
                 {
