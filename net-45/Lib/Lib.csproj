@@ -294,6 +294,7 @@
     <Compile Include="infrastructure\entity\common\SettingEntityBase.cs" />
     <Compile Include="infrastructure\entity\user\OrganizationEntityBase.cs" />
     <Compile Include="infrastructure\entity\PageEntityBase.cs" />
+    <Compile Include="infrastructure\extension\AuthExtension.cs" />
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\helper\UserLoginHelper.cs" />
     <Compile Include="infrastructure\model\ScopeInfoModel.cs" />

@@ -20,6 +20,7 @@ using WebCore.MvcLib.Controller;
 using Lib.data.ef;
 using Hiwjcn.Core.Domain.User;
 using Lib.infrastructure.service.user;
+using Lib.infrastructure.extension;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -102,24 +103,50 @@ namespace Hiwjcn.Web.Controllers
             var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
 
             var allscopes = await this._AuthScopeRepo.GetListAsync(null);
+
+            var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, loginuser.UserID, allscopes.Select(x => x.Name).ToList());
+            if (token.error)
+            {
+                data.SetErrorMsg(token.msg);
+                return data;
+            }
+
+            loginuser.SetAuthToken(token.data);
+
+            data.SetSuccessData(loginuser);
+            return data;
+        }
+
+        [NonAction]
+        private async Task<_<LoginUserInfo>> CreateAuthTokenWithCode(LoginUserInfo loginuser)
+        {
+            var data = new _<LoginUserInfo>();
+            if (loginuser == null)
+            {
+                data.SetErrorMsg("登录失败");
+                return data;
+            }
+
+            var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
+            var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
+
+            var allscopes = await this._AuthScopeRepo.GetListAsync(null);
             var code = await this._IAuthTokenService.CreateCodeAsync(client_id, allscopes.Select(x => x.Name).ToList(), loginuser.UserID);
 
-            if (ValidateHelper.IsPlumpString(code.msg))
+            if (code.error)
             {
                 data.SetErrorMsg(code.msg);
                 return data;
             }
 
             var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, code.data.UID);
-            if (ValidateHelper.IsPlumpString(token.msg))
+            if (token.error)
             {
                 data.SetErrorMsg(token.msg);
                 return data;
             }
 
-            loginuser.LoginToken = token.data.UID;
-            loginuser.RefreshToken = token.data.RefreshToken;
-            loginuser.TokenExpire = token.data.ExpiryTime;
+            loginuser.SetAuthToken(token.data);
 
             data.SetSuccessData(loginuser);
             return data;
@@ -138,7 +165,7 @@ namespace Hiwjcn.Web.Controllers
                     {
                         return data.msg;
                     }
-                    var loginuser = await this.CreateAuthToken(data.data);
+                    var loginuser = await this.CreateAuthTokenWithCode(data.data);
                     if (!loginuser.success)
                     {
                         return loginuser.msg;
@@ -164,7 +191,7 @@ namespace Hiwjcn.Web.Controllers
                     {
                         return data.msg;
                     }
-                    var loginuser = await this.CreateAuthToken(data.data);
+                    var loginuser = await this.CreateAuthTokenWithCode(data.data);
                     if (!data.success)
                     {
                         return loginuser.msg;
