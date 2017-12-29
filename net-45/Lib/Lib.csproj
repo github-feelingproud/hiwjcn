@@ -296,6 +296,7 @@
     <Compile Include="infrastructure\entity\PageEntityBase.cs" />
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\helper\UserLoginHelper.cs" />
+    <Compile Include="infrastructure\model\ScopeInfoModel.cs" />
     <Compile Include="infrastructure\service\common\EventLogServiceBase.cs" />
     <Compile Include="infrastructure\service\common\SettingServiceBase.cs" />
     <Compile Include="infrastructure\service\organization\OrganizationServiceBase.cs" />

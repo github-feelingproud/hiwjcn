@@ -12,6 +12,11 @@ namespace Lib.ioc
     public interface IAutoRegistered { }
 
     /// <summary>
+    /// 检查重复注册实例
+    /// </summary>
+    public class RepeatCheckAttribute : Attribute { }
+
+    /// <summary>
     /// 单例
     /// </summary>
     public class SingleInstanceAttribute : Attribute { }

@@ -304,14 +304,15 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 page = CheckPage(page);
-                var pagesize = 20;
-
+                
                 /*
                  var data = await this._IAuthLoginService.SearchUser(q, page.Value, pagesize);
                 ViewData["list"] = data.DataList;
                 ViewData["pager"] = data.GetPagerHtml(this, nameof(page), page.Value, pagesize);
                 ViewData["q"] = q;
                  */
+
+                await Task.FromResult(1);
 
                 return View();
             });
@@ -326,7 +327,7 @@ namespace Hiwjcn.Web.Controllers
             {
                 var res = await this._IAuthTokenService.DeleteUserTokensAsync(user_uid);
 
-                return GetJsonRes(res);
+                return GetJson(res);
             });
         }
 

@@ -14,6 +14,7 @@ using Lib.core;
 using Lib.infrastructure.entity.auth;
 using Lib.data.ef;
 using Lib.infrastructure.extension;
+using Lib.infrastructure.model;
 
 namespace Lib.infrastructure.service.user
 {
@@ -33,6 +34,8 @@ namespace Lib.infrastructure.service.user
         Task<TokenBase> FindTokenAsync(string client_uid, string token_uid);
 
         Task<_<TokenBase>> CreateTokenAsync(string client_id, string client_secret, string code_uid);
+
+        Task<_<TokenBase>> CreateTokenAsync(string client_id, string client_secret, string user_uid, List<string> scope_names);
     }
 
     public abstract class AuthServiceBase<ClientBase, ScopeBase, TokenBase, CodeBase, TokenScopeBase> :
@@ -189,12 +192,6 @@ namespace Lib.infrastructure.service.user
         }
         #endregion
 
-        private async Task ClearOldCode(string user_uid)
-        {
-            var expire = DateTime.Now.AddMinutes(-TokenConfig.CodeExpireMinutes);
-            await this._codeRepo.DeleteWhereAsync(x => x.UserUID == user_uid && x.CreateTime < expire);
-        }
-
         public virtual async Task<_<CodeBase>> CreateCodeAsync(string client_uid, List<string> scopes, string user_uid)
         {
             var data = new _<CodeBase>();
@@ -213,6 +210,7 @@ namespace Lib.infrastructure.service.user
                 return data;
             }
 
+            #region 检查今天创建了多少code
             var check_auth_code_count = false;
             if (check_auth_code_count)
             {
@@ -231,6 +229,7 @@ namespace Lib.infrastructure.service.user
                     return data;
                 }
             }
+            #endregion
 
             var code = new CodeBase()
             {
@@ -241,19 +240,14 @@ namespace Lib.infrastructure.service.user
 
             if (await this._codeRepo.AddAsync(code) > 0)
             {
-                //clear old data
-                await this.ClearOldCode(user_uid);
+                //删除过期code
+                var expire = now.AddMinutes(-TokenConfig.CodeExpireMinutes);
+                await this._codeRepo.DeleteWhereAsync(x => x.UserUID == user_uid && x.CreateTime < expire);
 
                 data.SetSuccessData(code);
                 return data;
             }
             throw new MsgException("保存票据失败");
-        }
-
-        private async Task ClearOldToken(string user_uid)
-        {
-            var now = DateTime.Now;
-            await this._tokenRepo.DeleteWhereAsync(x => x.UserUID == user_uid && x.ExpiryTime < now);
         }
 
         public virtual async Task<_<TokenBase>> CreateTokenAsync(string client_id, string client_secret, string code_uid)
@@ -269,11 +263,56 @@ namespace Lib.infrastructure.service.user
                 data.SetErrorMsg("code已失效");
                 return data;
             }
-            if (!ValidateHelper.IsPlumpString(code.ScopesJson))
+            //scope
+            var scope_names = code.ScopesJson.JsonToEntity<List<string>>(throwIfException: false);
+
+            var token = await this.CreateTokenAsync(client_id, client_secret, code.UserUID, scope_names);
+            //删除过期token
+            await this._tokenRepo.DeleteWhereAsync(x => x.UserUID == code.UserUID && x.ExpiryTime < now);
+
+            return token;
+        }
+
+        private async Task RefreshToken(TokenBase tk)
+        {
+            var now = DateTime.Now;
+            var token = await this._tokenRepo.GetFirstAsync(x => x.UID == tk.UID);
+            if (token == null || token.ExpiryTime < now || token.IsRemove > 0)
             {
-                data.SetErrorMsg("scope丢失");
-                return data;
+                return;
             }
+
+            //更新过期时间
+            token.ExpiryTime = now.AddDays(TokenConfig.TokenExpireDays);
+            token.UpdateTime = now;
+            token.RefreshTime = now;
+
+            await this._tokenRepo.UpdateAsync(token);
+        }
+
+        public virtual async Task<TokenBase> FindTokenAsync(string client_uid, string token_uid)
+        {
+            var now = DateTime.Now;
+            var token = await this._tokenRepo.GetFirstAsync(x => x.UID == token_uid);
+
+            if (token == null || token.ClientUID != client_uid || token.ExpiryTime < now)
+            {
+                return null;
+            }
+
+            //自动刷新过期时间
+            if ((token.ExpiryTime - now).TotalDays < (TokenConfig.TokenExpireDays / 2.0))
+            {
+                await this.RefreshToken(token);
+            }
+            return token;
+        }
+
+        public async Task<_<TokenBase>> CreateTokenAsync(string client_id, string client_secret, string user_uid, List<string> scope_names)
+        {
+            var data = new _<TokenBase>();
+            var now = DateTime.Now;
+
             //client
             var client = await this._clientRepo.GetFirstAsync(x => x.UID == client_id);
             if (client == null || client.ClientSecretUID != client_secret || client.IsRemove > 0)
@@ -282,7 +321,6 @@ namespace Lib.infrastructure.service.user
                 return data;
             }
             //scope
-            var scope_names = code.ScopesJson.JsonToEntity<List<string>>(throwIfException: false);
             if (!ValidateHelper.IsPlumpList(scope_names))
             {
                 data.SetErrorMsg("scope为空");
@@ -300,9 +338,9 @@ namespace Lib.infrastructure.service.user
             {
                 ExpiryTime = now.AddDays(TokenConfig.TokenExpireDays),
                 RefreshToken = Com.GetUUID(),
-                ScopesInfoJson = scopes.Select(x => new { uid = x.UID, name = x.Name }).ToJson(),
-                ClientUID = code.ClientUID,
-                UserUID = code.UserUID
+                ScopesInfoJson = scopes.Select(x => new ScopeInfoModel() { uid = x.UID, name = x.Name }).ToJson(),
+                ClientUID = client.UID,
+                UserUID = user_uid
             }.InitSelf("token");
 
             if (!token.IsValid(out var msg))
@@ -327,57 +365,8 @@ namespace Lib.infrastructure.service.user
                 return data;
             }
 
-            //clear old token
-            await ClearOldToken(code.UserUID);
-
             data.SetSuccessData(token);
             return data;
-        }
-
-        private async Task RefreshToken(TokenBase tk)
-        {
-            await this._tokenRepo.PrepareSessionAsync(async db =>
-            {
-                var now = DateTime.Now;
-                var token_query = db.Set<TokenBase>();
-                var token = await token_query.Where(x => x.UID == tk.UID && x.ExpiryTime > now && x.IsRemove <= 0).FirstOrDefaultAsync();
-                if (token == null) { return; }
-                if (token.ExpiryTime < now || token.IsRemove > 0) { return; }
-
-                //refresh expire time
-                token.ExpiryTime = now.AddDays(TokenConfig.TokenExpireDays);
-                token.UpdateTime = now;
-                token.RefreshTime = now;
-
-                await db.SaveChangesAsync();
-            });
-        }
-
-        public virtual async Task<TokenBase> FindTokenAsync(string client_uid, string token_uid)
-        {
-            return await this._tokenRepo.PrepareSessionAsync_(async db =>
-            {
-                var now = DateTime.Now;
-                var token_query = db.Set<TokenBase>().AsNoTrackingQueryable();
-                var token = await token_query.Where(x => x.UID == token_uid).FirstOrDefaultAsync();
-
-                if (token == null || token.ClientUID != client_uid || token.ExpiryTime < now)
-                {
-                    return null;
-                }
-
-                //对于scope不去排除isremove，这个条件在授权的时候已经拦截了
-                var scope_uids = db.Set<TokenScopeBase>().AsNoTrackingQueryable().Where(x => x.TokenUID == token.UID).Select(x => x.ScopeUID);
-                var scope_query = db.Set<ScopeBase>().AsNoTrackingQueryable();
-                token.Scopes = (await scope_query.Where(x => scope_uids.Contains(x.UID)).ToListAsync()).Select(x => (AuthScopeBase)x).ToList();
-
-                //自动刷新过期时间
-                if ((token.ExpiryTime - now).TotalDays < (TokenConfig.TokenExpireDays / 2.0))
-                {
-                    await this.RefreshToken(token);
-                }
-                return token;
-            });
         }
     }
 }

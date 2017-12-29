@@ -17,6 +17,7 @@ using System.Data.Entity;
 using Lib.data.ef;
 using Lib.infrastructure.service.user;
 using Lib.infrastructure.entity.auth;
+using Lib.infrastructure.model;
 
 namespace Lib.infrastructure.provider
 {
@@ -142,7 +143,7 @@ namespace Lib.infrastructure.provider
             loginuser.LoginToken = token.UID;
             loginuser.RefreshToken = token.RefreshToken;
             loginuser.TokenExpire = token.ExpiryTime;
-            loginuser.Scopes = token.Scopes?.Select(x => x.Name).ToList();
+            loginuser.Scopes = token.ScopesInfoJson?.JsonToEntity<ScopeInfoModel[]>(throwIfException: false)?.Select(x => x.name).ToList();
 
             data.SetSuccessData(loginuser);
 

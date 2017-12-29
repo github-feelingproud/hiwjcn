@@ -116,7 +116,7 @@ namespace Hiwjcn.Web.Controllers
 
                 var loginuser = await this.X.context.GetAuthUserAsync();
 
-                var data = await this._IAuthTokenService.GetMyAuthorizedClientsAsync(loginuser?.UserID, q, page.Value, pagesize);
+                var data = await this._IAuthTokenService.QueryClientListAsync(user_uid: loginuser?.UserID, q: q, page: page.Value, pagesize: pagesize);
                 ViewData["pager"] = data.GetPagerHtml(this, "page", page.Value, pagesize);
                 ViewData["list"] = data.DataList;
                 return View();

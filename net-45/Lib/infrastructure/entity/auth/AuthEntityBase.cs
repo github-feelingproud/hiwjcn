@@ -136,18 +136,6 @@ namespace Lib.infrastructure.entity.auth
         public virtual DateTime ExpiryTime { get; set; }
 
         public virtual DateTime? RefreshTime { get; set; }
-
-        [NotMapped]
-        public virtual List<AuthScopeBase> Scopes { get; set; }
-
-        [NotMapped]
-        public virtual List<string> ScopeNames { get; set; }
-
-        [NotMapped]
-        public virtual List<string> ScopeUIDS { get; set; }
-
-        [NotMapped]
-        public virtual AuthClientBase Client { get; set; }
     }
 
     [Serializable]
