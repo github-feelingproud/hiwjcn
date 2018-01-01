@@ -27,7 +27,7 @@ namespace Lib.infrastructure.helper
             {
                 foreach (var m in nodes)
                 {
-                    repeat.AddOnceOrThrow("树存在错误");
+                    repeat.AddOnceOrThrow(m.id, "树存在错误");
 
                     var children = list.Where(x => x.pId == m.id);
                     if (ValidateHelper.IsPlumpList(children))
@@ -58,7 +58,7 @@ namespace Lib.infrastructure.helper
             {
                 foreach (var m in nodes)
                 {
-                    repeat.AddOnceOrThrow("树存在错误");
+                    repeat.AddOnceOrThrow(m.id, "树存在错误");
 
                     var children = list.Where(x => x.pId == m.id);
                     if (ValidateHelper.IsPlumpList(children))
