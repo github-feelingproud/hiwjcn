@@ -224,6 +224,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="core\AttributeBundle.cs" />
     <Compile Include="core\Lazy_.cs" />
     <Compile Include="core\StaticData.cs" />
     <Compile Include="data\DataSourceContextBase.cs" />
