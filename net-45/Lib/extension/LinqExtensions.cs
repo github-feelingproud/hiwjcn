@@ -71,7 +71,7 @@ namespace Lib.extension
             }
             return query;
         }
-        
+
         /// <summary>
         /// 分页
         /// </summary>
@@ -111,7 +111,11 @@ namespace Lib.extension
         public static PagerData<T> ToPagedList<T, SortColumn>(this IQueryable<T> query,
             int page, int pagesize, Expression<Func<T, SortColumn>> orderby, bool desc = true)
         {
-            var data = new PagerData<T>() { PageSize = pagesize };
+            var data = new PagerData<T>()
+            {
+                Page = page,
+                PageSize = pagesize
+            };
 
             data.ItemCount = query.Count();
             data.DataList = query.OrderBy_(orderby, desc).QueryPage(page, pagesize).ToList();
@@ -125,7 +129,11 @@ namespace Lib.extension
         public static async Task<PagerData<T>> ToPagedListAsync<T, SortColumn>(this IQueryable<T> query,
             int page, int pagesize, Expression<Func<T, SortColumn>> orderby, bool desc = true)
         {
-            var data = new PagerData<T>() { PageSize = pagesize };
+            var data = new PagerData<T>()
+            {
+                Page = page,
+                PageSize = pagesize
+            };
 
             data.ItemCount = await query.CountAsync();
             data.DataList = await query.OrderBy_(orderby, desc).QueryPage(page, pagesize).ToListAsync();
