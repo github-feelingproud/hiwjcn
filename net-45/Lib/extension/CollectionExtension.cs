@@ -228,6 +228,17 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 如果不是空就添加到日志
+        /// </summary>
+        public static void AddErrorLogIfNotEmpty(this IEnumerable<string> list, string prefix = null)
+        {
+            if (ValidateHelper.IsPlumpList(list))
+            {
+                new Exception($"{prefix ?? string.Empty}{list.ToJson()}").AddErrorLog();
+            }
+        }
+
+        /// <summary>
         /// 解决ilist没有foreach的问题
         /// </summary>
         public static void ForEach_<T>(this IEnumerable<T> list, Action<int, T> action)
