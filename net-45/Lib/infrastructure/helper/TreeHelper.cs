@@ -20,16 +20,16 @@ namespace Lib.infrastructure.helper
         {
             if (list.Any(x => !ValidateHelper.IsPlumpString(x.id))) { throw new Exception("每个节点都需要id"); }
 
-            var data = list.Where(x => !ValidateHelper.IsPlumpString(x.pId));
+            var data = list.Where(x => !ValidateHelper.IsPlumpString(x.pId)).ToList();
             var repeat = new List<string>();
 
-            void BindChildren(ref IEnumerable<ZTreeNode> nodes)
+            void BindChildren(ref List<ZTreeNode> nodes)
             {
                 foreach (var m in nodes)
                 {
                     repeat.AddOnceOrThrow(m.id, "树存在错误");
 
-                    var children = list.Where(x => x.pId == m.id);
+                    var children = list.Where(x => x.pId == m.id).ToList();
                     if (ValidateHelper.IsPlumpList(children))
                     {
                         BindChildren(ref children);
@@ -51,16 +51,16 @@ namespace Lib.infrastructure.helper
         {
             if (list.Any(x => !ValidateHelper.IsPlumpString(x.id))) { throw new Exception("每个节点都需要id"); }
 
-            var data = list.Where(x => !ValidateHelper.IsPlumpString(x.pId));
+            var data = list.Where(x => !ValidateHelper.IsPlumpString(x.pId)).ToList();
             var repeat = new List<string>();
 
-            void BindChildren(ref IEnumerable<IViewTreeNode> nodes)
+            void BindChildren(ref List<IViewTreeNode> nodes)
             {
                 foreach (var m in nodes)
                 {
                     repeat.AddOnceOrThrow(m.id, "树存在错误");
 
-                    var children = list.Where(x => x.pId == m.id);
+                    var children = list.Where(x => x.pId == m.id).ToList();
                     if (ValidateHelper.IsPlumpList(children))
                     {
                         BindChildren(ref children);
