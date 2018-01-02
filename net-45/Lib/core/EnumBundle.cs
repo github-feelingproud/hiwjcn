@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,11 +56,17 @@ namespace Lib.core
     /// </summary>
     public enum PaymentWayEnum : int
     {
+        [Description("支付宝")]
         Alipay = 1,
+        [Description("微信")]
         Wechat = 2,
+        [Description("银联")]
         Union = 3,
+        [Description("Paypal")]
         Paypal = 4,
+        [Description("苹果支付")]
         ApplePay = 5,
+        [Description("谷歌钱包")]
         GoogleWallet = 6
     }
 
