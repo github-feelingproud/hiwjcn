@@ -16,7 +16,7 @@ namespace WindowsFormApp
         [STAThread]
         static void Main()
         {
-            AppContext.AddExtraRegistrar(new CommonDependencyRegister());
+            IocContext.Instance.AddExtraRegistrar(new CommonDependencyRegister());
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

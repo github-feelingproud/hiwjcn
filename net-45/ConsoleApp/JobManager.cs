@@ -12,12 +12,7 @@ namespace ConsoleApp
     {
         public static void Start()
         {
-            TaskManager.StartAllTasks(new Assembly[] { typeof(JobManager).Assembly });
-            while (true)
-            {
-                if (Console.ReadLine() == "q") { break; }
-            }
-            TaskManager.Dispose();
+            //
         }
     }
 }

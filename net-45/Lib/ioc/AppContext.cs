@@ -167,118 +167,7 @@ namespace Lib.ioc
             }
         }
     }
-
-    /// <summary>
-    /// IOC容器
-    /// https://autofac.org/
-    /// http://autofac.readthedocs.io/en/latest/getting-started/index.html
-    /// </summary>
-    [Obsolete("使用" + nameof(IocContext))]
-    public static class AppContext
-    {
-        private static readonly IocContext ioc = IocContext.Instance;
-
-        /// <summary>
-        /// 添加额外的注册（这个操作要尽量早执行）
-        /// </summary>
-        /// <param name="reg"></param>
-        public static void AddExtraRegistrar(IDependencyRegistrar reg) => ioc.AddExtraRegistrar(reg);
-
-        /// <summary>
-        /// 销毁容器
-        /// </summary>
-        public static void Dispose() => ioc.Dispose();
-
-        public static RefAction<ContainerBuilder> OnContainerBuilding
-        {
-            set
-            {
-                ioc.OnContainerBuilding += value;
-            }
-        }
-
-        /// <summary>
-        /// 获取ioc容器，第一次访问将创建容器
-        /// </summary>
-        /// <returns></returns>
-        public static IContainer Container => ioc.Container;
-
-        /// <summary>
-        /// 是否在容器中注册
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static bool IsRegistered<T>() => ioc.IsRegistered<T>();
-
-        /// <summary>
-        /// 是否在容器中注册
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static bool IsRegisteredWithName<T>(string name) => ioc.IsRegisteredWithName<T>(name);
-
-        /// <summary>
-        /// 是否在容器中注册
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static bool IsRegistered<T>(string name) => ioc.IsRegistered<T>(name);
-
-        /// <summary>
-        /// 获取对象实例
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        [Obsolete("不使用生命周期直接使用autofac创建实例，实例会被autofac跟踪，不会被释放")]
-        public static T GetObject<T>(string name = null)
-        {
-            if (ValidateHelper.IsPlumpString(name))
-            {
-                return Container.ResolveNamed<T>(name);
-            }
-            else
-            {
-                return Container.Resolve<T>();
-            }
-        }
-        /// <summary>
-        /// 获取所有实例
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        [Obsolete("不使用生命周期直接使用autofac创建实例，实例会被autofac跟踪，不会被释放")]
-        public static T[] GetAllObject<T>(string name = null)
-        {
-            return GetObject<IEnumerable<T>>(name).ToArray();
-        }
-
-        /// <summary>
-        /// 创建一个作用域
-        /// </summary>
-        /// <returns></returns>
-        public static ILifetimeScope Scope() => ioc.Scope();
-
-        /// <summary>
-        /// 生命周期
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public static T Scope<T>(Func<ILifetimeScope, T> func) => ioc.Scope(func);
-
-        /// <summary>
-        /// 生命周期
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public static async Task<T> ScopeAsync<T>(Func<ILifetimeScope, Task<T>> func) => await ioc.ScopeAsync(func);
-    }
-
+    
     public class RequestScopeModule : IHttpModule
     {
         public void Dispose()
@@ -290,7 +179,7 @@ namespace Lib.ioc
         {
             context.BeginRequest += (sender, e) =>
             {
-                HttpContext.Current.SetAutofacScope(AppContext.Scope());
+                HttpContext.Current.SetAutofacScope(IocContext.Instance.Scope());
             };
 
             context.EndRequest += (sender, e) =>

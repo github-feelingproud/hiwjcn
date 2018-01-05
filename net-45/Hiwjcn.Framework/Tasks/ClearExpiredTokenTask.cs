@@ -29,7 +29,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             try
             {
-                AppContext.Scope(s =>
+                IocContext.Instance.Scope(s =>
                 {
                     var repo = s.Resolve_<IEFRepository<AuthToken>>();
                     repo.PrepareSession(db =>

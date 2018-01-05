@@ -51,17 +51,7 @@ namespace Lib.core
             {
                 e.AddErrorLog();
             }
-
-            try
-            {
-                //task
-                TaskManager.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
+            
             try
             {
                 //redis
@@ -105,7 +95,7 @@ namespace Lib.core
             try
             {
                 //IOC
-                AppContext.Dispose();
+                IocContext.Instance.Dispose();
             }
             catch (Exception e)
             {

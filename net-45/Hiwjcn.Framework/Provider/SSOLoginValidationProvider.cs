@@ -48,7 +48,7 @@ namespace Hiwjcn.Framework.Provider
                     return null;
                 }
 
-                var user = AppContext.Scope(s =>
+                var user = IocContext.Instance.Scope(s =>
                 {
                     var key = CacheKeyManager.AuthSSOUserInfoKey(uid);
                     var cache = s.Resolve_<ICacheProvider>();

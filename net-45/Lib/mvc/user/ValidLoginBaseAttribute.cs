@@ -142,7 +142,7 @@ namespace Lib.mvc.user
         {
             context.BeginRequest += (sender, e) =>
             {
-                AppContext.Scope(x =>
+                IocContext.Instance.Scope(x =>
                 {
                     var loginstatus = x.Resolve_<LoginStatus>();
                     var loginuser = loginstatus.GetLoginUser();

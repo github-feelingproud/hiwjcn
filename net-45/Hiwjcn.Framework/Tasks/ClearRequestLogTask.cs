@@ -23,7 +23,7 @@ namespace Hiwjcn.Framework.Tasks
             try
             {
                 var expire = DateTime.Now.AddDays(-30);
-                AppContext.Scope(s =>
+                IocContext.Instance.Scope(s =>
                 {
                     s.Resolve_<IRepository<ReqLogEntity>>().DeleteWhere(x => x.CreateTime < expire);
                     s.Resolve_<IRepository<CacheHitLogEntity>>().DeleteWhere(x => x.CreateTime < expire);

@@ -21,7 +21,7 @@ namespace Lib.cache
             //如果读缓存，读到就返回
             if (UseCache)
             {
-                return AppContext.Scope(x =>
+                return IocContext.Instance.Scope(x =>
                 {
                     return x.Resolve_<ICacheProvider>().GetOrSet(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
                 });
@@ -38,7 +38,7 @@ namespace Lib.cache
             //如果读缓存，读到就返回
             if (UseCache)
             {
-                return await AppContext.ScopeAsync(async x =>
+                return await IocContext.Instance.ScopeAsync(async x =>
                 {
                     return await x.Resolve_<ICacheProvider>().GetOrSetAsync(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
                 });
@@ -52,37 +52,11 @@ namespace Lib.cache
         /// <param name="key"></param>
         public static void RemoveCache(string key)
         {
-            AppContext.Scope(x =>
+            IocContext.Instance.Scope(x =>
             {
                 x.Resolve_<ICacheProvider>().Remove(key);
                 return true;
             });
         }
-
-        /// <summary>
-        /// 通过正则删除缓存
-        /// </summary>
-        /// <param name="pattern"></param>
-        public static void RemoveByPattern(string pattern)
-        {
-            AppContext.Scope(x =>
-            {
-                x.Resolve_<ICacheProvider>().RemoveByPattern(pattern);
-                return true;
-            });
-        }
-
-        /// <summary>
-        /// 清空缓存
-        /// </summary>
-        public static void ClearCache()
-        {
-            AppContext.Scope(x =>
-            {
-                x.Resolve_<ICacheProvider>().Clear();
-                return true;
-            });
-        }
-
     }
 }

@@ -52,9 +52,9 @@ namespace Hiwjcn.Web
                     }*/
 
                     //添加依赖注入
-                    AppContext.AddExtraRegistrar(new CommonDependencyRegister());
-                    AppContext.AddExtraRegistrar(new FullDependencyRegistrar());
-                    AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
+                    IocContext.Instance.AddExtraRegistrar(new CommonDependencyRegister());
+                    IocContext.Instance.AddExtraRegistrar(new FullDependencyRegistrar());
+                    IocContext.Instance.OnContainerBuilding += (ref ContainerBuilder builder) =>
                     {
                         builder.UseAccountSystem<UserLoginService>();
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
@@ -73,7 +73,7 @@ namespace Hiwjcn.Web
                     //用AutoFac接管控制器生成，从而实现依赖注入
                     //ControllerBuilder.Current.SetControllerFactory(typeof(AutoFacControllerFactory));
                     //使用autofac生成控制器
-                    DependencyResolver.SetResolver(AppContext.Container.AutofacDependencyResolver_());
+                    DependencyResolver.SetResolver(IocContext.Instance.Container.AutofacDependencyResolver_());
 
                     try
                     {
@@ -98,7 +98,7 @@ namespace Hiwjcn.Web
 #endif
 
                     //启动后台服务
-                    TaskManager.StartAllTasks(new Assembly[] { typeof(CleanDatabaseTask).Assembly });
+                    TaskManager.Start();
                 }
             }
             catch (Exception e)
@@ -144,7 +144,8 @@ namespace Hiwjcn.Web
             {
                 ActorsFactory.Dispose();
                 //关闭的时候不等待任务完成
-                TaskManager._WaitForJobsToComplete = false;
+                TaskManager.Dispose();
+                IocContext.Instance.Dispose();
                 LibReleaseHelper.DisposeAll();
 
                 //记录程序关闭

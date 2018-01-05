@@ -38,7 +38,7 @@ namespace Lib.mvc.auth.validation
 
         public virtual void WhenUserNotLogin(HttpContext context)
         {
-            using (var s = AppContext.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
                 s.ResolveOptional_<LoginStatus>()?.SetUserLogout(context);
             }
@@ -46,7 +46,7 @@ namespace Lib.mvc.auth.validation
 
         public virtual void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
         {
-            using (var s = AppContext.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
                 s.ResolveOptional_<LoginStatus>()?.SetUserLogin(context, loginuser);
             }

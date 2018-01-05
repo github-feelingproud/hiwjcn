@@ -57,7 +57,7 @@ namespace Lib.data
         /// </summary>
         public static void PrepareConnection(Action<IDbConnection> callback)
         {
-            AppContext.Scope(x =>
+            IocContext.Instance.Scope(x =>
             {
                 using (var con = GetConnectionProvider(x))
                 {
@@ -72,7 +72,7 @@ namespace Lib.data
         /// </summary>
         public static async Task PrepareConnectionAsync(Func<IDbConnection, Task> callback)
         {
-            await AppContext.ScopeAsync(async x =>
+            await IocContext.Instance.ScopeAsync(async x =>
             {
                 using (var con = GetConnectionProvider(x))
                 {

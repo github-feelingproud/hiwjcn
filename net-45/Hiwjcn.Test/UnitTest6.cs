@@ -127,19 +127,19 @@ namespace Hiwjcn.Test
         {
             try
             {
-                AppContext.OnContainerBuilding = (ref ContainerBuilder builder) =>
+                IocContext.Instance.OnContainerBuilding += (ref ContainerBuilder builder) =>
                 {
                     builder.RegisterType<SqlConnection>().As<IDbConnection>();
                     builder.RegisterType<mmmm>().As<IDisposable>();
                 };
 
-                AppContext.Scope(x =>
+                IocContext.Instance.Scope(x =>
                 {
                     x.Resolve<IDisposable>();
                     return true;
                 });
 
-                var c = AppContext.Scope(x =>
+                var c = IocContext.Instance.Scope(x =>
                 {
                     var con = x.Resolve<IDbConnection>();
                     return con;

@@ -20,7 +20,7 @@ namespace Hiwjcn.Framework.Actors
                 try
                 {
                     x.Init("reqlog");
-                    AppContext.Scope(s =>
+                    IocContext.Instance.Scope(s =>
                     {
                         return s.Resolve_<IRepository<ReqLogEntity>>().Add(x);
                     });

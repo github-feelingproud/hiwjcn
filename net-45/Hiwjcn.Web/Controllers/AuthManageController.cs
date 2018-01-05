@@ -4,6 +4,7 @@ using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.Sys;
 using Hiwjcn.Framework;
 using Hiwjcn.Framework.Provider;
+using Hiwjcn.Framework.Tasks;
 using Lib.cache;
 using Lib.core;
 using Lib.data.ef;
@@ -286,7 +287,7 @@ namespace Hiwjcn.Web.Controllers
 
                 try
                 {
-                    ViewData["list"] = TaskManager.GetAllTasks();
+                    ViewData["list"] = TaskManager.Jobs.Value.GetAllTasks();
                 }
                 catch (Exception e)
                 {

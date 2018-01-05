@@ -22,7 +22,7 @@ namespace Hiwjcn.Framework.Actors
                         msg.AddBusinessInfoLog();
                         return;
                     }
-                    AppContext.Scope(s =>
+                    IocContext.Instance.Scope(s =>
                     {
                         s.Resolve_<IRepository<UserActivityEntity>>().Add(x);
                         return true;

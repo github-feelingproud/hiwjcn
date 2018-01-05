@@ -35,7 +35,7 @@ namespace Hiwjcn.Test
     {
         public UnitTest2()
         {
-            AppContext.AddExtraRegistrar(new CommonDependencyRegister());
+            IocContext.Instance.AddExtraRegistrar(new CommonDependencyRegister());
         }
         
         [TestMethod]

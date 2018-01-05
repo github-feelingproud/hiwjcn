@@ -22,7 +22,7 @@ namespace Hiwjcn.Framework.Actors
 
                     $"缓存命中情况：{x.ToJson()}".AddBusinessInfoLog();
 
-                    AppContext.Scope(s =>
+                    IocContext.Instance.Scope(s =>
                     {
                         s.Resolve_<IRepository<CacheHitLogEntity>>().Add(x);
                         return true;

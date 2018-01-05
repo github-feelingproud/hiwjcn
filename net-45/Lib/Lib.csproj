@@ -483,7 +483,6 @@
     <Compile Include="task\QuartzJobBase.cs" />
     <Compile Include="task\ScheduleJobModel.cs" />
     <Compile Include="task\TaskLogger.cs" />
-    <Compile Include="task\TaskManager.cs" />
     <Compile Include="TestFile.cs" />
     <Compile Include="rpc\ServiceClient.cs" />
     <Compile Include="threading\ThreadWrapper.cs" />

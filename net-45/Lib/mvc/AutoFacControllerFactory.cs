@@ -27,7 +27,7 @@ namespace Lib.mvc
             string cname = ConvertHelper.GetString(controllerName).ToLower();
 
             var key = $"{area}-{cname}";
-            var controller = AppContext.Scope(x => x.Resolve_<IController>(key));
+            var controller = IocContext.Instance.Scope(x => x.Resolve_<IController>(key));
             return controller;
         }
 

@@ -33,7 +33,7 @@ namespace Lib.mvc.attr
             var (AreaName, ControllerName, ActionName) = filterContext.RouteData.GetA_C_A();
             submitData = $"{AreaName}/{ControllerName}/{ActionName}/:{submitData}";
             //读取缓存
-            AppContext.Scope(s =>
+            IocContext.Instance.Scope(s =>
             {
                 using (var cache = s.Resolve_<ICacheProvider>())
                 {

@@ -31,7 +31,7 @@ namespace WindowsFormApp
             try
             {
                 btn.Enabled = false;
-                using (var scope = AppContext.Scope())
+                using (var scope = IocContext.Instance.Scope())
                 {
                     var repo = scope.Resolve_<IRepository<AuthClient>>();
                     var client = (await repo.GetListAsync(null, 1)).FirstOrDefault();

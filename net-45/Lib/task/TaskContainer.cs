@@ -14,15 +14,14 @@ namespace Lib.task
 {
     public class TaskContainer : IDisposable
     {
-        [Obsolete]
-        public IScheduler TaskScheduler { get => this._manager ?? throw new Exception("job容器没有生成"); }
-
         private readonly IScheduler _manager;
 
         public TaskContainer()
         {
             this._manager = StdSchedulerFactory.GetDefaultScheduler();
         }
+
+        public IScheduler TaskScheduler => this._manager ?? throw new Exception("job容器没有生成");
 
         public void AddJobFromAssembly(params Assembly[] ass)
         {
@@ -43,11 +42,6 @@ namespace Lib.task
         /// 开启
         /// </summary>
         public void Start() => this._manager.StartIfNotStarted_();
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        public void Stop(bool wait = false) => this._manager.ShutdownIfStarted_(wait);
 
         public List<ScheduleJobModel> GetAllTasks() => this._manager.GetAllTasks_();
 
@@ -89,7 +83,7 @@ namespace Lib.task
         public void Dispose(bool wait)
         {
             if (this._disposed) { return; }
-            this.Stop(wait);
+            this._manager?.ShutdownIfStarted_(wait);
             this._disposed = true;
         }
     }
