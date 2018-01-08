@@ -164,4 +164,34 @@ namespace Lib.infrastructure.entity
             return !(x == y);
         }
     }
+
+    /// <summary>
+    /// 搜索邮箱有资料
+    /// 【EF使用乐观锁，并发token&行版本】并发标记
+    /// https://docs.microsoft.com/zh-cn/ef/core/modeling/concurrency
+    /// </summary>
+    [Obsolete("不要使用")]
+    internal abstract class RowVersionTest
+    {
+        public virtual int IID { get; set; }
+
+        [Key]
+        [Required]
+        public virtual string UID { get; set; }
+
+        /// <summary>
+        /// where iid=@id and name=@name
+        /// </summary>
+        [ConcurrencyCheck]
+        public virtual string Name { get; set; }
+
+        /// <summary>
+        /// update xx set rowversion=@newrowversion where iid=@id and name=@name
+        /// 
+        /// sqlserver 通常使用byte[]
+        /// 但是不一定要使用byte[]，使用自动生成字段+ConcurrencyCheck也行
+        /// </summary>
+        [Timestamp]
+        public virtual byte[] RowVersion { get; set; }
+    }
 }
