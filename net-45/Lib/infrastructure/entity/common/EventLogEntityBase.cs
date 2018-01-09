@@ -16,6 +16,8 @@ namespace Lib.infrastructure.entity.common
 
         public virtual string Detail { get; set; }
 
+        public virtual string JsonDescription { get; set; }
+
         public virtual string ExceptionInfo { get; set; }
 
         public virtual string UserUID { get; set; }

@@ -71,6 +71,7 @@ namespace Lib.infrastructure.service
         public virtual async Task<_<string>> AddPage(PageBase page)
         {
             var data = new _<string>();
+            page.Init("page");
             if (!page.IsValid(out var msg))
             {
                 data.SetErrorMsg(msg);

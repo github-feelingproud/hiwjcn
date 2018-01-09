@@ -24,14 +24,14 @@ namespace Lib.infrastructure.extension
         {
             var repeat_check = new List<string>();
 
-            void FindChildren(ref IEnumerable<T> nodes)
+            void FindChildren(ref List<T> nodes)
             {
                 foreach (var m in nodes)
                 {
                     repeat_check.AddOnceOrThrow(m.UID, error_msg: tree_error);
 
                     var level = m.Level + 1;
-                    var children = data_source.Where(x => x.ParentUID == m.UID && x.Level == level);
+                    var children = data_source.Where(x => x.ParentUID == m.UID && x.Level == level).ToList();
                     if (ValidateHelper.IsPlumpList(children))
                     {
                         FindChildren(ref children);
@@ -41,7 +41,7 @@ namespace Lib.infrastructure.extension
                 }
             }
 
-            var start = new List<T>() { first_node }.AsEnumerable();
+            var start = new List<T>() { first_node };
             FindChildren(ref start);
         }
 
@@ -146,7 +146,8 @@ namespace Lib.infrastructure.extension
             throw new Exception("添加菜单失败");
         }
 
-        public static async Task<List<T>> QueryNodeList<T>(this ILinqRepository<T> repo, string parent = null, string group = null, int max = 5000)
+        public static async Task<List<T>> QueryNodeList<T>(this ILinqRepository<T> repo,
+            string parent = null, int? level = null, string group = null, int max = 5000)
             where T : TreeEntityBase
         {
             return await repo.PrepareIQueryableAsync_(async query =>
@@ -159,6 +160,10 @@ namespace Lib.infrastructure.extension
                 {
                     query = query.Where(x => x.ParentUID == parent);
                 }
+                if (level != null)
+                {
+                    query = query.Where(x => x.Level == level);
+                }
                 return await query.OrderByDescending(x => x.UpdateTime).Take(max).ToListAsync();
             });
         }
@@ -167,10 +172,12 @@ namespace Lib.infrastructure.extension
             where T : TreeEntityBase
         {
             var data = new _<string>();
-            var list = await repo.GetListEnsureMaxCountAsync(null, 5000, "树节点数量达到上线");
-            var permission = list.Where(x => x.UID == node_uid).FirstOrThrow_($"节点不存在{node_uid}");
+            var node = await repo.GetFirstAsync(x => x.UID == node_uid);
+            Com.AssertNotNull(node, "节点不存在");
 
-            var dead_nodes = list.FindNodeChildrenRecursively_(permission);
+            var list = await repo.GetListEnsureMaxCountAsync(x => x.GroupKey == node.GroupKey, 5000, "树节点数量达到上线");
+
+            var dead_nodes = list.FindNodeChildrenRecursively_(node);
 
             if (await repo.DeleteAsync(dead_nodes.ToArray()) > 0)
             {

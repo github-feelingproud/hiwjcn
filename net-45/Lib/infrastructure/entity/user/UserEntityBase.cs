@@ -9,6 +9,7 @@ namespace Lib.infrastructure.entity.user
     public class UserEntityBase : BaseEntity
     {
         [Column("user_name")]
+        [Index(IsUnique = true)]
         [StringLength(20, MinimumLength = 1, ErrorMessage = "用户名长度不匹配")]
         public virtual string UserName { get; set; }
 
@@ -138,6 +139,7 @@ namespace Lib.infrastructure.entity.user
     {
         [MaxLength(20)]
         [Required]
+        [Index(IsUnique = true)]
         public virtual string Name { get; set; }
 
         [MaxLength(500)]
@@ -184,6 +186,7 @@ namespace Lib.infrastructure.entity.user
     public class DepartmentEntityBase : TreeEntityBase
     {
         [Required]
+        [Index(IsUnique = true)]
         public virtual string DepartmentName { get; set; }
 
         public virtual string Description { get; set; }

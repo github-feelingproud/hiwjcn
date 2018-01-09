@@ -104,6 +104,8 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<_<UserBase>> RegisterUser(UserBase model)
         {
             var data = new _<UserBase>();
+
+            model.Init("user");
             if (!model.IsValid(out var msg))
             {
                 data.SetErrorMsg(msg);

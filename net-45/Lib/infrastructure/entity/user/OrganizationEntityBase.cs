@@ -21,6 +21,7 @@ namespace Lib.infrastructure.entity.user
     public class OrganizationEntityBase : AreaEntityBase
     {
         [Required]
+        [Index(IsUnique = true)]
         public virtual string OrgName { get; set; }
 
         public virtual string OrgDescription { get; set; }
@@ -54,7 +55,7 @@ namespace Lib.infrastructure.entity.user
         /// 权限/角色
         /// </summary>
         public virtual int Flag { get; set; }
-        
+
         /// <summary>
         /// 会员同意
         /// </summary>

@@ -77,6 +77,9 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<_<string>> AddUser(UserBase model)
         {
             var data = new _<string>();
+
+            model.Init("user");
+
             if (!model.IsValid(out var msg))
             {
                 data.SetErrorMsg(msg);
