@@ -35,14 +35,12 @@ namespace Lib.infrastructure.entity
         /// <summary>
         /// 层级
         /// </summary>
-        [Required]
         [Range(FIRST_LEVEL, FIRST_LEVEL + 500, ErrorMessage = "层级不在范围之内")]
         public virtual int Level { get; set; } = FIRST_LEVEL;
 
         /// <summary>
         /// 父级UID
         /// </summary>
-        [Required]
         [StringLength(100, ErrorMessage = "父级UID长度错误")]
         public virtual string ParentUID { get; set; } = FIRST_PARENT_UID;
 
