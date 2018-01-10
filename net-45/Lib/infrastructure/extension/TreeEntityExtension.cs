@@ -143,7 +143,7 @@ namespace Lib.infrastructure.extension
                 return data;
             }
 
-            throw new Exception("添加菜单失败");
+            throw new Exception("添加失败");
         }
 
         public static async Task<List<T>> QueryNodeList<T>(this ILinqRepository<T> repo,
