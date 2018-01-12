@@ -393,14 +393,6 @@ namespace Lib.data.ef
 
         public const bool DEFAULT_TRACK = false;
 
-        public abstract void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = DEFAULT_TRACK);
-
-        public abstract Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = DEFAULT_TRACK);
-
-        public abstract void PrepareSession(Func<DbContext, bool> callback);
-
-        public abstract Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback);
-
         #endregion
 
         #region 不用返回true的查询上下文
@@ -410,8 +402,14 @@ namespace Lib.data.ef
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="track"></param>
-        public void PrepareIQueryable(Action<IQueryable<T>> callback, bool track = DEFAULT_TRACK) =>
-            this.PrepareIQueryable(query => { callback.Invoke(query); return true; }, track: track);
+        public virtual void PrepareIQueryable(Action<IQueryable<T>> callback, bool track = DEFAULT_TRACK)
+        {
+            this.PrepareSession(db =>
+            {
+                var query = db.Set<T>().AsQueryableTrackingOrNot(track);
+                callback.Invoke(query);
+            });
+        }
 
         /// <summary>
         /// 不用return true
@@ -419,23 +417,27 @@ namespace Lib.data.ef
         /// <param name="callback"></param>
         /// <param name="track"></param>
         /// <returns></returns>
-        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback, bool track = DEFAULT_TRACK) =>
-            await this.PrepareIQueryableAsync(async query => { await callback.Invoke(query); return true; }, track: track);
+        public virtual async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback, bool track = DEFAULT_TRACK)
+        {
+            await this.PrepareSessionAsync(async db =>
+            {
+                var query = db.Set<T>().AsQueryableTrackingOrNot(track);
+                await callback.Invoke(query);
+            });
+        }
 
         /// <summary>
         /// 不用return true
         /// </summary>
         /// <param name="callback"></param>
-        public void PrepareSession(Action<DbContext> callback) =>
-            this.PrepareSession(db => { callback.Invoke(db); return true; });
+        public abstract void PrepareSession(Action<DbContext> callback);
 
         /// <summary>
         /// 不用return true
         /// </summary>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public async Task PrepareSessionAsync(Func<DbContext, Task> callback) =>
-            await this.PrepareSessionAsync(async db => { await callback.Invoke(db); return true; });
+        public abstract Task PrepareSessionAsync(Func<DbContext, Task> callback);
 
         #endregion
 
@@ -500,26 +502,6 @@ namespace Lib.data.ef
         public virtual void Dispose()
         {
             //do nothing
-        }
-
-        public List<T> GetListEnsureMaxCount(Expression<Func<T, bool>> where, int count, string error_msg)
-        {
-            var list = this.GetList(where, count);
-            if (list.Count >= count)
-            {
-                throw new Exception(error_msg);
-            }
-            return list;
-        }
-
-        public async Task<List<T>> GetListEnsureMaxCountAsync(Expression<Func<T, bool>> where, int count, string error_msg)
-        {
-            var list = await this.GetListAsync(where, count);
-            if (list.Count >= count)
-            {
-                throw new Exception(error_msg);
-            }
-            return list;
         }
     }
 }

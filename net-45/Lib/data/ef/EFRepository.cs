@@ -27,20 +27,11 @@ namespace Lib.data.ef
 
         #region 获取查询上下文
 
-        public override void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
-        {
-            this._EFManager.PrepareIQueryable<T>(callback, track);
-        }
-        public override async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
-        {
-            await this._EFManager.PrepareIQueryableAsync<T>(callback, track);
-        }
-
-        public override void PrepareSession(Func<DbContext, bool> callback)
+        public override void PrepareSession(Action<DbContext> callback)
         {
             this._EFManager.PrepareSession(callback);
         }
-        public override async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        public override async Task PrepareSessionAsync(Func<DbContext, Task> callback)
         {
             await this._EFManager.PrepareSessionAsync(callback);
         }
@@ -61,25 +52,7 @@ namespace Lib.data.ef
             this.GetContext = GetContext ?? throw new ArgumentNullException(nameof(GetContext));
         }
 
-        public override void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
-        {
-            using (var db = this.GetContext.Invoke())
-            {
-                var query = db.Set<T>().AsQueryableTrackingOrNot(track);
-                callback.Invoke(query);
-            }
-        }
-
-        public override async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
-        {
-            using (var db = this.GetContext.Invoke())
-            {
-                var query = db.Set<T>().AsQueryableTrackingOrNot(track);
-                await callback.Invoke(query);
-            }
-        }
-
-        public override void PrepareSession(Func<DbContext, bool> callback)
+        public override void PrepareSession(Action<DbContext> callback)
         {
             using (var db = this.GetContext.Invoke())
             {
@@ -87,7 +60,7 @@ namespace Lib.data.ef
             }
         }
 
-        public override async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        public override async Task PrepareSessionAsync(Func<DbContext, Task> callback)
         {
             using (var db = this.GetContext.Invoke())
             {
@@ -105,25 +78,7 @@ namespace Lib.data.ef
         where T : class, IDBTable
         where Context : DbContext, new()
     {
-        public override void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
-        {
-            using (var db = new Context())
-            {
-                var query = db.Set<T>().AsQueryableTrackingOrNot(track);
-                callback.Invoke(query);
-            }
-        }
-
-        public override async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
-        {
-            using (var db = new Context())
-            {
-                var query = db.Set<T>().AsQueryableTrackingOrNot(track);
-                await callback.Invoke(query);
-            }
-        }
-
-        public override void PrepareSession(Func<DbContext, bool> callback)
+        public override void PrepareSession(Action<DbContext> callback)
         {
             using (var db = new Context())
             {
@@ -131,7 +86,7 @@ namespace Lib.data.ef
             }
         }
 
-        public override async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        public override async Task PrepareSessionAsync(Func<DbContext, Task> callback)
         {
             using (var db = new Context())
             {
@@ -154,24 +109,12 @@ namespace Lib.data.ef
             this._context = _context;
         }
 
-        public override void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
-        {
-            var query = this._context.Set<T>().AsQueryableTrackingOrNot(track);
-            callback.Invoke(query);
-        }
-
-        public override async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
-        {
-            var query = this._context.Set<T>().AsQueryableTrackingOrNot(track);
-            await callback.Invoke(query);
-        }
-
-        public override void PrepareSession(Func<DbContext, bool> callback)
+        public override void PrepareSession(Action<DbContext> callback)
         {
             callback.Invoke(this._context);
         }
 
-        public override async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        public override async Task PrepareSessionAsync(Func<DbContext, Task> callback)
         {
             await callback.Invoke(this._context);
         }

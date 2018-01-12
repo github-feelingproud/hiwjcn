@@ -35,7 +35,6 @@ namespace Lib.data.ef
             PrepareSession(db =>
             {
                 errors = db.GetValidationErrors().ToJson();
-                return true;
             });
             return errors;
         }
@@ -57,34 +56,27 @@ namespace Lib.data.ef
         /// <summary>
         /// 准备实体容器对象
         /// </summary>
-        /// <param name="callback"></param>
-        public void PrepareSession(Func<DbContext, bool> callback)
+        public void PrepareSession(Action<DbContext> callback)
         {
             IocContext.Instance.Scope(x =>
             {
                 using (var db = GetDbContext(x))
                 {
                     //执行回调
-                    if (!callback.Invoke(db))
-                    {
-                        //执行失败
-                    }
+                    callback.Invoke(db);
                 }
                 return true;
             });
         }
 
-        public async Task PrepareSessionAsync(Func<DbContext, Task<bool>> callback)
+        public async Task PrepareSessionAsync(Func<DbContext, Task> callback)
         {
             await IocContext.Instance.ScopeAsync(async x =>
             {
                 using (var db = GetDbContext(x))
                 {
                     //执行回调
-                    if (!(await callback.Invoke(db)))
-                    {
-                        //执行失败
-                    }
+                    await callback.Invoke(db);
                 }
                 return true;
             });
@@ -105,7 +97,7 @@ namespace Lib.data.ef
                 //Gets a table with "no tracking" enabled (EF feature) 
                 //Use it only when you load record(s) only for read-only operations
                 var query = session.Set<T>().AsQueryableTrackingOrNot(track);
-                return callback.Invoke(query);
+                callback.Invoke(query);
             });
         }
 
@@ -119,7 +111,7 @@ namespace Lib.data.ef
                 //Gets a table with "no tracking" enabled (EF feature) 
                 //Use it only when you load record(s) only for read-only operations
                 var query = session.Set<T>().AsQueryableTrackingOrNot(track);
-                return await callback.Invoke(query);
+                await callback.Invoke(query);
             });
         }
 

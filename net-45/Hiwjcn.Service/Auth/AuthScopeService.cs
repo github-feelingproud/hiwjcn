@@ -134,8 +134,7 @@ namespace Hiwjcn.Bll.Auth
                 data.DataList = await query
                 .OrderBy(x => x.IsRemove).OrderByDescending(x => x.Important).OrderByDescending(x => x.Sort)
                 .QueryPage(page, pagesize).ToListAsync();
-
-                return true;
+                
             });
 
             return data;
