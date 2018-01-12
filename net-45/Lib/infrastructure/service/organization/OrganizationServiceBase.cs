@@ -55,7 +55,7 @@ namespace Lib.infrastructure.service.organization
             await this._orgRepo.AddEntity_(model, "org");
 
         public virtual async Task<_<string>> DeleteOrg(params string[] org_uids) =>
-            await this._orgRepo.DeleteByMultipleUIDS_(org_uids);
+            await this._orgRepo.DeleteByUIDS_(org_uids);
 
         public abstract void UpdateOrgEntity(ref OrgBase old_org, ref OrgBase new_org);
 

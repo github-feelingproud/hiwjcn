@@ -67,7 +67,7 @@ namespace Lib.infrastructure.service.user
             await this._roleRepo.DeleteTreeNodeRecursively(role_uid);
 
         public virtual async Task<_<string>> DeleteRole(params string[] role_uids) =>
-            await this._roleRepo.DeleteByMultipleUIDS_(role_uids);
+            await this._roleRepo.DeleteByUIDS_(role_uids);
 
         public abstract void UpdateRoleEntity(ref RoleBase old_role, ref RoleBase new_role);
 
@@ -129,8 +129,6 @@ namespace Lib.infrastructure.service.user
 
         public virtual async Task<_<string>> SetRolePermissions(string role_uid, List<RolePermissionBase> permissions)
         {
-            Com.AssertNotNull(permissions, "权限参数不能为空");
-
             var data = new _<string>();
             //检查参数
             if (permissions.Any(x => x.RoleID != role_uid))

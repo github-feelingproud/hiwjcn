@@ -75,6 +75,6 @@ namespace Lib.infrastructure.service.user
             await this._permissionRepo.DeleteTreeNodeRecursively(permission_uid);
 
         public virtual async Task<_<string>> DeletePermission(params string[] permission_uids) =>
-            await this._permissionRepo.DeleteByMultipleUIDS_(permission_uids);
+            await this._permissionRepo.DeleteByUIDS_(permission_uids);
     }
 }

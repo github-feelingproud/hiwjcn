@@ -290,7 +290,6 @@
     <Compile Include="data\ef\EFRepository.cs" />
     <Compile Include="data\ef\EFManager.cs" />
     <Compile Include="data\SerializeBase.cs" />
-    <Compile Include="infrastructure\entity\CalendarEventTimeEntity.cs" />
     <Compile Include="infrastructure\entity\common\EventLogEntityBase.cs" />
     <Compile Include="infrastructure\entity\common\SettingEntityBase.cs" />
     <Compile Include="infrastructure\entity\user\OrganizationEntityBase.cs" />
@@ -357,7 +356,6 @@
     <Compile Include="infrastructure\entity\AreaEntityBase.cs" />
     <Compile Include="infrastructure\entity\auth\AuthEntityBase.cs" />
     <Compile Include="infrastructure\entity\BaseEntity.cs" />
-    <Compile Include="infrastructure\entity\CatalogEntityBase.cs" />
     <Compile Include="infrastructure\entity\MenuEntityBase.cs" />
     <Compile Include="infrastructure\entity\TimeEntityBase.cs" />
     <Compile Include="infrastructure\entity\TreeEntityBase.cs" />

@@ -15,7 +15,7 @@ using Lib.data.ef;
 
 namespace Lib.infrastructure.service
 {
-    public interface IMenuServiceBase<MenuBase, MenuGroupBase>
+    public interface IMenuServiceBase<MenuBase>
     {
         Task<_<string>> AddMenu(MenuBase model);
 
@@ -28,41 +28,22 @@ namespace Lib.infrastructure.service
         Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null);
 
         Task<_<string>> UpdateMenu(MenuBase model);
-
-        Task<_<string>> AddMenuGroup(MenuGroupBase model);
-
-        Task<_<string>> DeleteMenuGroup(params string[] group_uids);
-
-        Task<_<string>> UpdateMenuGroup(MenuGroupBase model);
-
-        Task<PagerData<MenuGroupBase>> QueryMenuGroupList(string q, int page = 1, int pagesize = 20);
     }
 
-    public abstract class MenuServiceBase<MenuBase, MenuGroupBase> :
-        IMenuServiceBase<MenuBase, MenuGroupBase>
+    public abstract class MenuServiceBase<MenuBase> :
+        IMenuServiceBase<MenuBase>
         where MenuBase : MenuEntityBase, new()
-        where MenuGroupBase : MenuGroupEntityBase, new()
     {
         protected readonly IEFRepository<MenuBase> _menuRepo;
-        protected readonly IEFRepository<MenuGroupBase> _menuGroupRepo;
 
         public MenuServiceBase(
-            IEFRepository<MenuBase> _menuRepo,
-            IEFRepository<MenuGroupBase> _menuGroupRepo)
+            IEFRepository<MenuBase> _menuRepo)
         {
             this._menuRepo = _menuRepo;
-            this._menuGroupRepo = _menuGroupRepo;
         }
 
         public virtual async Task<_<string>> AddMenu(MenuBase model)
         {
-            var data = new _<string>();
-            if (!await this._menuGroupRepo.ExistAsync(x => x.GroupKey == model.GroupKey))
-            {
-                data.SetErrorMsg("菜单分组不存在");
-                return data;
-            }
-
             return await this._menuRepo.AddTreeNode(model, "mn");
         }
 
@@ -84,7 +65,7 @@ namespace Lib.infrastructure.service
         }
 
         public virtual async Task<_<string>> DeleteMenus(params string[] menu_uids) =>
-            await this._menuRepo.DeleteByMultipleUIDS_(menu_uids);
+            await this._menuRepo.DeleteByUIDS_(menu_uids);
 
         public virtual async Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null)
         {
@@ -125,54 +106,7 @@ namespace Lib.infrastructure.service
 
             throw new Exception("更新菜单错误");
         }
-
-        public virtual async Task<_<string>> AddMenuGroup(MenuGroupBase model) =>
-            await this._menuGroupRepo.AddEntity_(model, "mn_group");
-
-        public virtual async Task<_<string>> DeleteMenuGroup(params string[] group_uids) =>
-            await this._menuGroupRepo.DeleteByMultipleUIDS_(group_uids);
-
-        public abstract void UpdateMenuGroupEntity(ref MenuGroupBase old_group, ref MenuGroupBase new_group);
-
-        public virtual async Task<_<string>> UpdateMenuGroup(MenuGroupBase model)
-        {
-            var data = new _<string>();
-            var group = await this._menuGroupRepo.GetFirstAsync(x => x.UID == model.UID);
-            Com.AssertNotNull(group, "分组不存在");
-            this.UpdateMenuGroupEntity(ref group, ref model);
-            group.Update();
-            if (!group.IsValid(out var msg))
-            {
-                data.SetErrorMsg(msg);
-                return data;
-            }
-            if (await this._menuGroupRepo.UpdateAsync(group) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("更新失败");
-        }
-
-        public virtual async Task<PagerData<MenuGroupBase>> QueryMenuGroupList(string q, int page = 1, int pagesize = 20)
-        {
-            var data = new PagerData<MenuGroupBase>();
-
-            await this._menuGroupRepo.PrepareIQueryableAsync(async query =>
-            {
-                if (ValidateHelper.IsPlumpString(q))
-                {
-                    query = query.Where(x => x.GroupName.Contains(q) || x.Description.Contains(q));
-                }
-
-                data.ItemCount = await query.CountAsync();
-                data.DataList = await query.OrderByDescending(x => x.UpdateTime).QueryPage(page, pagesize).ToListAsync();
-            });
-
-            return data;
-        }
-
+        
         public async Task<_<string>> DeleteMenuWhenNoChildren(string uid) =>
             await this._menuRepo.DeleteSingleNodeWhenNoChildren_(uid);
     }

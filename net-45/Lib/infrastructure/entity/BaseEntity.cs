@@ -60,21 +60,17 @@ namespace Lib.infrastructure.entity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column(nameof(IID))]
+        [Column(nameof(IID)), Index(IsUnique = true)]
         public virtual long IID { get; set; }
 
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "UID必填")]
-        [Required]
-        [Index(IsUnique = true), Column(nameof(UID))]
+        [StringLength(500, MinimumLength = 1, ErrorMessage = "UID必填")]
+        [Column(nameof(UID)), Index(IsUnique = true), Required]
         public virtual string UID { get; set; }
 
-        [Index(IsUnique = false)]
         public virtual int IsRemove { get; set; }
 
-        [Index(IsUnique = false)]
         public virtual DateTime CreateTime { get; set; }
 
-        [Index(IsUnique = false)]
         public virtual DateTime UpdateTime { get; set; }
 
         /// <summary>
@@ -88,11 +84,6 @@ namespace Lib.infrastructure.entity
         /// </summary>
         public virtual void Init(string flag = null)
         {
-            flag = ConvertHelper.GetString(flag);
-            if (flag.ToArray().Any(x => x == ' '))
-            {
-                throw new Exception("init.flag不可以出现空格");
-            }
             var prefix = string.Empty;
             if (ValidateHelper.IsPlumpString(flag))
             {

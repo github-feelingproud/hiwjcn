@@ -17,10 +17,6 @@ namespace Lib.infrastructure.extension
         /// <summary>
         /// 初始化后返回自己
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="model"></param>
-        /// <param name="flag"></param>
-        /// <returns></returns>
         public static T InitSelf<T>(this T model, string flag = null)
             where T : BaseEntity
         {
@@ -31,11 +27,6 @@ namespace Lib.infrastructure.extension
         /// <summary>
         /// 判断数据是否已经过期
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="model"></param>
-        /// <param name="time"></param>
-        /// <param name="span"></param>
-        /// <returns></returns>
         public static bool ExpireAt<T>(this T model, DateTime time, TimeSpan span)
             where T : BaseEntity
         {
@@ -45,9 +36,6 @@ namespace Lib.infrastructure.extension
         /// <summary>
         /// 更新信息后返回自己
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="model"></param>
-        /// <returns></returns>
         public static T UpdateSelf<T>(this T model)
             where T : BaseEntity
         {
@@ -98,7 +86,10 @@ namespace Lib.infrastructure.extension
                 (q, d) => q.Where(x => x.UpdateTime < d),
                 as_date);
 
-        public static async Task<_<string>> DeleteByMultipleUIDS_<T>(this IRepository<T> repo, params string[] uids)
+        /// <summary>
+        /// check input=>delete by uids
+        /// </summary>
+        public static async Task<_<string>> DeleteByUIDS_<T>(this IRepository<T> repo, params string[] uids)
             where T : BaseEntity
         {
             var data = new _<string>();
@@ -116,7 +107,11 @@ namespace Lib.infrastructure.extension
             throw new Exception("删除数据错误");
         }
 
-        public static async Task<_<string>> AddEntity_<T>(this IRepository<T> repo, T model, string model_flag)
+        /// <summary>
+        /// init=>check=>save
+        /// </summary>
+        public static async Task<_<string>> AddEntity_<T>(this IRepository<T> repo,
+            T model, string model_flag)
             where T : BaseEntity
         {
             var data = new _<string>();

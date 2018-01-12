@@ -68,18 +68,4 @@ namespace Lib.infrastructure.entity
             return true;
         }
     }
-
-    [Serializable]
-    public class MenuGroupEntityBase : BaseEntity
-    {
-        [Required]
-        public virtual string GroupKey { get; set; }
-
-        [Required]
-        public virtual string GroupName { get; set; }
-
-        public virtual string Description { get; set; }
-
-        public virtual string ImageUrl { get; set; }
-    }
 }
