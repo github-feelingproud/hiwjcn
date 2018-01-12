@@ -52,7 +52,7 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<PagerData<UserBase>> QueryUserList(
             string name = null, string email = null, string keyword = null, int page = 1, int pagesize = 20)
         {
-            return await this._userRepo.PrepareIQueryableAsync_(async query =>
+            return await this._userRepo.PrepareIQueryableAsync(async query =>
             {
                 if (ValidateHelper.IsPlumpString(name))
                 {

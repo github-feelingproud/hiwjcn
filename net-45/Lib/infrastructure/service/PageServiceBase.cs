@@ -151,7 +151,7 @@ namespace Lib.infrastructure.service
         public virtual async Task<List<PageBase>> GetPagesByGroup(string group)
         {
             if (!ValidateHelper.IsPlumpString(group)) { throw new Exception("参数错误"); }
-            return await this._pageRepo.PrepareIQueryableAsync_(async query =>
+            return await this._pageRepo.PrepareIQueryableAsync(async query =>
             {
                 query = query.Where(x => x.IsRemove <= 0);
                 query = query.OrderByDescending(x => x.Sort).OrderByDescending(x => x.UpdateTime);
@@ -176,7 +176,7 @@ namespace Lib.infrastructure.service
         public virtual async Task<PagerData<PageBase>> RemovedPages(
             string user_uid, int page = 1, int pagesize = 10)
         {
-            return await this._pageRepo.PrepareIQueryableAsync_(async query =>
+            return await this._pageRepo.PrepareIQueryableAsync(async query =>
             {
                 var now = DateTime.Now;
 
@@ -191,7 +191,7 @@ namespace Lib.infrastructure.service
             string user_uid = null, bool enforce_date_range = true,
             int page = 1, int pagesize = 10)
         {
-            return await this._pageRepo.PrepareIQueryableAsync_(async query =>
+            return await this._pageRepo.PrepareIQueryableAsync(async query =>
             {
                 var now = DateTime.Now;
 

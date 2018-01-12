@@ -89,7 +89,7 @@ namespace Lib.infrastructure.service
         public virtual async Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null)
         {
             if (!ValidateHelper.IsPlumpString(group_key)) { throw new ArgumentNullException(nameof(group_key)); }
-            return await this._menuRepo.PrepareIQueryableAsync_(async query =>
+            return await this._menuRepo.PrepareIQueryableAsync(async query =>
             {
                 query = query.Where(x => x.GroupKey == group_key);
                 if (ValidateHelper.IsPlumpString(parent))

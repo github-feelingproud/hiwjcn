@@ -29,7 +29,7 @@ namespace Lib.infrastructure.service.common
         public virtual async Task<List<SettingBase>> GetSettingsBy(string user_uid, string org_uid, string group_key)
         {
             if (!ValidateHelper.IsAnyPlumpString(user_uid, org_uid, group_key)) { throw new Exception("参数错误"); }
-            return await this._settingRepo.PrepareIQueryableAsync_(async query =>
+            return await this._settingRepo.PrepareIQueryableAsync(async query =>
             {
                 if (ValidateHelper.IsPlumpString(user_uid))
                 {

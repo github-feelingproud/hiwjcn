@@ -24,11 +24,11 @@ namespace Lib.data.ef
         /// <summary>
         /// 可以拿到返回值
         /// </summary>
-        R PrepareSession_<R>(Func<DbContext, R> callback);
+        R PrepareSession<R>(Func<DbContext, R> callback);
 
         /// <summary>
         /// 可以拿到返回值
         /// </summary>
-        Task<R> PrepareSessionAsync_<R>(Func<DbContext, Task<R>> callback);
+        Task<R> PrepareSessionAsync<R>(Func<DbContext, Task<R>> callback);
     }
 }

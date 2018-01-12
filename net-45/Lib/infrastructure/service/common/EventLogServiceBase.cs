@@ -52,7 +52,7 @@ namespace Lib.infrastructure.service.common
         public async Task<PagerData<LogBase>> QueryPager(string q = null,
             DateTime? start = null, DateTime? end = null, int page = 1, int pagesize = 10)
         {
-            return await this._logRepo.PrepareIQueryableAsync_(async query =>
+            return await this._logRepo.PrepareIQueryableAsync(async query =>
             {
                 if (start != null)
                 {

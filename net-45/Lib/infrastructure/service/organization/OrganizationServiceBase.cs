@@ -88,7 +88,7 @@ namespace Lib.infrastructure.service.organization
 
         public virtual async Task<PagerData<OrgBase>> QueryOrgPager(string q = null, int page = 1, int pagesize = 10)
         {
-            return await this._orgRepo.PrepareIQueryableAsync_(async query =>
+            return await this._orgRepo.PrepareIQueryableAsync(async query =>
             {
                 if (ValidateHelper.IsPlumpString(q))
                 {

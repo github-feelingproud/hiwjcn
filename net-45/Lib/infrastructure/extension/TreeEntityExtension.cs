@@ -150,7 +150,7 @@ namespace Lib.infrastructure.extension
             string parent = null, int? level = null, string group = null, int max = 5000)
             where T : TreeEntityBase
         {
-            return await repo.PrepareIQueryableAsync_(async query =>
+            return await repo.PrepareIQueryableAsync(async query =>
             {
                 if (ValidateHelper.IsPlumpString(group))
                 {

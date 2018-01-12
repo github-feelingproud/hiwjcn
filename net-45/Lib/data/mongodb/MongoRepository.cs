@@ -190,13 +190,13 @@ namespace Lib.data.mongodb
             await callback.Invoke(q);
         }
 
-        public async Task<R> PrepareIQueryableAsync_<R>(Func<IQueryable<T>, Task<R>> callback, bool track = false)
+        public async Task<R> PrepareIQueryableAsync<R>(Func<IQueryable<T>, Task<R>> callback, bool track = false)
         {
             var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
             return await callback.Invoke(q);
         }
 
-        public R PrepareIQueryable_<R>(Func<IQueryable<T>, R> callback, bool track = false)
+        public R PrepareIQueryable<R>(Func<IQueryable<T>, R> callback, bool track = false)
         {
             var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
             return callback.Invoke(q);

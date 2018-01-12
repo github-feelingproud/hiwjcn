@@ -21,12 +21,12 @@ namespace Lib.data
         /// <summary>
         /// 可以拿到返回值
         /// </summary>
-        R PrepareIQueryable_<R>(Func<IQueryable<T>, R> callback, bool track = false);
+        R PrepareIQueryable<R>(Func<IQueryable<T>, R> callback, bool track = false);
 
         /// <summary>
         /// 可以拿到返回值
         /// </summary>
-        Task<R> PrepareIQueryableAsync_<R>(Func<IQueryable<T>, Task<R>> callback, bool track = false);
+        Task<R> PrepareIQueryableAsync<R>(Func<IQueryable<T>, Task<R>> callback, bool track = false);
 
     }
 }

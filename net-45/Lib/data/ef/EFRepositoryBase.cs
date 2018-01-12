@@ -450,10 +450,13 @@ namespace Lib.data.ef
         /// <param name="callback"></param>
         /// <param name="track"></param>
         /// <returns></returns>
-        public R PrepareIQueryable_<R>(Func<IQueryable<T>, R> callback, bool track = DEFAULT_TRACK)
+        public R PrepareIQueryable<R>(Func<IQueryable<T>, R> callback, bool track = DEFAULT_TRACK)
         {
             var data = default(R);
-            this.PrepareIQueryable(query => { data = callback.Invoke(query); }, track: track);
+            this.PrepareIQueryable(query =>
+            {
+                data = callback.Invoke(query);
+            }, track: track);
             return data;
         }
 
@@ -464,10 +467,13 @@ namespace Lib.data.ef
         /// <param name="callback"></param>
         /// <param name="track"></param>
         /// <returns></returns>
-        public async Task<R> PrepareIQueryableAsync_<R>(Func<IQueryable<T>, Task<R>> callback, bool track = DEFAULT_TRACK)
+        public async Task<R> PrepareIQueryableAsync<R>(Func<IQueryable<T>, Task<R>> callback, bool track = DEFAULT_TRACK)
         {
             var data = default(R);
-            await this.PrepareIQueryableAsync(async query => { data = await callback.Invoke(query); }, track: track);
+            await this.PrepareIQueryableAsync(async query =>
+            {
+                data = await callback.Invoke(query);
+            }, track: track);
             return data;
         }
 
@@ -477,10 +483,13 @@ namespace Lib.data.ef
         /// <typeparam name="R"></typeparam>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public R PrepareSession_<R>(Func<DbContext, R> callback)
+        public R PrepareSession<R>(Func<DbContext, R> callback)
         {
             var data = default(R);
-            this.PrepareSession(db => { data = callback.Invoke(db); });
+            this.PrepareSession(db =>
+            {
+                data = callback.Invoke(db);
+            });
             return data;
         }
 
@@ -490,10 +499,13 @@ namespace Lib.data.ef
         /// <typeparam name="R"></typeparam>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public async Task<R> PrepareSessionAsync_<R>(Func<DbContext, Task<R>> callback)
+        public async Task<R> PrepareSessionAsync<R>(Func<DbContext, Task<R>> callback)
         {
             var data = default(R);
-            await this.PrepareSessionAsync(async db => { data = await callback.Invoke(db); });
+            await this.PrepareSessionAsync(async db =>
+            {
+                data = await callback.Invoke(db);
+            });
             return data;
         }
 
