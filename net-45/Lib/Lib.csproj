@@ -451,14 +451,10 @@
     <Compile Include="mvc\SignHelper.cs" />
     <Compile Include="mvc\user\AccountHelper.cs" />
     <Compile Include="mvc\NameValueCollectionHelper.cs" />
-    <Compile Include="mvc\user\CheckLoginInfoData.cs" />
     <Compile Include="mvc\HtmlExtensions.cs" />
     <Compile Include="mvc\user\LoginUserInfo.cs" />
     <Compile Include="mvc\MySQLSessionProvider.cs" />
     <Compile Include="mvc\ResultBundle.cs" />
-    <Compile Include="mvc\user\SSOCheckAttribute.cs" />
-    <Compile Include="mvc\user\SSOClientHelper.cs" />
-    <Compile Include="mvc\user\UserModelBase.cs" />
     <Compile Include="mvc\user\ValidLoginBaseAttribute.cs" />
     <Compile Include="mvc\view\IViewRenderService.cs" />
     <Compile Include="mvc\view\RazorViewRenderService.cs" />
