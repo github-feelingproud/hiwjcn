@@ -21,10 +21,13 @@ namespace Lib.infrastructure.service.user
 
         Task<_<UserBase>> RegisterUser(UserBase model);
 
+        Task<_<UserBase>> ChangePwd(UserBase model);
+
         Task<List<UserBase>> LoadPermission(List<UserBase> list);
 
         Task<UserBase> LoadPermission(UserBase model);
     }
+
     /// <summary>
     /// 用户=角色=权限
     /// </summary>
@@ -189,6 +192,27 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<UserBase> LoadPermission(UserBase model) =>
             (await this.LoadPermission(new List<UserBase>() { model })).FirstOrDefault();
 
+        public virtual async Task<_<UserBase>> ChangePwd(UserBase model)
+        {
+            var data = new _<UserBase>();
+
+            var user = await this._userRepo.GetFirstAsync(x => x.UID == model.UID);
+            Com.AssertNotNull(user, "用户不存在，无法修改密码");
+            user.PassWord = this.EncryptPassword(model.PassWord);
+            user.Update();
+            if (!user.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._userRepo.UpdateAsync(user) > 0)
+            {
+                data.SetSuccessData(user);
+                return data;
+            }
+
+            throw new Exception("密码修改失败");
+        }
     }
 
     public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase> :

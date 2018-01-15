@@ -34,7 +34,6 @@ namespace Hiwjcn.Bll.Auth
             {
                 IID = model.IID,
                 UserID = model.UID,
-                UserUID = model.UID,
                 NickName = model.NickName,
                 UserName = model.UserName,
                 HeadImgUrl = model.UserImg,

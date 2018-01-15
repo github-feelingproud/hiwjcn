@@ -44,6 +44,7 @@ namespace Hiwjcn.Bll.User
             old_user.Flag = new_user.Flag;
             old_user.Phone = new_user.Phone;
             old_user.UserImg = new_user.UserImg;
+            old_user.NickName = new_user.NickName;
         }
 
         public override async Task<PagerData<UserEntity>> QueryUserList(string name = null, string email = null, string keyword = null, int page = 1, int pagesize = 20)

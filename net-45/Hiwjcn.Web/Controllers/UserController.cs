@@ -18,13 +18,16 @@ namespace Hiwjcn.Web.Controllers
     public class UserController : UserBaseController
     {
         private readonly IUserService _userService;
+        private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
 
         public UserController(
             IUserService _userService,
+            IUserLoginService _login,
             IAuthApi _authApi)
         {
             this._userService = _userService;
+            this._login = _login;
             this._authApi = _authApi;
         }
 
@@ -84,6 +87,27 @@ namespace Hiwjcn.Web.Controllers
 
         [HttpPost]
         [EpcAuth]
+        public async Task<ActionResult> ChangePwd(string data)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var model = data?.JsonToEntity<UserEntity>(throwIfException: false);
+                if (model == null)
+                {
+                    return GetJsonRes("参数错误");
+                }
+                var res = await this._login.ChangePwd(model);
+                if (res.error)
+                {
+                    return GetJsonRes(res.msg);
+                }
+
+                return GetJsonRes(string.Empty);
+            });
+        }
+
+        [HttpPost]
+        [EpcAuth]
         public async Task<ActionResult> UpdateUser(string data)
         {
             return await RunActionAsync(async () =>
@@ -93,10 +117,6 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes("参数错误");
                 }
-                var loginuser = await this.X.context.GetAuthUserAsync();
-                if (loginuser == null) { throw new Exception("loginuser"); }
-
-                model.UID = loginuser.UserID;
 
                 var res = await this._userService.UpdateUser(model);
                 if (res.error)
