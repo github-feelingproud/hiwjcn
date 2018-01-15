@@ -30,8 +30,7 @@ namespace Lib.infrastructure.extension
                 {
                     repeat_check.AddOnceOrThrow(m.UID, error_msg: tree_error);
 
-                    var level = m.Level + 1;
-                    var children = data_source.Where(x => x.ParentUID == m.UID && x.Level == level).ToList();
+                    var children = data_source.Where(x => x.ParentUID == m.UID).ToList();
                     if (ValidateHelper.IsPlumpList(children))
                     {
                         FindChildren(ref children);
@@ -63,7 +62,6 @@ namespace Lib.infrastructure.extension
             var repeat_check = new List<string>();
             var current_uid = first_node.UID;
 
-            var top_level = default(int?);
             var top_parent = default(string);
 
             var node = default(T);
@@ -79,14 +77,13 @@ namespace Lib.infrastructure.extension
 
                 {
                     //设置检查值
-                    top_level = node.Level;
                     top_parent = node.ParentUID;
                 }
 
                 current_uid = node.ParentUID;
                 node_path.Add(node);
             }
-            var success = top_level == TreeEntityBase.FIRST_LEVEL && top_parent == TreeEntityBase.FIRST_PARENT_UID;
+            var success = top_parent == TreeEntityBase.FIRST_PARENT_UID;
             return (success, node_path);
         }
 
@@ -121,9 +118,9 @@ namespace Lib.infrastructure.extension
             where T : TreeEntityBase
         {
             var data = new _<string>();
-            if (model.ParentUID == TreeEntityBase.FIRST_PARENT_UID)
+            if (model.IsFirstLevel())
             {
-                model.Level = TreeEntityBase.FIRST_LEVEL;
+                model.AsFirstLevel();
             }
             else
             {
