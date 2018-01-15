@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 
 namespace Hiwjcn.Bll.Auth
 {
-    public class UserLoginService : IAuthLoginService
+    public class AuthLoginService : IAuthLoginService
     {
         private readonly IUserLoginService _login;
         private readonly IUserService _user;
 
-        public UserLoginService(
+        public AuthLoginService(
             IUserLoginService _login,
             IUserService _user)
         {

@@ -43,8 +43,6 @@ namespace Hiwjcn.Bll
         private readonly IEFRepository<ReqLogEntity> _ReqLogModelRepo;
         private readonly IEFRepository<CacheHitLogEntity> _CacheHitLogRepo;
 
-        private readonly IEFRepository<LoginErrorLogEntity> _LoginErrorLogModelRepo;
-
         public ClearDataBaseService(
             IEFRepository<AuthClient> _AuthClientRepo,
             IEFRepository<AuthScope> _AuthScopeRepo,
@@ -53,9 +51,7 @@ namespace Hiwjcn.Bll
             IEFRepository<AuthTokenScope> _AuthTokenScopeRepo,
 
             IEFRepository<ReqLogEntity> _ReqLogModelRepo,
-            IEFRepository<CacheHitLogEntity> _CacheHitLogRepo,
-
-            IEFRepository<LoginErrorLogEntity> _LoginErrorLogModelRepo)
+            IEFRepository<CacheHitLogEntity> _CacheHitLogRepo)
         {
             this._AuthClientRepo = _AuthClientRepo;
             this._AuthScopeRepo = _AuthScopeRepo;
@@ -65,8 +61,6 @@ namespace Hiwjcn.Bll
 
             this._ReqLogModelRepo = _ReqLogModelRepo;
             this._CacheHitLogRepo = _CacheHitLogRepo;
-
-            this._LoginErrorLogModelRepo = _LoginErrorLogModelRepo;
         }
 
         public void ClearCacheHitLog()
@@ -93,7 +87,6 @@ namespace Hiwjcn.Bll
         public void ClearLoginLog()
         {
             var expire = DateTime.Now.AddDays(-100);
-            this._LoginErrorLogModelRepo.DeleteWhere(x => x.CreateTime < expire);
         }
 
         public void ClearPage()
@@ -103,7 +96,7 @@ namespace Hiwjcn.Bll
 
         public void ClearPermission()
         {
-            this._LoginErrorLogModelRepo.PrepareSession(db =>
+            this._AuthClientRepo.PrepareSession(db =>
             {
                 var role_set = db.Set<RoleEntity>();
                 var permission_set = db.Set<PermissionEntity>();
@@ -127,7 +120,7 @@ namespace Hiwjcn.Bll
 
         public void ClearRole()
         {
-            this._LoginErrorLogModelRepo.PrepareSession(db =>
+            this._AuthClientRepo.PrepareSession(db =>
             {
                 var user_set = db.Set<UserEntity>();
                 var role_set = db.Set<RoleEntity>();

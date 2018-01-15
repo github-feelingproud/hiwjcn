@@ -26,29 +26,28 @@ namespace Hiwjcn.Web.Controllers
 {
     public class AccountController : UserBaseController
     {
+        private readonly IReadOnlyCollection<string> DefaultScopes = new List<string>() { }.AsReadOnly();
+
         private readonly IAuthLoginService _IAuthLoginService;
-        private readonly IAuthTokenService _IAuthTokenService;
+        private readonly IAuthApi _authApi;
         private readonly LoginStatus _LoginStatus;
         private readonly IEFRepository<AuthScope> _AuthScopeRepo;
-        private readonly IEFRepository<LoginErrorLogEntity> _LogErrorRepo;
-        private readonly IAuthDataProvider _IValidationDataProvider;
+        private readonly IAuthDataProvider _dataProvider;
         private readonly ICacheProvider _cache;
 
         public AccountController(
             IAuthLoginService _IAuthLoginService,
-            IAuthTokenService _IAuthTokenService,
+            IAuthApi _authApi,
             LoginStatus logincontext,
             IEFRepository<AuthScope> _AuthScopeRepo,
-            IEFRepository<LoginErrorLogEntity> _LogErrorRepo,
-            IAuthDataProvider _IValidationDataProvider,
+            IAuthDataProvider _dataProvider,
             ICacheProvider _cache)
         {
             this._IAuthLoginService = _IAuthLoginService;
-            this._IAuthTokenService = _IAuthTokenService;
+            this._authApi = _authApi;
             this._LoginStatus = logincontext;
             this._AuthScopeRepo = _AuthScopeRepo;
-            this._LogErrorRepo = _LogErrorRepo;
-            this._IValidationDataProvider = _IValidationDataProvider;
+            this._dataProvider = _dataProvider;
             this._cache = _cache;
         }
 
@@ -57,7 +56,7 @@ namespace Hiwjcn.Web.Controllers
         private string retry_count_cache_key(string key) => $"login.retry.count.{key}".WithCacheKeyPrefix();
 
         [NonAction]
-        private async Task<string> AntiRetry(string user_name, Func<Task<string>> func)
+        private async Task<ActionResult> AntiRetry(string user_name, Func<Task<_<ActionResult>>> func)
         {
             if (!ValidateHelper.IsPlumpString(user_name)) { throw new Exception("username为空"); }
 
@@ -73,15 +72,16 @@ namespace Hiwjcn.Web.Controllers
             {
                 if (list.Count > max_error)
                 {
-                    return "错误尝试过多";
+                    return GetJsonRes("错误尝试过多");
                 }
                 //执行登录
                 var data = await func.Invoke();
-                if (ValidateHelper.IsPlumpString(data))
+                if (data.error)
                 {
                     list.Add(now);
+                    return GetJsonRes(data.msg);
                 }
-                return data;
+                return data.data;
             }
             finally
             {
@@ -89,92 +89,51 @@ namespace Hiwjcn.Web.Controllers
             }
         }
 
-        [NonAction]
-        private async Task<_<LoginUserInfo>> CreateAuthToken(LoginUserInfo loginuser)
-        {
-            var data = new _<LoginUserInfo>();
-            if (loginuser == null)
-            {
-                data.SetErrorMsg("登录失败");
-                return data;
-            }
-
-            var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
-            var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
-
-            var allscopes = await this._AuthScopeRepo.GetListAsync(null);
-
-            var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, loginuser.UserID, allscopes.Select(x => x.Name).ToList());
-            if (token.error)
-            {
-                data.SetErrorMsg(token.msg);
-                return data;
-            }
-
-            loginuser.SetAuthToken(token.data);
-
-            data.SetSuccessData(loginuser);
-            return data;
-        }
-
-        [NonAction]
-        private async Task<_<LoginUserInfo>> CreateAuthTokenWithCode(LoginUserInfo loginuser)
-        {
-            var data = new _<LoginUserInfo>();
-            if (loginuser == null)
-            {
-                data.SetErrorMsg("登录失败");
-                return data;
-            }
-
-            var client_id = this._IValidationDataProvider.GetClientID(this.X.context);
-            var client_security = this._IValidationDataProvider.GetClientSecurity(this.X.context);
-
-            var allscopes = await this._AuthScopeRepo.GetListAsync(null);
-            var code = await this._IAuthTokenService.CreateCodeAsync(client_id, allscopes.Select(x => x.Name).ToList(), loginuser.UserID);
-
-            if (code.error)
-            {
-                data.SetErrorMsg(code.msg);
-                return data;
-            }
-
-            var token = await this._IAuthTokenService.CreateTokenAsync(client_id, client_security, code.data.UID);
-            if (token.error)
-            {
-                data.SetErrorMsg(token.msg);
-                return data;
-            }
-
-            loginuser.SetAuthToken(token.data);
-
-            data.SetSuccessData(loginuser);
-            return data;
-        }
-
         [HttpPost]
         [RequestLog]
-        public async Task<ActionResult> LoginByPassword(string username, string password)
+        public async Task<ActionResult> LoginViaPass(string user_name, string password)
         {
             return await RunActionAsync(async () =>
             {
-                var res = await this.AntiRetry(username, async () =>
+                return await this.AntiRetry(user_name, async () =>
                 {
-                    var data = await this._IAuthLoginService.LoginByPassword(username, password);
-                    if (!data.success)
+                    var res = new _<ActionResult>();
+                    var client_id = this._dataProvider.GetClientID(this.X.context);
+                    var client_security = this._dataProvider.GetClientSecurity(this.X.context);
+                    var code = await this._authApi.GetAuthCodeByPasswordAsync(client_id, this.DefaultScopes.ToList(), user_name, password);
+                    if (code.error)
                     {
-                        return data.msg;
+                        res.SetErrorMsg(code.msg);
+                        return res;
                     }
-                    var loginuser = await this.CreateAuthTokenWithCode(data.data);
-                    if (!loginuser.success)
+                    var token = await this._authApi.GetAccessTokenAsync(client_id, client_security, code.data, string.Empty);
+                    if (token.error)
                     {
-                        return loginuser.msg;
+                        res.SetErrorMsg(token.msg);
+                        return res;
                     }
-                    this._cache.Remove(CacheKeyManager.AuthUserInfoKey(loginuser.data.UserID));
-                    this.X.context.CookieLogin(loginuser.data);
-                    return string.Empty;
+                    var user = await this._authApi.GetLoginUserInfoByTokenAsync(client_id, token.data.Token);
+                    if (user.error)
+                    {
+                        res.SetErrorMsg(user.msg);
+                        return res;
+                    }
+                    var loginuser = user.data;
+                    loginuser.LoginToken = token.data.Token;
+                    this.X.context.CookieLogin(loginuser);
+                    res.SetSuccessData(GetJson(new _()
+                    {
+                        success = true,
+                        data = new
+                        {
+                            user_uid = user.data.UserID,
+                            user_img = user.data.HeadImgUrl,
+                            user_name = user.data.NickName,
+                            token = token.data.Token,
+                        }
+                    }));
+                    return res;
                 });
-                return GetJsonRes(res);
             });
         }
 
@@ -184,23 +143,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var res = await this.AntiRetry(phone, async () =>
-                {
-                    var data = await this._IAuthLoginService.LoginByCode(phone, code);
-                    if (!data.success)
-                    {
-                        return data.msg;
-                    }
-                    var loginuser = await this.CreateAuthTokenWithCode(data.data);
-                    if (!data.success)
-                    {
-                        return loginuser.msg;
-                    }
-                    this._cache.Remove(CacheKeyManager.AuthUserInfoKey(loginuser.data.UserID));
-                    this.X.context.CookieLogin(loginuser.data);
-                    return string.Empty;
-                });
-                return GetJsonRes(res);
+                throw new NotImplementedException();
             });
         }
 

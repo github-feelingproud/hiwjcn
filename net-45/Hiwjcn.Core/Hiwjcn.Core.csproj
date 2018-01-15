@@ -88,14 +88,11 @@
     <Compile Include="Data\Auth\AuthTokenScopeRepository.cs" />
     <Compile Include="Data\EntityDB.cs" />
     <Compile Include="Data\SSODB.cs" />
-    <Compile Include="Domain\Auth\AuthClients.cs" />
-    <Compile Include="Domain\Page\PageEntity.cs" />
-    <Compile Include="Domain\Sys\ReqLogEntity.cs" />
-    <Compile Include="Domain\User\DepartmentEntity.cs" />
-    <Compile Include="Domain\User\LoginErrorLogEntity.cs" />
-    <Compile Include="Domain\User\RoleEntity.cs" />
-    <Compile Include="Domain\User\PermissionEntity.cs" />
-    <Compile Include="Domain\User\UserEntity.cs" />
+    <Compile Include="Entity\AuthClients.cs" />
+    <Compile Include="Entity\MenuEntity.cs" />
+    <Compile Include="Entity\ReqLogEntity.cs" />
+    <Compile Include="Entity\DepartmentEntity.cs" />
+    <Compile Include="Entity\UserEntity.cs" />
     <Compile Include="EnumsBundle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -103,7 +100,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="Proto\TestProto.proto" />
+    <None Include="Entity\TestProto.proto" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\Lib.csproj">

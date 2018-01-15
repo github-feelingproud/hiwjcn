@@ -132,6 +132,7 @@
     <Compile Include="Actors\UpdateEsIndexActor.cs" />
     <Compile Include="Actors\UserActivityLogActor.cs" />
     <Compile Include="AttributeBundle.cs" />
+    <Compile Include="AuthAttributesSet.cs" />
     <Compile Include="CommonDependencyRegister.cs" />
     <Compile Include="DataBaseInitData.cs" />
     <Compile Include="Extension\UserActivityExtension.cs" />

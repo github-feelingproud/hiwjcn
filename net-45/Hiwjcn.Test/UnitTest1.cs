@@ -115,9 +115,9 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void fsdafasdfasdfasfasdf()
         {
-            var users = new List<UserEntity>() { new UserEntity() { Money = 2 }, new UserEntity() { Money = 1 } };
-            var data = new { x = users.Where(x => x.Money == 2).ToList() };
-            users.Where(x => x.Money == 2).ToList().ForEach(x => x.NickName = "12");
+            var users = new List<UserEntity>() { new UserEntity() { IID = 2 }, new UserEntity() { IID = 1 } };
+            var data = new { x = users.Where(x => x.IID == 2).ToList() };
+            users.Where(x => x.IID == 2).ToList().ForEach(x => x.NickName = "12");
 
             var sections = new List<UserEntity>();
 

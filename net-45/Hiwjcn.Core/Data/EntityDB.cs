@@ -1,5 +1,6 @@
 ﻿#define use_mysql
 
+using Hiwjcn.Core.Domain;
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.Sys;
 using Hiwjcn.Core.Domain.User;
@@ -30,7 +31,7 @@ namespace Hiwjcn.Dal
     /// EF做映射的时候也可以数据库是int，代码里是string，
     /// 用attribute mapping测试成功，用fluent测试失败
     /// </summary>
-#if use_mysql_
+#if use_mysql
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
 #else
     [DbConfigurationType(typeof(SqlServerConfiguration))]
@@ -59,8 +60,6 @@ namespace Hiwjcn.Dal
         public virtual DbSet<UserEntity> UserEntity { get; set; }
         public virtual DbSet<UserOneTimeCodeEntity> UserOneTimeCode { get; set; }
 
-        public virtual DbSet<LoginErrorLogEntity> LoginErrorLogEntity { get; set; }
-
         public virtual DbSet<RoleEntity> RoleEntity { get; set; }
         public virtual DbSet<RolePermissionEntity> RolePermissionEntity { get; set; }
         public virtual DbSet<UserRoleEntity> UserRoleEntity { get; set; }
@@ -73,6 +72,8 @@ namespace Hiwjcn.Dal
 
         public virtual DbSet<ReqLogEntity> ReqLogEntity { get; set; }
         public virtual DbSet<CacheHitLogEntity> CacheHitLogEntity { get; set; }
+
+        public virtual DbSet<MenuEntity> MenuEntity { get; set; }
 
         #endregion
     }

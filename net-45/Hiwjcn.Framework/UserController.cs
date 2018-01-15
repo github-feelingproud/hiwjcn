@@ -14,6 +14,8 @@ namespace WebCore.MvcLib.Controller
     [ValidateInput(false)]
     public class UserBaseController : BaseController
     {
+        public readonly int PageSize = 10;
+
         public UserBaseController()
         {
             //

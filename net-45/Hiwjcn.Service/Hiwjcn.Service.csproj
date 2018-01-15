@@ -144,21 +144,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AopBoundle.cs" />
-    <Compile Include="Auth\AuthClientService.cs" />
-    <Compile Include="Auth\AuthScopeService.cs" />
-    <Compile Include="Auth\AuthTokenService.cs" />
-    <Compile Include="Auth\TokenEventHandler.cs" />
-    <Compile Include="Auth\UserLoginService.cs" />
+    <Compile Include="AuthClientService.cs" />
+    <Compile Include="AuthScopeService.cs" />
+    <Compile Include="AuthTokenService.cs" />
+    <Compile Include="TokenEventHandler.cs" />
+    <Compile Include="AuthLoginService.cs" />
     <Compile Include="ClearDataBaseService.cs" />
+    <Compile Include="MenuService.cs" />
     <Compile Include="MyService.cs" />
-    <Compile Include="Page\PageService.cs" />
     <Compile Include="QiniuHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="User\DepartmentService.cs" />
-    <Compile Include="User\PermissionService.cs" />
-    <Compile Include="User\RoleService.cs" />
-    <Compile Include="User\UserLoginService.cs" />
-    <Compile Include="User\UserService.cs" />
+    <Compile Include="DepartmentService.cs" />
+    <Compile Include="PermissionService.cs" />
+    <Compile Include="RoleService.cs" />
+    <Compile Include="UserLoginService.cs" />
+    <Compile Include="UserService.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
