@@ -22,7 +22,8 @@ namespace Lib.infrastructure.entity
 
         public MenuEntityBase()
         {
-            this.PermissionValues = new Lazy_<List<string>>(() => this.PermissionJson?.JsonToEntity<List<string>>(throwIfException: false));
+            this.PermissionValues = new Lazy_<List<string>>(() =>
+            this.PermissionJson?.JsonToEntity<List<string>>(throwIfException: false) ?? new List<string>() { });
         }
 
         [Required]

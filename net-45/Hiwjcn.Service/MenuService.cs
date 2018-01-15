@@ -49,6 +49,7 @@ namespace Hiwjcn.Bll.Common
             old_menu.ImageUrl = new_menu.ImageUrl;
             old_menu.Url = new_menu.Url;
             old_menu.Sort = new_menu.Sort;
+            old_menu.PermissionJson = new_menu.PermissionJson;
         }
 
         public override async Task<MenuEntity> GetMenuByUID(string uid)
