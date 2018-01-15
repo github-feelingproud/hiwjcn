@@ -12,6 +12,10 @@ namespace Hiwjcn.Core.Domain
     [Table("tb_menu")]
     public class MenuEntity : MenuEntityBase
     {
+        [NotMapped]
         public virtual List<MenuEntity> Children { get; set; }
+
+        [NotMapped]
+        public virtual List<string> PermissionIds { get; set; }
     }
 }

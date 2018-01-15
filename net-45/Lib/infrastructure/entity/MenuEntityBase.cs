@@ -8,6 +8,7 @@ using Lib.core;
 using Lib.extension;
 using Lib.helper;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Lib.infrastructure.entity
 {
@@ -48,7 +49,10 @@ namespace Lib.infrastructure.entity
         public virtual int Sort { get; set; }
 
         public virtual string PermissionJson { get; set; }
-        
+
+        [NotMapped]
+        public virtual List<string> PermissionNames => this.PermissionValues.Value;
+
         public virtual bool ShowForUser(LoginUserInfo loginuser)
         {
             var pers = this.PermissionValues.Value;
