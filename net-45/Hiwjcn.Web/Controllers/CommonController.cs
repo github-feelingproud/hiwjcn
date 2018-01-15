@@ -11,14 +11,50 @@ using System.Text;
 using System.Web.Mvc;
 using System.Xml;
 using Lib.mvc.attr;
+using Hiwjcn.Framework;
+using System.Threading.Tasks;
+using Lib.extra_;
+using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.Controllers
 {
     /// <summary>
     /// 公用组件
     /// </summary>
-    public class CommonController : WebCore.MvcLib.Controller.UserBaseController
+    public class CommonController : UserBaseController
     {
+        [HttpPost]
+        [EpcAuth]
+        public async Task<ActionResult> Upload()
+        {
+            return await RunActionAsync(async () =>
+            {
+                if ((this.X.context.Request.Files?.Count ?? 0) <= 0)
+                {
+                    return GetJsonRes("请选择要上传的文件");
+                }
+                var file = this.X.context.Request.Files[0];
+
+                var path = Server.MapPath("~/static/upload/");
+
+                var uploader = new FileUpload()
+                {
+                    MaxSize = Com.MbToB(1)
+                };
+
+                var res = uploader.UploadSingleFile(file, path);
+                if (!res.SuccessUpload)
+                {
+                    return GetJsonRes("上传失败");
+                }
+
+                var qiniu = new QiniuHelper();
+                var url = qiniu.Upload(res.FilePath, Com.GetUUID());
+
+                await Task.FromResult(1);
+                return GetJson(new _() { success = true, data = url });
+            });
+        }
         [HttpPost]
         public ActionResult SetLang(string lang)
         {

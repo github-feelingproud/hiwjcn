@@ -4,6 +4,7 @@ using Hiwjcn.Core.Domain;
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.Sys;
 using Hiwjcn.Core.Domain.User;
+using Hiwjcn.Core.Entity;
 using Lib.data.ef;
 using MySql.Data.Entity;
 using System;
@@ -74,6 +75,8 @@ namespace Hiwjcn.Dal
         public virtual DbSet<CacheHitLogEntity> CacheHitLogEntity { get; set; }
 
         public virtual DbSet<MenuEntity> MenuEntity { get; set; }
+
+        public virtual DbSet<SystemEntity> SystemEntity { get; set; }
 
         #endregion
     }

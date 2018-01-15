@@ -30,7 +30,25 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        [EpcAuth(Permission = "manage.menu.query")]
+        //[EpcAuth(Permission = "manage.menu.query")]
+        [EpcAuth]
+        public async Task<ActionResult> QueryByUID(string uid)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var data = await this._menuService.GetMenuByUID(uid);
+
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data
+                });
+            });
+        }
+
+        [HttpPost]
+        //[EpcAuth(Permission = "manage.menu.query")]
+        [EpcAuth]
         public async Task<ActionResult> Query(string group)
         {
             return await RunActionAsync(async () =>
@@ -66,7 +84,8 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        [EpcAuth(Permission = "manage.menu.edit")]
+        //[EpcAuth(Permission = "manage.menu.edit")]
+        [EpcAuth]
         public async Task<ActionResult> Save(string data)
         {
             return await RunActionAsync(async () =>
@@ -76,7 +95,6 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes("参数错误");
                 }
-
                 if (ValidateHelper.IsPlumpString(menu.UID))
                 {
                     var res = await this._menuService.UpdateMenu(menu);
@@ -88,7 +106,7 @@ namespace Hiwjcn.Web.Controllers
                 else
                 {
                     menu.AsFirstLevelIfParentIsNotValid();
-                    var res = await this._menuService.UpdateMenu(menu);
+                    var res = await this._menuService.AddMenu(menu);
                     if (res.error)
                     {
                         return GetJsonRes(res.msg);
@@ -100,7 +118,8 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        [EpcAuth(Permission = "manage.menu.delete")]
+        //[EpcAuth(Permission = "manage.menu.delete")]
+        [EpcAuth]
         public async Task<ActionResult> Delete(string uid)
         {
             return await RunActionAsync(async () =>

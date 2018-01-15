@@ -19,6 +19,8 @@ namespace Lib.infrastructure.service
     {
         Task<_<string>> AddMenu(MenuBase model);
 
+        Task<MenuBase> GetMenuByUID(string uid);
+
         Task<_<string>> DeleteMenuRecursively(string group_key, string menu_uid);
 
         Task<_<string>> DeleteMenus(params string[] menu_uids);
@@ -106,8 +108,11 @@ namespace Lib.infrastructure.service
 
             throw new Exception("更新菜单错误");
         }
-        
-        public async Task<_<string>> DeleteMenuWhenNoChildren(string uid) =>
+
+        public virtual async Task<_<string>> DeleteMenuWhenNoChildren(string uid) =>
             await this._menuRepo.DeleteSingleNodeWhenNoChildren_(uid);
+
+        public virtual async Task<MenuBase> GetMenuByUID(string uid) =>
+            await this._menuRepo.GetFirstAsync(x => x.UID == uid);
     }
 }

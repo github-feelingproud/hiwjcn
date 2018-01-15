@@ -14,7 +14,6 @@ using Lib.helper;
 using Lib.mvc;
 using Lib.mvc.attr;
 using Lib.mvc.user;
-using Lib.storage;
 using Nest;
 using Polly;
 using Polly.CircuitBreaker;
@@ -131,7 +130,7 @@ namespace Hiwjcn.Web.Controllers
 
         public ActionResult qiniu()
         {
-            var data = QiniuHelper.FindEntry("fas");
+            //
             return Content("");
         }
 

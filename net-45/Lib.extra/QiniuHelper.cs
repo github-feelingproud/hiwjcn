@@ -8,7 +8,7 @@ using System;
 using System.Configuration;
 using Lib.extension;
 
-namespace Lib.extra
+namespace Lib.extra_
 {
     /// <summary>
     /// http://developer.qiniu.com/resource/official.html#sdk

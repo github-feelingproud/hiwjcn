@@ -92,6 +92,7 @@
     <Compile Include="Entity\MenuEntity.cs" />
     <Compile Include="Entity\ReqLogEntity.cs" />
     <Compile Include="Entity\DepartmentEntity.cs" />
+    <Compile Include="Entity\SystemEntity.cs" />
     <Compile Include="Entity\UserEntity.cs" />
     <Compile Include="EnumsBundle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

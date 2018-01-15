@@ -12,6 +12,6 @@ namespace Hiwjcn.Core.Domain
     [Table("tb_menu")]
     public class MenuEntity : MenuEntityBase
     {
-        //
+        public virtual List<MenuEntity> Children { get; set; }
     }
 }

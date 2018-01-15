@@ -203,7 +203,9 @@
     <Folder Include="Views\Auth\" />
     <Folder Include="Views\Department\" />
     <Folder Include="Views\Menu\" />
+    <Folder Include="Views\Permission\" />
     <Folder Include="Views\Role\" />
+    <Folder Include="Views\SysManage\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
@@ -219,8 +221,10 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\PageController.cs" />
+    <Compile Include="Controllers\PermissionController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\SSOController.cs" />
+    <Compile Include="Controllers\SysManageController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
@@ -345,6 +349,10 @@
     <ProjectReference Include="..\Hiwjcn.Service\Hiwjcn.Service.csproj">
       <Project>{100b0f4d-99ac-498e-88d9-39fdd796ce19}</Project>
       <Name>Hiwjcn.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib.extra\Lib.extra.csproj">
+      <Project>{d30617e2-fc7f-495d-b9f1-8e693ad47f9f}</Project>
+      <Name>Lib.extra</Name>
     </ProjectReference>
     <ProjectReference Include="..\Lib\Lib.csproj">
       <Project>{5f8bd505-423d-400c-84c4-f9638f84cc41}</Project>

@@ -48,10 +48,7 @@ namespace Lib.infrastructure.entity
         public virtual int Sort { get; set; }
 
         public virtual string PermissionJson { get; set; }
-
-        [Required]
-        public virtual string MenuGroupKey { get; set; }
-
+        
         public virtual bool ShowForUser(LoginUserInfo loginuser)
         {
             var pers = this.PermissionValues.Value;

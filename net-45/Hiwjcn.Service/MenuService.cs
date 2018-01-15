@@ -45,5 +45,16 @@ namespace Hiwjcn.Bll.Common
             old_menu.Url = new_menu.Url;
             old_menu.Sort = new_menu.Sort;
         }
+
+        public override async Task<MenuEntity> GetMenuByUID(string uid)
+        {
+            var data = await base.GetMenuByUID(uid);
+            if (data != null)
+            {
+                data.Children = await this._menuRepo.GetListAsync(x => x.ParentUID == data.UID);
+            }
+
+            return data;
+        }
     }
 }
