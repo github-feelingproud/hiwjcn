@@ -17,6 +17,8 @@ namespace Lib.infrastructure.service.user
     {
         Task<_<string>> AddPermission(PermissionBase model);
 
+        Task<PermissionBase> GetPermissionByUID(string uid);
+
         Task<_<string>> DeletePermissionWhenNoChildren(string permission_uid);
 
         Task<List<PermissionBase>> QueryPermissionList(string parent = null);
@@ -76,5 +78,8 @@ namespace Lib.infrastructure.service.user
 
         public virtual async Task<_<string>> DeletePermission(params string[] permission_uids) =>
             await this._permissionRepo.DeleteByUIDS_(permission_uids);
+
+        public virtual async Task<PermissionBase> GetPermissionByUID(string uid) =>
+            await this._permissionRepo.GetFirstAsync(x => x.UID == uid);
     }
 }

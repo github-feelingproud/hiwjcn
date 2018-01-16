@@ -44,14 +44,9 @@ namespace Hiwjcn.Bll.User
             return await Task.FromResult(new List<string>() { });
         }
 
-        public override async Task<_<UserEntity>> RegisterUser(UserEntity model)
+        public override async Task<_<string>> RegisterCheck(UserEntity model)
         {
-            var data = new _<UserEntity>();
-            if (!model.IsValid(out var msg))
-            {
-                data.SetErrorMsg(msg);
-                return data;
-            }
+            var data = new _<string>();
             if (await this._userRepo.ExistAsync(x => x.UserName == model.UserName))
             {
                 data.SetErrorMsg("用户名已存在");
@@ -67,8 +62,8 @@ namespace Hiwjcn.Bll.User
                 data.SetErrorMsg("电话号码已存在");
                 return data;
             }
-
-            return await base.RegisterUser(model);
+            data.SetSuccessData(string.Empty);
+            return data;
         }
     }
 }

@@ -104,17 +104,25 @@ namespace Lib.infrastructure.service.user
             return data;
         }
 
+        public abstract Task<_<string>> RegisterCheck(UserBase model);
+
         public virtual async Task<_<UserBase>> RegisterUser(UserBase model)
         {
             var data = new _<UserBase>();
 
             model.Init("user");
+            model.PassWord = this.EncryptPassword(model.PassWord ?? throw new Exception("密码为空"));
             if (!model.IsValid(out var msg))
             {
                 data.SetErrorMsg(msg);
                 return data;
             }
-            model.PassWord = this.EncryptPassword(model.PassWord);
+            var check = await this.RegisterCheck(model);
+            if (check.error)
+            {
+                data.SetErrorMsg(check.msg);
+                return data;
+            }
 
             if (await this._userRepo.AddAsync(model) > 0)
             {

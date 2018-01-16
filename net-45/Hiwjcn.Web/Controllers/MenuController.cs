@@ -16,6 +16,7 @@ using Hiwjcn.Bll.Common;
 using Lib.infrastructure.model;
 using Lib.helper;
 using Lib.infrastructure.helper;
+using Lib.infrastructure.extension;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -82,6 +83,31 @@ namespace Hiwjcn.Web.Controllers
                     success = true,
                     data = list
                 });
+            });
+        }
+
+        [HttpPost]
+        //[EpcAuth(Permission = "manage.menu.query")]
+        [EpcAuth]
+        public async Task<ActionResult> InitTree(string group)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var data = new MenuEntity()
+                {
+                    MenuName = $"自动创建的节点{DateTime.Now}",
+                    Description = "自动创建的节点描述",
+                    PermissionJson = new List<string>() { }.ToJson(),
+                    GroupKey = group,
+                }.InitSelf("mu").AsFirstLevel();
+
+                var res = await this._menuService.AddMenu(data);
+                if (res.error)
+                {
+                    return GetJsonRes(res.msg);
+                }
+
+                return GetJsonRes(string.Empty);
             });
         }
 

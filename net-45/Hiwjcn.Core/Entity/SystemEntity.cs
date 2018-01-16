@@ -17,6 +17,9 @@ namespace Hiwjcn.Core.Entity
         [Required]
         public virtual string Name { get; set; }
 
+        [Required]
+        public virtual string Flag { get; set; }
+
         public virtual string Description { get; set; }
 
         public virtual string ImageUrl { get; set; }

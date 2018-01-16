@@ -50,32 +50,5 @@ namespace Lib.infrastructure.entity
         [Required]
         [StringLength(100, ErrorMessage = "分组长度错误")]
         public virtual string GroupKey { get; set; } = DEFAULT_GROUP;
-
-        /// <summary>
-        /// 判断是父级节点
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool IsFirstLevel() =>
-            !ValidateHelper.IsPlumpStringAfterTrim(this.ParentUID);
-
-        /// <summary>
-        /// 修改节点层级和父级为第一级
-        /// </summary>
-        public virtual void AsFirstLevel()
-        {
-            this.ParentUID = FIRST_PARENT_UID;
-            this.Level = FIRST_LEVEL;
-        }
-
-        /// <summary>
-        /// 如果节点的层级和父级错误，就修改为第一级
-        /// </summary>
-        public virtual void AsFirstLevelIfParentIsNotValid()
-        {
-            if (!ValidateHelper.IsPlumpStringAfterTrim(this.ParentUID) || this.ParentUID == FIRST_PARENT_UID)
-            {
-                this.AsFirstLevel();
-            }
-        }
     }
 }

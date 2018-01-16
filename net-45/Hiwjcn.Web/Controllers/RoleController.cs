@@ -15,6 +15,7 @@ using WebCore.MvcLib.Controller;
 using Lib.infrastructure.model;
 using Lib.infrastructure.helper;
 using Lib.helper;
+using Lib.infrastructure.extension;
 
 namespace Hiwjcn.Web.Controllers
 {

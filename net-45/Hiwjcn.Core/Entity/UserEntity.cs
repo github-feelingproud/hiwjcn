@@ -23,7 +23,11 @@ namespace Hiwjcn.Core.Domain.User
 
     [Serializable]
     [Table("tb_permission")]
-    public class PermissionEntity : PermissionEntityBase { }
+    public class PermissionEntity : PermissionEntityBase
+    {
+        [NotMapped]
+        public virtual List<PermissionEntity> Children { get; set; }
+    }
 
     /// <summary>
     /// 角色

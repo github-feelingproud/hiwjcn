@@ -24,7 +24,7 @@ namespace Lib.infrastructure.entity.user
         /// md5加密的密码
         /// </summary>
         [Column("user_pass")]
-        [StringLength(50, MinimumLength = 10, ErrorMessage = "密码长度错误")]
+        [StringLength(300, MinimumLength = 1, ErrorMessage = "密码长度错误")]
         public virtual string PassWord { get; set; }
 
         /// <summary>

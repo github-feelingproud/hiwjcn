@@ -201,5 +201,36 @@ namespace Lib.infrastructure.extension
             return data;
         }
 
+        /// <summary>
+        /// 判断是父级节点
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsFirstLevel<T>(this T model)
+            where T : TreeEntityBase
+            => !ValidateHelper.IsPlumpStringAfterTrim(model.ParentUID);
+
+        /// <summary>
+        /// 修改节点层级和父级为第一级
+        /// </summary>
+        public static T AsFirstLevel<T>(this T model)
+            where T : TreeEntityBase
+        {
+            model.ParentUID = TreeEntityBase.FIRST_PARENT_UID;
+            model.Level = TreeEntityBase.FIRST_LEVEL;
+            return model;
+        }
+
+        /// <summary>
+        /// 如果节点的层级和父级错误，就修改为第一级
+        /// </summary>
+        public static T AsFirstLevelIfParentIsNotValid<T>(this T model)
+            where T : TreeEntityBase
+        {
+            if (!ValidateHelper.IsPlumpStringAfterTrim(model.ParentUID) || model.ParentUID == TreeEntityBase.FIRST_PARENT_UID)
+            {
+                model.AsFirstLevel();
+            }
+            return model;
+        }
     }
 }

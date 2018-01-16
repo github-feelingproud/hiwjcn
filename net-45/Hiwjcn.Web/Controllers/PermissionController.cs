@@ -16,6 +16,7 @@ using Hiwjcn.Bll.Common;
 using Lib.infrastructure.model;
 using Lib.helper;
 using Lib.infrastructure.helper;
+using Lib.infrastructure.extension;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -27,6 +28,22 @@ namespace Hiwjcn.Web.Controllers
             IPermissionService _perService)
         {
             this._perService = _perService;
+        }
+
+        [HttpPost]
+        //[EpcAuth(Permission = "manage.role.query")]
+        [EpcAuth]
+        public async Task<ActionResult> GetPermissionByUID(string uid)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var data = await this._perService.GetPermissionByUID(uid);
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data,
+                });
+            });
         }
 
         [HttpPost]
@@ -50,5 +67,68 @@ namespace Hiwjcn.Web.Controllers
                 });
             });
         }
+
+        /// <summary>
+        /// 删除权限
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        [HttpPost]
+        //[EpcAuth(Permission = "manage.per.delete")]
+        [EpcAuth]
+        public async Task<ActionResult> Delete(string uid)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var res = await this._perService.DeletePermissionWhenNoChildren(uid);
+                if (res.error)
+                {
+                    return GetJsonRes(res.msg);
+                }
+
+                return GetJsonRes(string.Empty);
+            });
+        }
+
+        /// <summary>
+        /// 添加权限
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPost]
+        //[EpcAuth(Permission = "manage.per.edit")]
+        [EpcAuth]
+        public async Task<ActionResult> Save(string data)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var model = data?.JsonToEntity<PermissionEntity>(throwIfException: false);
+                if (model == null)
+                {
+                    return GetJsonRes("参数为空");
+                }
+
+                if (ValidateHelper.IsPlumpString(model.UID))
+                {
+                    var res = await this._perService.UpdatePermission(model);
+                    if (res.error)
+                    {
+                        return GetJsonRes(res.msg);
+                    }
+                }
+                else
+                {
+                    model.AsFirstLevelIfParentIsNotValid();
+                    var res = await this._perService.AddPermission(model);
+                    if (res.error)
+                    {
+                        return GetJsonRes(res.msg);
+                    }
+                }
+
+                return GetJsonRes(string.Empty);
+            });
+        }
+
     }
 }

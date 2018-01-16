@@ -54,6 +54,16 @@ namespace Hiwjcn.Web.Controllers
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }
 
+        public ActionResult data_import()
+        {
+            using (var db = new SSODB())
+            {
+                var syslist = db.T_Systems.ToList();
+                var pers = db.Auth_Permission.ToList();
+            }
+            return Content("ok");
+        }
+
         /// <summary>
         /// 表结构
         /// </summary>
