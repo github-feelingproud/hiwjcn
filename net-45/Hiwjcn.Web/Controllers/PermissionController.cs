@@ -36,15 +36,12 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var list = await this._perService.QueryPermissionList();
-                var iviewdata = list.Select(x => new IViewTreeNode()
+                var iviewdata = list.Select(x => (IViewTreeNode)x).ToList();
+
+                foreach (var m in iviewdata)
                 {
-                    id = x.UID,
-                    pId = x.ParentUID,
-                    title = x.Name,
-                    expand = false,
-                    @checked = false,
-                    selected = false,
-                }).ToList();
+                    m.expand = false;
+                }
 
                 return GetJson(new _()
                 {

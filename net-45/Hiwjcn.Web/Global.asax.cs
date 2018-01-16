@@ -62,7 +62,7 @@ namespace Hiwjcn.Web
                         builder.AuthUseValidationDataProvider<AppOrWebAuthDataProvider>();
                         builder.AuthClientUseCustomValidation<AuthBasicValidationProvider>();
                         //auth 功能逻辑
-                        builder.AuthUseServerApiAccessService<AuthApiServiceFromDB_>();
+                        builder.AuthUseServerApiAccessService<AuthApiService>();
                     };
 
                     //disable "X-AspNetMvc-Version" header name

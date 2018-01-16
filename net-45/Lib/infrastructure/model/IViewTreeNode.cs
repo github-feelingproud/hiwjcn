@@ -37,6 +37,7 @@ namespace Lib.infrastructure.model
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public virtual List<IViewTreeNode> children { get; set; }
 
+        public virtual object raw_data { get; set; }
 
         public static implicit operator IViewTreeNode(RoleEntityBase role) =>
             new IViewTreeNode()
@@ -44,6 +45,7 @@ namespace Lib.infrastructure.model
                 id = role.UID,
                 pId = role.ParentUID,
                 title = role.RoleName,
+                raw_data = role
             };
 
         public static implicit operator IViewTreeNode(DepartmentEntityBase department) =>
@@ -51,7 +53,8 @@ namespace Lib.infrastructure.model
             {
                 id = department.UID,
                 pId = department.ParentUID,
-                title = department.DepartmentName
+                title = department.DepartmentName,
+                raw_data = department
             };
 
         public static implicit operator IViewTreeNode(MenuEntityBase menu) =>
@@ -59,7 +62,17 @@ namespace Lib.infrastructure.model
             {
                 id = menu.UID,
                 pId = menu.ParentUID,
-                title = menu.MenuName
+                title = menu.MenuName,
+                raw_data = menu
+            };
+
+        public static implicit operator IViewTreeNode(PermissionEntityBase per) =>
+            new IViewTreeNode()
+            {
+                id = per.UID,
+                pId = per.ParentUID,
+                title = per.Description,
+                raw_data = per
             };
     }
 }

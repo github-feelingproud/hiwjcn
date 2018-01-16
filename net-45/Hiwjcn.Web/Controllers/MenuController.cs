@@ -69,6 +69,23 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
+        //[EpcAuth(Permission = "manage.menu.query")]
+        [EpcAuth]
+        public async Task<ActionResult> QueryList(string group)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var list = await this._menuService.QueryMenuList(group);
+
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = list
+                });
+            });
+        }
+
+        [HttpPost]
         [EpcAuth]
         public async Task<ActionResult> ShowMenu(string group)
         {

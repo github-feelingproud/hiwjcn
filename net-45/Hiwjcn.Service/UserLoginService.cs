@@ -10,6 +10,7 @@ using Lib.ioc;
 using Lib.data.ef;
 using Lib.mvc.user;
 using Lib.extension;
+using Lib.mvc;
 using Lib.infrastructure.service.user;
 
 namespace Hiwjcn.Bll.User
@@ -41,6 +42,33 @@ namespace Hiwjcn.Bll.User
         public override async Task<List<string>> GetAutoAssignRole()
         {
             return await Task.FromResult(new List<string>() { });
+        }
+
+        public override async Task<_<UserEntity>> RegisterUser(UserEntity model)
+        {
+            var data = new _<UserEntity>();
+            if (!model.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._userRepo.ExistAsync(x => x.UserName == model.UserName))
+            {
+                data.SetErrorMsg("用户名已存在");
+                return data;
+            }
+            if (await this._userRepo.ExistAsync(x => x.Email == model.Email))
+            {
+                data.SetErrorMsg("电子邮箱已存在");
+                return data;
+            }
+            if (await this._userRepo.ExistAsync(x => x.Phone == model.Phone))
+            {
+                data.SetErrorMsg("电话号码已存在");
+                return data;
+            }
+
+            return await base.RegisterUser(model);
         }
     }
 }

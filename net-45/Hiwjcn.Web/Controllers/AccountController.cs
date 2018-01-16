@@ -21,6 +21,7 @@ using Lib.data.ef;
 using Hiwjcn.Core.Domain.User;
 using Lib.infrastructure.service.user;
 using Lib.infrastructure.extension;
+using Hiwjcn.Bll.User;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -29,6 +30,7 @@ namespace Hiwjcn.Web.Controllers
         private readonly IReadOnlyCollection<string> DefaultScopes = new List<string>() { }.AsReadOnly();
 
         private readonly IAuthLoginService _IAuthLoginService;
+        private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
         private readonly LoginStatus _LoginStatus;
         private readonly IEFRepository<AuthScope> _AuthScopeRepo;
@@ -37,6 +39,7 @@ namespace Hiwjcn.Web.Controllers
 
         public AccountController(
             IAuthLoginService _IAuthLoginService,
+            IUserLoginService _login,
             IAuthApi _authApi,
             LoginStatus logincontext,
             IEFRepository<AuthScope> _AuthScopeRepo,
@@ -44,6 +47,7 @@ namespace Hiwjcn.Web.Controllers
             ICacheProvider _cache)
         {
             this._IAuthLoginService = _IAuthLoginService;
+            this._login = _login;
             this._authApi = _authApi;
             this._LoginStatus = logincontext;
             this._AuthScopeRepo = _AuthScopeRepo;
@@ -207,6 +211,26 @@ namespace Hiwjcn.Web.Controllers
                 var loginuser = await this.X.context.GetAuthUserAsync();
 
                 return GetJsonp(new _() { success = loginuser != null, data = loginuser });
+            });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Reg(string data)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var user = data?.JsonToEntity<UserEntity>(throwIfException: false);
+                if (user == null)
+                {
+                    return GetJsonRes("参数错误");
+                }
+                var res = await this._login.RegisterUser(user);
+                if (res.error)
+                {
+                    return GetJsonRes(res.msg);
+                }
+
+                return GetJsonRes(string.Empty);
             });
         }
 

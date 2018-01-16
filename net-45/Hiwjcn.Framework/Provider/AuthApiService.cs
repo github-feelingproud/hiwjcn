@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 
 namespace Hiwjcn.Bll.Auth
 {
-    public class AuthApiServiceFromDB_ :
+    public class AuthApiService :
         AuthApiServiceFromDbBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>
     {
         private readonly Lazy<IActorRef> LogActor;
 
-        public AuthApiServiceFromDB_(
+        public AuthApiService(
             IAuthLoginService _loginService,
             ICacheProvider _cache,
             IEFRepository<AuthClient> _clientRepo,

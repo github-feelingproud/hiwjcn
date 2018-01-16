@@ -161,7 +161,7 @@ namespace Lib.infrastructure.extension
                 {
                     query = query.Where(x => x.Level == level);
                 }
-                return await query.OrderByDescending(x => x.UpdateTime).Take(max).ToListAsync();
+                return await query.OrderByDescending(x => x.CreateTime).Take(max).ToListAsync();
             });
         }
 
