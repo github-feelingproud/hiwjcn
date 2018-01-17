@@ -21,7 +21,7 @@ namespace Hiwjcn.Bll.Auth
         private readonly Lazy<IActorRef> LogActor;
 
         public AuthApiService(
-            IAuthLoginService _loginService,
+            IAuthLoginProvider _loginService,
             ICacheProvider _cache,
             IEFRepository<AuthClient> _clientRepo,
             IEFRepository<AuthScope> _scopeRepo,

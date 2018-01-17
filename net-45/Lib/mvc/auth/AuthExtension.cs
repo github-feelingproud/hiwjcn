@@ -20,9 +20,9 @@ namespace Lib.mvc.auth
 {
     public static class AuthExtension
     {
-        public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : class, IAuthLoginService
+        public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : class, IAuthLoginProvider
         {
-            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IAuthLoginService>().SingleInstance();
+            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IAuthLoginProvider>().SingleInstance();
         }
 
         /// <summary>

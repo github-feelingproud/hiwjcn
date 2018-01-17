@@ -368,7 +368,7 @@
     <Compile Include="infrastructure\provider\UserLoginServiceBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="infrastructure\provider\AuthApiServiceFromDbBase.cs" />
-    <Compile Include="mvc\auth\IAuthLoginService.cs" />
+    <Compile Include="mvc\auth\IAuthLoginProvider.cs" />
     <Compile Include="infrastructure\service\user\AuthServiceBase.cs" />
     <Compile Include="infrastructure\service\user\DepartmentServiceBase.cs" />
     <Compile Include="infrastructure\service\MenuServiceBase.cs" />

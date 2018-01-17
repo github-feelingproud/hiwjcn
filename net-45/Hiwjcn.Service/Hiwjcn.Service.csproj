@@ -149,7 +149,7 @@
     <Compile Include="AuthTokenService.cs" />
     <Compile Include="SystemService.cs" />
     <Compile Include="TokenEventHandler.cs" />
-    <Compile Include="AuthLoginService.cs" />
+    <Compile Include="AuthLoginProvider.cs" />
     <Compile Include="ClearDataBaseService.cs" />
     <Compile Include="MenuService.cs" />
     <Compile Include="MyService.cs" />

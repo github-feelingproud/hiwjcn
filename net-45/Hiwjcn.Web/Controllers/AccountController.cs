@@ -29,7 +29,7 @@ namespace Hiwjcn.Web.Controllers
     {
         private readonly IReadOnlyCollection<string> DefaultScopes = new List<string>() { }.AsReadOnly();
 
-        private readonly IAuthLoginService _IAuthLoginService;
+        private readonly IAuthLoginProvider _IAuthLoginService;
         private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
         private readonly LoginStatus _LoginStatus;
@@ -38,7 +38,7 @@ namespace Hiwjcn.Web.Controllers
         private readonly ICacheProvider _cache;
 
         public AccountController(
-            IAuthLoginService _IAuthLoginService,
+            IAuthLoginProvider _IAuthLoginService,
             IUserLoginService _login,
             IAuthApi _authApi,
             LoginStatus logincontext,

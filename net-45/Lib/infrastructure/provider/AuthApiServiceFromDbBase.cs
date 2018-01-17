@@ -32,10 +32,10 @@ namespace Lib.infrastructure.provider
     {
         private readonly object AuthApiServiceFromDB = new object();
 
-        protected readonly IAuthLoginService _loginService;
+        protected readonly IAuthLoginProvider _loginService;
 
         public AuthApiServiceFromDbBase(
-            IAuthLoginService _loginService,
+            IAuthLoginProvider _loginService,
             ICacheProvider _cache,
             IEFRepository<ClientBase> _clientRepo,
             IEFRepository<ScopeBase> _scopeRepo,

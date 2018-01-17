@@ -27,7 +27,7 @@ namespace Hiwjcn.Web.Controllers
     public class ConnectController : BaseController
     {
         private readonly IAuthDataProvider _IValidationDataProvider;
-        private readonly IAuthLoginService _IAuthLoginService;
+        private readonly IAuthLoginProvider _IAuthLoginService;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly IAuthClientService _IAuthClientService;
@@ -36,7 +36,7 @@ namespace Hiwjcn.Web.Controllers
 
         public ConnectController(
             IAuthDataProvider _IValidationDataProvider,
-            IAuthLoginService _IAuthLoginService,
+            IAuthLoginProvider _IAuthLoginService,
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService,
             IAuthClientService _IAuthClientService,

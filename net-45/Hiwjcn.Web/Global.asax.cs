@@ -56,7 +56,7 @@ namespace Hiwjcn.Web
                     IocContext.Instance.AddExtraRegistrar(new FullDependencyRegistrar());
                     IocContext.Instance.OnContainerBuilding += (ref ContainerBuilder builder) =>
                     {
-                        builder.UseAccountSystem<AuthLoginService>();
+                        builder.UseAccountSystem<AuthLoginProvider>();
                         //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
                         builder.AuthUseLoginStatus(() => new LoginStatus($"auth_user_uid", $"auth_user_token", $"auth_user_session"));
                         builder.AuthUseValidationDataProvider<AppOrWebAuthDataProvider>();

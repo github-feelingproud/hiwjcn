@@ -10,7 +10,7 @@ using Autofac;
 
 namespace Lib.mvc.auth
 {
-    public interface IAuthLoginService
+    public interface IAuthLoginProvider
     {
         Task<_<LoginUserInfo>> LoginByPassword(string user_name, string password);
 

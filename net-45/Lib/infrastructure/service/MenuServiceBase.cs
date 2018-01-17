@@ -80,7 +80,7 @@ namespace Lib.infrastructure.service
                     query = query.Where(x => x.ParentUID == parent);
                 }
 
-                return await query.OrderByDescending(x => x.Sort).Take(5000).ToListAsync();
+                return await query.OrderBy(x => x.Sort).Take(5000).ToListAsync();
             });
         }
 

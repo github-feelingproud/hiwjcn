@@ -32,7 +32,7 @@ namespace Hiwjcn.Web.Controllers
         public const string manage_auth = "manage.auth";
 
         private readonly IAuthDataProvider _IValidationDataProvider;
-        private readonly IAuthLoginService _IAuthLoginService;
+        private readonly IAuthLoginProvider _IAuthLoginService;
         private readonly IAuthTokenService _IAuthTokenService;
         private readonly IAuthScopeService _IAuthScopeService;
         private readonly IAuthClientService _IAuthClientService;
@@ -44,7 +44,7 @@ namespace Hiwjcn.Web.Controllers
 
         public AuthManageController(
             IAuthDataProvider _IValidationDataProvider,
-            IAuthLoginService _IAuthLoginService,
+            IAuthLoginProvider _IAuthLoginService,
             IAuthTokenService _IAuthTokenService,
             IAuthScopeService _IAuthScopeService,
             IAuthClientService _IAuthClientService,
