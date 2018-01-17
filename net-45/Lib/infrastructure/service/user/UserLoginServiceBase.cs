@@ -13,7 +13,7 @@ using Lib.mvc;
 
 namespace Lib.infrastructure.service.user
 {
-    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>
+    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>
     {
         Task<_<UserBase>> LoginViaPassword(string user_name, string password);
 
@@ -23,41 +23,39 @@ namespace Lib.infrastructure.service.user
 
         Task<_<UserBase>> ChangePwd(UserBase model);
 
-        Task<List<UserBase>> LoadPermission(List<UserBase> list);
-
         Task<UserBase> LoadPermission(UserBase model);
     }
 
     /// <summary>
     /// 用户=角色=权限
     /// </summary>
-    /// <typeparam name="UserBase"></typeparam>
-    /// <typeparam name="OneTimeCodeBase"></typeparam>
-    /// <typeparam name="RolePermissionBase"></typeparam>
-    /// <typeparam name="UserRoleBase"></typeparam>
-    public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase> :
-        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>
+    public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase> :
+        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>
         where UserBase : UserEntityBase, new()
         where OneTimeCodeBase : UserOneTimeCodeEntityBase, new()
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
+        where PermissionBase : PermissionEntityBase, new()
     {
         protected readonly IEFRepository<UserBase> _userRepo;
         protected readonly IEFRepository<OneTimeCodeBase> _oneTimeCodeRepo;
         protected readonly IEFRepository<RolePermissionBase> _rolePermissionRepo;
         protected readonly IEFRepository<UserRoleBase> _userRoleRepo;
+        protected readonly IEFRepository<PermissionBase> _perRepo;
 
         public UserLoginServiceBase(
             IEFRepository<UserBase> _userRepo,
             IEFRepository<OneTimeCodeBase> _oneTimeCodeRepo,
             IEFRepository<RolePermissionBase> _rolePermissionRepo,
-            IEFRepository<UserRoleBase> _userRoleRepo)
+            IEFRepository<UserRoleBase> _userRoleRepo,
+            IEFRepository<PermissionBase> _perRepo)
         {
 
             this._userRepo = _userRepo;
             this._oneTimeCodeRepo = _oneTimeCodeRepo;
             this._rolePermissionRepo = _rolePermissionRepo;
             this._userRoleRepo = _userRoleRepo;
+            this._perRepo = _perRepo;
         }
 
         public abstract string EncryptPassword(string password);
@@ -151,54 +149,28 @@ namespace Lib.infrastructure.service.user
             throw new Exception("添加验证码失败");
         }
 
-        [Obsolete("暂时没有启用")]
-        public abstract Task<List<string>> GetAutoAssignRole();
-
-        public virtual async Task<List<UserBase>> LoadPermission(List<UserBase> list)
+        public virtual async Task<UserBase> LoadPermission(UserBase model)
         {
-            if (!ValidateHelper.IsPlumpList(list)) { return list; }
-
-            var user_uids = list.Select(x => x.UID).ToList();
-
-            var auto_assign_roles = await this.GetAutoAssignRole();
+            if (model == null) { return model; }
 
             await this._userRepo.PrepareSessionAsync(async db =>
             {
                 //table
-                var user_query = db.Set<UserBase>().AsNoTrackingQueryable();
                 var user_role_map_query = db.Set<UserRoleBase>().AsNoTrackingQueryable();
                 var role_permission_map_query = db.Set<RolePermissionBase>().AsNoTrackingQueryable();
+                var per_query = db.Set<PermissionBase>().AsNoTrackingQueryable();
 
-                var query = from user in user_query.Where(x => user_uids.Contains(x.UID))
-                            join r in user_role_map_query on user.UID equals r.UserID into role_join
-                            from role in role_join.DefaultIfEmpty()
-                            join p in role_permission_map_query on role.UID equals p.RoleID into permission_join
-                            from permission in permission_join.DefaultIfEmpty()
+                var roleids = user_role_map_query.Where(x => x.UserID == model.UID).Select(x => x.RoleID);
+                var perids = role_permission_map_query.Where(x => roleids.Contains(x.RoleID)).Select(x => x.PermissionID).Distinct();
 
-                            select new
-                            {
-                                user_uid = user.UID,
-                                role_uid = role.UID,
-                                permission_uid = permission.PermissionID
-                            };
+                var pers = await per_query.Where(x => perids.Contains(x.UID)).ToListAsync();
 
-                var map = await query.ToListAsync();
-
-                foreach (var m in list)
-                {
-                    var user_map = map.Where(x => x.user_uid == m.UID);
-                    m.RoleIds = user_map.NotEmptyAndDistinct(x => x.role_uid).ToList();
-
-                    m.PermissionIds = user_map.NotEmptyAndDistinct(x => x.permission_uid).ToList();
-                }
-
+                model.PermissionIds = pers.NotEmptyAndDistinct(x => x.UID).ToList();
+                model.PermissionNames = pers.NotEmptyAndDistinct(x => x.Name).ToList();
             });
 
-            return list;
+            return model;
         }
-
-        public virtual async Task<UserBase> LoadPermission(UserBase model) =>
-            (await this.LoadPermission(new List<UserBase>() { model })).FirstOrDefault();
 
         public virtual async Task<_<UserBase>> ChangePwd(UserBase model)
         {
@@ -223,8 +195,8 @@ namespace Lib.infrastructure.service.user
         }
     }
 
-    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase> :
-        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>
+    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase, PermissionBase> :
+        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>
     {
         //
     }
@@ -232,21 +204,16 @@ namespace Lib.infrastructure.service.user
     /// <summary>
     /// 用户=部门=角色=权限
     /// </summary>
-    /// <typeparam name="UserBase"></typeparam>
-    /// <typeparam name="OneTimeCodeBase"></typeparam>
-    /// <typeparam name="RolePermissionBase"></typeparam>
-    /// <typeparam name="UserRoleBase"></typeparam>
-    /// <typeparam name="UserDepartmentBase"></typeparam>
-    /// <typeparam name="DepartmentRoleBase"></typeparam>
-    public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase> :
-        UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase>,
-        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase>
+    public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase, PermissionBase> :
+        UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>,
+        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase, PermissionBase>
         where UserDepartmentBase : UserDepartmentEntityBase, new()
         where DepartmentRoleBase : DepartmentRoleEntityBase, new()
         where UserBase : UserEntityBase, new()
         where OneTimeCodeBase : UserOneTimeCodeEntityBase, new()
         where RolePermissionBase : RolePermissionEntityBase, new()
         where UserRoleBase : UserRoleEntityBase, new()
+        where PermissionBase : PermissionEntityBase, new()
     {
         protected readonly IEFRepository<UserDepartmentBase> _userDepartmentRepo;
         protected readonly IEFRepository<DepartmentRoleBase> _departmentRoleRepo;
@@ -257,66 +224,41 @@ namespace Lib.infrastructure.service.user
             IEFRepository<UserBase> _userRepo,
             IEFRepository<OneTimeCodeBase> _oneTimeCodeRepo,
             IEFRepository<RolePermissionBase> _rolePermissionRepo,
-            IEFRepository<UserRoleBase> _userRoleRepo) :
-            base(_userRepo, _oneTimeCodeRepo, _rolePermissionRepo, _userRoleRepo)
+            IEFRepository<UserRoleBase> _userRoleRepo,
+            IEFRepository<PermissionBase> _perRepo) :
+            base(_userRepo, _oneTimeCodeRepo, _rolePermissionRepo, _userRoleRepo, _perRepo)
         {
             this._userDepartmentRepo = _userDepartmentRepo;
             this._departmentRoleRepo = _departmentRoleRepo;
         }
 
-        public override async Task<List<UserBase>> LoadPermission(List<UserBase> list)
+        public override async Task<UserBase> LoadPermission(UserBase model)
         {
-            if (!ValidateHelper.IsPlumpList(list)) { return list; }
-
-            //load user->role->permission
-            list = await base.LoadPermission(list);
-
-            //next load user->department->role->permission
-            var user_uids = list.Select(x => x.UID).ToList();
+            if (model == null) { return model; }
 
             await this._userRepo.PrepareSessionAsync(async db =>
             {
-                var user_query = db.Set<UserBase>().AsNoTrackingQueryable();
+                //table
+                var user_dept_map_query = db.Set<UserDepartmentBase>().AsNoTrackingQueryable();
+                var dept_role_map_query = db.Set<DepartmentRoleBase>().AsNoTrackingQueryable();
+
+                var user_role_map_query = db.Set<UserRoleBase>().AsNoTrackingQueryable();
                 var role_permission_map_query = db.Set<RolePermissionBase>().AsNoTrackingQueryable();
-                var user_department_map_query = db.Set<UserDepartmentBase>().AsNoTrackingQueryable();
-                var department_role_map_query = db.Set<DepartmentRoleBase>().AsNoTrackingQueryable();
+                var per_query = db.Set<PermissionBase>().AsNoTrackingQueryable();
 
-                var query = from user in user_query.Where(x => user_uids.Contains(x.UID))
+                var deptids = user_dept_map_query.Where(x => x.UserUID == model.UID).Select(x => x.DepartmentUID);
+                var roleids_ = dept_role_map_query.Where(x => deptids.Contains(x.DepartmentUID)).Select(x => x.RoleUID);
 
-                            join d in user_department_map_query on user.UID equals d.UserUID into dept_join
-                            from dept in dept_join.DefaultIfEmpty()
+                var roleids = user_role_map_query.Where(x => x.UserID == model.UID).Select(x => x.RoleID);
+                var perids = role_permission_map_query.Where(x => roleids_.Contains(x.RoleID) || roleids.Contains(x.RoleID)).Select(x => x.PermissionID).Distinct();
 
-                            join r in department_role_map_query on dept.UID equals r.DepartmentUID into role_join
-                            from role in role_join.DefaultIfEmpty()
+                var pers = await per_query.Where(x => perids.Contains(x.UID)).ToListAsync();
 
-                            join p in role_permission_map_query on role.UID equals p.RoleID into permission_join
-                            from permission in permission_join.DefaultIfEmpty()
-
-                            select new
-                            {
-                                user_uid = user.UID,
-                                department_uid = dept.UID,
-                                role_uid = role.UID,
-                                permission_uid = permission.UID
-                            };
-
-                var map = await query.ToListAsync();
-
-                foreach (var m in list)
-                {
-                    var user_map = map.Where(x => x.user_uid == m.UID);
-
-                    m.DepartmentIds = user_map.NotEmptyAndDistinct(x => x.department_uid).ToList();
-
-                    m.RoleIds.AddRange(user_map.NotEmptyAndDistinct(x => x.role_uid));
-                    m.PermissionIds.AddRange(user_map.NotEmptyAndDistinct(x => x.permission_uid));
-
-                    m.RoleIds = m.RoleIds.Distinct().ToList();
-                    m.PermissionIds = m.PermissionIds.Distinct().ToList();
-                }
+                model.PermissionIds = pers.NotEmptyAndDistinct(x => x.UID).ToList();
+                model.PermissionNames = pers.NotEmptyAndDistinct(x => x.Name).ToList();
             });
 
-            return list;
+            return model;
         }
 
     }

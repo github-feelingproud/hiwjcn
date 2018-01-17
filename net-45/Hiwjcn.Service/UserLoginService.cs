@@ -16,12 +16,12 @@ using Lib.infrastructure.service.user;
 namespace Hiwjcn.Bll.User
 {
     public interface IUserLoginService :
-        IUserLoginServiceBase<UserEntity, UserOneTimeCodeEntity, RolePermissionEntity, UserRoleEntity, UserDepartmentEntity, DepartmentRoleEntity>,
+        IUserLoginServiceBase<UserEntity, UserOneTimeCodeEntity, RolePermissionEntity, UserRoleEntity, UserDepartmentEntity, DepartmentRoleEntity, PermissionEntity>,
         IAutoRegistered
     { }
 
     public class UserLoginService :
-        UserLoginServiceBase<UserEntity, UserOneTimeCodeEntity, RolePermissionEntity, UserRoleEntity, UserDepartmentEntity, DepartmentRoleEntity>,
+        UserLoginServiceBase<UserEntity, UserOneTimeCodeEntity, RolePermissionEntity, UserRoleEntity, UserDepartmentEntity, DepartmentRoleEntity, PermissionEntity>,
         IUserLoginService
     {
         public UserLoginService(
@@ -30,18 +30,16 @@ namespace Hiwjcn.Bll.User
             IEFRepository<UserEntity> _userRepo,
             IEFRepository<UserOneTimeCodeEntity> _oneTimeCodeRepo,
             IEFRepository<RolePermissionEntity> _rolePermissionRepo,
-            IEFRepository<UserRoleEntity> _userRoleRepo) :
-            base(_userDepartmentRepo, _departmentRoleRepo, _userRepo, _oneTimeCodeRepo, _rolePermissionRepo, _userRoleRepo)
-        { }
+            IEFRepository<UserRoleEntity> _userRoleRepo,
+            IEFRepository<PermissionEntity> _perRepo) :
+            base(_userDepartmentRepo, _departmentRoleRepo, _userRepo, _oneTimeCodeRepo, _rolePermissionRepo, _userRoleRepo, _perRepo)
+        {
+            //
+        }
 
         public override string EncryptPassword(string password)
         {
             return password.Trim().ToMD5().Trim().ToUpper();
-        }
-
-        public override async Task<List<string>> GetAutoAssignRole()
-        {
-            return await Task.FromResult(new List<string>() { });
         }
 
         public override async Task<_<string>> RegisterCheck(UserEntity model)

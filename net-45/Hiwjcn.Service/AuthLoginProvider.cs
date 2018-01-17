@@ -39,6 +39,7 @@ namespace Hiwjcn.Bll.Auth
                 HeadImgUrl = model.UserImg,
                 Email = model.Email,
 
+                Permissions = model.PermissionNames ?? new List<string>() { },
                 IsActive = model.IsActive,
             };
 
