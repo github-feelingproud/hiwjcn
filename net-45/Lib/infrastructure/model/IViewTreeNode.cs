@@ -37,42 +37,44 @@ namespace Lib.infrastructure.model
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public virtual List<IViewTreeNode> children { get; set; }
 
+        public virtual bool match { get; set; } = false;
+
         public virtual object raw_data { get; set; }
 
-        public static implicit operator IViewTreeNode(RoleEntityBase role) =>
+        public static implicit operator IViewTreeNode(RoleEntityBase data) =>
             new IViewTreeNode()
             {
-                id = role.UID,
-                pId = role.ParentUID,
-                title = role.RoleName,
-                raw_data = role
+                id = data.UID,
+                pId = data.ParentUID,
+                title = data.RoleName,
+                raw_data = data
             };
 
-        public static implicit operator IViewTreeNode(DepartmentEntityBase department) =>
+        public static implicit operator IViewTreeNode(DepartmentEntityBase data) =>
             new IViewTreeNode()
             {
-                id = department.UID,
-                pId = department.ParentUID,
-                title = department.DepartmentName,
-                raw_data = department
+                id = data.UID,
+                pId = data.ParentUID,
+                title = data.DepartmentName,
+                raw_data = data
             };
 
-        public static implicit operator IViewTreeNode(MenuEntityBase menu) =>
+        public static implicit operator IViewTreeNode(MenuEntityBase data) =>
             new IViewTreeNode()
             {
-                id = menu.UID,
-                pId = menu.ParentUID,
-                title = menu.MenuName,
-                raw_data = menu
+                id = data.UID,
+                pId = data.ParentUID,
+                title = data.MenuName,
+                raw_data = data
             };
 
-        public static implicit operator IViewTreeNode(PermissionEntityBase per) =>
+        public static implicit operator IViewTreeNode(PermissionEntityBase data) =>
             new IViewTreeNode()
             {
-                id = per.UID,
-                pId = per.ParentUID,
-                title = per.Description,
-                raw_data = per
+                id = data.UID,
+                pId = data.ParentUID,
+                title = data.Description,
+                raw_data = data
             };
     }
 }

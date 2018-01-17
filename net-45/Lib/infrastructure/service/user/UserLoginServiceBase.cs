@@ -13,7 +13,7 @@ using Lib.mvc;
 
 namespace Lib.infrastructure.service.user
 {
-    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>
+    public interface IUserLoginServiceBase<UserBase>
     {
         Task<_<UserBase>> LoginViaPassword(string user_name, string password);
 
@@ -30,7 +30,7 @@ namespace Lib.infrastructure.service.user
     /// 用户=角色=权限
     /// </summary>
     public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase> :
-        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>
+        IUserLoginServiceBase<UserBase>
         where UserBase : UserEntityBase, new()
         where OneTimeCodeBase : UserOneTimeCodeEntityBase, new()
         where RolePermissionBase : RolePermissionEntityBase, new()
@@ -131,24 +131,6 @@ namespace Lib.infrastructure.service.user
             throw new Exception("注册失败");
         }
 
-        public virtual async Task<_<string>> AddOneTimeCode(OneTimeCodeBase code)
-        {
-            var data = new _<string>();
-            code.Init("code");
-            if (!code.IsValid(out var msg))
-            {
-                data.SetErrorMsg(msg);
-                return data;
-            }
-            if (await this._oneTimeCodeRepo.AddAsync(code) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("添加验证码失败");
-        }
-
         public virtual async Task<UserBase> LoadPermission(UserBase model)
         {
             if (model == null) { return model; }
@@ -194,19 +176,13 @@ namespace Lib.infrastructure.service.user
             throw new Exception("密码修改失败");
         }
     }
-
-    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase, PermissionBase> :
-        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>
-    {
-        //
-    }
-
+    
     /// <summary>
     /// 用户=部门=角色=权限
     /// </summary>
     public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase, PermissionBase> :
         UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>,
-        IUserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase, PermissionBase>
+        IUserLoginServiceBase<UserBase>
         where UserDepartmentBase : UserDepartmentEntityBase, new()
         where DepartmentRoleBase : DepartmentRoleEntityBase, new()
         where UserBase : UserEntityBase, new()

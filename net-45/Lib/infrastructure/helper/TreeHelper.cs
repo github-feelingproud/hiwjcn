@@ -74,5 +74,43 @@ namespace Lib.infrastructure.helper
 
             return data;
         }
+
+        /// <summary>
+        /// 搜索树结构，找到的节点设置match=true,
+        /// 树必须是多层结构
+        /// </summary>
+        public static List<IViewTreeNode> SearchIViewTree(List<IViewTreeNode> list, string keyword)
+        {
+            var q = (keyword ?? string.Empty).ToLower();
+
+            bool SearchTree(ref List<IViewTreeNode> data)
+            {
+                var match_res = false;
+                foreach (var node in data)
+                {
+                    node.title = node.title ?? string.Empty;
+                    var match = node.title.ToLower().Contains(q);
+                    node.match = q.Length > 0 && match;
+
+                    var children_match = false;
+
+                    if (ValidateHelper.IsPlumpList(node.children))
+                    {
+                        var children = node.children;
+                        children_match = SearchTree(ref children);
+                    }
+                    node.expand = match || children_match;
+                    if (node.expand)
+                    {
+                        match_res = true;
+                    }
+                }
+                return match_res;
+            }
+
+            SearchTree(ref list);
+
+            return list;
+        }
     }
 }

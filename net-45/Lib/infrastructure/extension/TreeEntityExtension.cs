@@ -36,7 +36,7 @@ namespace Lib.infrastructure.extension
                         FindChildren(ref children);
                     }
 
-                    callback.Invoke(m, children.ToList());
+                    callback.Invoke(m, children);
                 }
             }
 
@@ -64,21 +64,17 @@ namespace Lib.infrastructure.extension
 
             var top_parent = default(string);
 
-            var node = default(T);
-
             var node_path = new List<T>();
 
             while (true)
             {
-                node = data_source.Where(x => x.UID == current_uid).FirstOrDefault();
+                var node = data_source.Where(x => x.UID == current_uid).FirstOrDefault();
                 if (node == null) { break; }
 
                 repeat_check.AddOnceOrThrow(node.UID, error_msg: "存在无限循环");
 
-                {
-                    //设置检查值
-                    top_parent = node.ParentUID;
-                }
+                //设置检查值
+                top_parent = node.ParentUID;
 
                 current_uid = node.ParentUID;
                 node_path.Add(node);
