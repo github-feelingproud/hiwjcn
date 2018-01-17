@@ -189,21 +189,40 @@ namespace Hiwjcn.Web.Controllers
         /// 退出地址
         /// </summary>
         /// <returns></returns>
-        [RequestLog]
+        [HttpGet]
         public ActionResult LogOut(string url, string @continue, string next, string callback)
         {
             return RunAction(() =>
             {
-                _LoginStatus.SetUserLogout();
+                this._LoginStatus.SetUserLogout();
 
                 url = new string[] { url, @continue, next, callback, "/" }.FirstNotEmpty_();
 
                 return Redirect(url);
-
             });
         }
 
-        [RequestLog]
+        [HttpPost]
+        public ActionResult LogOutAction()
+        {
+            return RunAction(() =>
+            {
+                this._LoginStatus.SetUserLogout();
+                return GetJsonRes(string.Empty);
+            });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GetLoginUserInfo()
+        {
+            return await RunActionAsync(async () =>
+            {
+                var loginuser = await this.X.context.GetAuthUserAsync();
+                return GetJson(new _() { success = loginuser != null, data = loginuser });
+            });
+        }
+
+        [HttpGet]
         public async Task<ActionResult> LoginUser()
         {
             return await RunActionAsync(async () =>
