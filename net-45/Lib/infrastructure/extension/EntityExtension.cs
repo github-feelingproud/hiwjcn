@@ -89,22 +89,18 @@ namespace Lib.infrastructure.extension
         /// <summary>
         /// check input=>delete by uids
         /// </summary>
-        public static async Task<_<string>> DeleteByUIDS_<T>(this IRepository<T> repo, params string[] uids)
+        public static async Task<_<int>> DeleteByIds<T>(this IRepository<T> repo, params string[] uids)
             where T : BaseEntity
         {
-            var data = new _<string>();
+            var data = new _<int>();
             if (!ValidateHelper.IsPlumpList(uids))
             {
                 data.SetErrorMsg("ID为空");
                 return data;
             }
-            if (await repo.DeleteWhereAsync(x => uids.Contains(x.UID)) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("删除数据错误");
+            var count = await repo.DeleteWhereAsync(x => uids.Contains(x.UID));
+            data.SetSuccessData(count);
+            return data;
         }
 
         /// <summary>

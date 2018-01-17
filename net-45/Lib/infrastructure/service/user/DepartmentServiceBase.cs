@@ -20,11 +20,11 @@ namespace Lib.infrastructure.service.user
 {
     public interface IDepartmentServiceBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase>
     {
-        Task<_<string>> DeleteDepartment(params string[] department_uids);
+        Task<_<int>> DeleteDepartment(params string[] department_uids);
 
-        Task<_<string>> DeleteDepartmentRecursively(string department_uid);
+        Task<_<int>> DeleteDepartmentRecursively(string department_uid);
 
-        Task<_<string>> DeleteDepartmentWhenNoChildren(string uid);
+        Task<_<int>> DeleteDepartmentWhenNoChildren(string uid);
 
         Task<_<DepartmentBase>> AddDepartment(DepartmentBase model);
 
@@ -59,10 +59,10 @@ namespace Lib.infrastructure.service.user
         }
 
 
-        public virtual async Task<_<string>> DeleteDepartment(params string[] department_uids) =>
-            await this._departmentRepo.DeleteByUIDS_(department_uids);
+        public virtual async Task<_<int>> DeleteDepartment(params string[] department_uids) =>
+            await this._departmentRepo.DeleteByIds(department_uids);
 
-        public virtual async Task<_<string>> DeleteDepartmentRecursively(string department_uid) =>
+        public virtual async Task<_<int>> DeleteDepartmentRecursively(string department_uid) =>
             await this._departmentRepo.DeleteTreeNodeRecursively(department_uid);
 
         public virtual async Task<_<DepartmentBase>> AddDepartment(DepartmentBase model) =>
@@ -160,7 +160,7 @@ namespace Lib.infrastructure.service.user
             return data;
         }
 
-        public virtual async Task<_<string>> DeleteDepartmentWhenNoChildren(string uid) =>
+        public virtual async Task<_<int>> DeleteDepartmentWhenNoChildren(string uid) =>
             await this._departmentRepo.DeleteSingleNodeWhenNoChildren_(uid);
     }
 }

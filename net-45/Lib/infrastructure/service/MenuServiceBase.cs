@@ -23,9 +23,9 @@ namespace Lib.infrastructure.service
 
         Task<_<string>> DeleteMenuRecursively(string group_key, string menu_uid);
 
-        Task<_<string>> DeleteMenus(params string[] menu_uids);
+        Task<_<int>> DeleteMenus(params string[] menu_uids);
 
-        Task<_<string>> DeleteMenuWhenNoChildren(string uid);
+        Task<_<int>> DeleteMenuWhenNoChildren(string uid);
 
         Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null);
 
@@ -66,8 +66,8 @@ namespace Lib.infrastructure.service
             throw new Exception("删除错误");
         }
 
-        public virtual async Task<_<string>> DeleteMenus(params string[] menu_uids) =>
-            await this._menuRepo.DeleteByUIDS_(menu_uids);
+        public virtual async Task<_<int>> DeleteMenus(params string[] menu_uids) =>
+            await this._menuRepo.DeleteByIds(menu_uids);
 
         public virtual async Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null)
         {
@@ -109,7 +109,7 @@ namespace Lib.infrastructure.service
             throw new Exception("更新菜单错误");
         }
 
-        public virtual async Task<_<string>> DeleteMenuWhenNoChildren(string uid) =>
+        public virtual async Task<_<int>> DeleteMenuWhenNoChildren(string uid) =>
             await this._menuRepo.DeleteSingleNodeWhenNoChildren_(uid);
 
         public virtual async Task<MenuBase> GetMenuByUID(string uid) =>

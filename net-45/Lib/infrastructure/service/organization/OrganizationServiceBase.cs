@@ -20,7 +20,7 @@ namespace Lib.infrastructure.service.organization
     {
         Task<_<OrgBase>> AddOrg(OrgBase model);
 
-        Task<_<string>> DeleteOrg(params string[] org_uids);
+        Task<_<int>> DeleteOrg(params string[] org_uids);
 
         Task<_<string>> UpdateOrg(OrgBase model);
 
@@ -54,8 +54,8 @@ namespace Lib.infrastructure.service.organization
         public virtual async Task<_<OrgBase>> AddOrg(OrgBase model) =>
             await this._orgRepo.AddEntity_(model, "org");
 
-        public virtual async Task<_<string>> DeleteOrg(params string[] org_uids) =>
-            await this._orgRepo.DeleteByUIDS_(org_uids);
+        public virtual async Task<_<int>> DeleteOrg(params string[] org_uids) =>
+            await this._orgRepo.DeleteByIds(org_uids);
 
         public abstract void UpdateOrgEntity(ref OrgBase old_org, ref OrgBase new_org);
 

@@ -25,11 +25,9 @@ namespace Lib.infrastructure.service.user
         Task<PagerData<UserBase>> QueryUserList(
             string name = null, string email = null, string keyword = null, int page = 1, int pagesize = 20);
 
-        Task<_<string>> AddUser(UserBase model);
+        Task<_<UserBase>> UpdateUser(UserBase model);
 
-        Task<_<string>> UpdateUser(UserBase model);
-
-        Task<_<string>> ActiveOrDeActiveUser(UserBase model, bool active);
+        Task<_<UserBase>> ActiveOrDeActiveUser(UserBase model, bool active);
     }
 
     public abstract class UserServiceBase<UserBase, UserAvatarBase> :
@@ -74,32 +72,11 @@ namespace Lib.infrastructure.service.user
             });
         }
 
-        public virtual async Task<_<string>> AddUser(UserBase model)
-        {
-            var data = new _<string>();
-
-            model.Init("user");
-
-            if (!model.IsValid(out var msg))
-            {
-                data.SetErrorMsg(msg);
-                return data;
-            }
-
-            if (await this._userRepo.AddAsync(model) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("注册失败");
-        }
-
         public abstract void UpdateUserEntity(ref UserBase old_user, ref UserBase new_user);
 
-        public virtual async Task<_<string>> UpdateUser(UserBase model)
+        public virtual async Task<_<UserBase>> UpdateUser(UserBase model)
         {
-            var data = new _<string>();
+            var data = new _<UserBase>();
 
             var user = await this._userRepo.GetFirstAsync(x => x.UID == model.UID);
             Com.AssertNotNull(user, $"用户不存在:{model.UID}");
@@ -113,16 +90,16 @@ namespace Lib.infrastructure.service.user
 
             if (await this._userRepo.UpdateAsync(user) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(user);
                 return data;
             }
 
             throw new Exception("更新失败");
         }
 
-        public virtual async Task<_<string>> ActiveOrDeActiveUser(UserBase model, bool active)
+        public virtual async Task<_<UserBase>> ActiveOrDeActiveUser(UserBase model, bool active)
         {
-            var data = new _<string>();
+            var data = new _<UserBase>();
 
             var user = await this._userRepo.GetFirstAsync(x => x.UID == model.UID);
             Com.AssertNotNull(user, $"用户不存在:{model.UID}");
@@ -141,7 +118,7 @@ namespace Lib.infrastructure.service.user
             }
             if (await this._userRepo.UpdateAsync(user) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(user);
                 return data;
             }
 

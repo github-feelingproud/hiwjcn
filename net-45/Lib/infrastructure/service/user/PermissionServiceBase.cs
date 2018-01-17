@@ -19,15 +19,15 @@ namespace Lib.infrastructure.service.user
 
         Task<PermissionBase> GetPermissionByUID(string uid);
 
-        Task<_<string>> DeletePermissionWhenNoChildren(string permission_uid);
+        Task<_<int>> DeletePermissionWhenNoChildren(string permission_uid);
 
         Task<List<PermissionBase>> QueryPermissionList(string parent = null);
 
-        Task<_<string>> UpdatePermission(PermissionBase model);
+        Task<_<PermissionBase>> UpdatePermission(PermissionBase model);
 
-        Task<_<string>> DeletePermissionRecursively(string permission_uid);
+        Task<_<int>> DeletePermissionRecursively(string permission_uid);
 
-        Task<_<string>> DeletePermission(params string[] permission_uids);
+        Task<_<int>> DeletePermission(params string[] permission_uids);
     }
 
     public abstract class PermissionServiceBase<PermissionBase> :
@@ -44,7 +44,7 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<_<PermissionBase>> AddPermission(PermissionBase model) =>
             await this._permissionRepo.AddTreeNode(model, "per");
 
-        public virtual async Task<_<string>> DeletePermissionWhenNoChildren(string permission_uid) =>
+        public virtual async Task<_<int>> DeletePermissionWhenNoChildren(string permission_uid) =>
             await this._permissionRepo.DeleteSingleNodeWhenNoChildren_(permission_uid);
 
         public virtual async Task<List<PermissionBase>> QueryPermissionList(string parent = null) =>
@@ -52,9 +52,9 @@ namespace Lib.infrastructure.service.user
 
         public abstract void UpdatePermissionEntity(ref PermissionBase old_permission, ref PermissionBase new_permission);
 
-        public virtual async Task<_<string>> UpdatePermission(PermissionBase model)
+        public virtual async Task<_<PermissionBase>> UpdatePermission(PermissionBase model)
         {
-            var data = new _<string>();
+            var data = new _<PermissionBase>();
             var permission = await this._permissionRepo.GetFirstAsync(x => x.UID == model.UID);
             Com.AssertNotNull(permission, $"权限为空:{model.UID}");
             this.UpdatePermissionEntity(ref permission, ref model);
@@ -66,18 +66,18 @@ namespace Lib.infrastructure.service.user
             }
             if (await this._permissionRepo.UpdateAsync(permission) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(permission);
                 return data;
             }
 
             throw new Exception("更新权限错误");
         }
 
-        public virtual async Task<_<string>> DeletePermissionRecursively(string permission_uid) =>
+        public virtual async Task<_<int>> DeletePermissionRecursively(string permission_uid) =>
             await this._permissionRepo.DeleteTreeNodeRecursively(permission_uid);
 
-        public virtual async Task<_<string>> DeletePermission(params string[] permission_uids) =>
-            await this._permissionRepo.DeleteByUIDS_(permission_uids);
+        public virtual async Task<_<int>> DeletePermission(params string[] permission_uids) =>
+            await this._permissionRepo.DeleteByIds(permission_uids);
 
         public virtual async Task<PermissionBase> GetPermissionByUID(string uid) =>
             await this._permissionRepo.GetFirstAsync(x => x.UID == uid);

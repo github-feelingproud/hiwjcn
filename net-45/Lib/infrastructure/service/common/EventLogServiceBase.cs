@@ -39,17 +39,16 @@ namespace Lib.infrastructure.service.common
             this._logRepo = _logRepo;
         }
 
-        public virtual async Task AddLogAsync(LogBase model) => await this._logRepo.AddEntity_(model, "log");
+        public virtual async Task AddLogAsync(LogBase model) => 
+            await this._logRepo.AddEntity_(model, "log");
 
-        public virtual void AddLog(LogBase model)
-        {
-            model.Init("log");
-            this._logRepo.Add(model);
-        }
+        public virtual void AddLog(LogBase model) =>
+            this._logRepo.Add(model.InitSelf("log"));
 
-        public virtual void ClearOldLogs(DateTime before) => this._logRepo.DeleteWhere(x => x.CreateTime < before);
+        public virtual void ClearOldLogs(DateTime before) =>
+            this._logRepo.DeleteWhere(x => x.CreateTime < before);
 
-        public async Task<PagerData<LogBase>> QueryPager(string q = null,
+        public virtual async Task<PagerData<LogBase>> QueryPager(string q = null,
             DateTime? start = null, DateTime? end = null, int page = 1, int pagesize = 10)
         {
             return await this._logRepo.PrepareIQueryableAsync(async query =>

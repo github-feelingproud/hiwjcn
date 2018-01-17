@@ -165,10 +165,10 @@ namespace Lib.infrastructure.extension
             });
         }
 
-        public static async Task<_<string>> DeleteTreeNodeRecursively<T>(this IRepository<T> repo, string node_uid)
+        public static async Task<_<int>> DeleteTreeNodeRecursively<T>(this IRepository<T> repo, string node_uid)
             where T : TreeEntityBase
         {
-            var data = new _<string>();
+            var data = new _<int>();
             var node = await repo.GetFirstAsync(x => x.UID == node_uid);
             Com.AssertNotNull(node, "节点不存在");
 
@@ -176,28 +176,25 @@ namespace Lib.infrastructure.extension
 
             var dead_nodes = list.FindNodeChildrenRecursively_(node);
 
-            if (await repo.DeleteAsync(dead_nodes.ToArray()) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
+            var count = await repo.DeleteAsync(dead_nodes.ToArray());
 
-            throw new Exception("删除节点错误");
+            data.SetSuccessData(count);
+            return data;
         }
 
-        public static async Task<_<string>> DeleteSingleNodeWhenNoChildren_<T>(this IRepository<T> repo, string node_uid)
+        public static async Task<_<int>> DeleteSingleNodeWhenNoChildren_<T>(this IRepository<T> repo, string node_uid)
             where T : TreeEntityBase
         {
-            var data = new _<string>();
+            var data = new _<int>();
             if (await repo.ExistAsync(x => x.ParentUID == node_uid))
             {
                 data.SetErrorMsg("节点存在子节点，不能删除");
                 return data;
             }
 
-            await repo.DeleteWhereAsync(x => x.UID == node_uid);
+            var count = await repo.DeleteWhereAsync(x => x.UID == node_uid);
 
-            data.SetSuccessData(string.Empty);
+            data.SetSuccessData(count);
             return data;
         }
 
