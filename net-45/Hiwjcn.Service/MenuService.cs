@@ -51,17 +51,24 @@ namespace Hiwjcn.Bll.Common
             old_menu.Sort = new_menu.Sort;
             old_menu.PermissionJson = new_menu.PermissionJson;
         }
-
-        public override async Task<MenuEntity> GetMenuByUID(string uid)
+        
+        public override async Task<List<MenuEntity>> QueryMenuList(string group_key, string parent = null)
         {
-            var data = await base.GetMenuByUID(uid);
-            if (data != null)
+            var data = await base.QueryMenuList(group_key, parent);
+            if (ValidateHelper.IsPlumpList(data))
             {
-                data.Children = await this._menuRepo.GetListAsync(x => x.ParentUID == data.UID);
-                var perNames = data.PermissionNames;
-                data.PermissionIds = (await this._perRepo.GetListAsync(x => perNames.Contains(x.Name))).Select(x => x.UID).ToList();
-            }
+                var names = new List<string>();
+                data.ForEach(x => names.AddWhenNotEmpty(x.PermissionNames));
+                names = names.Where(x => ValidateHelper.IsPlumpString(x)).ToList();
 
+                var list = await this._perRepo.GetListAsync(x => names.Contains(x.Name));
+
+                foreach (var m in data)
+                {
+                    m.PermissionIds = list.Where(x => m.PermissionNames.Contains(x.Name)).Select(x => x.UID).ToList();
+                }
+
+            }
             return data;
         }
 

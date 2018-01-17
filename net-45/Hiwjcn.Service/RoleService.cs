@@ -20,7 +20,7 @@ namespace Hiwjcn.Bll.User
     public interface IRoleService : IRoleServiceBase<RoleEntity, UserRoleEntity, RolePermissionEntity>,
         IAutoRegistered
     {
-        Task<RoleEntity> GetRoleByUID(string uid);
+        //
     }
 
     public class RoleService : RoleServiceBase<RoleEntity, UserRoleEntity, RolePermissionEntity>,
@@ -32,18 +32,21 @@ namespace Hiwjcn.Bll.User
             IEFRepository<RolePermissionEntity> _rolePermissionRepo) :
             base(_roleRepo, _userRoleRepo, _rolePermissionRepo)
         { }
-
-        public async Task<RoleEntity> GetRoleByUID(string uid)
+        
+        public override async Task<List<RoleEntity>> QueryRoleList(string parent = null)
         {
-            var role = await this._roleRepo.GetFirstAsync(x => x.UID == uid);
-            if (role != null)
+            var data = await base.QueryRoleList(parent);
+            if (ValidateHelper.IsPlumpList(data))
             {
-                var map = await this._rolePermissionRepo.GetListAsync(x => x.RoleID == uid);
-                role.PermissionIds = map.Select(x => x.PermissionID).ToList();
-
-                role.Children = await this._roleRepo.GetListAsync(x => x.ParentUID == role.UID);
+                var uids = data.Select(x => x.UID).ToList();
+                var map = await this._rolePermissionRepo.GetListAsync(x => uids.Contains(x.RoleID));
+                foreach (var role in data)
+                {
+                    role.PermissionIds = map.Where(x => x.RoleID == role.UID).Select(x => x.PermissionID).ToList();
+                }
             }
-            return role;
+
+            return data;
         }
 
         public override void UpdateRoleEntity(ref RoleEntity old_role, ref RoleEntity new_role)

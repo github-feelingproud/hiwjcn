@@ -51,6 +51,9 @@ namespace Lib.infrastructure.entity
 
         public virtual string PermissionJson { get; set; }
 
+        /// <summary>
+        /// 解析json，拿到权限名
+        /// </summary>
         [NotMapped]
         public virtual List<string> PermissionNames => this.PermissionValues.Value;
 

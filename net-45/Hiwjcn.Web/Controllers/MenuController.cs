@@ -33,23 +33,6 @@ namespace Hiwjcn.Web.Controllers
         [HttpPost]
         //[EpcAuth(Permission = "manage.menu.query")]
         [EpcAuth]
-        public async Task<ActionResult> QueryByUID(string uid)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var data = await this._menuService.GetMenuByUID(uid);
-
-                return GetJson(new _()
-                {
-                    success = true,
-                    data = data
-                });
-            });
-        }
-
-        [HttpPost]
-        //[EpcAuth(Permission = "manage.menu.query")]
-        [EpcAuth]
         public async Task<ActionResult> Query(string group)
         {
             return await RunActionAsync(async () =>

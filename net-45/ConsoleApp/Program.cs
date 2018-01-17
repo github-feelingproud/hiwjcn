@@ -39,9 +39,11 @@ namespace ConsoleApp
 
             //ZK.call().Wait();
 
-            WCF.Serv();
+            //WCF.Serv();
 
             //JobManager.Start();
+
+            new data_import() { }.run();
 
             Console.WriteLine("finish");
             Console.ReadLine();

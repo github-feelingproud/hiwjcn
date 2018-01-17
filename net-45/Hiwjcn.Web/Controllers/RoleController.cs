@@ -33,27 +33,6 @@ namespace Hiwjcn.Web.Controllers
         }
 
         /// <summary>
-        /// 更具uid获取权限和相关联的权限id
-        /// </summary>
-        /// <param name="uid"></param>
-        /// <returns></returns>
-        [HttpPost]
-        //[EpcAuth(Permission = "manage.role.query")]
-        [EpcAuth]
-        public async Task<ActionResult> GetRoleByUID(string uid)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var role = await this._roleService.GetRoleByUID(uid);
-                return GetJson(new _()
-                {
-                    success = true,
-                    data = role,
-                });
-            });
-        }
-
-        /// <summary>
         /// 显示角色树菜单
         /// </summary>
         /// <returns></returns>
