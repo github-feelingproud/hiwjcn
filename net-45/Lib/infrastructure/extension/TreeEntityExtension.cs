@@ -114,10 +114,10 @@ namespace Lib.infrastructure.extension
 
         #endregion
 
-        public static async Task<_<string>> AddTreeNode<T>(this IRepository<T> repo, T model, string model_flag)
+        public static async Task<_<T>> AddTreeNode<T>(this IRepository<T> repo, T model, string model_flag)
             where T : TreeEntityBase
         {
-            var data = new _<string>();
+            var data = new _<T>();
             if (model.IsFirstLevel())
             {
                 model.AsFirstLevel();
@@ -136,7 +136,7 @@ namespace Lib.infrastructure.extension
             }
             if (await repo.AddAsync(model) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(model);
                 return data;
             }
 

@@ -40,9 +40,9 @@ namespace Hiwjcn.Bll.User
             return data;
         }
 
-        public override async Task<_<string>> AddPermission(PermissionEntity model)
+        public override async Task<_<PermissionEntity>> AddPermission(PermissionEntity model)
         {
-            var res = new _<string>();
+            var res = new _<PermissionEntity>();
             if (await this._permissionRepo.ExistAsync(x => x.Name == model.Name))
             {
                 res.SetErrorMsg("权限名已存在");

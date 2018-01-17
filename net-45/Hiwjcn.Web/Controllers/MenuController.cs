@@ -38,6 +38,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var list = await this._menuService.QueryMenuList(group);
+                list = await this._menuService.LoadPermissionIds(list);
                 var iviewdata = list.Select(x => (IViewTreeNode)x).ToList();
                 foreach (var m in iviewdata)
                 {

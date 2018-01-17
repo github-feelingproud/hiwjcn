@@ -15,7 +15,7 @@ namespace Lib.infrastructure.service.user
 {
     public interface IPermissionServiceBase<PermissionBase>
     {
-        Task<_<string>> AddPermission(PermissionBase model);
+        Task<_<PermissionBase>> AddPermission(PermissionBase model);
 
         Task<PermissionBase> GetPermissionByUID(string uid);
 
@@ -41,7 +41,7 @@ namespace Lib.infrastructure.service.user
             this._permissionRepo = _permissionRepo;
         }
 
-        public virtual async Task<_<string>> AddPermission(PermissionBase model) =>
+        public virtual async Task<_<PermissionBase>> AddPermission(PermissionBase model) =>
             await this._permissionRepo.AddTreeNode(model, "per");
 
         public virtual async Task<_<string>> DeletePermissionWhenNoChildren(string permission_uid) =>

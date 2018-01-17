@@ -26,9 +26,9 @@ namespace Lib.infrastructure.service.user
 
         Task<_<string>> DeleteDepartmentWhenNoChildren(string uid);
 
-        Task<_<string>> AddDepartment(DepartmentBase model);
+        Task<_<DepartmentBase>> AddDepartment(DepartmentBase model);
 
-        Task<_<string>> UpdateDepartment(DepartmentBase model);
+        Task<_<DepartmentBase>> UpdateDepartment(DepartmentBase model);
 
         Task<List<DepartmentBase>> QueryDepartmentList(string parent = null);
 
@@ -65,14 +65,14 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<_<string>> DeleteDepartmentRecursively(string department_uid) =>
             await this._departmentRepo.DeleteTreeNodeRecursively(department_uid);
 
-        public virtual async Task<_<string>> AddDepartment(DepartmentBase model) =>
+        public virtual async Task<_<DepartmentBase>> AddDepartment(DepartmentBase model) =>
             await this._departmentRepo.AddTreeNode(model, "dept");
 
         public abstract void UpdateDepartmentEntity(ref DepartmentBase old_department, ref DepartmentBase new_department);
 
-        public virtual async Task<_<string>> UpdateDepartment(DepartmentBase model)
+        public virtual async Task<_<DepartmentBase>> UpdateDepartment(DepartmentBase model)
         {
-            var data = new _<string>();
+            var data = new _<DepartmentBase>();
             var department = await this._departmentRepo.GetFirstAsync(x => x.UID == model.UID);
             Com.AssertNotNull(department, "部门不存在");
             this.UpdateDepartmentEntity(ref department, ref model);
@@ -80,7 +80,7 @@ namespace Lib.infrastructure.service.user
 
             if (await this._departmentRepo.UpdateAsync(department) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(department);
                 return data;
             }
 

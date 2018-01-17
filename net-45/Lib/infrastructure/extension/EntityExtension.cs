@@ -110,11 +110,11 @@ namespace Lib.infrastructure.extension
         /// <summary>
         /// init=>check=>save
         /// </summary>
-        public static async Task<_<string>> AddEntity_<T>(this IRepository<T> repo,
+        public static async Task<_<T>> AddEntity_<T>(this IRepository<T> repo,
             T model, string model_flag)
             where T : BaseEntity
         {
-            var data = new _<string>();
+            var data = new _<T>();
 
             model.Init(model_flag);
             if (!model.IsValid(out var msg))
@@ -124,7 +124,7 @@ namespace Lib.infrastructure.extension
             }
             if (await repo.AddAsync(model) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(model);
                 return data;
             }
 

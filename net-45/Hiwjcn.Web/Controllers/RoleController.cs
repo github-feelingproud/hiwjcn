@@ -44,6 +44,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var list = await this._roleService.QueryRoleList();
+                list = await this._roleService.LoadPermissionIds(list);
                 var iviewdata = list.Select(x => (IViewTreeNode)x).ToList();
 
                 foreach (var m in iviewdata)
@@ -98,6 +99,15 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes("参数为空");
                 }
+                model.PermissionIds = model.PermissionIds ?? new List<string>() { };
+                List<RolePermissionEntity> CreateMap(string role_uid)
+                {
+                    return model.PermissionIds.Select(x => new RolePermissionEntity()
+                    {
+                        RoleID = role_uid,
+                        PermissionID = x
+                    }.InitSelf("rp")).ToList();
+                };
 
                 if (ValidateHelper.IsPlumpString(model.UID))
                 {
@@ -105,6 +115,11 @@ namespace Hiwjcn.Web.Controllers
                     if (res.error)
                     {
                         return GetJsonRes(res.msg);
+                    }
+                    var r = await this._roleService.SetRolePermissions(res.data.UID, CreateMap(res.data.UID));
+                    if (r.error)
+                    {
+                        return GetJsonRes(r.msg);
                     }
                 }
                 else
@@ -114,6 +129,11 @@ namespace Hiwjcn.Web.Controllers
                     if (res.error)
                     {
                         return GetJsonRes(res.msg);
+                    }
+                    var r = await this._roleService.SetRolePermissions(res.data.UID, CreateMap(res.data.UID));
+                    if (r.error)
+                    {
+                        return GetJsonRes(r.msg);
                     }
                 }
 

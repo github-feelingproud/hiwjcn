@@ -52,7 +52,7 @@ namespace Lib.infrastructure.service.common
             });
         }
 
-        public virtual async Task<_<string>> SaveSettings(SettingBase model) => 
+        public virtual async Task<_<SettingBase>> SaveSettings(SettingBase model) =>
             await this._settingRepo.AddEntity_(model, "st");
 
     }

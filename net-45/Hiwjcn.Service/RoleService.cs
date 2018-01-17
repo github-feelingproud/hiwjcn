@@ -20,7 +20,7 @@ namespace Hiwjcn.Bll.User
     public interface IRoleService : IRoleServiceBase<RoleEntity, UserRoleEntity, RolePermissionEntity>,
         IAutoRegistered
     {
-        //
+        Task<List<RoleEntity>> LoadPermissionIds(List<RoleEntity> data);
     }
 
     public class RoleService : RoleServiceBase<RoleEntity, UserRoleEntity, RolePermissionEntity>,
@@ -31,11 +31,12 @@ namespace Hiwjcn.Bll.User
             IEFRepository<UserRoleEntity> _userRoleRepo,
             IEFRepository<RolePermissionEntity> _rolePermissionRepo) :
             base(_roleRepo, _userRoleRepo, _rolePermissionRepo)
-        { }
-        
-        public override async Task<List<RoleEntity>> QueryRoleList(string parent = null)
         {
-            var data = await base.QueryRoleList(parent);
+            //
+        }
+        
+        public async Task<List<RoleEntity>> LoadPermissionIds(List<RoleEntity> data)
+        {
             if (ValidateHelper.IsPlumpList(data))
             {
                 var uids = data.Select(x => x.UID).ToList();
@@ -54,63 +55,6 @@ namespace Hiwjcn.Bll.User
             old_role.RoleName = new_role.RoleName;
             old_role.RoleDescription = new_role.RoleDescription;
             old_role.AutoAssignRole = new_role.AutoAssignRole;
-        }
-
-        private async Task<bool> SaveRolePermissions(RoleEntity role, List<string> permissions)
-        {
-            if (!ValidateHelper.IsPlumpList(permissions)) { return true; }
-
-            var data = permissions.Select(x => new RolePermissionEntity()
-            {
-                RoleID = role.UID,
-                PermissionID = x,
-            }.InitSelf("rp")).ToList();
-            await this._rolePermissionRepo.AddAsync(data.ToArray());
-            return true;
-        }
-
-        public override async Task<_<string>> UpdateRole(RoleEntity model)
-        {
-            var res = new _<string>();
-
-            var entity = await this._roleRepo.GetFirstAsync(x => x.UID == model.UID);
-            Com.AssertNotNull(entity, "角色不存在");
-            this.UpdateRoleEntity(ref entity, ref model);
-            entity.Update();
-
-            if (!entity.IsValid(out var msg))
-            {
-                res.SetErrorMsg(msg);
-                return res;
-            }
-
-            await this._roleRepo.UpdateAsync(entity);
-
-            await this._rolePermissionRepo.DeleteWhereAsync(x => x.RoleID == model.UID);
-
-            await this.SaveRolePermissions(model, model.PermissionIds);
-
-            res.SetSuccessData(string.Empty);
-            return res;
-        }
-
-        public override async Task<_<string>> AddRole(RoleEntity model)
-        {
-            var res = new _<string>();
-
-            model.Init("role");
-            if (!model.IsValid(out var msg))
-            {
-                res.SetErrorMsg(msg);
-                return res;
-            }
-
-            await this._roleRepo.AddAsync(model);
-
-            await this.SaveRolePermissions(model, model.PermissionIds);
-
-            res.SetSuccessData(string.Empty);
-            return res;
         }
     }
 }

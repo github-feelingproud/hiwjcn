@@ -18,7 +18,7 @@ namespace Lib.infrastructure.service.organization
 {
     public interface IOrganizationServiceBase<OrgBase, OrgMemberBase>
     {
-        Task<_<string>> AddOrg(OrgBase model);
+        Task<_<OrgBase>> AddOrg(OrgBase model);
 
         Task<_<string>> DeleteOrg(params string[] org_uids);
 
@@ -30,7 +30,7 @@ namespace Lib.infrastructure.service.organization
 
         Task<PagerData<OrgBase>> QueryOrgPager(string q = null, int page = 1, int pagesize = 10);
 
-        Task<_<string>> AddMember(OrgMemberBase model);
+        Task<_<OrgMemberBase>> AddMember(OrgMemberBase model);
 
         Task<_<string>> RemoveMember(string org_uid, string user_uid);
     }
@@ -51,7 +51,7 @@ namespace Lib.infrastructure.service.organization
             this._orgMemberRepo = _orgMemberRepo;
         }
 
-        public virtual async Task<_<string>> AddOrg(OrgBase model) =>
+        public virtual async Task<_<OrgBase>> AddOrg(OrgBase model) =>
             await this._orgRepo.AddEntity_(model, "org");
 
         public virtual async Task<_<string>> DeleteOrg(params string[] org_uids) =>
@@ -99,7 +99,7 @@ namespace Lib.infrastructure.service.organization
             });
         }
 
-        public virtual async Task<_<string>> AddMember(OrgMemberBase model) =>
+        public virtual async Task<_<OrgMemberBase>> AddMember(OrgMemberBase model) =>
             await this._orgMemberRepo.AddEntity_(model, "org-member");
 
         public virtual async Task<_<string>> RemoveMember(string org_uid, string user_uid)

@@ -22,7 +22,7 @@ namespace Lib.infrastructure.service.user
     {
         Task<List<RoleBase>> QueryRoleList(string parent = null);
 
-        Task<_<string>> AddRole(RoleBase role);
+        Task<_<RoleBase>> AddRole(RoleBase role);
 
         Task<_<string>> DeleteRoleRecursively(string role_uid);
 
@@ -30,7 +30,7 @@ namespace Lib.infrastructure.service.user
 
         Task<_<string>> DeleteRoleWhenNoChildren(string uid);
 
-        Task<_<string>> UpdateRole(RoleBase model);
+        Task<_<RoleBase>> UpdateRole(RoleBase model);
 
         Task<_<string>> SetUserRoles(string user_uid, List<UserRoleBase> roles);
 
@@ -60,7 +60,7 @@ namespace Lib.infrastructure.service.user
         public virtual async Task<List<RoleBase>> QueryRoleList(string parent = null) =>
             await this._roleRepo.QueryNodeList(parent);
 
-        public virtual async Task<_<string>> AddRole(RoleBase role) =>
+        public virtual async Task<_<RoleBase>> AddRole(RoleBase role) =>
             await this._roleRepo.AddTreeNode(role, "role");
 
         public virtual async Task<_<string>> DeleteRoleRecursively(string role_uid) =>
@@ -71,9 +71,9 @@ namespace Lib.infrastructure.service.user
 
         public abstract void UpdateRoleEntity(ref RoleBase old_role, ref RoleBase new_role);
 
-        public virtual async Task<_<string>> UpdateRole(RoleBase model)
+        public virtual async Task<_<RoleBase>> UpdateRole(RoleBase model)
         {
-            var data = new _<string>();
+            var data = new _<RoleBase>();
 
             var role = await this._roleRepo.GetFirstAsync(x => x.UID == model.UID);
             Com.AssertNotNull(role, $"角色不存在：{model.UID}");
@@ -86,7 +86,7 @@ namespace Lib.infrastructure.service.user
             }
             if (await this._roleRepo.UpdateAsync(role) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(role);
                 return data;
             }
 
@@ -166,7 +166,7 @@ namespace Lib.infrastructure.service.user
 
                 await this._rolePermissionRepo.DeleteWhereAsync(x => delete_list.Contains(x.UID));
             }
-            
+
             data.SetSuccessData(string.Empty);
             return data;
         }

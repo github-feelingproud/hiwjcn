@@ -21,7 +21,7 @@ namespace Hiwjcn.Bll.Common
     public interface IMenuService : IMenuServiceBase<MenuEntity>,
         IAutoRegistered
     {
-        //
+        Task<List<MenuEntity>> LoadPermissionIds(List<MenuEntity> data);
     }
 
     public class MenuService : MenuServiceBase<MenuEntity>,
@@ -51,10 +51,9 @@ namespace Hiwjcn.Bll.Common
             old_menu.Sort = new_menu.Sort;
             old_menu.PermissionJson = new_menu.PermissionJson;
         }
-        
-        public override async Task<List<MenuEntity>> QueryMenuList(string group_key, string parent = null)
+
+        public async Task<List<MenuEntity>> LoadPermissionIds(List<MenuEntity> data)
         {
-            var data = await base.QueryMenuList(group_key, parent);
             if (ValidateHelper.IsPlumpList(data))
             {
                 var names = new List<string>();
@@ -78,17 +77,16 @@ namespace Hiwjcn.Bll.Common
             return (await this._perRepo.GetListAsync(x => uids.Contains(x.UID))).Select(x => x.Name).ToList();
         }
 
-        public override async Task<_<string>> UpdateMenu(MenuEntity model)
+        public override async Task<_<MenuEntity>> UpdateMenu(MenuEntity model)
         {
             model.PermissionJson = (await this.ParsePermissionNames(model.PermissionIds)).ToJson();
             return await base.UpdateMenu(model);
         }
 
-        public override async Task<_<string>> AddMenu(MenuEntity model)
+        public override async Task<_<MenuEntity>> AddMenu(MenuEntity model)
         {
             model.PermissionJson = (await this.ParsePermissionNames(model.PermissionIds)).ToJson();
             return await base.AddMenu(model);
         }
-
     }
 }

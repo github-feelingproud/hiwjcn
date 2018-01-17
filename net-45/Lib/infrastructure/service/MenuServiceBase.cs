@@ -17,7 +17,7 @@ namespace Lib.infrastructure.service
 {
     public interface IMenuServiceBase<MenuBase>
     {
-        Task<_<string>> AddMenu(MenuBase model);
+        Task<_<MenuBase>> AddMenu(MenuBase model);
 
         Task<MenuBase> GetMenuByUID(string uid);
 
@@ -29,7 +29,7 @@ namespace Lib.infrastructure.service
 
         Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null);
 
-        Task<_<string>> UpdateMenu(MenuBase model);
+        Task<_<MenuBase>> UpdateMenu(MenuBase model);
     }
 
     public abstract class MenuServiceBase<MenuBase> :
@@ -44,7 +44,7 @@ namespace Lib.infrastructure.service
             this._menuRepo = _menuRepo;
         }
 
-        public virtual async Task<_<string>> AddMenu(MenuBase model)
+        public virtual async Task<_<MenuBase>> AddMenu(MenuBase model)
         {
             return await this._menuRepo.AddTreeNode(model, "mn");
         }
@@ -86,9 +86,9 @@ namespace Lib.infrastructure.service
 
         public abstract void UpdateMenuEntity(ref MenuBase old_menu, ref MenuBase new_menu);
 
-        public virtual async Task<_<string>> UpdateMenu(MenuBase model)
+        public virtual async Task<_<MenuBase>> UpdateMenu(MenuBase model)
         {
-            var data = new _<string>();
+            var data = new _<MenuBase>();
             var menu = await this._menuRepo.GetFirstAsync(x => x.UID == model.UID);
             Com.AssertNotNull(menu, "菜单不存在");
 
@@ -102,7 +102,7 @@ namespace Lib.infrastructure.service
             }
             if (await this._menuRepo.UpdateAsync(menu) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(menu);
                 return data;
             }
 
