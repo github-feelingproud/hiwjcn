@@ -50,16 +50,6 @@ namespace Hiwjcn.Bll.User
                 data.SetErrorMsg("用户名已存在");
                 return data;
             }
-            if (await this._userRepo.ExistAsync(x => x.Email == model.Email))
-            {
-                data.SetErrorMsg("电子邮箱已存在");
-                return data;
-            }
-            if (await this._userRepo.ExistAsync(x => x.Phone == model.Phone))
-            {
-                data.SetErrorMsg("电话号码已存在");
-                return data;
-            }
             data.SetSuccessData(string.Empty);
             return data;
         }
