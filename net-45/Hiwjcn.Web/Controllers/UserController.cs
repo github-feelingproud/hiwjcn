@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Mvc;
 using Lib.mvc;
 using WebCore.MvcLib.Controller;
+using Hiwjcn.Bll.Auth;
 
 namespace Hiwjcn.Web.Controllers
 {
