@@ -16,13 +16,13 @@ using System.Data.Entity;
 
 namespace Hiwjcn.Bll.User
 {
-    public interface IUserService : IUserServiceBase<UserEntity, UserAvatarEntity>,
-    IAutoRegistered
+    public interface IUserService : IUserServiceBase<UserEntity>,
+        IAutoRegistered
     {
         Task<List<UserEntity>> UserSuggest(string q, int count);
     }
 
-    public class UserService : UserServiceBase<UserEntity, UserAvatarEntity>,
+    public class UserService : UserServiceBase<UserEntity>,
         IUserService
     {
         private readonly IEFRepository<UserRoleEntity> _userRoleRepo;
@@ -30,10 +30,9 @@ namespace Hiwjcn.Bll.User
 
         public UserService(
             IEFRepository<UserEntity> _userRepo,
-            IEFRepository<UserAvatarEntity> _userAvatarRepo,
             IEFRepository<UserRoleEntity> _userRoleRepo,
             IEFRepository<RoleEntity> _roleRepo) :
-            base(_userRepo, _userAvatarRepo)
+            base(_userRepo)
         {
             this._userRoleRepo = _userRoleRepo;
             this._roleRepo = _roleRepo;

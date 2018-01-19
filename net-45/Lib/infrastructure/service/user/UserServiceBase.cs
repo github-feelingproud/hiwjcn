@@ -18,7 +18,7 @@ using Lib.infrastructure.entity.user;
 
 namespace Lib.infrastructure.service.user
 {
-    public interface IUserServiceBase<UserBase, UserAvatarBase>
+    public interface IUserServiceBase<UserBase>
     {
         Task<UserBase> GetUserByUID(string uid);
 
@@ -30,21 +30,17 @@ namespace Lib.infrastructure.service.user
         Task<_<UserBase>> ActiveOrDeActiveUser(UserBase model, bool active);
     }
 
-    public abstract class UserServiceBase<UserBase, UserAvatarBase> :
-        IUserServiceBase<UserBase, UserAvatarBase>
+    public abstract class UserServiceBase<UserBase> :
+        IUserServiceBase<UserBase>
         where UserBase : UserEntityBase, new()
-        where UserAvatarBase : UserAvatarEntityBase, new()
     {
         protected readonly IEFRepository<UserBase> _userRepo;
-        protected readonly IEFRepository<UserAvatarBase> _userAvatarRepo;
 
         public UserServiceBase(
-            IEFRepository<UserBase> _userRepo,
-            IEFRepository<UserAvatarBase> _userAvatarRepo)
+            IEFRepository<UserBase> _userRepo)
         {
 
             this._userRepo = _userRepo;
-            this._userAvatarRepo = _userAvatarRepo;
         }
 
         public virtual async Task<PagerData<UserBase>> QueryUserList(

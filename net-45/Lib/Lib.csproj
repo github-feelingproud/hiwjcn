@@ -365,7 +365,7 @@
     <Compile Include="infrastructure\helper\TreeHelper.cs" />
     <Compile Include="infrastructure\model\IViewTreeNode.cs" />
     <Compile Include="infrastructure\model\ZTreeNode.cs" />
-    <Compile Include="infrastructure\provider\UserLoginServiceBase.cs" />
+    <Compile Include="infrastructure\provider\AuthLoginProviderBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="infrastructure\provider\AuthApiServiceFromDbBase.cs" />
     <Compile Include="mvc\auth\IAuthLoginProvider.cs" />

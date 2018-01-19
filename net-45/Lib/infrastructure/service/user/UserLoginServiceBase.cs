@@ -13,11 +13,13 @@ using Lib.mvc;
 
 namespace Lib.infrastructure.service.user
 {
-    public interface IUserLoginServiceBase<UserBase>
+    public interface IUserLoginServiceBase<UserBase, OneTimeCodeBase>
     {
-        Task<_<UserBase>> LoginViaPassword(string user_name, string password);
+        Task<_<UserBase>> ValidUserPassword(string user_name, string password);
 
-        Task<_<UserBase>> LoginViaOneTimeCode(string user_name, string code);
+        Task<_<UserBase>> ValidUserOneTimeCode(string user_name, string code);
+
+        Task<_<OneTimeCodeBase>> AddOneTimeCode(string user_name, OneTimeCodeBase code);
 
         Task<_<UserBase>> RegisterUser(UserBase model);
 
@@ -30,7 +32,7 @@ namespace Lib.infrastructure.service.user
     /// 用户=角色=权限
     /// </summary>
     public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase> :
-        IUserLoginServiceBase<UserBase>
+        IUserLoginServiceBase<UserBase, OneTimeCodeBase>
         where UserBase : UserEntityBase, new()
         where OneTimeCodeBase : UserOneTimeCodeEntityBase, new()
         where RolePermissionBase : RolePermissionEntityBase, new()
@@ -60,7 +62,7 @@ namespace Lib.infrastructure.service.user
 
         public abstract string EncryptPassword(string password);
 
-        public virtual async Task<_<UserBase>> LoginViaPassword(string user_name, string password)
+        public virtual async Task<_<UserBase>> ValidUserPassword(string user_name, string password)
         {
             var data = new _<UserBase>();
             var user_model = await this._userRepo.GetFirstAsync(x => x.UserName == user_name);
@@ -79,7 +81,7 @@ namespace Lib.infrastructure.service.user
             return data;
         }
 
-        public virtual async Task<_<UserBase>> LoginViaOneTimeCode(string user_name, string code)
+        public virtual async Task<_<UserBase>> ValidUserOneTimeCode(string user_name, string code)
         {
             var data = new _<UserBase>();
             var user_model = await this._userRepo.GetFirstAsync(x => x.UserName == user_name);
@@ -175,14 +177,31 @@ namespace Lib.infrastructure.service.user
 
             throw new Exception("密码修改失败");
         }
+
+        public virtual async Task<_<OneTimeCodeBase>> AddOneTimeCode(string user_name, OneTimeCodeBase code)
+        {
+            var data = new _<OneTimeCodeBase>();
+
+            code.Init("code");
+            if (!code.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+
+            await this._oneTimeCodeRepo.AddAsync(code);
+
+            data.SetSuccessData(code);
+            return data;
+        }
     }
-    
+
     /// <summary>
     /// 用户=部门=角色=权限
     /// </summary>
     public abstract class UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, UserDepartmentBase, DepartmentRoleBase, PermissionBase> :
         UserLoginServiceBase<UserBase, OneTimeCodeBase, RolePermissionBase, UserRoleBase, PermissionBase>,
-        IUserLoginServiceBase<UserBase>
+        IUserLoginServiceBase<UserBase, OneTimeCodeBase>
         where UserDepartmentBase : UserDepartmentEntityBase, new()
         where DepartmentRoleBase : DepartmentRoleEntityBase, new()
         where UserBase : UserEntityBase, new()

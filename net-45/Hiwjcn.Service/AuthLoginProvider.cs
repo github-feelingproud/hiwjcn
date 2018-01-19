@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Hiwjcn.Bll.Auth
 {
     public interface IUserLoginService :
-        IUserLoginServiceBase<UserEntity>,
+        IUserLoginServiceBase<UserEntity, UserOneTimeCodeEntity>,
         IAutoRegistered
     { }
 
@@ -103,7 +103,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<_<LoginUserInfo>> LoginByCode(string phoneOrEmail, string code)
         {
             var data = new _<LoginUserInfo>();
-            var res = await this._login.LoginViaOneTimeCode(phoneOrEmail, code);
+            var res = await this._login.ValidUserOneTimeCode(phoneOrEmail, code);
             if (res.error)
             {
                 data.SetErrorMsg(res.msg);
@@ -117,7 +117,7 @@ namespace Hiwjcn.Bll.Auth
         public async Task<_<LoginUserInfo>> LoginByPassword(string user_name, string password)
         {
             var data = new _<LoginUserInfo>();
-            var res = await this._login.LoginViaPassword(user_name, password);
+            var res = await this._login.ValidUserPassword(user_name, password);
             if (res.error)
             {
                 data.SetErrorMsg(res.msg);

@@ -33,7 +33,6 @@ namespace Hiwjcn.Web.Controllers
         private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
         private readonly LoginStatus _LoginStatus;
-        private readonly IEFRepository<AuthScope> _AuthScopeRepo;
         private readonly IAuthDataProvider _dataProvider;
         private readonly ICacheProvider _cache;
 
@@ -42,7 +41,6 @@ namespace Hiwjcn.Web.Controllers
             IUserLoginService _login,
             IAuthApi _authApi,
             LoginStatus logincontext,
-            IEFRepository<AuthScope> _AuthScopeRepo,
             IAuthDataProvider _dataProvider,
             ICacheProvider _cache)
         {
@@ -50,7 +48,6 @@ namespace Hiwjcn.Web.Controllers
             this._login = _login;
             this._authApi = _authApi;
             this._LoginStatus = logincontext;
-            this._AuthScopeRepo = _AuthScopeRepo;
             this._dataProvider = _dataProvider;
             this._cache = _cache;
         }

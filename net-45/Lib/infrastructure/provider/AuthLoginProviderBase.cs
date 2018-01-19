@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lib.infrastructure.provider
 {
-    class UserLoginServiceBase
+    public abstract class AuthLoginProviderBase
     {
     }
 }
