@@ -15,6 +15,7 @@ using Hiwjcn.Framework;
 using System.Threading.Tasks;
 using Lib.extra_;
 using WebCore.MvcLib.Controller;
+using Lib.extension;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -25,7 +26,7 @@ namespace Hiwjcn.Web.Controllers
     {
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> Upload()
+        public async Task<ActionResult> Upload(string only_qiniu)
         {
             return await RunActionAsync(async () =>
             {
@@ -33,26 +34,38 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes("请选择要上传的文件");
                 }
-                var file = this.X.context.Request.Files[0];
-
-                var path = Server.MapPath("~/static/upload/");
-
-                var uploader = new FileUpload()
+                var file = this.X.context.Request.Files[0] ?? throw new ArgumentNullException("文件不存在");
+                if (file.ContentLength > Com.MbToB(1))
                 {
-                    MaxSize = Com.MbToB(1)
-                };
-
-                var res = uploader.UploadSingleFile(file, path);
-                if (!res.SuccessUpload)
-                {
-                    return GetJsonRes("上传失败");
+                    return GetJsonRes("文件过大");
                 }
 
                 var qiniu = new QiniuHelper();
-                var url = qiniu.Upload(res.FilePath, Com.GetUUID());
 
-                await Task.FromResult(1);
-                return GetJson(new _() { success = true, data = url });
+                if ((only_qiniu ?? "false").ToBool())
+                {
+                    var url = qiniu.Upload(file.GetBytes(), Com.GetUUID());
+                    return GetJson(new _() { success = true, data = url });
+                }
+                else
+                {
+                    var path = Server.MapPath("~/static/upload/");
+
+                    var uploader = new FileUpload()
+                    {
+                        MaxSize = Com.MbToB(1)
+                    };
+
+                    var res = uploader.UploadSingleFile(file, path);
+                    if (!res.SuccessUpload)
+                    {
+                        return GetJsonRes("上传失败");
+                    }
+                    var url = qiniu.Upload(res.FilePath, Com.GetUUID());
+
+                    await Task.FromResult(1);
+                    return GetJson(new _() { success = true, data = url });
+                }
             });
         }
         [HttpPost]
