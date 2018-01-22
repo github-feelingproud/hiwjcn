@@ -61,7 +61,7 @@ namespace ConsoleApp
 
             foreach (var sys in list.Select(x => x.SysID).Distinct())
             {
-                xx(string.Empty, 1, list.Where(x => x.SysID == sys && first(x)).ToList());
+                xx(string.Empty, 0, list.Where(x => x.SysID == sys && first(x)).ToList());
             }
         }
 
@@ -220,7 +220,7 @@ namespace ConsoleApp
                 }
                 list.Add(sys_root);
 
-                xx(string.Empty, 1, list.Where(x => x.SysID == m &&
+                xx(string.Empty, 0, list.Where(x => x.SysID == m &&
                 !ValidateHelper.IsPlumpString(x.ParentPermissionID?.Trim())).ToList());
             }
         }
