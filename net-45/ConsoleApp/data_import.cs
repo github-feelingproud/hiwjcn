@@ -274,10 +274,10 @@ namespace ConsoleApp
                 Console.WriteLine("user-role finish");
                 this.role(role);
                 Console.WriteLine("role finish");
-                this.role_permission(persmap);
-                Console.WriteLine("role-permission finish");
                 this.permission(pers, syslist);
                 Console.WriteLine("permission finish");
+                this.role_permission(persmap);
+                Console.WriteLine("role-permission finish");
             }
             Console.WriteLine("finish");
         }
