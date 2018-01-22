@@ -24,6 +24,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
 using System.Text;
+using Lib.ioc;
+using Hiwjcn.Framework;
 
 namespace ConsoleApp
 {
@@ -31,19 +33,29 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            //ES.IndexFiles();
+            IocContext.Instance.AddExtraRegistrar(new CommonDependencyRegister());
 
-            //FleckWS.ws();
+            try
+            {
+                //ES.IndexFiles();
 
-            //MQ.Consumer();
+                //FleckWS.ws();
 
-            //ZK.call().Wait();
+                //MQ.Consumer();
 
-            //WCF.Serv();
+                //ZK.call().Wait();
 
-            //JobManager.Start();
+                //WCF.Serv();
 
-            new data_import() { }.run();
+                //JobManager.Start();
+
+                new data_import() { }.run();
+            }
+            catch (Exception e)
+            {
+                //
+                Console.WriteLine(e.GetInnerExceptionAsJson());
+            }
 
             Console.WriteLine("finish");
             Console.ReadLine();
