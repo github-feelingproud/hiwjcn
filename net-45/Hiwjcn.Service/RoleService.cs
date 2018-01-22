@@ -57,4 +57,67 @@ namespace Hiwjcn.Bll.User
             old_role.AutoAssignRole = new_role.AutoAssignRole;
         }
     }
+
+    public interface IDepartmentService :
+        IDepartmentServiceBase<DepartmentEntity, UserDepartmentEntity, DepartmentRoleEntity>,
+        IAutoRegistered
+    {
+        //
+    }
+
+    public class DepartmentService :
+        DepartmentServiceBase<DepartmentEntity, UserDepartmentEntity, DepartmentRoleEntity>,
+        IDepartmentService
+    {
+        public DepartmentService(
+            IEFRepository<DepartmentEntity> _departmentRepo,
+            IEFRepository<UserDepartmentEntity> _userDepartmentRepo,
+            IEFRepository<DepartmentRoleEntity> _departmentRoleRepo) :
+            base(_departmentRepo, _userDepartmentRepo, _departmentRoleRepo)
+        { }
+
+        public override void UpdateDepartmentEntity(ref DepartmentEntity old_department, ref DepartmentEntity new_department)
+        {
+            old_department.DepartmentName = new_department.DepartmentName;
+            old_department.Description = new_department.Description;
+        }
+    }
+
+    public interface IPermissionService : IPermissionServiceBase<PermissionEntity>,
+        IAutoRegistered
+    { }
+
+    public class PermissionService : PermissionServiceBase<PermissionEntity>,
+        IPermissionService
+    {
+        public PermissionService(IEFRepository<PermissionEntity> _perRepo) : base(_perRepo)
+        { }
+
+        public override void UpdatePermissionEntity(ref PermissionEntity old_permission, ref PermissionEntity new_permission)
+        {
+            old_permission.Description = new_permission.Description;
+        }
+
+        public override async Task<PermissionEntity> GetPermissionByUID(string uid)
+        {
+            var data = await base.GetPermissionByUID(uid);
+            if (data != null)
+            {
+                data.Children = await this._permissionRepo.GetListAsync(x => x.ParentUID == data.UID);
+            }
+            return data;
+        }
+
+        public override async Task<_<PermissionEntity>> AddPermission(PermissionEntity model)
+        {
+            var res = new _<PermissionEntity>();
+            if (await this._permissionRepo.ExistAsync(x => x.Name == model.Name))
+            {
+                res.SetErrorMsg("权限名已存在");
+                return res;
+            }
+
+            return await base.AddPermission(model);
+        }
+    }
 }
