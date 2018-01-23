@@ -12,7 +12,9 @@ using System.Web;
 using System.Web.Mvc;
 using Lib.mvc;
 using WebCore.MvcLib.Controller;
+using Lib.cache;
 using Hiwjcn.Bll.Auth;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -21,15 +23,21 @@ namespace Hiwjcn.Web.Controllers
         private readonly IUserService _userService;
         private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
+        private readonly IAuthTokenService _tokenService;
+        private readonly ICacheProvider _cache;
 
         public UserController(
             IUserService _userService,
             IUserLoginService _login,
-            IAuthApi _authApi)
+            IAuthApi _authApi,
+            IAuthTokenService _tokenService,
+            ICacheProvider _cache)
         {
             this._userService = _userService;
             this._login = _login;
             this._authApi = _authApi;
+            this._tokenService = _tokenService;
+            this._cache = _cache;
         }
 
         /// <summary>
@@ -102,6 +110,9 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(res.msg);
                 }
+                //踢下线
+                await this._tokenService.DeleteUserTokensAsync(model.UID);
+                this._cache.Remove(CacheKeyManager.AuthUserInfoKey(model.UID));
 
                 return GetJsonRes(string.Empty);
             });

@@ -15,7 +15,9 @@ using WebCore.MvcLib.Controller;
 using Lib.infrastructure.model;
 using Lib.infrastructure.helper;
 using Lib.helper;
+using Lib.cache;
 using Lib.infrastructure.extension;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -25,11 +27,14 @@ namespace Hiwjcn.Web.Controllers
     public class RoleController : UserBaseController
     {
         private readonly IRoleService _roleService;
+        private readonly ICacheProvider _cache;
 
         public RoleController(
-            IRoleService _roleService)
+            IRoleService _roleService,
+            ICacheProvider _cache)
         {
             this._roleService = _roleService;
+            this._cache = _cache;
         }
 
         /// <summary>
@@ -176,6 +181,7 @@ namespace Hiwjcn.Web.Controllers
                 {
                     return GetJsonRes(res.msg);
                 }
+                this._cache.Remove(CacheKeyManager.AuthUserInfoKey(user_uid));
 
                 return GetJsonRes(string.Empty);
             });
