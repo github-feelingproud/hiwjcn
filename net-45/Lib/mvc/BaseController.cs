@@ -178,11 +178,6 @@ namespace Lib.mvc
         #endregion
 
         #region action处理
-
-        protected List<string> PermissionList { get; set; }
-        protected List<string> ScopeList { get; set; }
-        protected Func<ActionResult> NoLoginResult { get; set; }
-        protected Func<ActionResult> NoPermissionResult { get; set; }
         protected Func<ActionResult> ErrorResult { get; set; }
 
         protected readonly bool ShowExceptionResult = (ConfigurationManager.AppSettings["ShowExceptionResult"] ?? "true").ToBool();
@@ -208,32 +203,14 @@ namespace Lib.mvc
 
             return GetJsonRes("服务器发生错误");
         }
-
-        /// <summary>
-        /// 没有登录的时候使用这个返回，可以重写
-        /// </summary>
-        /// <returns></returns>
-        [NonAction]
-        protected virtual ActionResult WhenNoLogin() =>
-            this.NoLoginResult?.Invoke() ??
-            this.GetJsonRes("没有登录", (-999).ToString());
-
-        /// <summary>
-        /// 没有权限的时候调用，可以重写
-        /// </summary>
-        /// <returns></returns>
-        [NonAction]
-        protected virtual ActionResult WhenNoPermission() =>
-            this.NoPermissionResult?.Invoke() ??
-            this.GetJsonRes("没有权限", (-(int)HttpStatusCode.Unauthorized).ToString());
-
+        
         /// <summary>
         /// 获取action的时候捕获异常
         /// </summary>
         /// <param name="GetActionFunc"></param>
         /// <returns></returns>
         [NonAction]
-        public ActionResult RunAction(Func<ActionResult> GetActionFunc)
+        public virtual ActionResult RunAction(Func<ActionResult> GetActionFunc)
         {
             try
             {
@@ -251,7 +228,7 @@ namespace Lib.mvc
         /// <param name="GetActionFunc"></param>
         /// <returns></returns>
         [NonAction]
-        public async Task<ActionResult> RunActionAsync(Func<Task<ActionResult>> GetActionFunc)
+        public virtual async Task<ActionResult> RunActionAsync(Func<Task<ActionResult>> GetActionFunc)
         {
             try
             {
@@ -262,70 +239,7 @@ namespace Lib.mvc
                 return WhenError(e);
             }
         }
-
-        /// <summary>
-        /// 通过session验证身份
-        /// 里面不要捕获异常，此方法会自动记录日志
-        /// loginuser为有效登陆用户，用户ID>0
-        /// </summary>
-        /// <param name="GetActionFunc"></param>
-        /// <returns></returns>
-        [NonAction]
-        public ActionResult RunActionWhenLogin(Func<LoginUserInfo, ActionResult> GetActionFunc)
-        {
-            return RunAction(() =>
-            {
-                var loginuser = this.X.context.GetAuthUser();
-                //判断是否登录
-                if (loginuser == null)
-                {
-                    return WhenNoLogin();
-                }
-                //判断权限
-                if (ConvertHelper.NotNullList(this.PermissionList).Any(x => !loginuser.HasPermission(x)))
-                {
-                    return WhenNoPermission();
-                }
-                //判断scope
-                if (ConvertHelper.NotNullList(this.ScopeList).Any(x => !loginuser.HasScope(x)))
-                {
-                    return WhenNoPermission();
-                }
-
-                return GetActionFunc.Invoke(loginuser);
-            });
-        }
-
-        /// <summary>
-        /// 异步实现
-        /// </summary>
-        /// <param name="GetActionFunc"></param>
-        /// <returns></returns>
-        [NonAction]
-        public async Task<ActionResult> RunActionWhenLoginAsync(Func<LoginUserInfo, Task<ActionResult>> GetActionFunc)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var loginuser = await this.X.context.GetAuthUserAsync();
-                //判断是否登录
-                if (loginuser == null)
-                {
-                    return WhenNoLogin();
-                }
-                //判断权限
-                if (ConvertHelper.NotNullList(this.PermissionList).Any(x => !loginuser.HasPermission(x)))
-                {
-                    return WhenNoPermission();
-                }
-                //判断scope
-                if (ConvertHelper.NotNullList(this.ScopeList).Any(x => !loginuser.HasScope(x)))
-                {
-                    return WhenNoPermission();
-                }
-
-                return await GetActionFunc.Invoke(loginuser);
-            });
-        }
+        
         #endregion
 
     }

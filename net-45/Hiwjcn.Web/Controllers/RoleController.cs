@@ -165,16 +165,11 @@ namespace Hiwjcn.Web.Controllers
                     return GetJsonRes("参数错误");
                 }
 
-                var map = roles.Select(x =>
+                var map = roles.Select(x => new UserRoleEntity()
                 {
-                    var m = new UserRoleEntity()
-                    {
-                        UserID = user_uid,
-                        RoleID = x
-                    };
-                    m.Init("ud");
-                    return m;
-                }).ToList();
+                    UserID = user_uid,
+                    RoleID = x
+                }.InitSelf("ur")).ToList();
 
                 var res = await this._roleService.SetUserRoles(user_uid, map);
                 if (res.error)
