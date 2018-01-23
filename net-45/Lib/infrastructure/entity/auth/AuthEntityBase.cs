@@ -62,28 +62,6 @@ namespace Lib.infrastructure.entity.auth
     }
 
     [Serializable]
-    public class AuthClientCheckLogBase : BaseEntity
-    {
-        public virtual int CheckStatus { get; set; }
-
-        [MaxLength(500)]
-        public virtual string Msg { get; set; }
-    }
-
-    [Serializable]
-    public class AuthClientUseageBase : BaseEntity
-    {
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "client uid 名称必填")]
-        [Required]
-        public virtual string ClientUID { get; set; }
-
-
-        [StringLength(100, MinimumLength = 20, ErrorMessage = "user uid 名称必填")]
-        [Required]
-        public virtual string UserUID { get; set; }
-    }
-
-    [Serializable]
     public class AuthScopeBase : BaseEntity
     {
         [StringLength(100, ErrorMessage = "scope 名称必填")]

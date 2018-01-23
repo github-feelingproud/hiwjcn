@@ -24,9 +24,7 @@ namespace Hiwjcn.Bll.Auth
         Task<string> EnableOrDisableClientAsync(string client_uid, string user_uid);
 
         Task<AuthClient> GetByID(string uid);
-
-        Task<string> ApproveClient(string client_uid, bool active, string reason);
-
+        
         Task<PagerData<AuthClient>> QueryListAsync(
             string user_uid = null, string q = null, bool? is_active = null, bool? is_remove = null,
             int page = 1, int pagesize = 10);
@@ -37,13 +35,10 @@ namespace Hiwjcn.Bll.Auth
     public class AuthClientService : ServiceBase<AuthClient>, IAuthClientService
     {
         private readonly IEFRepository<AuthClient> _AuthClientRepository;
-        private readonly IEFRepository<AuthClientCheckLog> _AuthClientCheckLogRepository;
         public AuthClientService(
-            IEFRepository<AuthClient> _AuthClientRepository,
-            IEFRepository<AuthClientCheckLog> _AuthClientCheckLogRepository)
+            IEFRepository<AuthClient> _AuthClientRepository)
         {
             this._AuthClientRepository = _AuthClientRepository;
-            this._AuthClientCheckLogRepository = _AuthClientCheckLogRepository;
         }
 
         public async Task<string> AddClientAsync(AuthClient client)
@@ -96,32 +91,6 @@ namespace Hiwjcn.Bll.Auth
             var model = await this._AuthClientRepository.GetFirstAsync(x => x.UID == uid && x.IsActive > 0 && x.IsRemove <= 0);
 
             return model;
-        }
-
-        public async Task<string> ApproveClient(string client_uid, bool active, string reason)
-        {
-            var model = await this._AuthClientRepository.GetFirstAsync(x => x.UID == client_uid);
-            Com.AssertNotNull(model, $"can not find client by uid:{client_uid}");
-            var active_data = active.ToString().ToBoolInt();
-            if (model.IsActive == active_data)
-            {
-                return "状态无需改变";
-            }
-            model.IsActive = active_data;
-            if (await this._AuthClientRepository.UpdateAsync(model) > 0)
-            {
-                var log = new AuthClientCheckLog();
-                log.Init("clientchecklog");
-                log.CheckStatus = model.IsActive;
-                log.Msg = reason ?? "no reason";
-                if (await this._AuthClientCheckLogRepository.AddAsync(log) <= 0)
-                {
-                    $"{model.ToJson()}保存操作日志失败{log.ToJson()}".AddBusinessInfoLog();
-                }
-
-                return SUCCESS;
-            }
-            throw new Exception("更新client失败");
         }
 
         public async Task<PagerData<AuthClient>> QueryListAsync(

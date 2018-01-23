@@ -11,15 +11,7 @@ namespace Hiwjcn.Core.Domain.Auth
     [Serializable]
     [Table("auth_client")]
     public class AuthClient : AuthClientBase { }
-
-    [Serializable]
-    [Table("auth_client_checklog")]
-    public class AuthClientCheckLog : AuthClientCheckLogBase { }
-
-    [Serializable]
-    [Table("auth_client_useage")]
-    public class AuthClientUseage : AuthClientCheckLogBase { }
-
+    
     [Serializable]
     [Table("auth_scope")]
     public class AuthScope : AuthScopeBase { }

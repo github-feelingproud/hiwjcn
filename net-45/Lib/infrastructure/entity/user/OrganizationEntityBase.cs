@@ -18,7 +18,7 @@ namespace Lib.infrastructure.entity.user
     /// 组织，公司
     /// </summary>
     [Serializable]
-    public class OrganizationEntityBase : AreaEntityBase
+    public class OrganizationEntityBase : BaseEntity
     {
         [Required]
         [Index(IsUnique = true)]
