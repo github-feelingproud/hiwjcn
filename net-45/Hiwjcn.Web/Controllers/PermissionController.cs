@@ -29,23 +29,7 @@ namespace Hiwjcn.Web.Controllers
         {
             this._perService = _perService;
         }
-
-        [HttpPost]
-        //[EpcAuth(Permission = "manage.role.query")]
-        [EpcAuth]
-        public async Task<ActionResult> GetPermissionByUID(string uid)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var data = await this._perService.GetPermissionByUID(uid);
-                return GetJson(new _()
-                {
-                    success = true,
-                    data = data,
-                });
-            });
-        }
-
+        
         [HttpPost]
         [EpcAuth]
         public async Task<ActionResult> Query()

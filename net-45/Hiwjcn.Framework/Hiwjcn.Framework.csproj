@@ -138,7 +138,6 @@
     <Compile Include="Extension\UserActivityExtension.cs" />
     <Compile Include="Factory\ActorsFactory.cs" />
     <Compile Include="Provider\AuthApiService.cs" />
-    <Compile Include="Provider\SSOLoginValidationProvider.cs" />
     <Compile Include="Tasks\CleanDatabaseTask.cs" />
     <Compile Include="Tasks\ClearExpiredTokenTask.cs" />
     <Compile Include="Tasks\ClearRequestLogTask.cs" />
