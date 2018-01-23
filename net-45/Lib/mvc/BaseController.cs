@@ -30,10 +30,10 @@ namespace Lib.mvc
         }
 
         [NonAction]
-        protected int? CheckPage(int? page) => Com.CheckPage(page);
+        protected virtual int? CheckPage(int? page) => Com.CheckPage(page);
 
         [NonAction]
-        protected int? CheckPageSize(int? size) => Com.CheckPageSize(size);
+        protected virtual int? CheckPageSize(int? size) => Com.CheckPageSize(size);
 
         #region 返回结果
         /// <summary>
@@ -73,7 +73,7 @@ namespace Lib.mvc
         /// 获取json
         /// </summary>
         [NonAction]
-        public ActionResult GetJson(object obj, JsonRequestBehavior behavior = JsonRequestBehavior.AllowGet)
+        public virtual ActionResult GetJson(object obj, JsonRequestBehavior behavior = JsonRequestBehavior.AllowGet)
         {
             return Json(obj, behavior);
         }
@@ -85,7 +85,7 @@ namespace Lib.mvc
         /// <param name="callback"></param>
         /// <returns></returns>
         [NonAction]
-        public ActionResult GetJsonp(object obj, string callback = "callback")
+        public virtual ActionResult GetJsonp(object obj, string callback = "callback")
         {
             var func = this.Request.QueryString[callback];
             return Content($"{func}({obj.ToJson()})", "text/javascript");
@@ -95,13 +95,13 @@ namespace Lib.mvc
         /// 判断是否成功
         /// </summary>
         [NonAction]
-        public bool IsSuccess(string msg) => !ValidateHelper.IsPlumpStringAfterTrim(msg);
+        public virtual bool IsSuccess(string msg) => !ValidateHelper.IsPlumpStringAfterTrim(msg);
 
         /// <summary>
         /// 获取默认的json
         /// </summary>
         [NonAction]
-        public ActionResult GetJsonRes(string errmsg = null,
+        public virtual ActionResult GetJsonRes(string errmsg = null,
             string code = default(string),
             object data = null)
         {
@@ -120,7 +120,7 @@ namespace Lib.mvc
         /// <param name="json"></param>
         /// <returns></returns>
         [NonAction]
-        public ActionResult StringAsJson(string json)
+        public virtual ActionResult StringAsJson(string json)
         {
             return Content(json, "text/json");
         }
@@ -130,7 +130,7 @@ namespace Lib.mvc
         /// </summary>
         /// <returns></returns>
         [NonAction]
-        public ActionResult Http500()
+        public virtual ActionResult Http500()
         {
             return new Http500();
         }
@@ -140,7 +140,7 @@ namespace Lib.mvc
         /// </summary>
         /// <returns></returns>
         [NonAction]
-        public ActionResult Http404()
+        public virtual ActionResult Http404()
         {
             return new Http404();
         }
@@ -151,7 +151,7 @@ namespace Lib.mvc
         /// <param name="url"></param>
         /// <returns></returns>
         [NonAction]
-        public ActionResult Http301(string url)
+        public virtual ActionResult Http301(string url)
         {
             return new Http301(url);
         }
@@ -161,7 +161,7 @@ namespace Lib.mvc
         /// </summary>
         /// <returns></returns>
         [NonAction]
-        public ActionResult Http403()
+        public virtual ActionResult Http403()
         {
             return new Http403();
         }
@@ -171,7 +171,7 @@ namespace Lib.mvc
         /// </summary>
         /// <returns></returns>
         [NonAction]
-        public ActionResult GoHome()
+        public virtual ActionResult GoHome()
         {
             return new GoHomeResult();
         }
@@ -179,10 +179,7 @@ namespace Lib.mvc
 
         #region action处理
         protected Func<ActionResult> ErrorResult { get; set; }
-
-        protected readonly bool ShowExceptionResult = (ConfigurationManager.AppSettings["ShowExceptionResult"] ?? "true").ToBool();
-
-
+        
         [NonAction]
         protected virtual ActionResult WhenError(Exception e)
         {
@@ -196,19 +193,9 @@ namespace Lib.mvc
             }
 
             //捕获的错误
-            if (this.ShowExceptionResult)
-            {
-                return GetJsonRes(e.GetInnerExceptionAsJson());
-            }
-
-            return GetJsonRes("服务器发生错误");
+            return GetJsonRes(e.GetInnerExceptionAsJson());
         }
         
-        /// <summary>
-        /// 获取action的时候捕获异常
-        /// </summary>
-        /// <param name="GetActionFunc"></param>
-        /// <returns></returns>
         [NonAction]
         public virtual ActionResult RunAction(Func<ActionResult> GetActionFunc)
         {
@@ -221,12 +208,7 @@ namespace Lib.mvc
                 return WhenError(e);
             }
         }
-
-        /// <summary>
-        /// 异步，还没有使用
-        /// </summary>
-        /// <param name="GetActionFunc"></param>
-        /// <returns></returns>
+        
         [NonAction]
         public virtual async Task<ActionResult> RunActionAsync(Func<Task<ActionResult>> GetActionFunc)
         {
