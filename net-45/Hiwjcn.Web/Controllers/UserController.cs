@@ -23,14 +23,14 @@ namespace Hiwjcn.Web.Controllers
         private readonly IUserService _userService;
         private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
-        private readonly IAuthTokenService _tokenService;
+        private readonly IAuthService _tokenService;
         private readonly ICacheProvider _cache;
 
         public UserController(
             IUserService _userService,
             IUserLoginService _login,
             IAuthApi _authApi,
-            IAuthTokenService _tokenService,
+            IAuthService _tokenService,
             ICacheProvider _cache)
         {
             this._userService = _userService;

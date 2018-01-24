@@ -145,7 +145,6 @@
   <ItemGroup>
     <Compile Include="AopBoundle.cs" />
     <Compile Include="AuthClientService.cs" />
-    <Compile Include="AuthScopeService.cs" />
     <Compile Include="AuthTokenService.cs" />
     <Compile Include="SystemService.cs" />
     <Compile Include="TokenEventHandler.cs" />

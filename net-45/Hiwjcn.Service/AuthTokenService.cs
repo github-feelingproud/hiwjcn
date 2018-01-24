@@ -23,17 +23,17 @@ using Lib.infrastructure.service.user;
 
 namespace Hiwjcn.Bll.Auth
 {
-    public interface IAuthTokenService : IAuthServiceBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>,
+    public interface IAuthService : IAuthServiceBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>,
         IAutoRegistered
     {
 
     }
 
-    public class AuthTokenService :
+    public class AuthService :
         AuthServiceBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>,
-        IAuthTokenService
+        IAuthService
     {
-        public AuthTokenService(
+        public AuthService(
             IEventPublisher _publisher,
             IEFRepository<AuthToken> _AuthTokenRepository,
             IEFRepository<AuthTokenScope> _AuthTokenScopeRepository,
