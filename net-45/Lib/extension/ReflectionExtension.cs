@@ -136,20 +136,17 @@ namespace Lib.extension
         /// <summary>
         /// 获取可以赋值给T的属性
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="prop"></param>
-        /// <returns></returns>
-        public static IEnumerable<T> GetCustomAttributes_<T>(this MemberInfo prop) where T : Attribute
+        public static IEnumerable<T> GetCustomAttributes_<T>(this MemberInfo prop, bool inherit = true) where T : Attribute
         {
-            var attrs = prop.GetCustomAttributes();
-            return attrs.Where(x => x.GetType().IsAssignableTo_<T>()).Select(x => (T)x);
+            var attrs = CustomAttributeExtensions.GetCustomAttributes(prop, inherit);
+            return attrs.Where(x => x.GetType().IsAssignableTo_<T>()).Select(x => (T)x).ToList();
         }
 
         /// <summary>
         /// 有属性
         /// </summary>
-        public static bool HasCustomAttributes_<T>(this MemberInfo prop)
+        public static bool HasCustomAttributes_<T>(this MemberInfo prop, bool inherit = true)
             where T : Attribute =>
-            prop.GetCustomAttributes_<T>().Any();
+            prop.GetCustomAttributes_<T>(inherit).Any();
     }
 }

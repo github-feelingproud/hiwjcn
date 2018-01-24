@@ -14,44 +14,6 @@ using System.Data.Entity;
 
 namespace Lib.infrastructure.entity
 {
-    [Serializable]
-    public abstract class VersionBaseEntity : BaseEntity
-    {
-        /// <summary>
-        /// 记录的版本
-        /// 用一个uuid来标识此次数据更新，以后ES就可以用这个字段判断数据是否是最新的
-        /// </summary>
-        public virtual string UpdateFlag { get; set; }
-
-        /// <summary>
-        /// 版本，每次更新+1，不在EF中使用
-        /// </summary>
-        public virtual int VersionID { get; set; }
-
-        public override void Update()
-        {
-            base.Update();
-            this.UpdateFlag = Com.GetUUID();
-            ++this.VersionID;
-        }
-    }
-
-    /// <summary>
-    /// 搜索邮箱：
-    /// 使用rrule
-    /// 【终极解决方案】calendar周期性事件，可以高效查询的数据库设计和存储方案
-    /// </summary>
-    [Serializable]
-    [Obsolete("使用rrule")]
-    public class CalendarEventTimeEntity : BaseEntity
-    {
-        public virtual string RRule { get; set; }
-
-        public virtual DateTime Start { get; set; }
-
-        public virtual DateTime? End { get; set; }
-    }
-
     /// <summary>
     /// 实体基类
     /// </summary>
@@ -178,14 +140,8 @@ namespace Lib.infrastructure.entity
     /// https://docs.microsoft.com/zh-cn/ef/core/modeling/concurrency
     /// </summary>
     [Obsolete("不要使用")]
-    internal abstract class RowVersionTest
+    internal abstract class RowVersionTest : BaseEntity
     {
-        public virtual int IID { get; set; }
-
-        [Key]
-        [Required]
-        public virtual string UID { get; set; }
-
         /// <summary>
         /// where iid=@id and name=@name
         /// </summary>
@@ -201,4 +157,21 @@ namespace Lib.infrastructure.entity
         [Timestamp]
         public virtual byte[] RowVersion { get; set; }
     }
+
+    /// <summary>
+    /// 搜索邮箱：
+    /// 使用rrule
+    /// 【终极解决方案】calendar周期性事件，可以高效查询的数据库设计和存储方案
+    /// </summary>
+    [Serializable]
+    [Obsolete("使用rrule")]
+    public class CalendarEventTimeEntity : BaseEntity
+    {
+        public virtual string RRule { get; set; }
+
+        public virtual DateTime Start { get; set; }
+
+        public virtual DateTime? End { get; set; }
+    }
+
 }

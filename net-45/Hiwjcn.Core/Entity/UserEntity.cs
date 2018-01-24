@@ -66,6 +66,8 @@ namespace Hiwjcn.Core.Domain.User
     {
         public override string Phone { get => base.Phone; set => base.Phone = value; }
 
+        public new string Email { get => base.Email; set => base.Email = value; }
+
         /// <summary>
         /// 性别
         /// </summary>

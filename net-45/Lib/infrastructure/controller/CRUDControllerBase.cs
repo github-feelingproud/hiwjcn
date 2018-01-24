@@ -64,17 +64,4 @@ namespace Lib.infrastructure.controller
             });
         }
     }
-
-    class CTest : CRUDControllerBase<UserEntityBase>
-    {
-        public CTest(IRepository<UserEntityBase> _repo) : base(_repo)
-        { }
-
-        [HttpPost]
-        public override Task<ActionResult> PageList(int? page, int? pagesize)
-        {
-            return base.PageList(page, pagesize);
-        }
-
-    }
 }

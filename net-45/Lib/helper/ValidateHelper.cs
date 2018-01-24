@@ -441,85 +441,15 @@ namespace Lib.helper
         /// <summary>
         /// 根据attribute验证model
         /// </summary>
-        [Obsolete("使用CheckEntity_")]
-        public static List<string> CheckEntity<T>(T model) where T : IDBTable
-        {
-            var list = new List<string>();
-            if (model == null)
-            {
-                list.Add("实体对象不能为Null");
-                return list;
-            }
-
-            //checker
-            Func<ValidationAttribute, object, bool> CheckProp = (validator, data) =>
-            {
-                if (validator != null && !validator.IsValid(data))
-                {
-                    list.Add(validator.ErrorMessage);
-                    return false;
-                }
-                return true;
-            };
-
-            foreach (var prop in model.GetType().GetProperties())
-            {
-                if (prop.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
-                //自定义
-                if (prop.GetCustomAttributes<CustomValidationAttribute>().FirstOrDefault() != null)
-                {
-                    throw new NotSupportedException("不支持CustomValidationAttribute");
-                }
-
-                var value = prop.GetValue(model);
-
-                //是否可为空
-                if (!CheckProp(prop.GetCustomAttributes<RequiredAttribute>().FirstOrDefault(), value)) { continue; }
-                //字符串长度
-                if (!CheckProp(prop.GetCustomAttributes<StringLengthAttribute>().FirstOrDefault(), value)) { continue; }
-                //正则表达式
-                if (!CheckProp(prop.GetCustomAttributes<RegularExpressionAttribute>().FirstOrDefault(), value)) { continue; }
-                //范围
-                if (!CheckProp(prop.GetCustomAttributes<RangeAttribute>().FirstOrDefault(), value)) { continue; }
-                //最大长度
-                if (!CheckProp(prop.GetCustomAttributes<MaxLengthAttribute>().FirstOrDefault(), value)) { continue; }
-                //最小长度
-                if (!CheckProp(prop.GetCustomAttributes<MinLengthAttribute>().FirstOrDefault(), value)) { continue; }
-                //电话
-                if (!CheckProp(prop.GetCustomAttributes<PhoneAttribute>().FirstOrDefault(), value)) { continue; }
-                //邮件
-                if (!CheckProp(prop.GetCustomAttributes<EmailAddressAttribute>().FirstOrDefault(), value)) { continue; }
-                //URL
-                if (!CheckProp(prop.GetCustomAttributes<UrlAttribute>().FirstOrDefault(), value)) { continue; }
-                //信用卡
-                if (!CheckProp(prop.GetCustomAttributes<CreditCardAttribute>().FirstOrDefault(), value)) { continue; }
-            }
-
-            list = list.Where(x => IsPlumpString(x)).Distinct().ToList();
-
-            if (ValidateHelper.IsPlumpList(list))
-            {
-                Console.WriteLine(",".Join_(list));
-            }
-
-            return list;
-        }
-
-        /// <summary>
-        /// 根据attribute验证model
-        /// </summary>
         public static List<string> CheckEntity_<T>(T model) where T : IDBTable
         {
+            if (model == null) { throw new ArgumentNullException(nameof(model)); }
             var list = new List<string>();
-            if (model == null)
-            {
-                list.Add("实体对象不能为Null");
-                return list;
-            }
 
             //checker
-            bool CheckProp(IEnumerable<ValidationAttribute> validators, object data, PropertyInfo p)
+            bool CheckProp(IEnumerable<ValidationAttribute> validators, PropertyInfo p)
             {
+                var data = p.GetValue(model);
                 foreach (var validator in ConvertHelper.NotNullList(validators))
                 {
                     if (!validator.IsValid(data))
@@ -538,19 +468,14 @@ namespace Lib.helper
 
             foreach (var prop in model.GetType().GetProperties())
             {
-                if (prop.GetCustomAttributes<NotMappedAttribute>().Any()) { continue; }
+                if (prop.HasCustomAttributes_<NotMappedAttribute>(inherit: false)) { continue; }
 
-                var value = prop.GetValue(model);
-
-                if (!CheckProp(prop.GetCustomAttributes_<ValidationAttribute>(), value, prop)) { continue; }
+                //忽略父级的验证属性
+                var validators = prop.GetCustomAttributes_<ValidationAttribute>(inherit: false);
+                if (!CheckProp(validators, prop)) { continue; }
             }
 
-            list = list.Where(x => IsPlumpString(x)).Distinct().ToList();
-
-            if (ValidateHelper.IsPlumpList(list))
-            {
-                Console.WriteLine(",".Join_(list));
-            }
+            list = list.NotEmptyAndDistinct(x => x).ToList();
 
             return list;
         }

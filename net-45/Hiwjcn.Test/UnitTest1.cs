@@ -4,7 +4,6 @@ using Lib.distributed.redis;
 using Lib.extension;
 using Lib.helper;
 using Lib.rpc;
-using Lib.storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
@@ -186,12 +185,6 @@ on user.UID equals section.UID
             {
                 //
             }
-        }
-
-        [TestMethod]
-        public void qiniutest()
-        {
-            var x = QiniuHelper.FindEntry("fads");
         }
 
         class p

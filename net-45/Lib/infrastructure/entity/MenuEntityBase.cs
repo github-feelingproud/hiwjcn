@@ -59,12 +59,13 @@ namespace Lib.infrastructure.entity
 
         public virtual bool ShowForUser(LoginUserInfo loginuser)
         {
+            if (loginuser == null) { throw new ArgumentNullException(nameof(loginuser)); }
             var pers = this.PermissionValues.Value;
             if (ValidateHelper.IsPlumpList(pers))
             {
                 foreach (var p in pers)
                 {
-                    if (!(loginuser?.HasPermission(p) ?? false))
+                    if (!loginuser.HasPermission(p))
                     {
                         return false;
                     }

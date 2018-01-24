@@ -18,25 +18,6 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest5
     {
-        [TestMethod]
-        public void CheckModel()
-        {
-            var model = new UserEntity();
-
-            model.UID = Com.GetUUID();
-            model.NickName = "a";
-            model.PassWord = "fa";
-            model.Email = "fafa";
-
-            var errors = ValidateHelper.CheckEntity(model);
-            errors = ValidateHelper.CheckEntity_(model);
-
-            model.UID = string.Empty;
-            model.NickName = "hiwjcn";
-            model.Email = "hiwjcn@live.com";
-            errors = ValidateHelper.CheckEntity(model);
-            errors = ValidateHelper.CheckEntity_(model);
-        }
 
         [TestMethod]
         public void TestMethod1()
