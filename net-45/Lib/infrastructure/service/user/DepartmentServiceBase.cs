@@ -20,10 +20,6 @@ namespace Lib.infrastructure.service.user
 {
     public interface IDepartmentServiceBase<DepartmentBase, UserDepartmentBase, DepartmentRoleBase>
     {
-        Task<_<int>> DeleteDepartment(params string[] department_uids);
-
-        Task<_<int>> DeleteDepartmentRecursively(string department_uid);
-
         Task<_<int>> DeleteDepartmentWhenNoChildren(string uid);
 
         Task<_<DepartmentBase>> AddDepartment(DepartmentBase model);
@@ -57,13 +53,6 @@ namespace Lib.infrastructure.service.user
             this._userDepartmentRepo = _userDepartmentRepo;
             this._departmentRoleRepo = _departmentRoleRepo;
         }
-
-
-        public virtual async Task<_<int>> DeleteDepartment(params string[] department_uids) =>
-            await this._departmentRepo.DeleteByIds(department_uids);
-
-        public virtual async Task<_<int>> DeleteDepartmentRecursively(string department_uid) =>
-            await this._departmentRepo.DeleteTreeNodeRecursively(department_uid);
 
         public virtual async Task<_<DepartmentBase>> AddDepartment(DepartmentBase model) =>
             await this._departmentRepo.AddTreeNode(model, "dept");
@@ -115,14 +104,14 @@ namespace Lib.infrastructure.service.user
 
             if (ValidateHelper.IsPlumpList(departments))
             {
-                if (await this._userDepartmentRepo.AddAsync(departments.ToArray()) <= 0)
+                if (await this._userDepartmentRepo.AddAsync(departments.ToArray()) > 0)
                 {
-                    throw new Exception("设置部门失败");
+                    data.SetSuccessData(string.Empty);
+                    return data;
                 }
             }
 
-            data.SetSuccessData(string.Empty);
-            return data;
+            throw new Exception("设置部门失败");
         }
 
         public virtual async Task<_<string>> SetDepartmentRole(string department_uid, List<DepartmentRoleBase> roles)
@@ -150,14 +139,14 @@ namespace Lib.infrastructure.service.user
 
             if (ValidateHelper.IsPlumpList(roles))
             {
-                if (await this._departmentRoleRepo.AddAsync(roles.ToArray()) <= 0)
+                if (await this._departmentRoleRepo.AddAsync(roles.ToArray()) > 0)
                 {
-                    throw new Exception("保存角色失败");
+                    data.SetSuccessData(string.Empty);
+                    return data;
                 }
             }
 
-            data.SetSuccessData(string.Empty);
-            return data;
+            throw new Exception("保存角色失败");
         }
 
         public virtual async Task<_<int>> DeleteDepartmentWhenNoChildren(string uid) =>

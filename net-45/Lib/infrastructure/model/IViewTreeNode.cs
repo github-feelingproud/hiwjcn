@@ -41,40 +41,28 @@ namespace Lib.infrastructure.model
 
         public virtual object raw_data { get; set; }
 
-        public static implicit operator IViewTreeNode(RoleEntityBase data) =>
-            new IViewTreeNode()
+        public static IViewTreeNode FromTreeData<T>(T data, Func<T, string> title_selector)
+            where T : TreeEntityBase
+        {
+            return new IViewTreeNode()
             {
                 id = data.UID,
                 pId = data.ParentUID,
-                title = data.RoleName,
+                title = title_selector.Invoke(data),
                 raw_data = data
             };
+        }
+
+        public static implicit operator IViewTreeNode(RoleEntityBase data) =>
+            IViewTreeNode.FromTreeData(data, x => x.RoleName);
 
         public static implicit operator IViewTreeNode(DepartmentEntityBase data) =>
-            new IViewTreeNode()
-            {
-                id = data.UID,
-                pId = data.ParentUID,
-                title = data.DepartmentName,
-                raw_data = data
-            };
+            IViewTreeNode.FromTreeData(data, x => x.DepartmentName);
 
         public static implicit operator IViewTreeNode(MenuEntityBase data) =>
-            new IViewTreeNode()
-            {
-                id = data.UID,
-                pId = data.ParentUID,
-                title = data.MenuName,
-                raw_data = data
-            };
+            IViewTreeNode.FromTreeData(data, x => x.MenuName);
 
         public static implicit operator IViewTreeNode(PermissionEntityBase data) =>
-            new IViewTreeNode()
-            {
-                id = data.UID,
-                pId = data.ParentUID,
-                title = data.Description,
-                raw_data = data
-            };
+            IViewTreeNode.FromTreeData(data, x => x.Description);
     }
 }

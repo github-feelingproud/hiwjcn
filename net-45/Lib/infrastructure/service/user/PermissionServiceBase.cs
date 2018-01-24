@@ -24,10 +24,6 @@ namespace Lib.infrastructure.service.user
         Task<List<PermissionBase>> QueryPermissionList(string parent = null);
 
         Task<_<PermissionBase>> UpdatePermission(PermissionBase model);
-
-        Task<_<int>> DeletePermissionRecursively(string permission_uid);
-
-        Task<_<int>> DeletePermission(params string[] permission_uids);
     }
 
     public abstract class PermissionServiceBase<PermissionBase> :
@@ -72,12 +68,6 @@ namespace Lib.infrastructure.service.user
 
             throw new Exception("更新权限错误");
         }
-
-        public virtual async Task<_<int>> DeletePermissionRecursively(string permission_uid) =>
-            await this._permissionRepo.DeleteTreeNodeRecursively(permission_uid);
-
-        public virtual async Task<_<int>> DeletePermission(params string[] permission_uids) =>
-            await this._permissionRepo.DeleteByIds(permission_uids);
 
         public virtual async Task<PermissionBase> GetPermissionByUID(string uid) =>
             await this._permissionRepo.GetFirstAsync(x => x.UID == uid);

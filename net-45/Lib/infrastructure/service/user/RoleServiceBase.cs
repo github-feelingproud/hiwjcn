@@ -23,11 +23,7 @@ namespace Lib.infrastructure.service.user
         Task<List<RoleBase>> QueryRoleList(string parent = null);
 
         Task<_<RoleBase>> AddRole(RoleBase role);
-
-        Task<_<int>> DeleteRoleRecursively(string role_uid);
-
-        Task<_<int>> DeleteRole(params string[] role_uids);
-
+        
         Task<_<int>> DeleteRoleWhenNoChildren(string uid);
 
         Task<_<RoleBase>> UpdateRole(RoleBase model);
@@ -62,13 +58,7 @@ namespace Lib.infrastructure.service.user
 
         public virtual async Task<_<RoleBase>> AddRole(RoleBase role) =>
             await this._roleRepo.AddTreeNode(role, "role");
-
-        public virtual async Task<_<int>> DeleteRoleRecursively(string role_uid) =>
-            await this._roleRepo.DeleteTreeNodeRecursively(role_uid);
-
-        public virtual async Task<_<int>> DeleteRole(params string[] role_uids) =>
-            await this._roleRepo.DeleteByIds(role_uids);
-
+        
         public abstract void UpdateRoleEntity(ref RoleBase old_role, ref RoleBase new_role);
 
         public virtual async Task<_<RoleBase>> UpdateRole(RoleBase model)

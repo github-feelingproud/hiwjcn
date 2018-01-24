@@ -110,7 +110,8 @@ namespace Lib.infrastructure.extension
 
         #endregion
 
-        public static async Task<_<T>> AddTreeNode<T>(this IRepository<T> repo, T model, string model_flag)
+        public static async Task<_<T>> AddTreeNode<T>(this IRepository<T> repo, T model, string model_flag,
+            ISaveCheck<T> checker = null)
             where T : TreeEntityBase
         {
             var data = new _<T>();
@@ -130,6 +131,17 @@ namespace Lib.infrastructure.extension
                 data.SetErrorMsg(msg);
                 return data;
             }
+
+            if (checker != null)
+            {
+                var res = await checker.CheckEntityWhenAdd(model);
+                if (res.error)
+                {
+                    data.SetErrorMsg(res.msg);
+                    return data;
+                }
+            }
+
             if (await repo.AddAsync(model) > 0)
             {
                 data.SetSuccessData(model);

@@ -27,7 +27,7 @@ namespace Lib.infrastructure.service.user
 
         Task<_<UserBase>> UpdateUser(UserBase model);
 
-        Task<_<UserBase>> ActiveOrDeActiveUser(UserBase model, bool active);
+        Task<_<UserBase>> ActiveOrDeActiveUser(string uid, bool active);
     }
 
     public abstract class UserServiceBase<UserBase> :
@@ -93,12 +93,12 @@ namespace Lib.infrastructure.service.user
             throw new Exception("更新失败");
         }
 
-        public virtual async Task<_<UserBase>> ActiveOrDeActiveUser(UserBase model, bool active)
+        public virtual async Task<_<UserBase>> ActiveOrDeActiveUser(string uid, bool active)
         {
             var data = new _<UserBase>();
 
-            var user = await this._userRepo.GetFirstAsync(x => x.UID == model.UID);
-            Com.AssertNotNull(user, $"用户不存在:{model.UID}");
+            var user = await this._userRepo.GetFirstAsync(x => x.UID == uid);
+            Com.AssertNotNull(user, $"用户不存在:{uid}");
 
             if (user.IsActive.ToBool() == active)
             {

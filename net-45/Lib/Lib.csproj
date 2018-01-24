@@ -292,7 +292,6 @@
     <Compile Include="data\SerializeBase.cs" />
     <Compile Include="infrastructure\extension\AuthExtension.cs" />
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
-    <Compile Include="infrastructure\helper\UserLoginHelper.cs" />
     <Compile Include="infrastructure\model\ScopeInfoModel.cs" />
     <Compile Include="infrastructure\service\user\UserLoginServiceBase.cs" />
     <Compile Include="task\QuartzExtension.cs" />
@@ -355,7 +354,6 @@
     <Compile Include="infrastructure\extension\TreeEntityExtension.cs" />
     <Compile Include="infrastructure\helper\TreeHelper.cs" />
     <Compile Include="infrastructure\model\IViewTreeNode.cs" />
-    <Compile Include="infrastructure\model\ZTreeNode.cs" />
     <Compile Include="infrastructure\provider\AuthLoginProviderBase.cs" />
     <Compile Include="infrastructure\ServiceBase.cs" />
     <Compile Include="infrastructure\provider\AuthApiServiceFromDbBase.cs" />

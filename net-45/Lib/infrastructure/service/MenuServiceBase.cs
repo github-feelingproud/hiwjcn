@@ -20,11 +20,7 @@ namespace Lib.infrastructure.service
         Task<_<MenuBase>> AddMenu(MenuBase model);
 
         Task<MenuBase> GetMenuByUID(string uid);
-
-        Task<_<string>> DeleteMenuRecursively(string group_key, string menu_uid);
-
-        Task<_<int>> DeleteMenus(params string[] menu_uids);
-
+        
         Task<_<int>> DeleteMenuWhenNoChildren(string uid);
 
         Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null);
@@ -48,27 +44,7 @@ namespace Lib.infrastructure.service
         {
             return await this._menuRepo.AddTreeNode(model, "mn");
         }
-
-        public virtual async Task<_<string>> DeleteMenuRecursively(string group_key, string menu_uid)
-        {
-            if (!ValidateHelper.IsPlumpString(group_key)) { throw new ArgumentNullException(nameof(group_key)); }
-            var data = new _<string>();
-            var list = await this._menuRepo.GetListEnsureMaxCountAsync(x => x.GroupKey == group_key, 5000, "树结构节点数量达到上限");
-            var node = list.Where(x => x.UID == menu_uid).FirstOrThrow_("节点不存在");
-            var dead_nodes = list.FindNodeChildrenRecursively_(node);
-
-            if (await this._menuRepo.DeleteAsync(dead_nodes.ToArray()) > 0)
-            {
-                data.SetSuccessData(string.Empty);
-                return data;
-            }
-
-            throw new Exception("删除错误");
-        }
-
-        public virtual async Task<_<int>> DeleteMenus(params string[] menu_uids) =>
-            await this._menuRepo.DeleteByIds(menu_uids);
-
+        
         public virtual async Task<List<MenuBase>> QueryMenuList(string group_key, string parent = null)
         {
             if (!ValidateHelper.IsPlumpString(group_key)) { throw new ArgumentNullException(nameof(group_key)); }
