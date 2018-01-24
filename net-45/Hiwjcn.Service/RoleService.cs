@@ -97,17 +97,7 @@ namespace Hiwjcn.Bll.User
         {
             old_permission.Description = new_permission.Description;
         }
-
-        public override async Task<PermissionEntity> GetPermissionByUID(string uid)
-        {
-            var data = await base.GetPermissionByUID(uid);
-            if (data != null)
-            {
-                data.Children = await this._permissionRepo.GetListAsync(x => x.ParentUID == data.UID);
-            }
-            return data;
-        }
-
+        
         public override async Task<_<PermissionEntity>> AddPermission(PermissionEntity model)
         {
             var res = new _<PermissionEntity>();
