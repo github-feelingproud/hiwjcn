@@ -32,7 +32,6 @@ namespace Hiwjcn.Web.Controllers
         private readonly IAuthLoginProvider _IAuthLoginService;
         private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
-        private readonly LoginStatus _LoginStatus;
         private readonly IAuthDataProvider _dataProvider;
         private readonly ICacheProvider _cache;
 
@@ -40,14 +39,12 @@ namespace Hiwjcn.Web.Controllers
             IAuthLoginProvider _IAuthLoginService,
             IUserLoginService _login,
             IAuthApi _authApi,
-            LoginStatus logincontext,
             IAuthDataProvider _dataProvider,
             ICacheProvider _cache)
         {
             this._IAuthLoginService = _IAuthLoginService;
             this._login = _login;
             this._authApi = _authApi;
-            this._LoginStatus = logincontext;
             this._dataProvider = _dataProvider;
             this._cache = _cache;
         }
@@ -174,7 +171,6 @@ namespace Hiwjcn.Web.Controllers
                 var auth_user = await this.X.context.GetAuthUserAsync();
                 if (auth_user != null)
                 {
-                    this._LoginStatus.SetUserLogin(this.X.context, auth_user);
                     return Redirect(url);
                 }
 
@@ -191,7 +187,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return RunAction(() =>
             {
-                this._LoginStatus.SetUserLogout();
+                this.X.context.CookieLogout();
 
                 url = new string[] { url, @continue, next, callback, "/" }.FirstNotEmpty_();
 
@@ -204,7 +200,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return RunAction(() =>
             {
-                this._LoginStatus.SetUserLogout();
+                this.X.context.CookieLogout();
                 return GetJsonRes(string.Empty);
             });
         }

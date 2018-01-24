@@ -64,6 +64,8 @@ namespace Hiwjcn.Core.Domain.User
     [Table("tb_user")]
     public class UserEntity : UserEntityBase
     {
+        public override string Phone { get => base.Phone; set => base.Phone = value; }
+
         /// <summary>
         /// 性别
         /// </summary>

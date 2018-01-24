@@ -353,7 +353,6 @@
     <Compile Include="helper\TaskHelper.cs" />
     <Compile Include="infrastructure\controller\CRUDControllerBase.cs" />
     <Compile Include="infrastructure\controller\UserLoginControllerBase.cs" />
-    <Compile Include="infrastructure\entity\AreaEntityBase.cs" />
     <Compile Include="infrastructure\entity\auth\AuthEntityBase.cs" />
     <Compile Include="infrastructure\entity\BaseEntity.cs" />
     <Compile Include="infrastructure\entity\MenuEntityBase.cs" />

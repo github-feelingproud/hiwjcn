@@ -155,14 +155,14 @@ namespace Lib.mvc.user
 
         public string GetCookieUID(HttpContext context = null)
         {
-            context = this.GetContext(context);
+            context = Com.TryGetContext(context);
 
             return context.GetCookie(this.COOKIE_LOGIN_UID);
         }
 
         public string GetCookieTokenRaw(HttpContext context = null)
         {
-            context = this.GetContext(context);
+            context = Com.TryGetContext(context);
 
             return context.GetCookie(this.COOKIE_LOGIN_TOKEN);
         }
@@ -180,8 +180,8 @@ namespace Lib.mvc.user
 
         public void SetUserLogin(HttpContext context = null, LoginUserInfo loginuser = null)
         {
-            context = this.GetContext(context);
-            if (loginuser == null) { throw new Exception("登陆状态为空"); }
+            context = Com.TryGetContext(context);
+            if (loginuser == null) { throw new ArgumentNullException("登陆状态为空"); }
             if (this.CookieExpiresMinutes <= 0) { throw new Exception("cookie过期时间必须大于0，请修改配置"); }
 
             if (!ValidateHelper.IsPlumpString(loginuser.UserID))
@@ -214,7 +214,7 @@ namespace Lib.mvc.user
 
         public void SetUserLogout(HttpContext context = null)
         {
-            context = this.GetContext(context);
+            context = Com.TryGetContext(context);
 
             context.Session.RemoveSession(this.LOGIN_USER_SESSION);
             //清空其他cookie操作
@@ -232,7 +232,7 @@ namespace Lib.mvc.user
         [Obsolete("即将失效")]
         public LoginUserInfo GetLoginUser(HttpContext context = null)
         {
-            context = this.GetContext(context);
+            context = Com.TryGetContext(context);
 
             var model = context.Session.GetObjectFromJsonOrDefault<LoginUserInfo>(this.LOGIN_USER_SESSION);
             var cookie_uid = this.GetCookieUID(context);
@@ -244,8 +244,6 @@ namespace Lib.mvc.user
             }
             return null;
         }
-
-        private HttpContext GetContext(HttpContext _context) => Com.TryGetContext(_context);
     }
 
     public static class LoginStatusExtension

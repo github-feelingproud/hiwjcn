@@ -77,13 +77,8 @@ namespace Lib.helper
         /// </summary>
         /// <param name="_context"></param>
         /// <returns></returns>
-        public static HttpContext TryGetContext(HttpContext _context)
-        {
-            if (_context != null) { return _context; }
-            var context = System.Web.HttpContext.Current;
-
-            return context ?? throw new Exception("无法获取上下文对象");
-        }
+        public static HttpContext TryGetContext(HttpContext _context) =>
+            _context ?? System.Web.HttpContext.Current ?? throw new Exception("无法获取上下文对象");
 
         /// <summary>
         /// 把对象可读属性读出来变成字典

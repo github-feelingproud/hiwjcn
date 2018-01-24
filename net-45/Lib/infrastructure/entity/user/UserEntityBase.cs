@@ -39,7 +39,6 @@ namespace Lib.infrastructure.entity.user
         /// </summary>
         [Column("user_email")]
         [StringLength(50)]
-        [EmailAddress(ErrorMessage = "邮件格式错误")]
         public virtual string Email { get; set; }
 
         /// <summary>
@@ -126,12 +125,6 @@ namespace Lib.infrastructure.entity.user
         [Column("role_desc")]
         [StringLength(500)]
         public virtual string RoleDescription { get; set; }
-
-        /// <summary>
-        /// 用户注册的时候自动分配这些权限
-        /// </summary>
-        [Column("auto_assign_to_user")]
-        public virtual int AutoAssignRole { get; set; }
     }
 
     [Serializable]
@@ -171,14 +164,14 @@ namespace Lib.infrastructure.entity.user
         /// 用户ID
         /// </summary>
         [Column("user_id")]
-        [StringLength(100)]
+        [StringLength(100), Required]
         public virtual string UserID { get; set; }
 
         /// <summary>
         /// 角色ID
         /// </summary>
         [Column("role_id")]
-        [StringLength(100)]
+        [StringLength(100), Required]
         public virtual string RoleID { get; set; }
     }
 

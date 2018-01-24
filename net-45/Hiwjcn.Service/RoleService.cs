@@ -54,7 +54,6 @@ namespace Hiwjcn.Bll.User
         {
             old_role.RoleName = new_role.RoleName;
             old_role.RoleDescription = new_role.RoleDescription;
-            old_role.AutoAssignRole = new_role.AutoAssignRole;
         }
     }
 
