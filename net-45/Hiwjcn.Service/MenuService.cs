@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Lib.data.ef;
 using Lib.infrastructure.service;
-using Lib.infrastructure.service.common;
-using Lib.infrastructure.service.organization;
 using Lib.infrastructure.service.user;
 using Lib.infrastructure.extension;
 using Lib.extension;
