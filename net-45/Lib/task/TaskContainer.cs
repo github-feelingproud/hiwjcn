@@ -26,7 +26,7 @@ namespace Lib.task
         public void AddJobFromAssembly(params Assembly[] ass)
         {
             var jobs = ass.FindAllJobsAndCreateInstance_();
-            this.AddJob(jobs.ToArray());
+            this.AddJob(jobs.Where(x => x.AutoStart).ToArray());
         }
 
         public void AddJob(params QuartzJobBase[] jobs)
