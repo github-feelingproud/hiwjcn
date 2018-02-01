@@ -6,9 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ICanPay.Alipay" Version="1.1.7" />
-    <PackageReference Include="ICanPay.Unionpay" Version="1.1.7" />
-    <PackageReference Include="ICanPay.Wechatpay" Version="1.1.7" />
+    <PackageReference Include="Common.Logging.Log4Net1213" Version="3.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="6.10.5" />
