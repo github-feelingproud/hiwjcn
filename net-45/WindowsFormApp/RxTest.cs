@@ -12,6 +12,34 @@ using System.Reactive.Linq;
 
 namespace WindowsFormApp
 {
+    public partial class RxTest : Form
+    {
+        public RxTest()
+        {
+            InitializeComponent();
+
+
+            var drag = from down in this.button1.MouseDownAsObservable()
+                       from move in this.button1.MouseMoveAsObservable()
+                       .StartWith(down).Skip(1).TakeUntil(this.button1.MouseUpAsObservable())
+                       select new { down, move };
+
+            drag.Subscribe(x =>
+            {
+                this.button1.Left += x.move.X;
+                this.button1.Top += x.move.Y;
+                Console.WriteLine($"{x.move.X},{x.move.Y}");
+            });
+
+            Observable.FromEventPattern(this.button1, "Click").Select(x => x.EventArgs)
+                .Throttle(TimeSpan.FromSeconds(1))
+                .Subscribe(x => 
+                {
+                    MessageBox.Show("1");
+                });
+        }
+    }
+
     public static class FormExtensions
     {
         public static IObservable<MouseEventArgs> MouseMoveAsObservable(this Control form)
@@ -27,33 +55,6 @@ namespace WindowsFormApp
         public static IObservable<MouseEventArgs> MouseUpAsObservable(this Control form)
         {
             return Observable.FromEventPattern<MouseEventArgs>(form, "MouseUp").Select(e => e.EventArgs);
-        }
-    }
-    public partial class RxTest : Form
-    {
-        public RxTest()
-        {
-            InitializeComponent();
-
-            this.button1.MouseDownAsObservable();
-            this.button1.MouseUpAsObservable();
-            this.button1.MouseMoveAsObservable();
-
-            var drag = from down in button1.MouseDownAsObservable()
-                       from move in button1.MouseMoveAsObservable()
-                       .StartWith(down).TakeUntil(button1.MouseUpAsObservable())
-                       select new { down, move };
-
-            drag.Subscribe(x =>
-            {
-                this.button1.Left += x.move.X;
-                this.button1.Top += x.move.Y;
-            });
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
