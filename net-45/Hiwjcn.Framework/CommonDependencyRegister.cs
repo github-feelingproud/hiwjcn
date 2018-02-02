@@ -16,6 +16,7 @@ using Lib.mvc.auth;
 using Lib.data;
 using Lib.infrastructure;
 using Lib.data.ef;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Framework
 {
@@ -54,7 +55,8 @@ namespace Hiwjcn.Framework
             #region 注册Data
             //注册数据访问层
             RegDataRepository_(ref builder, tps.core);
-            RegEFDataRepositoryProvider(ref builder, typeof(EFRepository<>));
+            builder.RegisterGeneric(typeof(EFRepository<>)).As(typeof(IRepository<>));
+            builder.RegisterGeneric(typeof(SSORepository<>)).As(typeof(ISSORepository<>));
             #endregion
 
             #region 注册service

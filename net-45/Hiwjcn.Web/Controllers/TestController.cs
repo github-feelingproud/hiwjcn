@@ -41,15 +41,20 @@ namespace Hiwjcn.Web.Controllers
         private readonly IEventPublisher _IEventPublisher;
         private readonly IEFRepository<AuthClient> _clientRepo;
         private readonly IUserService _IUserService;
+        private readonly ISSORepository<T_UserInfo> sso_user;
 
         public TestController(
             IEventPublisher pub,
             IUserService _IUserService,
-            IEFRepository<AuthClient> _clientRepo)
+            IEFRepository<AuthClient> _clientRepo,
+            ISSORepository<T_UserInfo> sso_user)
         {
             this._IEventPublisher = pub;
             this._IUserService = _IUserService;
             this._clientRepo = _clientRepo;
+            this.sso_user = sso_user;
+
+            this.sso_user.Exist(x => x.IID >= 0);
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
         }

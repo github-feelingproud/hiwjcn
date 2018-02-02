@@ -10,11 +10,8 @@ using Lib.extension;
 using Lib.helper;
 using Lib.infrastructure;
 using Lib.mvc.plugin;
-using Lib.task;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
@@ -26,20 +23,20 @@ namespace Lib.ioc
     /// </summary>
     public abstract class DependencyRegistrarBase : IDependencyRegistrar
     {
-        private readonly List<string> repeat_checker = new List<string>();
-        private readonly string GROUP_DATA_REPO = "db_repo";
-        private readonly string GROUP_SERVICE = "service";
-
-
         public abstract void Register(ref ContainerBuilder builder);
 
         private readonly IDictionary<Assembly, List<Type>> _cache = new Dictionary<Assembly, List<Type>>();
 
+        /// <summary>
+        /// 缓存需要注册的类，排除泛型
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         private List<Type> CachedClass(Assembly a)
         {
             if (!this._cache.ContainsKey(a))
             {
-                this._cache[a] = a.FindAllRegistableClass().ToList();
+                this._cache[a] = a.FindAllRegistableClass().Where(x => !x.IsGenericType).ToList();
             }
 
             return this._cache[a] ?? throw new Exception("无法获取可以注册的类");
@@ -72,25 +69,21 @@ namespace Lib.ioc
         /// <summary>
         /// 使用EF仓储实现
         /// </summary>
+        [Obsolete("使用autofac的泛型注册")]
         protected virtual void RegEFDataRepositoryProvider(ref ContainerBuilder builder, Type t)
         {
-            this.repeat_checker.AddOnceOrThrow(GROUP_DATA_REPO, "只能选择一种数据存储方案");
-
             if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
-            builder.RegisterGeneric(t).AsSelf()
-                .As(typeof(IEFRepository<>)).As(typeof(ILinqRepository<>)).As(typeof(IRepository<>));
+            builder.RegisterGeneric(t).AsSelf().As(typeof(IEFRepository<>));
         }
 
         /// <summary>
         /// 使用mongodb仓储实现
         /// </summary>
+        [Obsolete("使用autofac的泛型注册")]
         protected virtual void RegMongoDataRepositoryProvider(ref ContainerBuilder builder, Type t)
         {
-            this.repeat_checker.AddOnceOrThrow(GROUP_DATA_REPO, "只能选择一种数据存储方案");
-
             if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
-            builder.RegisterGeneric(t).AsSelf()
-                .As(typeof(IMongoRepository<>)).As(typeof(ILinqRepository<>)).As(typeof(IRepository<>));
+            builder.RegisterGeneric(t).AsSelf().As(typeof(IMongoRepository<>));
         }
 
         /// <summary>
@@ -103,9 +96,9 @@ namespace Lib.ioc
                 foreach (var t in this.CachedClass(a))
                 {
                     var all_interfaces = t.GetAllInterfaces_().ToArray();
-                    if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IRepository<>))))
+                    if (all_interfaces.Any(x => x.IsGenericType_(typeof(IRepository<>))))
                     {
-                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).As(all_interfaces);
+                        var reg = builder.RegisterType(t).AsSelf().As(all_interfaces);
                     }
                 }
             }
@@ -130,9 +123,9 @@ namespace Lib.ioc
                 foreach (var t in this.CachedClass(a))
                 {
                     var all_interfaces = t.GetAllInterfaces_().ToArray();
-                    if (t.BaseType != null && all_interfaces.Any(x => x.IsGenericType_(typeof(IServiceBase<>))))
+                    if (all_interfaces.Any(x => x.IsGenericType_(typeof(IServiceBase<>))))
                     {
-                        var reg = builder.RegisterType(t).AsSelf().As(t.BaseType).AsImplementedInterfaces();
+                        var reg = builder.RegisterType(t).AsSelf().AsImplementedInterfaces();
                         if (t.IsInterceptClass())
                         {
                             reg = reg.EnableClassInterceptors();
@@ -212,7 +205,6 @@ namespace Lib.ioc
         public void Clean()
         {
             this._cache.Clear();
-            this.repeat_checker.Clear();
         }
     }
 }
