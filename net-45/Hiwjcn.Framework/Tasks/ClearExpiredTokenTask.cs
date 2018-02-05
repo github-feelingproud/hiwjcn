@@ -12,6 +12,7 @@ using Hiwjcn.Core.Domain.Auth;
 using Lib.infrastructure.entity;
 using Lib.data.ef;
 using Lib.infrastructure.entity.auth;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Framework.Tasks
 {
@@ -31,7 +32,7 @@ namespace Hiwjcn.Framework.Tasks
             {
                 IocContext.Instance.Scope(s =>
                 {
-                    var repo = s.Resolve_<IEFRepository<AuthToken>>();
+                    var repo = s.Resolve_<IMSRepository<AuthToken>>();
                     repo.PrepareSession(db =>
                     {
                         var now = DateTime.Now;

@@ -160,19 +160,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AopBoundle.cs" />
-    <Compile Include="AuthClientService.cs" />
-    <Compile Include="AuthTokenService.cs" />
-    <Compile Include="SystemService.cs" />
-    <Compile Include="TokenEventHandler.cs" />
-    <Compile Include="AuthLoginProvider.cs" />
-    <Compile Include="ClearDataBaseService.cs" />
-    <Compile Include="MenuService.cs" />
+    <Compile Include="MemberShip\AuthClientService.cs" />
+    <Compile Include="MemberShip\AuthTokenService.cs" />
+    <Compile Include="MemberShip\SystemService.cs" />
+    <Compile Include="MemberShip\TokenEventHandler.cs" />
+    <Compile Include="MemberShip\AuthLoginProvider.cs" />
+    <Compile Include="MemberShip\ClearDataBaseService.cs" />
+    <Compile Include="MemberShip\MenuService.cs" />
     <Compile Include="MyService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoleService.cs" />
-    <Compile Include="UserService.cs" />
+    <Compile Include="MemberShip\RoleService.cs" />
+    <Compile Include="MemberShip\UserService.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Crm\" />
+    <Folder Include="FacilityCheck\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hiwjcn.Core\Hiwjcn.Core.csproj">
       <Project>{35bcb473-b95c-4b87-a9e6-7a538719c3d9}</Project>

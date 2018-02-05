@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Hiwjcn.Core;
+using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.Sys;
 using Hiwjcn.Framework.Actors;
@@ -23,11 +24,11 @@ namespace Hiwjcn.Bll.Auth
         public AuthApiService(
             IAuthLoginProvider _loginService,
             ICacheProvider _cache,
-            IEFRepository<AuthClient> _clientRepo,
-            IEFRepository<AuthScope> _scopeRepo,
-            IEFRepository<AuthToken> _tokenRepo,
-            IEFRepository<AuthCode> _codeRepo,
-            IEFRepository<AuthTokenScope> _tokenScopeRepo) :
+            IMSRepository<AuthClient> _clientRepo,
+            IMSRepository<AuthScope> _scopeRepo,
+            IMSRepository<AuthToken> _tokenRepo,
+            IMSRepository<AuthCode> _codeRepo,
+            IMSRepository<AuthTokenScope> _tokenScopeRepo) :
             base(_loginService, _cache, _clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
         {
             this.LogActor = new Lazy<IActorRef>(() => ActorsManager<CacheHitLogActor>.Instance.DefaultClient);

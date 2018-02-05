@@ -13,6 +13,7 @@ using Lib.mvc;
 using Lib.helper;
 using Hiwjcn.Core.Domain;
 using Hiwjcn.Core.Domain.User;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Bll.Common
 {
@@ -25,10 +26,10 @@ namespace Hiwjcn.Bll.Common
     public class MenuService : MenuServiceBase<MenuEntity>,
         IMenuService
     {
-        private readonly IEFRepository<PermissionEntity> _perRepo;
+        private readonly IMSRepository<PermissionEntity> _perRepo;
         public MenuService(
-            IEFRepository<MenuEntity> _menuRepo,
-            IEFRepository<PermissionEntity> _perRepo) :
+            IMSRepository<MenuEntity> _menuRepo,
+            IMSRepository<PermissionEntity> _perRepo) :
             base(_menuRepo)
         {
             this._perRepo = _perRepo;

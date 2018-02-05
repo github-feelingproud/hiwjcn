@@ -136,6 +136,7 @@
     <Compile Include="AuthAttributesSet.cs" />
     <Compile Include="CommonDependencyRegister.cs" />
     <Compile Include="DataBaseInitData.cs" />
+    <Compile Include="EpcBaseController.cs" />
     <Compile Include="Extension\UserActivityExtension.cs" />
     <Compile Include="Factory\ActorsFactory.cs" />
     <Compile Include="Provider\AuthApiService.cs" />

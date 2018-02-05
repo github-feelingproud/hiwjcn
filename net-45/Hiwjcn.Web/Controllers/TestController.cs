@@ -39,14 +39,14 @@ namespace Hiwjcn.Web.Controllers
     public class TestController : UserBaseController
     {
         private readonly IEventPublisher _IEventPublisher;
-        private readonly IEFRepository<AuthClient> _clientRepo;
+        private readonly IMSRepository<AuthClient> _clientRepo;
         private readonly IUserService _IUserService;
         private readonly ISSORepository<T_UserInfo> sso_user;
 
         public TestController(
             IEventPublisher pub,
             IUserService _IUserService,
-            IEFRepository<AuthClient> _clientRepo,
+            IMSRepository<AuthClient> _clientRepo,
             ISSORepository<T_UserInfo> sso_user)
         {
             this._IEventPublisher = pub;

@@ -13,6 +13,7 @@ using Lib.extension;
 using Lib.infrastructure.service.user;
 using Lib.helper;
 using System.Data.Entity;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Bll.User
 {
@@ -25,13 +26,13 @@ namespace Hiwjcn.Bll.User
     public class UserService : UserServiceBase<UserEntity>,
         IUserService
     {
-        private readonly IEFRepository<UserRoleEntity> _userRoleRepo;
-        private readonly IEFRepository<RoleEntity> _roleRepo;
+        private readonly IMSRepository<UserRoleEntity> _userRoleRepo;
+        private readonly IMSRepository<RoleEntity> _roleRepo;
 
         public UserService(
-            IEFRepository<UserEntity> _userRepo,
-            IEFRepository<UserRoleEntity> _userRoleRepo,
-            IEFRepository<RoleEntity> _roleRepo) :
+            IMSRepository<UserEntity> _userRepo,
+            IMSRepository<UserRoleEntity> _userRoleRepo,
+            IMSRepository<RoleEntity> _roleRepo) :
             base(_userRepo)
         {
             this._userRoleRepo = _userRoleRepo;

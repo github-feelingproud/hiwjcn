@@ -18,16 +18,7 @@ using Lib.data.ef;
 
 namespace Hiwjcn.Core.Data
 {
-    public class QPLSSOSqlServerConfiguration : DbConfiguration
-    {
-        public QPLSSOSqlServerConfiguration()
-        {
-            this.SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
-            this.SetDefaultConnectionFactory(new LocalDbConnectionFactory("mssqllocaldb"));
-        }
-    }
-
-    [DbConfigurationType(typeof(QPLSSOSqlServerConfiguration))]
+    [DbConfigurationType(typeof(Hiwjcn.Core.SqlServerConfiguration))]
     public class SSODB : BaseEFContext
     {
         public SSODB()

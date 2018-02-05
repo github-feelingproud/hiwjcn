@@ -14,6 +14,7 @@ using Lib.infrastructure.service.user;
 using Lib.mvc;
 using Lib.helper;
 using Lib.infrastructure.extension;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Bll.User
 {
@@ -27,9 +28,9 @@ namespace Hiwjcn.Bll.User
         IRoleService
     {
         public RoleService(
-            IEFRepository<RoleEntity> _roleRepo,
-            IEFRepository<UserRoleEntity> _userRoleRepo,
-            IEFRepository<RolePermissionEntity> _rolePermissionRepo) :
+            IMSRepository<RoleEntity> _roleRepo,
+            IMSRepository<UserRoleEntity> _userRoleRepo,
+            IMSRepository<RolePermissionEntity> _rolePermissionRepo) :
             base(_roleRepo, _userRoleRepo, _rolePermissionRepo)
         {
             //
@@ -69,9 +70,9 @@ namespace Hiwjcn.Bll.User
         IDepartmentService
     {
         public DepartmentService(
-            IEFRepository<DepartmentEntity> _departmentRepo,
-            IEFRepository<UserDepartmentEntity> _userDepartmentRepo,
-            IEFRepository<DepartmentRoleEntity> _departmentRoleRepo) :
+            IMSRepository<DepartmentEntity> _departmentRepo,
+            IMSRepository<UserDepartmentEntity> _userDepartmentRepo,
+            IMSRepository<DepartmentRoleEntity> _departmentRoleRepo) :
             base(_departmentRepo, _userDepartmentRepo, _departmentRoleRepo)
         { }
 
@@ -89,7 +90,7 @@ namespace Hiwjcn.Bll.User
     public class PermissionService : PermissionServiceBase<PermissionEntity>,
         IPermissionService
     {
-        public PermissionService(IEFRepository<PermissionEntity> _perRepo) : base(_perRepo)
+        public PermissionService(IMSRepository<PermissionEntity> _perRepo) : base(_perRepo)
         { }
 
         public override void UpdatePermissionEntity(ref PermissionEntity old_permission, ref PermissionEntity new_permission)

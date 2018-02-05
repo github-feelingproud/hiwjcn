@@ -16,26 +16,14 @@ using System.Data.Entity.SqlServer;
 namespace Hiwjcn.Dal
 {
     /// <summary>
-    /// sqlserver数据库
-    /// </summary>
-    public class SqlServerConfiguration : DbConfiguration
-    {
-        public SqlServerConfiguration()
-        {
-            this.SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
-            this.SetDefaultConnectionFactory(new LocalDbConnectionFactory("mssqllocaldb"));
-        }
-    }
-
-    /// <summary>
     /// EF容器上下文
     /// EF做映射的时候也可以数据库是int，代码里是string，
     /// 用attribute mapping测试成功，用fluent测试失败
     /// </summary>
 #if use_mysql_
-    [DbConfigurationType(typeof(MySqlEFConfiguration))]
+    [DbConfigurationType(typeof(MySql.Data.Entity.MySqlEFConfiguration))]
 #else
-    [DbConfigurationType(typeof(SqlServerConfiguration))]
+    [DbConfigurationType(typeof(Hiwjcn.Core.SqlServerConfiguration))]
 #endif
     public class EntityDB : BaseEFContext
     {
@@ -53,7 +41,7 @@ namespace Hiwjcn.Dal
         public virtual DbSet<AuthToken> AuthToken { get; set; }
         public virtual DbSet<AuthTokenScope> AuthTokenScope { get; set; }
         public virtual DbSet<AuthCode> AuthCode { get; set; }
-        
+
         public virtual DbSet<UserAvatarEntity> UserAvatar { get; set; }
         public virtual DbSet<UserEntity> UserEntity { get; set; }
         public virtual DbSet<UserOneTimeCodeEntity> UserOneTimeCode { get; set; }

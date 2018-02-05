@@ -55,8 +55,8 @@ namespace Hiwjcn.Framework
             #region 注册Data
             //注册数据访问层
             RegDataRepository_(ref builder, tps.core);
-            builder.RegisterGeneric(typeof(EFRepository<>)).As(typeof(IEFRepository<>));
             builder.RegisterGeneric(typeof(SSORepository<>)).As(typeof(ISSORepository<>));
+            builder.RegisterGeneric(typeof(MemberShipRepository<>)).As(typeof(IMSRepository<>));
             //builder.RegisterGeneric(typeof(MongoRepository<>)).AsSelf().As(typeof(IMongoRepository<>));
             #endregion
 

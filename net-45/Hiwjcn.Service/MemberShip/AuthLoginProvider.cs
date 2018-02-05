@@ -1,4 +1,5 @@
 ﻿using Hiwjcn.Bll.User;
+using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.User;
 using Lib.data.ef;
 using Lib.extension;
@@ -26,13 +27,13 @@ namespace Hiwjcn.Bll.Auth
         IUserLoginService
     {
         public UserLoginService(
-            IEFRepository<UserDepartmentEntity> _userDepartmentRepo,
-            IEFRepository<DepartmentRoleEntity> _departmentRoleRepo,
-            IEFRepository<UserEntity> _userRepo,
-            IEFRepository<UserOneTimeCodeEntity> _oneTimeCodeRepo,
-            IEFRepository<RolePermissionEntity> _rolePermissionRepo,
-            IEFRepository<UserRoleEntity> _userRoleRepo,
-            IEFRepository<PermissionEntity> _perRepo) :
+            IMSRepository<UserDepartmentEntity> _userDepartmentRepo,
+            IMSRepository<DepartmentRoleEntity> _departmentRoleRepo,
+            IMSRepository<UserEntity> _userRepo,
+            IMSRepository<UserOneTimeCodeEntity> _oneTimeCodeRepo,
+            IMSRepository<RolePermissionEntity> _rolePermissionRepo,
+            IMSRepository<UserRoleEntity> _userRoleRepo,
+            IMSRepository<PermissionEntity> _perRepo) :
             base(_userDepartmentRepo, _departmentRoleRepo, _userRepo, _oneTimeCodeRepo, _rolePermissionRepo, _userRoleRepo, _perRepo)
         {
             //

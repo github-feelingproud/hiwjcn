@@ -20,6 +20,7 @@ using Lib.data.ef;
 using Lib.ioc;
 using Lib.infrastructure.entity.auth;
 using Lib.infrastructure.service.user;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -35,11 +36,11 @@ namespace Hiwjcn.Bll.Auth
     {
         public AuthService(
             IEventPublisher _publisher,
-            IEFRepository<AuthToken> _AuthTokenRepository,
-            IEFRepository<AuthTokenScope> _AuthTokenScopeRepository,
-            IEFRepository<AuthScope> _AuthScopeRepository,
-            IEFRepository<AuthCode> _AuthCodeRepository,
-            IEFRepository<AuthClient> _AuthClientRepository,
+            IMSRepository<AuthToken> _AuthTokenRepository,
+            IMSRepository<AuthTokenScope> _AuthTokenScopeRepository,
+            IMSRepository<AuthScope> _AuthScopeRepository,
+            IMSRepository<AuthCode> _AuthCodeRepository,
+            IMSRepository<AuthClient> _AuthClientRepository,
             ICacheProvider _cache) :
             base(_cache, _AuthClientRepository, _AuthScopeRepository, _AuthTokenRepository, _AuthCodeRepository, _AuthTokenScopeRepository)
         {

@@ -82,28 +82,33 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheKeyManager.cs" />
-    <Compile Include="Data\Auth\AuthClientRepository.cs" />
-    <Compile Include="Data\Auth\AuthCodeRepository.cs" />
-    <Compile Include="Data\Auth\AuthScopeRepository.cs" />
-    <Compile Include="Data\Auth\AuthTokenRepository.cs" />
-    <Compile Include="Data\Auth\AuthTokenScopeRepository.cs" />
-    <Compile Include="Data\EntityDB.cs" />
-    <Compile Include="Data\SSODB.cs" />
-    <Compile Include="Data\SSORepo.cs" />
-    <Compile Include="Entity\AuthClients.cs" />
-    <Compile Include="Entity\MenuEntity.cs" />
-    <Compile Include="Entity\ReqLogEntity.cs" />
-    <Compile Include="Entity\DepartmentEntity.cs" />
-    <Compile Include="Entity\SystemEntity.cs" />
-    <Compile Include="Entity\UserEntity.cs" />
+    <Compile Include="EFConfiguration.cs" />
+    <Compile Include="ExceptionsBundle.cs" />
+    <Compile Include="MemberShip\Data\Auth\AuthClientRepository.cs" />
+    <Compile Include="MemberShip\Data\Auth\AuthCodeRepository.cs" />
+    <Compile Include="MemberShip\Data\Auth\AuthScopeRepository.cs" />
+    <Compile Include="MemberShip\Data\Auth\AuthTokenRepository.cs" />
+    <Compile Include="MemberShip\Data\Auth\AuthTokenScopeRepository.cs" />
+    <Compile Include="MemberShip\EntityDB.cs" />
+    <Compile Include="MemberShip\SSODB.cs" />
+    <Compile Include="MemberShip\MemberShipRepo.cs" />
+    <Compile Include="MemberShip\Entity\AuthClients.cs" />
+    <Compile Include="MemberShip\Entity\MenuEntity.cs" />
+    <Compile Include="MemberShip\Entity\ReqLogEntity.cs" />
+    <Compile Include="MemberShip\Entity\DepartmentEntity.cs" />
+    <Compile Include="MemberShip\Entity\SystemEntity.cs" />
+    <Compile Include="MemberShip\Entity\UserEntity.cs" />
     <Compile Include="EnumsBundle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Crm\" />
+    <Folder Include="FacilityCheck\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="Entity\TestProto.proto" />
+    <None Include="MemberShip\Entity\TestProto.proto" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\Lib.csproj">

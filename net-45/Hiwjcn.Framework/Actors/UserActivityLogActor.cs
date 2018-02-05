@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.Sys;
 using Lib.core;
 using Lib.data;
@@ -25,7 +26,7 @@ namespace Hiwjcn.Framework.Actors
                     }
                     IocContext.Instance.Scope(s =>
                     {
-                        s.Resolve_<IEFRepository<UserActivityEntity>>().Add(x);
+                        s.Resolve_<IMSRepository<UserActivityEntity>>().Add(x);
                         return true;
                     });
                 }

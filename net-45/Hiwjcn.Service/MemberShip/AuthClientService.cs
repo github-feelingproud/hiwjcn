@@ -12,6 +12,7 @@ using Lib.extension;
 using Lib.helper;
 using System.Data.Entity;
 using Lib.data.ef;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Bll.Auth
 {
@@ -34,9 +35,9 @@ namespace Hiwjcn.Bll.Auth
 
     public class AuthClientService : ServiceBase<AuthClient>, IAuthClientService
     {
-        private readonly IEFRepository<AuthClient> _AuthClientRepository;
+        private readonly IMSRepository<AuthClient> _AuthClientRepository;
         public AuthClientService(
-            IEFRepository<AuthClient> _AuthClientRepository)
+            IMSRepository<AuthClient> _AuthClientRepository)
         {
             this._AuthClientRepository = _AuthClientRepository;
         }

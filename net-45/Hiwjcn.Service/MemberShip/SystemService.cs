@@ -14,6 +14,7 @@ using System.Data.Entity;
 using Lib.data.ef;
 using Hiwjcn.Core.Domain;
 using Hiwjcn.Core.Entity;
+using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Bll
 {
@@ -24,10 +25,10 @@ namespace Hiwjcn.Bll
 
     public class SystemService : ServiceBase<SystemEntity>, ISystemService
     {
-        private readonly IEFRepository<SystemEntity> _sysRepo;
+        private readonly IMSRepository<SystemEntity> _sysRepo;
 
         public SystemService(
-            IEFRepository<SystemEntity> _sysRepo)
+            IMSRepository<SystemEntity> _sysRepo)
         {
             this._sysRepo = _sysRepo;
         }

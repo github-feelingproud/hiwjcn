@@ -1,4 +1,5 @@
-﻿using Hiwjcn.Core.Domain.Auth;
+﻿using Hiwjcn.Core.Data;
+using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.Sys;
 using Hiwjcn.Core.Domain.User;
 using Lib.data.ef;
@@ -34,24 +35,24 @@ namespace Hiwjcn.Bll
 
     public class ClearDataBaseService : IClearDataBaseService
     {
-        private readonly IEFRepository<AuthClient> _AuthClientRepo;
-        private readonly IEFRepository<AuthScope> _AuthScopeRepo;
-        private readonly IEFRepository<AuthToken> _AuthTokenRepo;
-        private readonly IEFRepository<AuthCode> _AuthCodeRepo;
-        private readonly IEFRepository<AuthTokenScope> _AuthTokenScopeRepo;
+        private readonly IMSRepository<AuthClient> _AuthClientRepo;
+        private readonly IMSRepository<AuthScope> _AuthScopeRepo;
+        private readonly IMSRepository<AuthToken> _AuthTokenRepo;
+        private readonly IMSRepository<AuthCode> _AuthCodeRepo;
+        private readonly IMSRepository<AuthTokenScope> _AuthTokenScopeRepo;
 
-        private readonly IEFRepository<ReqLogEntity> _ReqLogModelRepo;
-        private readonly IEFRepository<CacheHitLogEntity> _CacheHitLogRepo;
+        private readonly IMSRepository<ReqLogEntity> _ReqLogModelRepo;
+        private readonly IMSRepository<CacheHitLogEntity> _CacheHitLogRepo;
 
         public ClearDataBaseService(
-            IEFRepository<AuthClient> _AuthClientRepo,
-            IEFRepository<AuthScope> _AuthScopeRepo,
-            IEFRepository<AuthToken> _AuthTokenRepo,
-            IEFRepository<AuthCode> _AuthCodeRepo,
-            IEFRepository<AuthTokenScope> _AuthTokenScopeRepo,
+            IMSRepository<AuthClient> _AuthClientRepo,
+            IMSRepository<AuthScope> _AuthScopeRepo,
+            IMSRepository<AuthToken> _AuthTokenRepo,
+            IMSRepository<AuthCode> _AuthCodeRepo,
+            IMSRepository<AuthTokenScope> _AuthTokenScopeRepo,
 
-            IEFRepository<ReqLogEntity> _ReqLogModelRepo,
-            IEFRepository<CacheHitLogEntity> _CacheHitLogRepo)
+            IMSRepository<ReqLogEntity> _ReqLogModelRepo,
+            IMSRepository<CacheHitLogEntity> _CacheHitLogRepo)
         {
             this._AuthClientRepo = _AuthClientRepo;
             this._AuthScopeRepo = _AuthScopeRepo;
