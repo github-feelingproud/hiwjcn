@@ -67,26 +67,6 @@ namespace Lib.ioc
         }
 
         /// <summary>
-        /// 使用EF仓储实现
-        /// </summary>
-        [Obsolete("使用autofac的泛型注册")]
-        protected virtual void RegEFDataRepositoryProvider(ref ContainerBuilder builder, Type t)
-        {
-            if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
-            builder.RegisterGeneric(t).AsSelf().As(typeof(IEFRepository<>));
-        }
-
-        /// <summary>
-        /// 使用mongodb仓储实现
-        /// </summary>
-        [Obsolete("使用autofac的泛型注册")]
-        protected virtual void RegMongoDataRepositoryProvider(ref ContainerBuilder builder, Type t)
-        {
-            if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
-            builder.RegisterGeneric(t).AsSelf().As(typeof(IMongoRepository<>));
-        }
-
-        /// <summary>
         /// 注册所有实现了仓储的类
         /// </summary>
         protected virtual void RegDataRepository_(ref ContainerBuilder builder, params Assembly[] ass)
@@ -98,19 +78,11 @@ namespace Lib.ioc
                     var all_interfaces = t.GetAllInterfaces_().ToArray();
                     if (all_interfaces.Any(x => x.IsGenericType_(typeof(IRepository<>))))
                     {
-                        var reg = builder.RegisterType(t).AsSelf().As(all_interfaces);
+                        var not_generic_type = all_interfaces.Where(x => !x.IsGenericType).ToArray();
+                        var reg = builder.RegisterType(t).AsSelf().As(not_generic_type);
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// 注册logic service
-        /// </summary>
-        protected virtual void RegServiceProvider(ref ContainerBuilder builder, Type t)
-        {
-            if (!t.IsGenericType) { throw new Exception($"{t.GetType()}不是泛型"); }
-            builder.RegisterGeneric(t).AsSelf().As(typeof(IServiceBase<>));
         }
 
         /// <summary>
@@ -125,7 +97,8 @@ namespace Lib.ioc
                     var all_interfaces = t.GetAllInterfaces_().ToArray();
                     if (all_interfaces.Any(x => x.IsGenericType_(typeof(IServiceBase<>))))
                     {
-                        var reg = builder.RegisterType(t).AsSelf().AsImplementedInterfaces();
+                        var not_generic_type = all_interfaces.Where(x => !x.IsGenericType).ToArray();
+                        var reg = builder.RegisterType(t).AsSelf().As(not_generic_type);
                         if (t.IsInterceptClass())
                         {
                             reg = reg.EnableClassInterceptors();

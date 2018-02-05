@@ -1,5 +1,6 @@
 ﻿using Hiwjcn.Core.Domain.Sys;
 using Lib.data;
+using Lib.data.ef;
 using Lib.extension;
 using Lib.ioc;
 using Lib.task;
@@ -25,8 +26,8 @@ namespace Hiwjcn.Framework.Tasks
                 var expire = DateTime.Now.AddDays(-30);
                 IocContext.Instance.Scope(s =>
                 {
-                    s.Resolve_<IRepository<ReqLogEntity>>().DeleteWhere(x => x.CreateTime < expire);
-                    s.Resolve_<IRepository<CacheHitLogEntity>>().DeleteWhere(x => x.CreateTime < expire);
+                    s.Resolve_<IEFRepository<ReqLogEntity>>().DeleteWhere(x => x.CreateTime < expire);
+                    s.Resolve_<IEFRepository<CacheHitLogEntity>>().DeleteWhere(x => x.CreateTime < expire);
                     return true;
                 });
             }

@@ -2,6 +2,7 @@
 using Hiwjcn.Core.Domain.Sys;
 using Lib.core;
 using Lib.data;
+using Lib.data.ef;
 using Lib.extension;
 using Lib.ioc;
 using System;
@@ -24,7 +25,7 @@ namespace Hiwjcn.Framework.Actors
                     }
                     IocContext.Instance.Scope(s =>
                     {
-                        s.Resolve_<IRepository<UserActivityEntity>>().Add(x);
+                        s.Resolve_<IEFRepository<UserActivityEntity>>().Add(x);
                         return true;
                     });
                 }

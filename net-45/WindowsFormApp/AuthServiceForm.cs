@@ -15,6 +15,7 @@ using Hiwjcn.Core.Domain.Auth;
 using Lib.rpc;
 using Lib.mvc.auth;
 using Lib.mvc.auth.api;
+using Lib.data.ef;
 
 namespace WindowsFormApp
 {
@@ -33,7 +34,7 @@ namespace WindowsFormApp
                 btn.Enabled = false;
                 using (var scope = IocContext.Instance.Scope())
                 {
-                    var repo = scope.Resolve_<IRepository<AuthClient>>();
+                    var repo = scope.Resolve_<IEFRepository<AuthClient>>();
                     var client = (await repo.GetListAsync(null, 1)).FirstOrDefault();
                     if (client == null)
                     {

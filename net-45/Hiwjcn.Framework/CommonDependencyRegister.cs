@@ -46,7 +46,7 @@ namespace Hiwjcn.Framework
             builder.UseEF<EntityDB>("db");
             builder.UseAdoConnection<MySqlConnection>();
             //builder.RegisterInstance(new LoginStatus()).As<LoginStatus>().SingleInstance();
-            //builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().As<ILoginStatus>().SingleInstance();
+            //builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().SingleInstance();
 
             #region 自动注册
             AutoRegistered(ref builder, tps.core, tps.service, tps.framework);
@@ -55,14 +55,15 @@ namespace Hiwjcn.Framework
             #region 注册Data
             //注册数据访问层
             RegDataRepository_(ref builder, tps.core);
-            builder.RegisterGeneric(typeof(EFRepository<>)).As(typeof(IRepository<>));
+            builder.RegisterGeneric(typeof(EFRepository<>)).As(typeof(IEFRepository<>));
             builder.RegisterGeneric(typeof(SSORepository<>)).As(typeof(ISSORepository<>));
+            //builder.RegisterGeneric(typeof(MongoRepository<>)).AsSelf().As(typeof(IMongoRepository<>));
             #endregion
 
             #region 注册service
             //逻辑代码注册
             RegService_(ref builder, tps.service);
-            RegServiceProvider(ref builder, typeof(ServiceBase<>));
+            builder.RegisterGeneric(typeof(ServiceBase<>)).AsSelf().As(typeof(IServiceBase<>));
             #endregion
 
             #region 注册事件

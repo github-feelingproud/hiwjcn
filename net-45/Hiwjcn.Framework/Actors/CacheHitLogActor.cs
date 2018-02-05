@@ -1,6 +1,7 @@
 ﻿using Akka.Actor;
 using Hiwjcn.Core.Domain.Sys;
 using Lib.data;
+using Lib.data.ef;
 using Lib.extension;
 using Lib.ioc;
 using System;
@@ -24,7 +25,7 @@ namespace Hiwjcn.Framework.Actors
 
                     IocContext.Instance.Scope(s =>
                     {
-                        s.Resolve_<IRepository<CacheHitLogEntity>>().Add(x);
+                        s.Resolve_<IEFRepository<CacheHitLogEntity>>().Add(x);
                         return true;
                     });
                 }

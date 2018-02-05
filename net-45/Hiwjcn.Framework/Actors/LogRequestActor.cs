@@ -1,6 +1,7 @@
 ﻿using Akka.Actor;
 using Hiwjcn.Core.Domain.Sys;
 using Lib.data;
+using Lib.data.ef;
 using Lib.extension;
 using Lib.ioc;
 using System;
@@ -22,7 +23,7 @@ namespace Hiwjcn.Framework.Actors
                     x.Init("reqlog");
                     IocContext.Instance.Scope(s =>
                     {
-                        return s.Resolve_<IRepository<ReqLogEntity>>().Add(x);
+                        return s.Resolve_<IEFRepository<ReqLogEntity>>().Add(x);
                     });
                 }
                 catch (Exception e)
