@@ -7,8 +7,6 @@ using Lib.rpc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
-using QPL.WebService.Order.Core;
-using QPL.WebService.Order.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,57 +16,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hiwjcn.Core.Domain.User;
 
-namespace QPL.WebService.Order.Core.Models
-{
-    [DataContract]
-    public class OrderModel
-    {
-        [DataMember]
-        public virtual string UID { get; set; }
-        [DataMember]
-        public virtual decimal Price { get; set; }
-        [DataMember]
-        public virtual Exception e { get; set; }
-    }
-}
-namespace QPL.WebService.Order.Core
-{
-    [ServiceContract]
-    public interface IOrderService
-    {
-        [OperationContract]
-        List<OrderModel> GetOrders();
-
-        [OperationContract]
-        Task<List<OrderModel>> GetOrdersAsync_();
-
-        [OperationContract]
-        List<OrderModel> ThrowOrders();
-
-        [OperationContract]
-        int notExistFunction();
-    }
-}
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest1
     {
         [TestMethod]
-        public async Task fsdafds()
+        public void fsdafds()
         {
-            var data_0 = ServiceHelper<IOrderService>.Invoke(x => x.GetOrders());
-            var data_4 = ServiceHelper<IOrderService>.Invoke(x => x.notExistFunction());
-
-            var data_2 = await ServiceHelper<IOrderService>.InvokeAsync(async x => await x.GetOrdersAsync_());
-
-            var data_1 = await ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.GetOrders());
-            var data_3 = await ServiceHelper<IOrderService>.InvokeSyncAsAsync(x => x.ThrowOrders());
-
-
-
-
-
             var steps = new List<string>();
 
             try
@@ -95,17 +50,6 @@ namespace Hiwjcn.Test
                 //方法开始=>获取用户=>获取订单=>获取商品=>获取xx=>方法结束
                 steps.AsSteps().AddBusinessInfoLog();
             }
-
-
-
-
-
-
-
-
-
-
-
         }
 
         /// <summary>
