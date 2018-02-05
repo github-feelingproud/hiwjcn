@@ -17,6 +17,7 @@ using Lib.data;
 using Lib.infrastructure;
 using Lib.data.ef;
 using Hiwjcn.Core.Data;
+using EPC.Core;
 
 namespace Hiwjcn.Framework
 {
@@ -55,8 +56,8 @@ namespace Hiwjcn.Framework
             #region 注册Data
             //注册数据访问层
             RegDataRepository_(ref builder, tps.core);
-            builder.RegisterGeneric(typeof(SSORepository<>)).As(typeof(ISSORepository<>));
             builder.RegisterGeneric(typeof(MemberShipRepository<>)).As(typeof(IMSRepository<>));
+            builder.RegisterGeneric(typeof(EpcRepository<>)).As(typeof(IEpcRepository<>));
             //builder.RegisterGeneric(typeof(MongoRepository<>)).AsSelf().As(typeof(IMongoRepository<>));
             #endregion
 

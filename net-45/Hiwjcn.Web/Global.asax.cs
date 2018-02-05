@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using EPC.Core;
 using Hiwjcn.Bll.Auth;
 using Hiwjcn.Core.Data;
 using Hiwjcn.Dal;
@@ -85,10 +86,8 @@ namespace Hiwjcn.Web
                         Policy.Timeout(TimeSpan.FromSeconds(10), TimeoutStrategy.Pessimistic).Execute(() =>
                         {
                             //加速首次启动EF
-                            //EFManager.SelectDB(null).FastStart();
                             EFManager.FastStart<EntityDB>();
-                            //SSO数据库
-                            //EFManager.FastStart<SSODB>();
+                            EFManager.FastStart<EpcEntityDB>();
                         });
                     }
                     catch (Exception err)
@@ -127,6 +126,7 @@ namespace Hiwjcn.Web
                 {
                     //尝试创建数据表
                     EFManager.TryInstallDatabase<EntityDB>();
+                    EFManager.TryInstallDatabase<EpcEntityDB>();
                     //写文件
                     var data = new
                     {

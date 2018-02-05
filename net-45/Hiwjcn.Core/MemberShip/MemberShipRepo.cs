@@ -20,17 +20,4 @@ namespace Hiwjcn.Core.Data
     {
         //
     }
-
-    public interface ISSORepository<T> : IEFRepository<T>
-        where T : IDBTable
-    {
-        //
-    }
-
-    public class SSORepository<T> : EFRepositoryFromContext<T, SSODB>,
-        ISSORepository<T>
-        where T : class, IDBTable
-    {
-        //
-    }
 }

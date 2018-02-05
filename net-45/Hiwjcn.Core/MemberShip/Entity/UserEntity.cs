@@ -79,11 +79,7 @@ namespace Hiwjcn.Core.Domain.User
         /// </summary>
         [NotMapped]
         public virtual string UserToken { get; set; }
-
-
-        [NotMapped]
-        public virtual string RoleNames { get; set; }
-
+        
         [NotMapped]
         public virtual string SexName
         {
@@ -99,6 +95,18 @@ namespace Hiwjcn.Core.Domain.User
                 }
             }
         }
+
+        [NotMapped]
+        public virtual string OrgUID { get; set; }
+
+        [NotMapped]
+        public virtual int OrgFlag { get; set; }
+
+        [NotMapped]
+        public virtual string OrgFlagName { get; set; }
+
+        [NotMapped]
+        public virtual string RoleNames { get; set; }
     }
 
     public class UserModelMapping : EFMappingBase<UserEntity>

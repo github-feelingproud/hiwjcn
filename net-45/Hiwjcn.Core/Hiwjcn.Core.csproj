@@ -84,13 +84,22 @@
     <Compile Include="CacheKeyManager.cs" />
     <Compile Include="EFConfiguration.cs" />
     <Compile Include="ExceptionsBundle.cs" />
+    <Compile Include="Epc\Entity\CalendarEventEntity.cs" />
+    <Compile Include="Epc\Entity\CheckLogEntity.cs" />
+    <Compile Include="Epc\Entity\DeviceEntity.cs" />
+    <Compile Include="Epc\Entity\DeviceParameterEntity.cs" />
+    <Compile Include="Epc\Entity\IssueEntity.cs" />
+    <Compile Include="Epc\Entity\PageEntity.cs" />
+    <Compile Include="Epc\EpcEntityDB.cs" />
+    <Compile Include="Epc\EpcRepo.cs" />
+    <Compile Include="Epc\Model\DashboardModel.cs" />
     <Compile Include="MemberShip\Data\Auth\AuthClientRepository.cs" />
     <Compile Include="MemberShip\Data\Auth\AuthCodeRepository.cs" />
     <Compile Include="MemberShip\Data\Auth\AuthScopeRepository.cs" />
     <Compile Include="MemberShip\Data\Auth\AuthTokenRepository.cs" />
     <Compile Include="MemberShip\Data\Auth\AuthTokenScopeRepository.cs" />
     <Compile Include="MemberShip\EntityDB.cs" />
-    <Compile Include="MemberShip\SSODB.cs" />
+    <Compile Include="MemberShip\Entity\OrganizationEntity.cs" />
     <Compile Include="MemberShip\MemberShipRepo.cs" />
     <Compile Include="MemberShip\Entity\AuthClients.cs" />
     <Compile Include="MemberShip\Entity\MenuEntity.cs" />
@@ -103,12 +112,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Crm\" />
-    <Folder Include="FacilityCheck\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="MemberShip\Entity\TestProto.proto" />
+    <None Include="TestProto.proto" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\Lib.csproj">

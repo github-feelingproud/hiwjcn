@@ -160,8 +160,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AopBoundle.cs" />
+    <Compile Include="Epc\CalendarService.cs" />
+    <Compile Include="Epc\CheckLogService.cs" />
+    <Compile Include="Epc\DashboardService.cs" />
+    <Compile Include="Epc\DeviceService.cs" />
+    <Compile Include="Epc\InputsType\BoolInputExpression.cs" />
+    <Compile Include="Epc\InputsType\DeviceInputData.cs" />
+    <Compile Include="Epc\InputsType\InputExpression.cs" />
+    <Compile Include="Epc\InputsType\NumberInputExpression.cs" />
+    <Compile Include="Epc\InputsType\SelectInputExpression.cs" />
+    <Compile Include="Epc\InputsType\StringInputExpression.cs" />
+    <Compile Include="Epc\IssueService.cs" />
+    <Compile Include="Epc\PageService.cs" />
     <Compile Include="MemberShip\AuthClientService.cs" />
     <Compile Include="MemberShip\AuthTokenService.cs" />
+    <Compile Include="MemberShip\MemberShipDashboardService.cs" />
+    <Compile Include="MemberShip\OrgService.cs" />
     <Compile Include="MemberShip\SystemService.cs" />
     <Compile Include="MemberShip\TokenEventHandler.cs" />
     <Compile Include="MemberShip\AuthLoginProvider.cs" />
@@ -174,7 +188,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Crm\" />
-    <Folder Include="FacilityCheck\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hiwjcn.Core\Hiwjcn.Core.csproj">

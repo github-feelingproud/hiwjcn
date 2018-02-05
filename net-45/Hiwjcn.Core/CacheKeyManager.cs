@@ -63,5 +63,34 @@ namespace Hiwjcn.Core
         public static string AuthStaticsCacheHitGroupByKeys() =>
             "auth.statics.cachehit_groupbykeys".WithCacheKeyPrefix();
 
+        #region EPC
+
+        public static string DeviceCacheKey(string device_uid) =>
+            $"epc.device.uid={device_uid}".WithCacheKeyPrefix();
+
+        public static string DeviceParameterListCacheKey(string device_uid) =>
+            $"epc.device.param.device_uid={device_uid}".WithCacheKeyPrefix();
+
+        public static string PageCacheKey(string page_uid) =>
+            $"epc.page.uid={page_uid}".WithCacheKeyPrefix();
+
+        public static string OrgListCacheKey(string user_uid) =>
+            $"epc.org_list.user_uid={user_uid}".WithCacheKeyPrefix();
+
+        public static string OrgCacheKey(string org_uid) =>
+            $"epc.org.uid={org_uid}".WithCacheKeyPrefix();
+
+        public static string MemberCountCacheKey(string org_uid) =>
+            $"epc.org.member.count.uid={org_uid}".WithCacheKeyPrefix();
+
+        public static string IssueCountCacheKey(string org_uid) =>
+            $"epc.org.issue.count.uid={org_uid}".WithCacheKeyPrefix();
+
+        public static string DeviceCountCacheKey(string org_uid) =>
+            $"epc.org.device.count.uid={org_uid}".WithCacheKeyPrefix();
+
+        public static string RRuleCountCacheKey(string org_uid) =>
+            $"epc.org.rrule.count.uid={org_uid}".WithCacheKeyPrefix();
+        #endregion
     }
 }

@@ -41,32 +41,17 @@ namespace Hiwjcn.Web.Controllers
         private readonly IEventPublisher _IEventPublisher;
         private readonly IMSRepository<AuthClient> _clientRepo;
         private readonly IUserService _IUserService;
-        private readonly ISSORepository<T_UserInfo> sso_user;
 
         public TestController(
             IEventPublisher pub,
             IUserService _IUserService,
-            IMSRepository<AuthClient> _clientRepo,
-            ISSORepository<T_UserInfo> sso_user)
+            IMSRepository<AuthClient> _clientRepo)
         {
             this._IEventPublisher = pub;
             this._IUserService = _IUserService;
             this._clientRepo = _clientRepo;
-            this.sso_user = sso_user;
-
-            this.sso_user.Exist(x => x.IID >= 0);
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
-        }
-
-        public ActionResult data_import()
-        {
-            using (var db = new SSODB())
-            {
-                var syslist = db.T_Systems.ToList();
-                var pers = db.Auth_Permission.ToList();
-            }
-            return Content("ok");
         }
 
         /// <summary>
@@ -116,13 +101,10 @@ namespace Hiwjcn.Web.Controllers
         {
             return RunAction(() =>
             {
-                using (var db = new SSODB())
-                {
-                    var list = db.T_UserInfo.Take(1000).ToList();
-                    var data = Lib.io.ExcelHelper.ObjectToExcel(list, "用户列表");
+                var list = this._clientRepo.GetList(x => x.IID > 0);
+                var data = Lib.io.ExcelHelper.ObjectToExcel(list, "用户列表");
 
-                    return File(data, Lib.io.ExcelHelper.ContentType, $"用户列表导出-{DateTime.Now.ToDateTimeString()}.xls");
-                }
+                return File(data, Lib.io.ExcelHelper.ContentType, $"用户列表导出-{DateTime.Now.ToDateTimeString()}.xls");
             });
         }
 
