@@ -36,8 +36,12 @@ namespace Lib.mvc.auth.validation
 
         public abstract Task<LoginUserInfo> FindUserAsync(HttpContext context);
 
+        //xxxxxxxxxxxxx
+        private readonly bool xx = true;
+
         public virtual void WhenUserNotLogin(HttpContext context)
         {
+            if (xx) { return; }
             using (var s = IocContext.Instance.Scope())
             {
                 s.ResolveOptional_<LoginStatus>()?.SetUserLogout(context);
@@ -46,6 +50,7 @@ namespace Lib.mvc.auth.validation
 
         public virtual void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
         {
+            if (xx) { return; }
             using (var s = IocContext.Instance.Scope())
             {
                 s.ResolveOptional_<LoginStatus>()?.SetUserLogin(context, loginuser);

@@ -1,30 +1,15 @@
 ﻿using Lib.helper;
+using Lib.ioc;
+using Lib.mvc.auth.validation;
+using Lib.mvc.user;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using Lib.extension;
-using Lib.io;
-using Lib.ioc;
-using Lib.mvc.user;
-using System.Reflection;
-using System.Web.SessionState;
-using Autofac;
-using Lib.mvc.auth.validation;
 
 namespace Lib.mvc.auth
 {
     public static class AuthExtension
     {
-        public static void UseAccountSystem<T>(this ContainerBuilder builder) where T : class, IAuthLoginProvider
-        {
-            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().As<IAuthLoginProvider>().SingleInstance();
-        }
-
         /// <summary>
         /// 获取当前登录用户
         /// </summary>
@@ -81,18 +66,6 @@ namespace Lib.mvc.auth
         }
 
         /// <summary>
-        /// 获取client id
-        /// </summary>
-        public static string GetAuthClientID(this HttpContext context) =>
-            context.Request.Headers["auth.client_id"] ?? string.Empty;
-
-        /// <summary>
-        /// 获取client security
-        /// </summary>
-        public static string GetAuthClientSecurity(this HttpContext context) =>
-            context.Request.Headers["auth.client_security"] ?? string.Empty;
-
-        /// <summary>
         /// 使用cookie登录
         /// </summary>
         public static void CookieLogin(this HttpContext context, LoginUserInfo loginuser)
@@ -114,48 +87,6 @@ namespace Lib.mvc.auth
                 var loginstatus = s.Resolve_<LoginStatus>();
                 loginstatus.SetUserLogout(context);
             }
-        }
-
-        /// <summary>
-        /// cookie store
-        /// </summary>
-        public static void AuthUseLoginStatus(this ContainerBuilder builder, Func<LoginStatus> config)
-        {
-            builder.Register(_ => config.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
-        }
-
-        /// <summary>
-        /// 获取token client的逻辑
-        /// </summary>
-        public static void AuthUseValidationDataProvider<T>(this ContainerBuilder builder)
-            where T : IAuthDataProvider
-        {
-            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces().SingleInstance();
-        }
-
-        /// <summary>
-        /// auth服务器配置
-        /// </summary>
-        public static void AuthUseServerConfig(this ContainerBuilder builder, Func<AuthServerConfig> config)
-        {
-            builder.Register(_ => config.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
-        }
-
-        /// <summary>
-        /// 访问服务的方式，wcf，webapi，db
-        /// </summary>
-        public static void AuthUseServerApiAccessService<T>(this ContainerBuilder builder) where T : IAuthApi
-        {
-            builder.RegisterType<T>().AsSelf().AsImplementedInterfaces();
-        }
-
-        /// <summary>
-        /// 自定义验证
-        /// </summary>
-        public static void AuthClientUseCustomValidation<T>(this ContainerBuilder builder)
-            where T : ITokenValidationProvider
-        {
-            builder.RegisterType<T>().AsSelf().As<ITokenValidationProvider>().SingleInstance();
         }
     }
 }

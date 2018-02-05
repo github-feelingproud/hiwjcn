@@ -56,13 +56,17 @@ namespace Hiwjcn.Web
                     IocContext.Instance.AddExtraRegistrar(new FullDependencyRegistrar());
                     IocContext.Instance.OnContainerBuilding += (ref ContainerBuilder builder) =>
                     {
-                        builder.UseAccountSystem<AuthLoginProvider>();
-                        //builder.AuthUseAuthServerValidation(() => new AuthServerConfig() { });
-                        builder.AuthUseLoginStatus(() => new LoginStatus($"auth_user_uid", $"auth_user_token", $"auth_user_session"));
-                        builder.AuthUseValidationDataProvider<AppOrWebAuthDataProvider>();
-                        builder.AuthClientUseCustomValidation<AuthBasicValidationProvider>();
-                        //auth 功能逻辑
-                        builder.AuthUseServerApiAccessService<AuthApiService>();
+                        Func<LoginStatus> CookieProvider = () => new LoginStatus($"auth_user_uid", $"auth_user_token", $"auth_user_session");
+
+                        var server_host = string.Empty;
+                        if (ValidateHelper.IsPlumpString(server_host))
+                        {
+                            builder.AuthBasicServerConfig<AuthLoginProvider>(() => new AuthServerConfig(server_host), CookieProvider);
+                        }
+                        else
+                        {
+                            builder.AuthBasicConfig<AuthLoginProvider, AuthApiService>(CookieProvider);
+                        }
                     };
 
                     //disable "X-AspNetMvc-Version" header name
@@ -78,7 +82,7 @@ namespace Hiwjcn.Web
                     try
                     {
                         //断网的情况下这里不会抛异常，会长时间等待
-                        Policy.Timeout(TimeSpan.FromSeconds(6), TimeoutStrategy.Pessimistic).Execute(() =>
+                        Policy.Timeout(TimeSpan.FromSeconds(10), TimeoutStrategy.Pessimistic).Execute(() =>
                         {
                             //加速首次启动EF
                             //EFManager.SelectDB(null).FastStart();

@@ -26,7 +26,7 @@ namespace Lib.mvc.auth.validation
 
         public string GetClientID(HttpContext context)
         {
-            var client_id = context.GetAuthClientID();
+            var client_id = context.Request.Headers["auth.client_id"] ?? string.Empty;
             if (!ValidateHelper.IsPlumpString(client_id))
             {
                 client_id = WebClientConfig.ClientID();
@@ -36,7 +36,7 @@ namespace Lib.mvc.auth.validation
 
         public string GetClientSecurity(HttpContext context)
         {
-            var client_security = context.GetAuthClientSecurity();
+            var client_security = context.Request.Headers["auth.client_security"] ?? string.Empty;
             if (!ValidateHelper.IsPlumpString(client_security))
             {
                 client_security = WebClientConfig.ClientSecurity();
