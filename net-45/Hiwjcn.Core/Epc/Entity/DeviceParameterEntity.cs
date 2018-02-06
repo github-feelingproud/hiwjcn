@@ -26,7 +26,7 @@ namespace EPC.Core.Entity
 
     [Serializable]
     [Table("tb_device_parameter")]
-    public class DeviceParameterEntity : BaseEntity
+    public class DeviceParameterEntity : BaseEntity, IEpcDBTable
     {
         /// <summary>
         /// 设备UID

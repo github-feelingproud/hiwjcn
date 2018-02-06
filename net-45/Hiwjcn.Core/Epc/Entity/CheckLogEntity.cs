@@ -13,7 +13,7 @@ namespace EPC.Core.Entity
     /// </summary>
     [Serializable]
     [Table("tb_check_log")]
-    public class CheckLogEntity : TimeEntityBase
+    public class CheckLogEntity : TimeEntityBase, IEpcDBTable
     {
         [Required]
         public virtual string OrgUID { get; set; }
@@ -25,7 +25,7 @@ namespace EPC.Core.Entity
         public virtual string DeviceUID { get; set; }
 
         public virtual int StatusOK { get; set; }
-        
+
         [NotMapped]
         public virtual List<string> Tips { get; set; }
 
@@ -41,11 +41,11 @@ namespace EPC.Core.Entity
     /// </summary>
     [Serializable]
     [Table("tb_check_log_item")]
-    public class CheckLogItemEntity : TimeEntityBase
+    public class CheckLogItemEntity : TimeEntityBase, IEpcDBTable
     {
         [Required]
         public virtual string CheckUID { get; set; }
-        
+
         [Required]
         public virtual string DeviceUID { get; set; }
 

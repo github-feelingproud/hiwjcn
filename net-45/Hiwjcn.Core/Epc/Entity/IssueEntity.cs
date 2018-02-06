@@ -9,7 +9,7 @@ namespace EPC.Core.Entity
 {
     [Serializable]
     [Table("tb_issue")]
-    public class IssueEntity : TimeEntityBase
+    public class IssueEntity : TimeEntityBase, IEpcDBTable
     {
         public virtual string Title { get; set; }
 
@@ -42,7 +42,7 @@ namespace EPC.Core.Entity
         /// </summary>
         [NotMapped]
         public virtual UserEntity UserModel { get; set; }
-        
+
         /// <summary>
         /// 被指派的人
         /// </summary>
@@ -52,7 +52,7 @@ namespace EPC.Core.Entity
 
     [Serializable]
     [Table("tb_issue_operation_log")]
-    public class IssueOperationLogEntity : TimeEntityBase
+    public class IssueOperationLogEntity : TimeEntityBase, IEpcDBTable
     {
         public virtual string IssueUID { get; set; }
 

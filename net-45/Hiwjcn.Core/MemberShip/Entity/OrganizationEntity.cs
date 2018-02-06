@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Lib.helper;
 using System.Linq;
 using Lib.extension;
+using Hiwjcn.Core.Data;
 
 namespace EPC.Core.Entity
 {
@@ -43,7 +44,7 @@ namespace EPC.Core.Entity
 
     [Serializable]
     [Table("tb_org")]
-    public class OrganizationEntity : BaseEntity
+    public class OrganizationEntity : BaseEntity, IMemberShipDBTable
     {
         [Required]
         [Index(IsUnique = true)]
@@ -72,7 +73,7 @@ namespace EPC.Core.Entity
 
     [Serializable]
     [Table("tb_org_memeber")]
-    public class OrganizationMemberEntity : BaseEntity
+    public class OrganizationMemberEntity : BaseEntity, IMemberShipDBTable
     {
         [Required]
         public virtual string OrgUID { get; set; }

@@ -8,7 +8,7 @@ namespace EPC.Core.Entity
 {
     [Serializable]
     [Table("tb_calendar_event")]
-    public class CalendarEventEntity : BaseEntity
+    public class CalendarEventEntity : BaseEntity, IEpcDBTable
     {
         public virtual DateTime DateStart { get; set; }
 
@@ -44,7 +44,7 @@ namespace EPC.Core.Entity
 
     [Serializable]
     [Table("tb_event_device")]
-    public class EventDeviceEntity : BaseEntity
+    public class EventDeviceEntity : BaseEntity, IEpcDBTable
     {
         public virtual string EventUID { get; set; }
 

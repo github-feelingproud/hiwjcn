@@ -1,4 +1,5 @@
-﻿using Lib.core;
+﻿using Hiwjcn.Core.Data;
+using Lib.core;
 using Lib.data.ef;
 using Lib.helper;
 using Lib.infrastructure.entity;
@@ -12,7 +13,7 @@ namespace Hiwjcn.Core.Entity
 {
     [Serializable]
     [Table("tb_system")]
-    public class SystemEntity : BaseEntity
+    public class SystemEntity : BaseEntity, IMemberShipDBTable
     {
         [Required]
         public virtual string Name { get; set; }

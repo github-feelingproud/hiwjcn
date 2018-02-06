@@ -1,5 +1,6 @@
 ﻿#define use_mysql
 
+using EPC.Core.Entity;
 using Hiwjcn.Core.Domain;
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.Sys;
@@ -28,8 +29,8 @@ namespace Hiwjcn.Dal
     public class EntityDB : BaseEFContext
     {
         public EntityDB() : base(
-            ConfigurationManager.ConnectionStrings["db"]?.ConnectionString ??
-            throw new Exception("请配置db数据库链接字符串"))
+            ConfigurationManager.ConnectionStrings["member_ship"]?.ConnectionString ??
+            throw new Exception("请配置member_ship数据库链接字符串"))
         {
             //
         }
@@ -62,6 +63,9 @@ namespace Hiwjcn.Dal
         public virtual DbSet<MenuEntity> MenuEntity { get; set; }
 
         public virtual DbSet<SystemEntity> SystemEntity { get; set; }
+
+        public virtual DbSet<OrganizationEntity> OrganizationEntity { get; set; }
+        public virtual DbSet<OrganizationMemberEntity> OrganizationMemberEntity { get; set; }
 
         #endregion
     }

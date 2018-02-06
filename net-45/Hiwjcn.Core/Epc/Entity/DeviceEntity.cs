@@ -9,7 +9,7 @@ namespace EPC.Core.Entity
 {
     [Serializable]
     [Table("tb_device")]
-    public class DeviceEntity : BaseEntity
+    public class DeviceEntity : BaseEntity, IEpcDBTable
     {
         /// <summary>
         /// 设备名称
@@ -20,7 +20,7 @@ namespace EPC.Core.Entity
         /// 设备描述
         /// </summary>
         public virtual string Description { get; set; }
-        
+
         /// <summary>
         /// 最后编辑人
         /// </summary>

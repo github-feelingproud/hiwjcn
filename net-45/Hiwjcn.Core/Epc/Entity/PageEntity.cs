@@ -9,7 +9,7 @@ namespace EPC.Core.Entity
 {
     [Serializable]
     [Table("tb_page")]
-    public class PageEntity : BaseEntity
+    public class PageEntity : BaseEntity, IEpcDBTable
     {
         [Required]
         public virtual string UserUID { get; set; }
@@ -52,7 +52,7 @@ namespace EPC.Core.Entity
         public virtual string PageGroup { get; set; } = string.Empty;
 
         public virtual int PageLanguage { get; set; }
-        
+
         public virtual bool ShowWhen(DateTime time) =>
             (this.PageStartTime == null || this.PageStartTime < time) &&
             (this.PageEndTime == null || this.PageEndTime > time);

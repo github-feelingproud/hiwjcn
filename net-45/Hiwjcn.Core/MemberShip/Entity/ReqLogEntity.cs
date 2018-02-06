@@ -1,4 +1,5 @@
-﻿using Lib.cache;
+﻿using Hiwjcn.Core.Data;
+using Lib.cache;
 using Lib.core;
 using Lib.extension;
 using Lib.helper;
@@ -66,7 +67,7 @@ namespace Hiwjcn.Core.Domain.Sys
 
     [Serializable]
     [Table("sys_reqlog")]
-    public class ReqLogEntity : TimeEntityBase
+    public class ReqLogEntity : TimeEntityBase, IMemberShipDBTable
     {
         [MaxLength(100)]
         public virtual string ReqID { get; set; }
@@ -155,7 +156,7 @@ namespace Hiwjcn.Core.Domain.Sys
     /// </summary>
     [Serializable]
     [Table("sys_cachehitlog")]
-    public class CacheHitLogEntity : TimeEntityBase
+    public class CacheHitLogEntity : TimeEntityBase, IMemberShipDBTable
     {
         /// <summary>
         /// 没有无参构造函数autofac会报错
@@ -189,7 +190,7 @@ namespace Hiwjcn.Core.Domain.Sys
 
     [Serializable]
     [Table("sys_user_activity")]
-    public class UserActivityEntity : TimeEntityBase
+    public class UserActivityEntity : TimeEntityBase, IMemberShipDBTable
     {
         [MaxLength(100)]
         public virtual string ReqID { get; set; }

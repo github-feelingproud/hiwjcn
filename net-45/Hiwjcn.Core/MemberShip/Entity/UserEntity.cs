@@ -1,4 +1,5 @@
-﻿using Lib.core;
+﻿using Hiwjcn.Core.Data;
+using Lib.core;
 using Lib.data.ef;
 using Lib.helper;
 using Lib.infrastructure.entity;
@@ -12,18 +13,18 @@ namespace Hiwjcn.Core.Domain.User
 {
     [Serializable]
     [Table("tb_user_avatar")]
-    public class UserAvatarEntity : UserAvatarEntityBase { }
+    public class UserAvatarEntity : UserAvatarEntityBase, IMemberShipDBTable { }
 
     /// <summary>
     /// 一次性登录用的code
     /// </summary>
     [Serializable]
     [Table("tb_one_time_code")]
-    public class UserOneTimeCodeEntity : UserOneTimeCodeEntityBase { }
+    public class UserOneTimeCodeEntity : UserOneTimeCodeEntityBase, IMemberShipDBTable { }
 
     [Serializable]
     [Table("tb_permission")]
-    public class PermissionEntity : PermissionEntityBase
+    public class PermissionEntity : PermissionEntityBase, IMemberShipDBTable
     {
         [NotMapped]
         public virtual List<PermissionEntity> Children { get; set; }
@@ -34,7 +35,7 @@ namespace Hiwjcn.Core.Domain.User
     /// </summary>
     [Serializable]
     [Table("tb_role")]
-    public class RoleEntity : RoleEntityBase
+    public class RoleEntity : RoleEntityBase, IMemberShipDBTable
     {
         [NotMapped]
         public virtual List<string> PermissionIds { get; set; }
@@ -48,21 +49,21 @@ namespace Hiwjcn.Core.Domain.User
     /// </summary>
     [Serializable]
     [Table("tb_role_permission")]
-    public class RolePermissionEntity : RolePermissionEntityBase { }
+    public class RolePermissionEntity : RolePermissionEntityBase, IMemberShipDBTable { }
 
     /// <summary>
     /// 用户角色关联
     /// </summary>
     [Serializable]
     [Table("tb_user_role")]
-    public class UserRoleEntity : UserRoleEntityBase { }
-    
+    public class UserRoleEntity : UserRoleEntityBase, IMemberShipDBTable { }
+
     /// <summary>
     ///用户的账户模型
     /// </summary>
     [Serializable]
     [Table("tb_user")]
-    public class UserEntity : UserEntityBase
+    public class UserEntity : UserEntityBase, IMemberShipDBTable
     {
         public override string Phone { get => base.Phone; set => base.Phone = value; }
 
@@ -79,7 +80,7 @@ namespace Hiwjcn.Core.Domain.User
         /// </summary>
         [NotMapped]
         public virtual string UserToken { get; set; }
-        
+
         [NotMapped]
         public virtual string SexName
         {

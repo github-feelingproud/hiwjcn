@@ -1,4 +1,5 @@
-﻿using Lib.infrastructure.entity;
+﻿using Hiwjcn.Core.Data;
+using Lib.infrastructure.entity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,7 +11,7 @@ namespace Hiwjcn.Core.Domain
 {
     [Serializable]
     [Table("tb_menu")]
-    public class MenuEntity : MenuEntityBase
+    public class MenuEntity : MenuEntityBase, IMemberShipDBTable
     {
         [NotMapped]
         public virtual List<MenuEntity> Children { get; set; }

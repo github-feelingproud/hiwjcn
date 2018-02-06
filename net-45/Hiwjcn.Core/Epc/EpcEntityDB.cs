@@ -22,7 +22,7 @@ namespace EPC.Core
     {
         public EpcEntityDB() : base(
             ConfigurationManager.ConnectionStrings["epc"]?.ConnectionString ??
-            throw new Exception("请配置db数据库链接字符串"))
+            throw new Exception("请配置epc数据库链接字符串"))
         {
             //
         }
