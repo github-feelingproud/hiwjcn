@@ -3,6 +3,8 @@ using Lib.infrastructure.entity;
 using Lib.infrastructure.entity.auth;
 using Lib.infrastructure.entity.user;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EPC.Core.Entity
@@ -11,14 +13,17 @@ namespace EPC.Core.Entity
     [Table("tb_issue")]
     public class IssueEntity : TimeEntityBase, IEpcDBTable
     {
+        [Required]
         public virtual string Title { get; set; }
 
         public virtual string Content { get; set; }
 
         public virtual string ContentMarkdown { get; set; }
 
+        [Required]
         public virtual string OrgUID { get; set; }
 
+        [Required]
         public virtual string UserUID { get; set; }
 
         public virtual string AssignedUserUID { get; set; }
@@ -30,6 +35,9 @@ namespace EPC.Core.Entity
         public virtual DateTime? Start { get; set; }
 
         public virtual string DeviceUID { get; set; }
+
+        [NotMapped]
+        public virtual List<IssueOperationLogEntity> OperationLog { get; set; }
 
         /// <summary>
         /// 设备
@@ -54,10 +62,15 @@ namespace EPC.Core.Entity
     [Table("tb_issue_operation_log")]
     public class IssueOperationLogEntity : TimeEntityBase, IEpcDBTable
     {
+        [Required]
+        public virtual string OrgUID { get; set; }
+
+        [Required]
         public virtual string IssueUID { get; set; }
 
         public virtual string Content { get; set; }
 
+        [Required]
         public virtual string UserUID { get; set; }
     }
 

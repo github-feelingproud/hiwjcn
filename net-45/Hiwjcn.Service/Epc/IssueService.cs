@@ -20,33 +20,38 @@ namespace EPC.Service
     {
         Task<_<IssueEntity>> AddIssue(IssueEntity model);
 
-        Task<_<string>> OpenOrClose(string org_uid, string uid, bool close);
+        Task<_<string>> OpenOrClose(string org_uid, string uid, bool close, string user_uid, string comment);
 
         Task<PagerData<IssueEntity>> QueryIssue(string org_uid,
             DateTime? start = null, DateTime? end = null,
             string user_uid = null, string assigned_user_uid = null, bool? open = true,
             string q = null, int page = 1, int pagesize = 10);
 
-        Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count = 10);
+        Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(string org_uid, string issue_uid, int count);
+
+        Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count);
     }
 
     public class IssueService : ServiceBase<IssueEntity>, IIssueService
     {
         private readonly IEpcRepository<IssueEntity> _issueRepo;
+        private readonly IEpcRepository<IssueOperationLogEntity> _issueOperaRepo;
         private readonly IMSRepository<UserEntity> _userRepo;
 
         public IssueService(
             IEpcRepository<IssueEntity> _issueRepo,
+            IEpcRepository<IssueOperationLogEntity> _issueOperaRepo,
             IMSRepository<UserEntity> _userRepo)
         {
             this._issueRepo = _issueRepo;
+            this._issueOperaRepo = _issueOperaRepo;
             this._userRepo = _userRepo;
         }
 
         public virtual async Task<_<IssueEntity>> AddIssue(IssueEntity model) =>
             await this._issueRepo.AddEntity_(model, "is");
 
-        public virtual async Task<_<string>> OpenOrClose(string org_uid, string uid, bool close)
+        public virtual async Task<_<string>> OpenOrClose(string org_uid, string uid, bool close, string user_uid, string comment)
         {
             var res = new _<string>();
 
@@ -59,21 +64,37 @@ namespace EPC.Service
             }
 
             var status = close.ToBoolInt();
-            if (model.IsClosed != status)
+            if (model.IsClosed == status)
             {
-                model.IsClosed = status;
-
-                if (close)
-                {
-                    model.SecondsToTakeToClose = (int)(DateTime.Now - model.CreateTime).TotalSeconds;
-                }
-                else
-                {
-                    model.SecondsToTakeToClose = 0;
-                }
-
-                await this._issueRepo.UpdateAsync(model);
+                res.SetErrorMsg("状态无需改变");
+                return res;
             }
+            model.IsClosed = status;
+
+            if (close)
+            {
+                model.SecondsToTakeToClose = (int)(DateTime.Now - model.CreateTime).TotalSeconds;
+            }
+            else
+            {
+                model.SecondsToTakeToClose = 0;
+            }
+
+            await this._issueRepo.UpdateAsync(model);
+            //add log
+            var operation_log = new IssueOperationLogEntity()
+            {
+                OrgUID = model.OrgUID,
+                IssueUID = model.UID,
+                UserUID = user_uid,
+                Content = comment
+            }.InitSelf("iol");
+            if (!operation_log.IsValid(out var msg))
+            {
+                res.SetErrorMsg(msg);
+                return res;
+            }
+            await this._issueOperaRepo.AddAsync(operation_log);
 
             res.SetSuccessData(string.Empty);
             return res;
@@ -139,7 +160,14 @@ namespace EPC.Service
             });
         }
 
-        public async Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count = 10) =>
+        public virtual async Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(
+            string org_uid, string issue_uid, int count) =>
+            await this._issueOperaRepo.QueryListAsync(
+                where: x => x.OrgUID == org_uid && x.IssueUID == issue_uid,
+                orderby: x => x.IID, Desc: true,
+                count: count);
+
+        public virtual async Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count) =>
             await this._issueRepo.QueryListAsync(
                 where: x => x.OrgUID == org_uid,
                 orderby: x => x.IID, Desc: true,

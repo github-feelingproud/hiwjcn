@@ -66,6 +66,23 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
 
         [HttpPost]
         [EpcAuth]
+        public async Task<ActionResult> QueryOperationLog(string issue_uid)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid);
+
+                var data = await this._issueService.QueryIssueOperationLog(org_uid, issue_uid, 100);
+                return GetJson(new _()
+                {
+                    success = true,
+                });
+            });
+        }
+
+        [HttpPost]
+        [EpcAuth]
         public async Task<ActionResult> TopOpenIssue()
         {
             return await RunActionAsync(async () =>
@@ -117,13 +134,16 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> CloseOrOpen(string uid, string open)
+        public async Task<ActionResult> CloseOrOpen(string uid, string open, string comment)
         {
             return await RunActionAsync(async () =>
             {
                 if (!ValidateHelper.IsAllPlumpString(uid, open)) { return GetJsonRes("参数错误"); }
                 var org_uid = this.GetSelectedOrgUID();
-                var data = await this._issueService.OpenOrClose(org_uid, uid, open.ToBool());
+                var loginuser = await this.ValidMember(org_uid);
+                var data = await this._issueService.OpenOrClose(
+                    org_uid, uid, open.ToBool(),
+                    loginuser.UserID, comment ?? string.Empty);
 
                 return GetJsonRes(string.Empty);
             });
