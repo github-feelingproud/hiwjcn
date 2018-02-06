@@ -18,7 +18,7 @@ using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class UserController : UserBaseController
+    public class UserController : EpcBaseController
     {
         private readonly IUserService _userService;
         private readonly IUserLoginService _login;

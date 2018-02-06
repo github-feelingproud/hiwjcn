@@ -15,7 +15,7 @@ using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class DepartmentController : Controller
+    public class DepartmentController : EpcBaseController
     {
         // GET: Department
         public ActionResult Index()

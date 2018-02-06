@@ -25,7 +25,7 @@ using Hiwjcn.Bll.User;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class AccountController : UserBaseController
+    public class AccountController : EpcBaseController
     {
         private readonly IReadOnlyCollection<string> DefaultScopes = new List<string>() { }.AsReadOnly();
 

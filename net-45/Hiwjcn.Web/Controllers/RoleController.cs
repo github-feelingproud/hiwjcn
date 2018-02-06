@@ -24,7 +24,7 @@ namespace Hiwjcn.Web.Controllers
     /// <summary>
     /// 角色
     /// </summary>
-    public class RoleController : UserBaseController
+    public class RoleController : EpcBaseController
     {
         private readonly IRoleService _roleService;
         private readonly ICacheProvider _cache;

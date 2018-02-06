@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class PageController : BaseController
+    public class PageController : EpcBaseController
     {
         private readonly ICacheProvider _cache;
 

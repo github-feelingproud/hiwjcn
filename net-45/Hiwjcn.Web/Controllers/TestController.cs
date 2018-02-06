@@ -3,6 +3,7 @@ using Hiwjcn.Bll.User;
 using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.User;
+using Hiwjcn.Framework;
 using Lib.data.ef;
 using Lib.data.elasticsearch;
 using Lib.distributed.redis;
@@ -36,7 +37,7 @@ namespace Hiwjcn.Web.Controllers
         public virtual string Key { get; set; }
     }
 
-    public class TestController : UserBaseController
+    public class TestController : EpcBaseController
     {
         private readonly IEventPublisher _IEventPublisher;
         private readonly IMSRepository<AuthClient> _clientRepo;
@@ -60,13 +61,7 @@ namespace Hiwjcn.Web.Controllers
         /// <returns></returns>
         public ActionResult EntityJson() =>
             GetJson(typeof(Hiwjcn.Core.CacheKeyManager).Assembly.FindEntityDefaultInstance());
-
-        public async Task<ActionResult> left()
-        {
-
-            return Content(string.Empty);
-        }
-
+        
         /// <summary>
         /// 不会卡死
         /// </summary>

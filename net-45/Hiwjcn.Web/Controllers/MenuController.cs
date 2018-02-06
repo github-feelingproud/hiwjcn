@@ -20,7 +20,7 @@ using Lib.infrastructure.extension;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class MenuController : UserBaseController
+    public class MenuController : EpcBaseController
     {
         private readonly IMenuService _menuService;
 

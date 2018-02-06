@@ -20,7 +20,7 @@ using Lib.infrastructure.extension;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class PermissionController : UserBaseController
+    public class PermissionController : EpcBaseController
     {
         private readonly IPermissionService _perService;
 

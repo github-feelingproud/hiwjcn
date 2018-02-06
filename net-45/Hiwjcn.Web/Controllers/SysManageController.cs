@@ -17,10 +17,11 @@ using Lib.infrastructure.model;
 using Lib.helper;
 using Lib.infrastructure.helper;
 using Hiwjcn.Bll;
+using Hiwjcn.Framework.Tasks;
 
 namespace Hiwjcn.Web.Controllers
 {
-    public class SysManageController : UserBaseController
+    public class SysManageController : EpcBaseController
     {
         private readonly ISystemService _sysService;
 
@@ -37,6 +38,22 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 var data = await this._sysService.QueryAll();
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data
+                });
+            });
+        }
+
+        [HttpPost]
+        [EpcAuth]
+        public async Task<ActionResult> QueryJobs()
+        {
+            return await RunActionAsync(async () =>
+            {
+                await Task.FromResult(1);
+                var data = TaskManager.Jobs.Value.GetAllTasks();
                 return GetJson(new _()
                 {
                     success = true,
