@@ -64,7 +64,7 @@ namespace Hiwjcn.Framework
 
                 var list = await cache.GetOrSetAsync(key,
                     async () => await s.Resolve_<IOrgService>().GetMyOrgMap(loginuser.UserID),
-                    TimeSpan.FromMinutes(1));
+                    TimeSpan.FromMinutes(5));
                 list = ConvertHelper.NotNullList(list);
 
                 var org = list.Where(x => x.OrgUID == org_uid).OrderByDescending(x => x.IID).FirstOrDefault();
@@ -86,6 +86,12 @@ namespace Hiwjcn.Framework
         protected ActionResult AccessDeny() => GetJson(new _() { success = false, msg = "无权访问", code = "-111" });
 
         [NonAction]
+        public override ActionResult RunAction(Func<ActionResult> GetActionFunc)
+        {
+            return base.RunAction(GetActionFunc);
+        }
+
+        [NonAction]
         public override async Task<ActionResult> RunActionAsync(Func<Task<ActionResult>> GetActionFunc)
         {
             try
@@ -94,11 +100,11 @@ namespace Hiwjcn.Framework
 
                 return data;
             }
-            catch (NoOrgException e)
+            catch (NoOrgException)
             {
                 return GetJson(new _() { success = false, msg = "无权访问", code = "-111" });
             }
-            catch (NoLoginException e)
+            catch (NoLoginException)
             {
                 return GetJson(new _()
                 {
@@ -107,7 +113,7 @@ namespace Hiwjcn.Framework
                     code = "-401"
                 });
             }
-            catch (NoPermissionInOrgException e)
+            catch (NoPermissionInOrgException)
             {
                 return GetJsonRes("无权操作");
             }

@@ -86,6 +86,7 @@ namespace EPC.Service
             {
                 OrgUID = model.OrgUID,
                 IssueUID = model.UID,
+                IsClosed = model.IsClosed,
                 UserUID = user_uid,
                 Content = comment
             }.InitSelf("iol");
@@ -161,11 +162,26 @@ namespace EPC.Service
         }
 
         public virtual async Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(
-            string org_uid, string issue_uid, int count) =>
-            await this._issueOperaRepo.QueryListAsync(
+            string org_uid, string issue_uid, int count)
+        {
+            var data = await this._issueOperaRepo.QueryListAsync(
                 where: x => x.OrgUID == org_uid && x.IssueUID == issue_uid,
                 orderby: x => x.IID, Desc: true,
                 count: count);
+
+            if (ValidateHelper.IsPlumpList(data))
+            {
+                var user_uids = data.Select(x => x.UserUID).Distinct().ToList();
+                var users = await this._userRepo.GetListAsync(x => user_uids.Contains(x.UID));
+                foreach (var m in data)
+                {
+                    m.UserModel = users.FirstOrDefault(x => x.UID == m.UserUID);
+                }
+            }
+
+            return data;
+        }
+
 
         public virtual async Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count) =>
             await this._issueRepo.QueryListAsync(

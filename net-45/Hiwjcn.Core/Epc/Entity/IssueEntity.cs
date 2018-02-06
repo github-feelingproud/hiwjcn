@@ -70,8 +70,13 @@ namespace EPC.Core.Entity
 
         public virtual string Content { get; set; }
 
+        public virtual int IsClosed { get; set; }
+        
         [Required]
         public virtual string UserUID { get; set; }
+
+        [NotMapped]
+        public virtual UserEntity UserModel { get; set; }
     }
 
 }
