@@ -61,8 +61,7 @@ namespace EPC.Api.Controllers
         /// <param name="page"></param>
         /// <returns></returns>
         [HttpPost]
-        //[EpcAuth(Permission = "manage.org.query")]
-        [EpcAuth]
+        [EpcAuth(Permission = "manage.org")]
         public async Task<ActionResult> Query(string q, int? page)
         {
             return await RunActionAsync(async () =>
@@ -85,8 +84,7 @@ namespace EPC.Api.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
-        //[EpcAuth(Permission = "manage.org.edit")]
-        [EpcAuth]
+        [EpcAuth(Permission = "manage.org")]
         public async Task<ActionResult> Save(string data)
         {
             return await RunActionAsync(async () =>
@@ -141,8 +139,7 @@ namespace EPC.Api.Controllers
         /// <param name="uid"></param>
         /// <returns></returns>
         [HttpPost]
-        //[EpcAuth(Permission = "manage.org.delete")]
-        [EpcAuth]
+        [EpcAuth(Permission = "manage.org")]
         public async Task<ActionResult> Delete(string uid)
         {
             return await RunActionAsync(async () =>

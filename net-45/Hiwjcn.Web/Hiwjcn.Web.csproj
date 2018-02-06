@@ -227,6 +227,7 @@
     <Folder Include="Views\Permission\" />
     <Folder Include="Views\Role\" />
     <Folder Include="Views\SysManage\" />
+    <Folder Include="Views\UserManage\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
@@ -254,7 +255,7 @@
     <Compile Include="Controllers\SysManageController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\WidgetController.cs" />
+    <Compile Include="Controllers\UserManageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -365,8 +366,6 @@
     <Content Include="Areas\Crm\Views\web.config" />
     <None Include="Properties\PublishProfiles\iis.pubxml" />
     <None Include="Properties\PublishProfiles\xx.pubxml" />
-    <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\LogOut.cshtml" />
     <Content Include="Views\Simple_CRUD\SimpleList.cshtml" />
     <Content Include="Views\Shared\lang_select.cshtml" />
     <Content Include="Views\Shared\Limited.cshtml" />

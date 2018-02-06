@@ -12,20 +12,11 @@ namespace Hiwjcn.Web.Controllers
     public class ErrorController : Controller
     {
 
-        public ActionResult Http404()
-        {
-            return new Http404();
-        }
+        public ActionResult Http404() => new Http404();
 
-        public ActionResult Http403()
-        {
-            return new Http403();
-        }
+        public ActionResult Http403() => new Http403();
 
-        public ActionResult Http500()
-        {
-            return new Http500();
-        }
+        public ActionResult Http500() => new Http500();
 
     }
 }

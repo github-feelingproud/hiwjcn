@@ -26,8 +26,7 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        //[EpcAuth(Permission = "manage.menu.query")]
-        [EpcAuth]
+        [EpcAuth(Permission = "manage.menu")]
         public async Task<ActionResult> Query(string group)
         {
             return await RunActionAsync(async () =>
@@ -49,8 +48,7 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        //[EpcAuth(Permission = "manage.menu.query")]
-        [EpcAuth]
+        [EpcAuth(Permission = "manage.menu")]
         public async Task<ActionResult> QueryList(string group)
         {
             return await RunActionAsync(async () =>
@@ -66,8 +64,7 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        //[EpcAuth(Permission = "manage.menu.query")]
-        [EpcAuth]
+        [EpcAuth(Permission = "manage.menu")]
         public async Task<ActionResult> InitTree(string group)
         {
             return await RunActionAsync(async () =>
@@ -90,6 +87,11 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
         [HttpPost]
         [EpcAuth]
         public async Task<ActionResult> ShowMenu(string group)
@@ -106,8 +108,7 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        //[EpcAuth(Permission = "manage.menu.edit")]
-        [EpcAuth]
+        [EpcAuth(Permission = "manage.menu")]
         public async Task<ActionResult> Save(string data)
         {
             return await RunActionAsync(async () =>
@@ -140,8 +141,7 @@ namespace Hiwjcn.Web.Controllers
         }
 
         [HttpPost]
-        //[EpcAuth(Permission = "manage.menu.delete")]
-        [EpcAuth]
+        [EpcAuth(Permission = "manage.menu")]
         public async Task<ActionResult> Delete(string uid)
         {
             return await RunActionAsync(async () =>

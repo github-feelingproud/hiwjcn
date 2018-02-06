@@ -131,6 +131,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
+                await Task.FromResult(1);
                 throw new NotImplementedException();
             });
         }

@@ -27,48 +27,6 @@ namespace Hiwjcn.Web.Controllers
         /// <returns></returns>
         [HtmlCache(3)]
         [RequestLog]
-        public ActionResult Home()
-        {
-            return RunAction(() =>
-            {
-                return View();
-            });
-        }
-
-        [RequestLog]
-        [Route("Page/Show/{name}/")]
-        public ActionResult Show(string name)
-        {
-            return RunAction(() =>
-            {
-                return View();
-            });
-        }
-
-        /// <summary>
-        /// 新闻
-        /// </summary>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        [RequestLog]
-        public ActionResult News(int? page)
-        {
-            return RunAction(() =>
-            {
-                return View();
-            });
-        }
-
-        /// <summary>
-        /// 保持唤醒的请求地址
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult KeepAlive()
-        {
-            var alive_key = "alive";
-            Session[alive_key] = DateTime.Now.ToString();
-            return Content(ConvertHelper.GetString(Session[alive_key]));
-        }
-
+        public ActionResult Home() => Content(string.Empty);
     }
 }
