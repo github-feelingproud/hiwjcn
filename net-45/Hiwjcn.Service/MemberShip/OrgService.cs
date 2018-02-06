@@ -20,7 +20,7 @@ using EPC.Core;
 using Hiwjcn.Core.Domain.User;
 using Hiwjcn.Core.Data;
 
-namespace EPC.Service
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IOrgService : IAutoRegistered
     {

@@ -1,20 +1,13 @@
-﻿using Hiwjcn.Bll.User;
+﻿using Hiwjcn.Core;
 using Hiwjcn.Core.Domain.User;
-using Hiwjcn.Core.Domain;
 using Hiwjcn.Framework;
-using Lib.extension;
-using Lib.mvc.auth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Lib.mvc;
-using WebCore.MvcLib.Controller;
+using Hiwjcn.Service.MemberShip;
 using Lib.cache;
-using Hiwjcn.Bll.Auth;
-using Hiwjcn.Core;
+using Lib.extension;
+using Lib.mvc;
+using Lib.mvc.auth;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Controllers
 {

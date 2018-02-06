@@ -288,70 +288,6 @@
     <Content Include="Static\image\no_data.png" />
     <Content Include="Static\image\weixin_qr.jpg" />
     <Content Include="Static\vue.html" />
-    <Content Include="ui\boot-theme\flatly\bootstrap.css" />
-    <Content Include="ui\boot-theme\flatly\bootstrap.min.css" />
-    <Content Include="ui\bootstrap\css\bootstrap-theme.min.css" />
-    <Content Include="ui\bootstrap\css\bootstrap.min.css" />
-    <Content Include="ui\bootstrap\js\bootstrap.min.js" />
-    <Content Include="ui\echarts\echarts.min.js" />
-    <Content Include="ui\font-icon\css\font-awesome.css" />
-    <Content Include="ui\font-icon\css\font-awesome.min.css" />
-    <Content Include="ui\font-icon\fonts\fontawesome-webfont.svg" />
-    <Content Include="ui\font-icon\HELP-US-OUT.txt" />
-    <Content Include="ui\jq-plus\ajaxfileupload.js" />
-    <Content Include="ui\jq-plus\datepicker\css\bootstrap-datepicker.min.css" />
-    <Content Include="ui\jq-plus\datepicker\css\bootstrap-datepicker.standalone.min.css" />
-    <Content Include="ui\jq-plus\datepicker\css\bootstrap-datepicker3.min.css" />
-    <Content Include="ui\jq-plus\datepicker\css\bootstrap-datepicker3.standalone.min.css" />
-    <Content Include="ui\jq-plus\datepicker\js\bootstrap-datepicker.min.js" />
-    <Content Include="ui\jq-plus\datepicker\locales\bootstrap-datepicker.zh-CN.min.js" />
-    <Content Include="ui\jq-plus\layer\extend\layer.ext.js" />
-    <Content Include="ui\jq-plus\layer\layer.js" />
-    <Content Include="ui\jq-plus\layer\skin\default\icon-ext.png" />
-    <Content Include="ui\jq-plus\layer\skin\default\icon.png" />
-    <Content Include="ui\jq-plus\layer\skin\default\loading-0.gif" />
-    <Content Include="ui\jq-plus\layer\skin\default\loading-1.gif" />
-    <Content Include="ui\jq-plus\layer\skin\default\loading-2.gif" />
-    <Content Include="ui\jq-plus\layer\skin\layer.css" />
-    <Content Include="ui\jq-plus\layer\skin\layer.ext.css" />
-    <Content Include="ui\jq-plus\owl\AjaxLoader.gif" />
-    <Content Include="ui\jq-plus\owl\grabbing.png" />
-    <Content Include="ui\jq-plus\owl\owl.carousel.css" />
-    <Content Include="ui\jq-plus\owl\owl.carousel.min.js" />
-    <Content Include="ui\jq-plus\owl\owl.theme.css" />
-    <Content Include="ui\jq-plus\owl\owl.transitions.css" />
-    <Content Include="ui\jq-plus\ztree\css\awesomeStyle\awesome.css" />
-    <Content Include="ui\jq-plus\ztree\css\awesomeStyle\img\loading.gif" />
-    <Content Include="ui\jq-plus\ztree\css\demo.css" />
-    <Content Include="ui\jq-plus\ztree\css\metroStyle\img\line_conn.png" />
-    <Content Include="ui\jq-plus\ztree\css\metroStyle\img\loading.gif" />
-    <Content Include="ui\jq-plus\ztree\css\metroStyle\img\metro.gif" />
-    <Content Include="ui\jq-plus\ztree\css\metroStyle\img\metro.png" />
-    <Content Include="ui\jq-plus\ztree\css\metroStyle\metroStyle.css" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\1_close.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\1_open.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\2.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\3.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\4.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\5.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\6.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\7.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\8.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\diy\9.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\line_conn.gif" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\loading.gif" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\zTreeStandard.gif" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\img\zTreeStandard.png" />
-    <Content Include="ui\jq-plus\ztree\css\zTreeStyle\zTreeStyle.css" />
-    <Content Include="ui\jq-plus\ztree\js\jquery.ztree.all-3.5.min.js" />
-    <Content Include="ui\jq-plus\ztree\js\jquery.ztree.core-3.5.min.js" />
-    <Content Include="ui\jq-plus\ztree\js\jquery.ztree.excheck-3.5.min.js" />
-    <Content Include="ui\jq-plus\ztree\js\jquery.ztree.exedit-3.5.min.js" />
-    <Content Include="ui\jq-plus\ztree\js\jquery.ztree.exhide-3.5.min.js" />
-    <Content Include="ui\jq\jquery-1.10.1.min.js" />
-    <Content Include="ui\ui\img\cursor.ico" />
-    <Content Include="ui\ui\ui.css" />
-    <Content Include="ui\ui\ui.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -361,8 +297,6 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Test\WJ.cshtml" />
-    <Content Include="Views\Page\Show.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hiwjcn.Core\Hiwjcn.Core.csproj">
@@ -410,9 +344,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Page\Home.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -420,9 +351,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Widget\Nav.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\Simple_Layout.cshtml" />
@@ -437,67 +365,12 @@
     <Content Include="Areas\Crm\Views\web.config" />
     <None Include="Properties\PublishProfiles\iis.pubxml" />
     <None Include="Properties\PublishProfiles\xx.pubxml" />
-    <Content Include="Views\Page\News.cshtml" />
-    <Content Include="Views\Test\TB.cshtml" />
-    <Content Include="Views\Test\FindAllActions.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\LogOut.cshtml" />
     <Content Include="Views\Simple_CRUD\SimpleList.cshtml" />
     <Content Include="Views\Shared\lang_select.cshtml" />
-    <Content Include="Views\Test\Lang.cshtml" />
-    <Content Include="ui\bootstrap\config.json" />
-    <Content Include="ui\jq-plus\ztree\css\awesomeStyle\awesome.less" />
-    <Content Include="ui\jq-plus\ztree\css\awesomeStyle\fa.less" />
-    <Content Include="ui\font-icon\fonts\fontawesome-webfont.eot" />
-    <Content Include="ui\font-icon\fonts\fontawesome-webfont.ttf" />
-    <Content Include="ui\font-icon\fonts\fontawesome-webfont.woff" />
-    <Content Include="ui\font-icon\fonts\fontawesome-webfont.woff2" />
-    <Content Include="ui\font-icon\fonts\FontAwesome.otf" />
-    <Content Include="ui\font-icon\less\animated.less" />
-    <Content Include="ui\font-icon\less\bordered-pulled.less" />
-    <Content Include="ui\font-icon\less\core.less" />
-    <Content Include="ui\font-icon\less\fixed-width.less" />
-    <Content Include="ui\font-icon\less\font-awesome.less" />
-    <Content Include="ui\font-icon\less\icons.less" />
-    <Content Include="ui\font-icon\less\larger.less" />
-    <Content Include="ui\font-icon\less\list.less" />
-    <Content Include="ui\font-icon\less\mixins.less" />
-    <Content Include="ui\font-icon\less\path.less" />
-    <Content Include="ui\font-icon\less\rotated-flipped.less" />
-    <Content Include="ui\font-icon\less\screen-reader.less" />
-    <Content Include="ui\font-icon\less\stacked.less" />
-    <Content Include="ui\font-icon\less\variables.less" />
-    <Content Include="ui\font-icon\scss\font-awesome.scss" />
-    <Content Include="ui\font-icon\scss\_animated.scss" />
-    <Content Include="ui\font-icon\scss\_bordered-pulled.scss" />
-    <Content Include="ui\font-icon\scss\_core.scss" />
-    <Content Include="ui\font-icon\scss\_fixed-width.scss" />
-    <Content Include="ui\font-icon\scss\_icons.scss" />
-    <Content Include="ui\font-icon\scss\_larger.scss" />
-    <Content Include="ui\font-icon\scss\_list.scss" />
-    <Content Include="ui\font-icon\scss\_mixins.scss" />
-    <Content Include="ui\font-icon\scss\_path.scss" />
-    <Content Include="ui\font-icon\scss\_rotated-flipped.scss" />
-    <Content Include="ui\font-icon\scss\_screen-reader.scss" />
-    <Content Include="ui\font-icon\scss\_stacked.scss" />
-    <Content Include="ui\font-icon\scss\_variables.scss" />
-    <Content Include="Views\Test\UView.cshtml" />
     <Content Include="Views\Shared\Limited.cshtml" />
-    <Content Include="Views\Connect\MyClients.cshtml" />
     <Content Include="Views\Shared\Analysis.cshtml" />
-    <Content Include="Views\Connect\Login.cshtml" />
-    <Content Include="Views\Connect\Authorize.cshtml" />
-    <Content Include="Views\Shared\auth_loginbypassword.cshtml" />
-    <Content Include="Views\Shared\auth_loginbycode.cshtml" />
-    <Content Include="Views\Shared\auth_scope_confirm.cshtml" />
-    <Content Include="Views\AuthManage\Scopes.cshtml" />
-    <Content Include="Views\Shared\AuthManageLayout.cshtml" />
-    <Content Include="Views\AuthManage\Clients.cshtml" />
-    <Content Include="Views\AuthManage\Statics.cshtml" />
-    <Content Include="Views\AuthManage\Tasks.cshtml" />
-    <Content Include="Views\AuthManage\EditScope.cshtml" />
-    <Content Include="Views\AuthManage\Users.cshtml" />
-    <Content Include="Views\SSO\Login.cshtml" />
     <Content Include="Views\Shared\pager.cshtml" />
   </ItemGroup>
   <PropertyGroup>

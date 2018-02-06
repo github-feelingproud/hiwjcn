@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EPC.Service.InputsType
+namespace Hiwjcn.Service.Epc.InputsType
 {
     public class ValidResult
     {

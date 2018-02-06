@@ -1,23 +1,15 @@
 ﻿using Autofac;
-using Hiwjcn.Bll;
-using Hiwjcn.Dal;
-using Lib.cache;
-using Lib.ioc;
-using Lib.core;
-using Lib.mvc.user;
-using MySql.Data.MySqlClient;
-using System.Data;
-using System.Data.Entity;
-using WebCore.MvcLib.Controller;
-using Lib.helper;
-using System;
-using Hiwjcn.Bll.Auth;
-using Lib.mvc.auth;
-using Lib.data;
-using Lib.infrastructure;
-using Lib.data.ef;
-using Hiwjcn.Core.Data;
 using EPC.Core;
+using Hiwjcn.Core.Data;
+using Hiwjcn.Dal;
+using Hiwjcn.Service;
+using Lib.cache;
+using Lib.core;
+using Lib.helper;
+using Lib.infrastructure;
+using Lib.ioc;
+using MySql.Data.MySqlClient;
+using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Framework
 {

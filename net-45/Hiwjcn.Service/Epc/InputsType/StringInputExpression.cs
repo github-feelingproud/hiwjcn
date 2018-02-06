@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EPC.Service.InputsType
+namespace Hiwjcn.Service.Epc.InputsType
 {
     /// <summary>
     /// 字符串类型

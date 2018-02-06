@@ -3,7 +3,7 @@ using Hiwjcn.Core.Domain.Auth;
 using Lib.cache;
 using Lib.events;
 
-namespace Hiwjcn.Bll.Auth
+namespace Hiwjcn.Service.MemberShip
 {
     /// <summary>
     /// 用来清理缓存等

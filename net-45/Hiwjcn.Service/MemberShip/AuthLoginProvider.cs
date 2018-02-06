@@ -1,9 +1,6 @@
-﻿using Hiwjcn.Bll.User;
-using Hiwjcn.Core.Data;
+﻿using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.User;
-using Lib.data.ef;
 using Lib.extension;
-using Lib.helper;
 using Lib.infrastructure.service.user;
 using Lib.ioc;
 using Lib.mvc;
@@ -11,11 +8,9 @@ using Lib.mvc.auth;
 using Lib.mvc.user;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Hiwjcn.Bll.Auth
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IUserLoginService :
         IUserLoginServiceBase<UserEntity, UserOneTimeCodeEntity>,

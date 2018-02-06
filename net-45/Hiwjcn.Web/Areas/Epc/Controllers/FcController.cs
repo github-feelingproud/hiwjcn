@@ -11,9 +11,10 @@ using Lib.helper;
 using Lib.data.ef;
 using Lib.mvc.auth;
 using EPC.Core.Entity;
-using EPC.Service;
-using EPC.Service.InputsType;
+using Hiwjcn.Service;
+using Hiwjcn.Service.Epc.InputsType;
 using Hiwjcn.Framework;
+using Hiwjcn.Service.Epc;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {

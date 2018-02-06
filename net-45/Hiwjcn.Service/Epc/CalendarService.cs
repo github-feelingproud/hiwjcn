@@ -13,7 +13,7 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPC.Service
+namespace Hiwjcn.Service.Epc
 {
     public interface ICalendarService : IServiceBase<CalendarEventEntity>
     {

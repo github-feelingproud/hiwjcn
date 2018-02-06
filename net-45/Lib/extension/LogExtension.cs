@@ -4,144 +4,93 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Web;
 using System.Linq;
-using Lib.mvc;
+using Common.Logging;
 using System.Diagnostics;
 
 namespace Lib.extension
 {
-    [Serializable]
-    public class LogTarget
+    /// <summary>
+    /// 基本扩展
+    /// </summary>
+    public static class CommonLoggingExtension
     {
-        private string _;
-        public LogTarget(string target)
-        {
-            this._ = target ?? throw new ArgumentNullException(nameof(target));
-        }
+        public static ILog GetLogger(this string name) =>
+            LogManager.GetLogger(name ?? "empty_logger_name");
 
-        public static implicit operator LogTarget(Type t) => new LogTarget($"{t.Assembly.FullName}-{t.FullName}");
+        public static ILog GetLogger(this Type t) =>
+            LogManager.GetLogger(t ?? throw new ArgumentNullException($"can not get logger,type is null"));
 
-        public override string ToString() => this._;
-    }
+        public static string GetInnerExceptionAsJson(this Exception e) =>
+            Com.GetExceptionMsgJson(e);
 
-    public static class LogExtension
-    {
-        #region exception扩展
-        /// <summary>
-        /// 获取深层的异常信息
-        /// </summary>
-        public static string GetInnerExceptionAsJson(this Exception e)
-        {
-            return Com.GetExceptionMsgJson(e);
-        }
+        public static List<string> GetInnerExceptionAsList(this Exception e) =>
+            Com.GetExceptionMsgList(e);
 
-        /// <summary>
-        /// 获取深层的异常信息
-        /// </summary>
-        public static List<string> GetInnerExceptionAsList(this Exception e)
-        {
-            return Com.GetExceptionMsgList(e);
-        }
-
-        /// <summary>
-        /// 输出
-        /// </summary>
-        public static void DebugInfo(this Exception e)
-        {
+        public static void DebugInfo(this Exception e) =>
             Debug.WriteLine(e.GetInnerExceptionAsJson());
-        }
 
-        /// <summary>
-        /// 输出
-        /// </summary>
         public static void DebugInfo(this string msg) =>
             Debug.WriteLine(msg);
-
-        #endregion
-
-        #region 日志扩展
-        /// <summary>
-        /// 使用log4net添加日志
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="name"></param>
-        public static void AddLog(this Exception e, string name)
-        {
-            e.GetInnerExceptionAsJson().AddErrorLog(name);
-        }
-        /// <summary>
-        /// 使用log4net添加日志
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="t"></param>
-        public static void AddLog(this Exception e, Type t)
-        {
-            e.GetInnerExceptionAsJson().AddErrorLog(t);
-        }
-
-        /// <summary>
-        /// 记录错误日志
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="name"></param>
-        public static void AddErrorLog(this string log, string name)
-        {
-            LogHelper.Error(name, log);
-        }
-        /// <summary>
-        /// 记录错误日志
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="t"></param>
-        public static void AddErrorLog(this string log, Type t)
-        {
-            LogHelper.Error(t, log);
-        }
-
-        /// <summary>
-        /// 保存信息日志
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="name"></param>
-        public static void AddInfoLog(this string log, string name)
-        {
-            LogHelper.Info(name, log);
-        }
-        /// <summary>
-        /// 保存信息日志
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="t"></param>
-        public static void AddInfoLog(this string log, Type t)
-        {
-            LogHelper.Info(t, log);
-        }
-
-        /// <summary>
-        /// 保存警告日志
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="name"></param>
-        public static void AddWarnLog(this string log, string name)
-        {
-            LogHelper.Warn(name, log);
-        }
-        /// <summary>
-        /// 保存警告日志
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="t"></param>
-        public static void AddWarnLog(this string log, Type t)
-        {
-            LogHelper.Warn(t, log);
-        }
-        #endregion
     }
 
+    /// <summary>
+    /// 日志扩展
+    /// </summary>
+    public static class LogExtension
+    {
+        private static void Handler(Action action)
+        {
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception e)
+            {
+                e.DebugInfo();
+            }
+        }
+
+        public static void AddLog(this Exception e, string name) =>
+            Handler(() => name.GetLogger().Error(e.GetInnerExceptionAsJson()));
+
+        public static void AddLog(this Exception e, Type t) =>
+            Handler(() => t.GetLogger().Error(e.GetInnerExceptionAsJson()));
+        
+        public static void AddLog_(this Exception e, string name) =>
+            Handler(() => name.GetLogger().Error(e.GetInnerExceptionAsJson(), e));
+        
+        public static void AddLog_(this Exception e, Type t) =>
+            Handler(() => t.GetLogger().Error(e.GetInnerExceptionAsJson(), e));
+
+        public static void AddErrorLog(this string log, string name) =>
+            Handler(() => name.GetLogger().Error(log));
+
+        public static void AddErrorLog(this string log, Type t) =>
+            Handler(() => t.GetLogger().Error(log));
+
+        public static void AddInfoLog(this string log, string name) =>
+            Handler(() => name.GetLogger().Info(log));
+
+        public static void AddInfoLog(this string log, Type t) =>
+            Handler(() => t.GetLogger().Info(log));
+
+        public static void AddWarnLog(this string log, string name) =>
+            Handler(() => name.GetLogger().Warn(log));
+
+        public static void AddWarnLog(this string log, Type t) =>
+            Handler(() => t.GetLogger().Warn(log));
+    }
+
+    /// <summary>
+    /// 日志进一步封装，部分是史俊的要求
+    /// </summary>
     public static class CommonLogExtension
     {
-        public static readonly string LoggerName = ConfigurationManager.AppSettings["LoggerName"] ?? "WebLogger";
+        public static readonly string LoggerName =
+            ConfigurationManager.AppSettings["LoggerName"] ?? "WebLogger";
 
-        public static readonly bool LogFullException = (ConfigurationManager.AppSettings["LogFullException"] ?? "true").ToBool();
+        public static readonly bool LogFullException =
+            (ConfigurationManager.AppSettings["LogFullException"] ?? "true").ToBool();
 
         private static string FriendlyTime()
         {

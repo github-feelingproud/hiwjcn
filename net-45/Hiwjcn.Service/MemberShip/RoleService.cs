@@ -16,7 +16,7 @@ using Lib.helper;
 using Lib.infrastructure.extension;
 using Hiwjcn.Core.Data;
 
-namespace Hiwjcn.Bll.User
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IRoleService : IRoleServiceBase<RoleEntity, UserRoleEntity, RolePermissionEntity>,
         IAutoRegistered

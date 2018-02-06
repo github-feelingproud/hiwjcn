@@ -1,4 +1,4 @@
-﻿using EPC.Service;
+﻿using Hiwjcn.Service;
 using Hiwjcn.Core;
 using Lib.cache;
 using Lib.extension;
@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Hiwjcn.Service.MemberShip;
 
 namespace Hiwjcn.Framework
 {

@@ -15,7 +15,7 @@ using Lib.helper;
 using System.Data.Entity;
 using Hiwjcn.Core.Data;
 
-namespace Hiwjcn.Bll.User
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IUserService : IUserServiceBase<UserEntity>,
         IAutoRegistered

@@ -14,7 +14,7 @@ using System.Data.Entity;
 using Lib.data.ef;
 using Hiwjcn.Core.Data;
 
-namespace Hiwjcn.Bll.Auth
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IAuthClientService : IServiceBase<AuthClient>
     {

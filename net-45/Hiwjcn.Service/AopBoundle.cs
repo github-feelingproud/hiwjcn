@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Lib.extension;
 using System.Transactions;
 
-namespace Hiwjcn.Bll
+namespace Hiwjcn.Service
 {
     /*
     

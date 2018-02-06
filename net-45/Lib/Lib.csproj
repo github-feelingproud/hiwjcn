@@ -320,7 +320,6 @@
     <Compile Include="core\Singleton.cs" />
     <Compile Include="extension\LinqExtensions.cs" />
     <Compile Include="core\ConfigHelper.cs" />
-    <Compile Include="helper\LogHelper.cs" />
     <Compile Include="helper\Pager.cs" />
     <Compile Include="helper\PermissionHelper.cs" />
     <Compile Include="helper\StringHelper.cs" />

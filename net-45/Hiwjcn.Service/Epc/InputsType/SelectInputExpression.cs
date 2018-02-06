@@ -3,7 +3,7 @@ using Lib.helper;
 using System;
 using System.Collections.Generic;
 
-namespace EPC.Service.InputsType
+namespace Hiwjcn.Service.Epc.InputsType
 {
     /// <summary>
     /// 选项类型

@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Lib.mvc;
 using System.Threading.Tasks;
-using EPC.Service;
+using Hiwjcn.Service;
 using Lib.infrastructure.helper;
 using Lib.infrastructure.model;
 using Lib.extension;
@@ -13,6 +13,7 @@ using EPC.Core.Entity;
 using Lib.mvc.auth;
 using Lib.helper;
 using Hiwjcn.Framework;
+using Hiwjcn.Service.Epc;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {

@@ -14,7 +14,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPC.Service
+namespace Hiwjcn.Service.Epc
 {
     public interface IIssueService : IServiceBase<IssueEntity>
     {

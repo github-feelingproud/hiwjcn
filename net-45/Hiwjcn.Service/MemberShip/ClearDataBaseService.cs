@@ -8,7 +8,7 @@ using Lib.ioc;
 using System;
 using System.Linq;
 
-namespace Hiwjcn.Bll
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IClearDataBaseService : IAutoRegistered
     {

@@ -15,7 +15,7 @@ using Hiwjcn.Core.Domain;
 using Hiwjcn.Core.Domain.User;
 using Hiwjcn.Core.Data;
 
-namespace Hiwjcn.Bll.Common
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IMenuService : IMenuServiceBase<MenuEntity>,
         IAutoRegistered

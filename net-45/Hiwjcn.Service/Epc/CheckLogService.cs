@@ -1,7 +1,7 @@
 ﻿using EPC.Core;
 using EPC.Core.Entity;
 using EPC.Core.Model;
-using EPC.Service.InputsType;
+using Hiwjcn.Service.Epc.InputsType;
 using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.User;
 using Lib.core;
@@ -17,7 +17,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPC.Service
+namespace Hiwjcn.Service.Epc
 {
     public interface ICheckLogService : IServiceBase<CheckLogEntity>
     {

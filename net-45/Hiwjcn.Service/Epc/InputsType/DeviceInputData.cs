@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EPC.Service.InputsType
+namespace Hiwjcn.Service.Epc.InputsType
 {
     /// <summary>
     /// app提交的数据结构

@@ -22,7 +22,7 @@ using Lib.infrastructure.entity.auth;
 using Lib.infrastructure.service.user;
 using Hiwjcn.Core.Data;
 
-namespace Hiwjcn.Bll.Auth
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IAuthService : IAuthServiceBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>,
         IAutoRegistered

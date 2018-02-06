@@ -1,6 +1,6 @@
 ﻿using EPC.Core;
 using EPC.Core.Entity;
-using EPC.Service.InputsType;
+using Hiwjcn.Service.Epc.InputsType;
 using Lib.core;
 using Lib.data.ef;
 using Lib.extension;
@@ -13,7 +13,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPC.Service
+namespace Hiwjcn.Service.Epc
 {
     public interface IDeviceService : IServiceBase<DeviceEntity>
     {

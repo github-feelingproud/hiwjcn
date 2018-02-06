@@ -1,10 +1,8 @@
-﻿using Hiwjcn.Bll;
-using Hiwjcn.Bll.User;
-using Hiwjcn.Core.Data;
+﻿using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.User;
 using Hiwjcn.Framework;
-using Lib.data.ef;
+using Hiwjcn.Service.MemberShip;
 using Lib.data.elasticsearch;
 using Lib.distributed.redis;
 using Lib.events;
@@ -21,12 +19,10 @@ using Polly.CircuitBreaker;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using WebCore.MvcLib.Controller;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -53,6 +49,7 @@ namespace Hiwjcn.Web.Controllers
             this._clientRepo = _clientRepo;
 
             this._IEventPublisher.Publish("发布一个垃圾消息");
+            //new ArgumentNullException("发布一个垃圾消息").AddLog_("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         }
 
         /// <summary>
@@ -61,7 +58,7 @@ namespace Hiwjcn.Web.Controllers
         /// <returns></returns>
         public ActionResult EntityJson() =>
             GetJson(typeof(Hiwjcn.Core.CacheKeyManager).Assembly.FindEntityDefaultInstance());
-        
+
         /// <summary>
         /// 不会卡死
         /// </summary>

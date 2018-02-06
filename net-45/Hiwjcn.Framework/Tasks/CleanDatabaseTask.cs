@@ -7,6 +7,7 @@ using System.Threading;
 using Lib.core;
 using Lib.ioc;
 using Hiwjcn.Bll;
+using Hiwjcn.Service.MemberShip;
 
 namespace Hiwjcn.Framework.Tasks
 {

@@ -11,11 +11,12 @@ using Lib.mvc;
 using Lib.extension;
 using Lib.mvc.user;
 using EPC.Core.Entity;
-using EPC.Service;
+using Hiwjcn.Service;
 using Lib.cache;
 using Lib.helper;
-using EPC.Service.MemberShip;
+using Hiwjcn.Service.MemberShip;
 using Hiwjcn.Framework;
+using Hiwjcn.Service.Epc;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {

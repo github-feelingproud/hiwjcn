@@ -16,7 +16,7 @@ using Hiwjcn.Core.Domain;
 using Hiwjcn.Core.Entity;
 using Hiwjcn.Core.Data;
 
-namespace Hiwjcn.Bll
+namespace Hiwjcn.Service.MemberShip
 {
     public interface ISystemService : IServiceBase<SystemEntity>
     {

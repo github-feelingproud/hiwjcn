@@ -6,7 +6,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPC.Service.MemberShip
+namespace Hiwjcn.Service.MemberShip
 {
     public interface IMemberShipDashboardService : IAutoRegistered
     {

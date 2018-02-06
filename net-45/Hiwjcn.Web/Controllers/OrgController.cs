@@ -1,5 +1,5 @@
 ﻿using EPC.Core.Entity;
-using EPC.Service;
+using Hiwjcn.Service;
 using Hiwjcn.Framework;
 using Lib.core;
 using Lib.extension;
@@ -9,6 +9,7 @@ using Lib.mvc.auth;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Hiwjcn.Service.MemberShip;
 
 namespace EPC.Api.Controllers
 {
