@@ -77,6 +77,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 return GetJson(new _()
                 {
                     success = true,
+                    data = data.OrderBy(x => x.IID).ToList()
                 });
             });
         }
