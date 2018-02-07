@@ -13,6 +13,7 @@ using Lib.infrastructure.entity;
 using Lib.data.ef;
 using Lib.infrastructure.entity.auth;
 using Hiwjcn.Core.Data;
+using System.Threading.Tasks;
 
 namespace Hiwjcn.Framework.Tasks
 {
@@ -26,7 +27,7 @@ namespace Hiwjcn.Framework.Tasks
 
         public override ITrigger Trigger => this.TriggerIntervalInMinutes(5);
 
-        public override void Execute(IJobExecutionContext context)
+        public override async Task Execute(IJobExecutionContext context)
         {
             try
             {

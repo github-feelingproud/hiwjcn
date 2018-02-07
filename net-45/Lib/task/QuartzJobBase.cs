@@ -5,12 +5,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Quartz;
-using Quartz.Job;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
-using Quartz.Collection;
 using Lib.helper;
 using Lib.core;
+using System.Threading.Tasks;
 
 namespace Lib.task
 {
@@ -20,7 +19,7 @@ namespace Lib.task
         /// 任务名，不能重复
         /// </summary>
         public abstract string Name { get; }
-        
+
         /// <summary>
         /// 分组
         /// </summary>
@@ -65,7 +64,7 @@ namespace Lib.task
         /// 任务的具体实现
         /// </summary>
         /// <param name="context"></param>
-        public abstract void Execute(IJobExecutionContext context);
+        public abstract Task Execute(IJobExecutionContext context);
 
         /// <summary>
         /// Cron表达式
@@ -152,9 +151,10 @@ namespace Lib.task
 
     public abstract class QuartzJobBase_ : QuartzJobBase
     {
-        public override void Execute(IJobExecutionContext context)
+        public override async Task Execute(IJobExecutionContext context)
         {
             this.ExecuteJob(context);
+            await Task.FromResult(1);
         }
 
         public abstract void ExecuteJob(IJobExecutionContext context);

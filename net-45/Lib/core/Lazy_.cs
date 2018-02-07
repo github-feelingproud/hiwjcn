@@ -8,7 +8,8 @@ namespace Lib.core
 {
     public class Lazy_<T> : IDisposable
     {
-        private readonly object _lock = new object();
+        private readonly object _create_lock = new object();
+        private readonly object _dispose_lock = new object();
         private readonly Func<T> _creator;
 
         private RefAction<T> _when_created;
@@ -17,6 +18,8 @@ namespace Lib.core
         private bool _created = false;
 
         public bool IsValueCreated => this._created;
+
+        public bool HasValue => this._created;
 
         public Lazy_(Func<T> _creator)
         {
@@ -42,7 +45,7 @@ namespace Lib.core
             {
                 if (!this._created)
                 {
-                    lock (this._lock)
+                    lock (this._create_lock)
                     {
                         if (!this._created)
                         {
@@ -60,13 +63,20 @@ namespace Lib.core
 
         public void Dispose()
         {
-            if (this.IsValueCreated)
+            if (this._created)
             {
-                //销毁时调用
-                this._when_disposed?.Invoke(ref this._value);
+                lock (this._dispose_lock)
+                {
+                    if (this._created)
+                    {
+                        //销毁时调用
+                        this._when_disposed?.Invoke(ref this._value);
+                        //初始化
+                        this._value = default(T);
+                        this._created = false;
+                    }
+                }
             }
-            this._value = default(T);
-            this._created = false;
         }
     }
 }

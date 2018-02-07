@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lib.helper;
 using Quartz;
+using Quartz.Impl;
 
 namespace Lib.task
 {
@@ -22,5 +24,16 @@ namespace Lib.task
                 yield return time;
             }
         }
+
+        public static JobKey CreateJobKey(string name, string group = null)
+        {
+            name = name ?? throw new ArgumentNullException("job key name is null");
+            return ValidateHelper.IsPlumpString(group) ?
+                new JobKey(name, group) :
+                new JobKey(name);
+        }
+
+        public static async Task<IScheduler> GetDefaultScheduler() =>
+            await StdSchedulerFactory.GetDefaultScheduler();
     }
 }

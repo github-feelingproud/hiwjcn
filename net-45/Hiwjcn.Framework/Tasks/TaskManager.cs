@@ -13,8 +13,11 @@ namespace Hiwjcn.Framework.Tasks
         public static readonly Lazy_<TaskContainer> Jobs = new Lazy_<TaskContainer>(() =>
         {
             var con = new TaskContainer();
-            con.AddJobFromAssembly(typeof(TaskManager).Assembly);
-            con.Start();
+            Task.Run(async () =>
+            {
+                await con.AddJobFromAssembly(typeof(TaskManager).Assembly);
+                await con.Start();
+            }).Wait();
             return con;
         }).WhenDispose((ref TaskContainer x) => x.Dispose(false));
 

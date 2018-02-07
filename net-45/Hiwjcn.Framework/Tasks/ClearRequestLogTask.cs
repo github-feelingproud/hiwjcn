@@ -7,6 +7,7 @@ using Lib.ioc;
 using Lib.task;
 using Quartz;
 using System;
+using System.Threading.Tasks;
 
 namespace Hiwjcn.Framework.Tasks
 {
@@ -20,7 +21,7 @@ namespace Hiwjcn.Framework.Tasks
 
         public override ITrigger Trigger => this.TriggerIntervalInMinutes(5);
 
-        public override void Execute(IJobExecutionContext context)
+        public override async Task Execute(IJobExecutionContext context)
         {
             try
             {

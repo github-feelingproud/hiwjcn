@@ -20,36 +20,32 @@ namespace Lib.task
         /// 获取task信息
         /// </summary>
         /// <returns></returns>
-        public static List<ScheduleJobModel> GetAllTasks_(this IScheduler manager)
+        public static async Task<List<ScheduleJobModel>> GetAllTasks_(this IScheduler manager)
         {
             //所有任务
-            var jobKeys = manager.GetAllJobKeys_();
+            var jobKeys = await manager.GetAllJobKeys_();
             //正在运行的任务
-            var runningJobs = manager.GetCurrentlyExecutingJobs();
+            var runningJobs = await manager.GetCurrentlyExecutingJobs();
 
             var list = new List<ScheduleJobModel>();
             foreach (var jobKey in jobKeys)
             {
-                var triggers = manager.GetTriggersOfJob(jobKey);
+                var triggers = await manager.GetTriggersOfJob(jobKey);
                 if (!ValidateHelper.IsPlumpList(triggers)) { continue; }
                 foreach (var trigger in triggers)
                 {
-                    var job = new ScheduleJobModel();
-
-                    job.JobName = jobKey.Name;
-                    job.JobGroup = jobKey.Group;
-
-                    job.TriggerName = trigger.Key.Name;
-                    job.TriggerGroup = trigger.Key.Group;
-
-                    //trigger information
-                    job.StartTime = trigger.StartTimeUtc.LocalDateTime;
-                    job.PreTriggerTime = trigger.GetPreviousFireTimeUtc()?.LocalDateTime;
-                    job.NextTriggerTime = trigger.GetNextFireTimeUtc()?.LocalDateTime;
-                    job.JobStatus = manager.GetTriggerState(trigger.Key).GetTriggerState();
-
-                    //判断是否在运行
-                    job.IsRunning = runningJobs.Any(x => x.JobDetail.Key == jobKey);
+                    var job = new ScheduleJobModel()
+                    {
+                        JobName = jobKey.Name,
+                        JobGroup = jobKey.Group,
+                        TriggerName = trigger.Key.Name,
+                        TriggerGroup = trigger.Key.Group,
+                        StartTime = trigger.StartTimeUtc.LocalDateTime,
+                        PreTriggerTime = trigger.GetPreviousFireTimeUtc()?.LocalDateTime,
+                        NextTriggerTime = trigger.GetNextFireTimeUtc()?.LocalDateTime,
+                        JobStatus = (await manager.GetTriggerState(trigger.Key)).GetTriggerState(),
+                        IsRunning = runningJobs.Any(x => x.JobDetail.Key == jobKey)
+                    };
 
                     list.Add(job);
                 }
@@ -57,17 +53,13 @@ namespace Lib.task
             return list;
         }
 
-        public static IEnumerable<JobKey> GetAllJobKeys_(this IScheduler manager) =>
-            manager.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).AsEnumerable();
+        public static async Task<IEnumerable<JobKey>> GetAllJobKeys_(this IScheduler manager) =>
+            (await manager.GetJobKeys(GroupMatcher<JobKey>.AnyGroup())).AsEnumerable();
 
-        public static void AddJob_(this IScheduler manager, QuartzJobBase job, bool throw_if_exist = true) =>
-            manager.AddJob_(job.GetType(), job.CachedTrigger, job.Name, job.Group, throw_if_exist);
+        public static async Task AddJob_(this IScheduler manager, QuartzJobBase job, bool throw_if_exist = true) =>
+            await manager.AddJob_(job.GetType(), job.CachedTrigger, job.Name, job.Group, throw_if_exist);
 
-        public static void AddJob_<T>(this IScheduler manager,
-            ITrigger trigger, string name, string group = null, bool throw_if_exist = true) =>
-            manager.AddJob_(typeof(T), trigger, name, group, throw_if_exist);
-
-        public static void AddJob_(this IScheduler manager,
+        public static async Task AddJob_(this IScheduler manager,
             Type t, ITrigger trigger, string name, string group = null, bool throw_if_exist = true)
         {
             Com.AssertNotNull(t, nameof(t));
@@ -85,7 +77,7 @@ namespace Lib.task
             }
             var job = builder.Build();
 
-            if (manager.GetAllJobKeys_().Contains(job.Key))
+            if ((await manager.GetAllJobKeys_()).Contains(job.Key))
             {
                 if (throw_if_exist)
                 {
@@ -97,20 +89,20 @@ namespace Lib.task
                 }
             }
 
-            manager.ScheduleJob(job, trigger);
+            await manager.ScheduleJob(job, trigger);
         }
 
-        public static void StartIfNotStarted_(this IScheduler manager, TimeSpan? delay = null)
+        public static async Task StartIfNotStarted_(this IScheduler manager, TimeSpan? delay = null)
         {
             if (!manager.IsStarted)
             {
                 if (delay == null)
                 {
-                    manager.Start();
+                    await manager.Start();
                 }
                 else
                 {
-                    manager.StartDelayed(delay.Value);
+                    await manager.StartDelayed(delay.Value);
                 }
             }
         }
@@ -120,7 +112,7 @@ namespace Lib.task
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="waitForJobsToComplete"></param>
-        public static void ShutdownIfStarted_(this IScheduler manager, bool waitForJobsToComplete = false)
+        public static async Task ShutdownIfStarted_(this IScheduler manager, bool waitForJobsToComplete = false)
         {
             if (!waitForJobsToComplete)
             {
@@ -128,7 +120,7 @@ namespace Lib.task
             }
             if (manager.IsStarted)
             {
-                manager.Shutdown(waitForJobsToComplete);
+                await manager.Shutdown(waitForJobsToComplete);
             }
         }
 

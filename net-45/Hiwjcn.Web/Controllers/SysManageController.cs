@@ -4,6 +4,7 @@ using Hiwjcn.Service.MemberShip;
 using Lib.mvc;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Lib.task;
 
 namespace Hiwjcn.Web.Controllers
 {
@@ -39,7 +40,7 @@ namespace Hiwjcn.Web.Controllers
             return await RunActionAsync(async () =>
             {
                 await Task.FromResult(1);
-                var data = TaskManager.Jobs.Value.GetAllTasks();
+                var data = await TaskManager.Jobs.Value.TaskScheduler.GetAllTasks_();
                 return GetJson(new _()
                 {
                     success = true,

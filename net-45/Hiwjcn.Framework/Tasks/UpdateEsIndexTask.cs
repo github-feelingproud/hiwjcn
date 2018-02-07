@@ -1,5 +1,6 @@
 ﻿using Lib.task;
 using Quartz;
+using System.Threading.Tasks;
 
 namespace Hiwjcn.Framework.Tasks
 {
@@ -13,7 +14,7 @@ namespace Hiwjcn.Framework.Tasks
 
         public override ITrigger Trigger => TriggerDaily(1, 1);
 
-        public override void Execute(IJobExecutionContext context)
+        public override async Task Execute(IJobExecutionContext context)
         {
             //do nothing
         }

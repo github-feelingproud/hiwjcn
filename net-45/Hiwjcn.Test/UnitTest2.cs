@@ -8,7 +8,6 @@ using System.Dynamic;
 using System.Reflection.Emit;
 using System.Reflection;
 using Newtonsoft.Json;
-using Lib.extra.api;
 using Polly;
 using System.Threading;
 using Polly.Timeout;
@@ -155,52 +154,6 @@ namespace Hiwjcn.Test
 
             var obj = JsonConvert.DeserializeObject(json);
 
-        }
-
-        [TestMethod]
-        public void fsadfajsdflasdfas()
-        {
-            try
-            {
-                var payload = new PayLoadAndroid();
-                payload.body = new PayLoadAndroidBody()
-                {
-                    ticker = "123",
-                    title = "123",
-                    text = "123"
-                };
-                payload.extra = new
-                {
-                    ContentType = "7",
-                    PositionMackTitle = "网页",
-                    Url = "http://www.qq.com/"
-                };
-                var t = UmengPushHelper.PushAndroid(new UmengPushKeyConfig(), payload, new List<string>() { "6d28395cac6c427bb77fba889b9e54a5", "b11dfe19ef4d4f60860dda673dfa7863" });
-                var data = Lib.helper.AsyncHelper.RunSync(() => t);
-            }
-            catch (Exception e)
-            {
-                //
-            }
-        }
-
-        [TestMethod]
-        public void fasdfasd()
-        {
-            try
-            {
-                var payload = new
-                {
-                    aps = new { alert = "提示内容" },
-                    ContentType = "7",
-                    PositionMackTitle = "网页",
-                    Url = "http://www.qq.com/"
-                };
-                var t = UmengPushHelper.PushIOS(new UmengPushKeyConfig(), payload, new List<string>() { "6d28395cac6c427bb77fba889b9e54a5", "b11dfe19ef4d4f60860dda673dfa7863" });
-                var data = Lib.helper.AsyncHelper.RunSync(() => t);
-            }
-            catch (Exception e)
-            { }
         }
 
         [TestMethod]

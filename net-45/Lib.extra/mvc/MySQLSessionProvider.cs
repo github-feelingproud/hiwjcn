@@ -63,7 +63,8 @@ IF NOT EXISTS `my_aspnet_sessions` (
             sessionStateConfig = (SessionStateSection)webConfig.SectionGroups["system.web"].Sections["sessionState"];
 
             // Initialize connection.
-            this.connectionString = ConfigHelper.Instance.MySqlConnectionString;
+            this.connectionString = ConfigurationManager.ConnectionStrings["MySqlConnectionString"]?.ConnectionString ?? 
+                throw new ArgumentNullException("MySqlConnectionString for session");
             if (connectionString?.Length <= 0) { throw new Exception("连接字符串不能为空"); }
 
             using (var con = new MySqlConnection(connectionString))

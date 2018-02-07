@@ -15,44 +15,6 @@ using Quartz;
 
 namespace Hiwjcn.Test
 {
-    [PersistJobDataAfterExecution]
-    [DisallowConcurrentExecution]
-    public class ConcurrentTestTask : QuartzJobBase
-    {
-        public override bool AutoStart
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        public override string Name
-        {
-            get
-            {
-                return "测试任务并发";
-            }
-        }
-
-        public override ITrigger Trigger
-        {
-            get
-            {
-                return this.TriggerIntervalInSeconds(1);
-            }
-        }
-
-        /// <summary>
-        /// 不能使用async，不然不会等待结束
-        /// </summary>
-        /// <param name="context"></param>
-        public override void Execute(IJobExecutionContext context)
-        {
-            System.Diagnostics.Debug.WriteLine("job running");
-        }
-    }
-
     [TestClass]
     public class UnitTest11
     {
@@ -66,16 +28,6 @@ namespace Hiwjcn.Test
                 {
                     Console.WriteLine(x);
                 });
-        }
-
-        [TestMethod]
-        public void fasdfasg()
-        {
-            using (var con = new TaskContainer())
-            {
-                con.AddJobFromAssembly(this.GetType().Assembly);
-                con.Start();
-            }
         }
 
         [TestMethod]

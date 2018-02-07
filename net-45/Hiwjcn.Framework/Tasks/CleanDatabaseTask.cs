@@ -8,6 +8,7 @@ using Lib.core;
 using Lib.ioc;
 using Hiwjcn.Bll;
 using Hiwjcn.Service.MemberShip;
+using System.Threading.Tasks;
 
 namespace Hiwjcn.Framework.Tasks
 {
@@ -43,7 +44,7 @@ namespace Hiwjcn.Framework.Tasks
             }
         }
 
-        public override void Execute(IJobExecutionContext context)
+        public override async Task Execute(IJobExecutionContext context)
         {
             try
             {

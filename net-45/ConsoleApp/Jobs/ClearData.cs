@@ -18,7 +18,7 @@ namespace ConsoleApp.Jobs
 
         public override ITrigger Trigger => this.TriggerIntervalInSeconds(30);
 
-        public override void Execute(IJobExecutionContext context)
+        public override async Task Execute(IJobExecutionContext context)
         {
             //
         }
