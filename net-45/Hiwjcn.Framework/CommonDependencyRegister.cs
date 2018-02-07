@@ -37,7 +37,12 @@ namespace Hiwjcn.Framework
             }
             builder.UseSystemConfig<BasicConfigProvider>();
             builder.UseEF<EntityDB>("db");
-            builder.UseAdoConnection<MySqlConnection>();
+            builder.UseAdoConnection(() =>
+            {
+                var con = new MySqlConnection("xxxx");
+                con.Open();
+                return con;
+            });
             //builder.RegisterInstance(new LoginStatus()).As<LoginStatus>().SingleInstance();
             //builder.Register(_ => new LoginStatus("hiwjcn_uid", "hiwjcn_token", "hiwjcn_login_session", "")).AsSelf().SingleInstance();
 

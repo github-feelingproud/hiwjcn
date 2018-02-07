@@ -1,5 +1,4 @@
 ﻿using Lib.core;
-using MySql.Data.MySqlClient;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -33,38 +32,18 @@ namespace Lib.data
     /// </summary>
     public static class DBHelper
     {
-        private static string ConStr
-        {
-            get => ConfigurationManager.ConnectionStrings["db"]?.ToString() ??
-            ConfigurationManager.AppSettings["db"] ??
-            throw new Exception("请在connectionstring或者appsetting中配置节点为db的通用链接字符串");
-        }
-
-        /// <summary>
-        /// 使用ioc中注册的数据库
-        /// </summary>
-        public static IDbConnection GetConnectionProvider(ILifetimeScope scope)
-        {
-            var con = scope.Resolve_<IDbConnection>();
-            con.ConnectionString = ConStr;
-            //打开链接，重试两次
-            con.OpenIfClosedWithRetry(2);
-            return con;
-        }
-
         /// <summary>
         /// 使用ioc中注册的数据库
         /// </summary>
         public static void PrepareConnection(Action<IDbConnection> callback)
         {
-            IocContext.Instance.Scope(x =>
+            using (var s = IocContext.Instance.Scope())
             {
-                using (var con = GetConnectionProvider(x))
+                using (var con = s.Resolve_<IDbConnection>())
                 {
                     callback.Invoke(con);
                 }
-                return true;
-            });
+            }
         }
 
         /// <summary>
@@ -72,14 +51,13 @@ namespace Lib.data
         /// </summary>
         public static async Task PrepareConnectionAsync(Func<IDbConnection, Task> callback)
         {
-            await IocContext.Instance.ScopeAsync(async x =>
+            using (var s = IocContext.Instance.Scope())
             {
-                using (var con = GetConnectionProvider(x))
+                using (var con = s.Resolve_<IDbConnection>())
                 {
                     await callback.Invoke(con);
                 }
-                return true;
-            });
+            }
         }
 
         /// <summary>
@@ -140,51 +118,6 @@ namespace Lib.data
                     }
                 }
             });
-        }
-
-
-
-
-        /// <summary>
-        /// mysql MySqlConnectionString
-        /// </summary>
-        public static MySqlConnection GetMySqlConnection()
-        {
-            var con = new MySqlConnection(ConfigHelper.Instance.MySqlConnectionString);
-            con.Open();
-            return con;
-        }
-
-        /// <summary>
-        /// mysql MySqlConnectionString
-        /// </summary>
-        public static void PrepareMySqlConnection(Action<MySqlConnection> callback)
-        {
-            using (var db = GetMySqlConnection())
-            {
-                callback.Invoke(db);
-            }
-        }
-
-        /// <summary>
-        /// sqlserver MsSqlConnectionString
-        /// </summary>
-        public static SqlConnection GetSqlServerConnection()
-        {
-            var con = new SqlConnection(ConfigHelper.Instance.MsSqlConnectionString);
-            con.Open();
-            return con;
-        }
-
-        /// <summary>
-        /// sqlserver MsSqlConnectionString
-        /// </summary>
-        public static void PrepareSqlServerConnection(Action<SqlConnection> callback)
-        {
-            using (var db = GetSqlServerConnection())
-            {
-                callback.Invoke(db);
-            }
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ using Dapper;
 using Lib.core;
 using Lib.extension;
 
-namespace Lib.mvc
+namespace Lib.extra.mvc
 {
     /// <summary>
     /// mysql.web.dll

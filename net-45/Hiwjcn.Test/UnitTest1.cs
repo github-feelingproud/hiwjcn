@@ -197,7 +197,7 @@ on user.UID equals section.UID
         [TestMethod]
         public void mysqlconstr()
         {
-            var b = new MySqlConnectionStringBuilder(ConfigHelper.Instance.MySqlConnectionString);
+            var b = new MySqlConnectionStringBuilder("");
             b.ConnectionTimeout = 10;
             var str = b.ToString();
         }

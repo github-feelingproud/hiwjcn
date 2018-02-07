@@ -20,7 +20,7 @@ namespace Lib.extension
         public static readonly Dictionary<Type, ILog> _type_logger_factory = new Dictionary<Type, ILog>();
 
         public static ILog GetLogger(this string logger) =>
-            LogManager.GetLogger(logger ?? throw new ArgumentNullException("logger name is null"));
+            LogManager.GetLogger(logger ?? throw new ArgumentNullException($"logger name is null"));
 
         public static ILog GetLogger(this Type logger) =>
             LogManager.GetLogger(logger ?? throw new ArgumentNullException($"logger type is null"));

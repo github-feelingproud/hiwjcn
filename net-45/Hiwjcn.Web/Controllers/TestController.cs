@@ -2,7 +2,11 @@
 using Hiwjcn.Core.Domain.Auth;
 using Hiwjcn.Core.Domain.User;
 using Hiwjcn.Framework;
+using Hiwjcn.Service.Epc.InputsType;
 using Hiwjcn.Service.MemberShip;
+using Ical.Net;
+using Ical.Net.DataTypes;
+using Ical.Net.Serialization.DataTypes;
 using Lib.data.elasticsearch;
 using Lib.distributed.redis;
 using Lib.events;
@@ -54,7 +58,7 @@ namespace Hiwjcn.Web.Controllers
 
         public ActionResult InitUser()
         {
-            return RunAction(() => 
+            return RunAction(() =>
             {
                 return Content("ok");
             });
@@ -66,6 +70,28 @@ namespace Hiwjcn.Web.Controllers
         /// <returns></returns>
         public ActionResult EntityJson() =>
             GetJson(typeof(Hiwjcn.Core.CacheKeyManager).Assembly.FindEntityDefaultInstance());
+
+        public ActionResult Rule()
+        {
+            var rrule = new RecurrencePattern(FrequencyType.Weekly, 2);
+            var serializer = new RecurrencePatternSerializer();
+            var s = serializer.SerializeToString(rrule);
+
+            return Content(s);
+        }
+
+        public ActionResult InputParamJson()
+        {
+            var dict = new Dictionary<string, object>();
+            var tps = typeof(InputExpressionValidateable).Assembly.GetTypes().Where(x => x.IsNormalClass() && x.IsAssignableTo_<InputExpressionValidateable>());
+
+            foreach (var t in tps)
+            {
+                dict[t.Name] = Activator.CreateInstance(t);
+            }
+
+            return GetJson(dict);
+        }
 
         /// <summary>
         /// 不会卡死
@@ -108,22 +134,21 @@ namespace Hiwjcn.Web.Controllers
             });
         }
 
-        public ActionResult es_log()
-        {
-            foreach (var i in Com.Range(50))
-            {
-                $"业务日志{i}".AddBusinessInfoLog();
-                $"警告日志{i}".AddBusinessWarnLog();
-                //new Exception().AddErrorLog();
-            }
-            return Content("ok");
-        }
-
         public ActionResult P()
         {
             return Content(this.X.context.PostAndGet().ToUrlParam());
         }
 
+        public ActionResult Log()
+        {
+            DateTime.Now.ToString().AddBusinessInfoLog();
+            DateTime.Now.ToString().AddBusinessWarnLog();
+            $"业务日志{DateTime.Now}".AddBusinessInfoLog();
+            $"警告日志{DateTime.Now}".AddBusinessWarnLog();
+            new Exception("第一层错误", new Exception(DateTime.Now.ToString())).AddErrorLog();
+            return Content(DateTime.Now.ToString());
+        }
+        
         public async Task<ActionResult> es_log_list(string q)
         {
             return await RunActionAsync(async () =>
@@ -223,14 +248,6 @@ namespace Hiwjcn.Web.Controllers
                 }).InvokeWithRetry<Exception>(5);
                 return Content($"retrycount:{retryCount}");
             });
-        }
-
-        public ActionResult Log()
-        {
-            DateTime.Now.ToString().AddBusinessInfoLog();
-            DateTime.Now.ToString().AddBusinessWarnLog();
-            new Exception("第一层错误", new Exception(DateTime.Now.ToString())).AddErrorLog();
-            return Content(DateTime.Now.ToString());
         }
 
         public ActionResult redis_list()

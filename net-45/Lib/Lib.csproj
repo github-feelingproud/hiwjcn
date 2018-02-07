@@ -93,9 +93,6 @@
     <Reference Include="MongoDB.Driver.Core, Version=2.4.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Driver.Core.2.4.4\lib\net45\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.9.10.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.9.10\lib\net45\MySql.Data.dll</HintPath>
-    </Reference>
     <Reference Include="Nest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
       <HintPath>..\packages\NEST.2.4.6\lib\net45\Nest.dll</HintPath>
       <Private>True</Private>
@@ -282,7 +279,6 @@
     <Compile Include="distributed\IDistributedLock.cs" />
     <Compile Include="distributed\redis\RedisDistributedLock.cs" />
     <Compile Include="distributed\zookeeper\ZooKeeperClient.cs" />
-    <Compile Include="distributed\zookeeper\ZooKeeperConfigProvider.cs" />
     <Compile Include="events\EntityDeleted.cs" />
     <Compile Include="events\EntityInserted.cs" />
     <Compile Include="events\EntityUpdated.cs" />
@@ -417,7 +413,6 @@
     <Compile Include="mvc\NameValueCollectionHelper.cs" />
     <Compile Include="mvc\HtmlExtensions.cs" />
     <Compile Include="mvc\user\LoginUserInfo.cs" />
-    <Compile Include="mvc\MySQLSessionProvider.cs" />
     <Compile Include="mvc\ResultBundle.cs" />
     <Compile Include="mvc\user\ValidLoginBaseAttribute.cs" />
     <Compile Include="mvc\view\IViewRenderService.cs" />

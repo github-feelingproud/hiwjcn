@@ -42,9 +42,8 @@ namespace Lib.ioc
         /// <summary>
         /// 使用数据库
         /// </summary>
-        public static void UseAdoConnection<T>(this ContainerBuilder builder)
-            where T : class, IDbConnection =>
-            builder.RegisterType<T>().AsSelf().As<IDbConnection>();
+        public static void UseAdoConnection(this ContainerBuilder builder, Func<IDbConnection> get_opened_connction) =>
+            builder.Register(x => get_opened_connction.Invoke()).AsSelf().As<IDbConnection>().InstancePerDependency();
 
         /// <summary>
         /// 使用缓存
@@ -137,7 +136,7 @@ namespace Lib.ioc
                 return scope.ResolveOptional<T>();
             }
         }
-        
+
         /// <summary>
         /// 不自动dispose对象
         /// </summary>

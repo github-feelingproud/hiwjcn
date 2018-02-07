@@ -1,8 +1,6 @@
 ﻿using Dapper;
 using Lib.core;
 using Lib.helper;
-using MySql.Data.Common;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -24,17 +22,13 @@ namespace Lib.extension
     /// <summary>
     /// 针对不同数据库的sql方言
     /// </summary>
-    public interface ISqlDialect
-    { }
+    public interface ISqlDialect { }
 
-    public class MySqlDialect : ISqlDialect
-    { }
+    public class MySqlDialect : ISqlDialect { }
 
-    public class SqlServerDialect : ISqlDialect
-    { }
+    public class SqlServerDialect : ISqlDialect { }
 
-    public class PostgreSqlDialect : ISqlDialect
-    { }
+    public class PostgreSqlDialect : ISqlDialect { }
 
     public static class SimpleOrmExtension
     {
@@ -381,26 +375,7 @@ namespace Lib.extension
                 transaction: transaction, commandTimeout: commandTimeout).FirstOrDefault();
         }
     }
-
-    /// <summary>
-    /// mysql ado扩展
-    /// </summary>
-    public static class MysqlAdoExtension
-    {
-        /// <summary>
-        /// 获取带timeout的链接字符串
-        /// </summary>
-        /// <param name="con"></param>
-        /// <returns></returns>
-        public static string GetTimeoutConnectionString(this MySqlConnection con)
-        {
-            var b = new MySqlConnectionStringBuilder(ConfigHelper.Instance.MySqlConnectionString);
-            b.ConnectionTimeout = 3;
-            var str = b.ToString();
-            return str;
-        }
-    }
-
+    
     /// <summary>
     /// 对Ado的扩展
     /// </summary>
