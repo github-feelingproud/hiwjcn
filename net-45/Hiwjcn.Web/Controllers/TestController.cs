@@ -52,6 +52,14 @@ namespace Hiwjcn.Web.Controllers
             //new ArgumentNullException("发布一个垃圾消息").AddLog_("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         }
 
+        public ActionResult InitUser()
+        {
+            return RunAction(() => 
+            {
+                return Content("ok");
+            });
+        }
+
         /// <summary>
         /// 表结构
         /// </summary>
@@ -111,51 +119,9 @@ namespace Hiwjcn.Web.Controllers
             return Content("ok");
         }
 
-        [ValidateSign]
-        public ActionResult sign()
-        {
-            return Content("");
-        }
-
-        public ActionResult qiniu()
-        {
-            //
-            return Content("");
-        }
-
-        public ActionResult UView()
-        {
-            return View();
-        }
-
         public ActionResult P()
         {
             return Content(this.X.context.PostAndGet().ToUrlParam());
-        }
-
-        public class ppp
-        {
-            public string name { get; set; }
-            public int age { get; set; }
-        }
-
-        public ActionResult pj(ppp pp)
-        {
-            if (pp != null)
-            {
-                return GetJson(pp);
-            }
-            return Content("no data");
-        }
-
-        public ActionResult err()
-        {
-            return RunAction(() =>
-            {
-                int? page = null;
-
-                return Content((page ?? throw new Exception("fasdfasd")).ToString());
-            });
         }
 
         public async Task<ActionResult> es_log_list(string q)
@@ -267,38 +233,6 @@ namespace Hiwjcn.Web.Controllers
             return Content(DateTime.Now.ToString());
         }
 
-        //public ActionResult set_cookie()
-        //{
-        //    AccountHelper.Admin.SetUserLogin(this.X.context, new LoginUserInfo() { });
-        //    return Content("");
-        //}
-
-        //public ActionResult remove_cookie()
-        //{
-        //    AccountHelper.Admin.DeleteCookie(this.X.context, true);
-        //    AccountHelper.Admin.DeleteCookie(this.X.context, false);
-        //    return Content("");
-        //}
-
-        public async Task<ActionResult> tt()
-        {
-            var list = new List<string>();
-
-            list.Add($"{Thread.CurrentThread.Name}-{Thread.CurrentThread.ManagedThreadId}");
-
-            Func<string> func = () => { return $"{Thread.CurrentThread.Name}-{Thread.CurrentThread.ManagedThreadId}"; };
-            list.Add(await Task.FromResult(func()));
-
-            list.Add($"{Thread.CurrentThread.Name}-{Thread.CurrentThread.ManagedThreadId}");
-
-            return Content(string.Join(",", list));
-        }
-
-        public ActionResult Lang()
-        {
-            return View();
-        }
-
         public ActionResult redis_list()
         {
             var db = new RedisHelper(dbNum: 15, readWriteHosts: "172.16.42.28:6379,password=1q2w3e4r5T");
@@ -306,22 +240,6 @@ namespace Hiwjcn.Web.Controllers
             var model = db.ListRightPop<TBColumns>("UserOperationLog");
 
             return Content("");
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public async Task<ActionResult> Task_Http()
-        {
-            var url = await Task.Run(() =>
-            {
-                object obj = new { me = new UserEntity() };
-                var dy = obj as dynamic;
-
-                return this.X.context.Request.Url.ToString();
-            });
-            return Content(url);
         }
 
         public async Task<ActionResult> Baidu(string q, string from = "auto", string to = "en")
@@ -337,26 +255,6 @@ namespace Hiwjcn.Web.Controllers
             html += "================";
             html += Com.Pinyin(str);
             return Content(html);
-        }
-
-        public async Task<ActionResult> AsyncAction()
-        {
-            var start = DateTime.Now;
-            var countlist = new List<Task<int>>();
-            for (int i = 0; i < 10; ++i)
-            {
-                countlist.Add(Task<int>.Run(() =>
-                {
-                    Thread.Sleep(1000);
-                    return 1;
-                }));
-            }
-            var count = 0;
-            foreach (var t in countlist)
-            {
-                count += await t;
-            }
-            return Content($"耗时：{(DateTime.Now - start).TotalSeconds}，结果：{count}");
         }
 
         public ActionResult FindAllActions()
@@ -377,31 +275,6 @@ namespace Hiwjcn.Web.Controllers
                 e.AddErrorLog();
             }
             return View();
-        }
-
-        public async Task<ActionResult> yibu()
-        {
-            var count = await Task<int>.Run(() =>
-            {
-                Thread.Sleep(5000);
-                return 0;
-            });
-            return Content(count.ToString());
-        }
-
-        [PageAuth(Permission = "auth_manage.order,auth_manage.user", Scope = "order")]
-        public ActionResult WJ()
-        {
-            var str = Com.GetUUID();
-            var key = Com.GetPassKey(str);
-            return Content(string.Format("{0}==============={1}", str, key));
-        }
-
-        public ActionResult session()
-        {
-            var key = Com.GetUUID();
-            Session[key] = key;
-            return Content(key);
         }
 
         [ElasticsearchType(IdProperty = nameof(UID), Name = nameof(SuggestTest))]

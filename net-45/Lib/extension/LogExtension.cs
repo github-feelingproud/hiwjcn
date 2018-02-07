@@ -1,4 +1,5 @@
 ﻿using Lib.helper;
+using Lib.core;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,11 +15,21 @@ namespace Lib.extension
     /// </summary>
     public static class CommonLoggingExtension
     {
-        public static ILog GetLogger(this string name) =>
-            LogManager.GetLogger(name ?? "empty_logger_name");
+        //缓存各种logger
+        public static readonly Dictionary<string, ILog> _str_logger_factory = new Dictionary<string, ILog>();
+        public static readonly Dictionary<Type, ILog> _type_logger_factory = new Dictionary<Type, ILog>();
 
-        public static ILog GetLogger(this Type t) =>
-            LogManager.GetLogger(t ?? throw new ArgumentNullException($"can not get logger,type is null"));
+        public static ILog GetLogger(this string logger) =>
+            LogManager.GetLogger(logger ?? throw new ArgumentNullException("logger name is null"));
+
+        public static ILog GetLogger(this Type logger) =>
+            LogManager.GetLogger(logger ?? throw new ArgumentNullException($"logger type is null"));
+
+        public static ILog CachedLogger(this string logger) =>
+            _str_logger_factory.GetOrSet(logger, () => logger.GetLogger());
+
+        public static ILog CachedLogger(this Type logger) =>
+            _type_logger_factory.GetOrSet(logger, () => logger.GetLogger());
 
         public static string GetInnerExceptionAsJson(this Exception e) =>
             Com.GetExceptionMsgJson(e);
@@ -50,35 +61,41 @@ namespace Lib.extension
             }
         }
 
-        public static void AddLog(this Exception e, string name) =>
-            Handler(() => name.GetLogger().Error(e.GetInnerExceptionAsJson()));
+        public static void AddLog(this Exception e, string logger) =>
+            Handler(() => logger.CachedLogger().Error(e.GetInnerExceptionAsJson()));
 
-        public static void AddLog(this Exception e, Type t) =>
-            Handler(() => t.GetLogger().Error(e.GetInnerExceptionAsJson()));
-        
-        public static void AddLog_(this Exception e, string name) =>
-            Handler(() => name.GetLogger().Error(e.GetInnerExceptionAsJson(), e));
-        
-        public static void AddLog_(this Exception e, Type t) =>
-            Handler(() => t.GetLogger().Error(e.GetInnerExceptionAsJson(), e));
+        public static void AddLog(this Exception e, Type logger) =>
+            Handler(() => logger.CachedLogger().Error(e.GetInnerExceptionAsJson()));
 
-        public static void AddErrorLog(this string log, string name) =>
-            Handler(() => name.GetLogger().Error(log));
+        public static void AddLog_(this Exception e, string logger) =>
+            Handler(() => logger.CachedLogger().Error(e.GetInnerExceptionAsJson(), e));
 
-        public static void AddErrorLog(this string log, Type t) =>
-            Handler(() => t.GetLogger().Error(log));
+        public static void AddLog_(this Exception e, Type logger) =>
+            Handler(() => logger.CachedLogger().Error(e.GetInnerExceptionAsJson(), e));
 
-        public static void AddInfoLog(this string log, string name) =>
-            Handler(() => name.GetLogger().Info(log));
+        public static void AddErrorLog(this string log, string logger) =>
+            Handler(() => logger.CachedLogger().Error(log));
 
-        public static void AddInfoLog(this string log, Type t) =>
-            Handler(() => t.GetLogger().Info(log));
+        public static void AddErrorLog(this string log, Type logger) =>
+            Handler(() => logger.CachedLogger().Error(log));
 
-        public static void AddWarnLog(this string log, string name) =>
-            Handler(() => name.GetLogger().Warn(log));
+        public static void AddInfoLog(this string log, string logger) =>
+            Handler(() => logger.CachedLogger().Info(log));
 
-        public static void AddWarnLog(this string log, Type t) =>
-            Handler(() => t.GetLogger().Warn(log));
+        public static void AddInfoLog(this string log, Type logger) =>
+            Handler(() => logger.CachedLogger().Info(log));
+
+        public static void AddWarnLog(this string log, string logger) =>
+            Handler(() => logger.CachedLogger().Warn(log));
+
+        public static void AddWarnLog(this string log, Type logger) =>
+            Handler(() => logger.CachedLogger().Warn(log));
+
+        public static void AddFatalLog(this string log, string logger) =>
+            Handler(() => logger.CachedLogger().Fatal(log));
+
+        public static void AddFatalLog(this string log, Type logger) =>
+            Handler(() => logger.CachedLogger().Fatal(log));
     }
 
     /// <summary>

@@ -11,6 +11,15 @@ namespace Lib.extension
 {
     public static class DictExtension
     {
+        public static Value GetOrSet<Key, Value>(this IDictionary<Key, Value> dict, Key k, Func<Value> v)
+        {
+            if (!dict.ContainsKey(k))
+            {
+                dict[k] = v.Invoke();
+            }
+            return dict[k];
+        }
+
         /// <summary>
         /// 字典变url格式(a=1&b=3)
         /// </summary>
