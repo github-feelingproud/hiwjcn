@@ -102,15 +102,80 @@ namespace Hiwjcn.Service.Epc
             return await Task.FromResult(data);
         }
 
+        private async Task<CheckLogItemEntity> ValidParamsValues(CheckLogItemEntity data,
+            DeviceParameterEntity p, string value)
+        {
+            await Task.FromResult(1);
+            ValidResult res = null;
+
+            if (p.InputType == (int)DeviceParameterTypeEnum.字符)
+            {
+                var expression = p.Rule?.JsonToEntity<StringInputExpression>();
+                var input = value?.JsonToEntity<StringValue>();
+                if (expression == null || input == null)
+                {
+                    throw new MsgException($"{p.ParameterName}参数错误");
+                }
+                res = expression.ValidInputs(input.Value);
+                data.NormalString = input.Value;
+            }
+            else if (p.InputType == (int)DeviceParameterTypeEnum.布尔)
+            {
+                var expression = p.Rule?.JsonToEntity<BoolInputExpression>();
+                var input = value?.JsonToEntity<BoolValue>();
+                if (expression == null || input == null)
+                {
+                    throw new MsgException($"{p.ParameterName}参数错误");
+                }
+                res = expression.ValidInputs(input.Value);
+                data.NormalBool = input.Value.ToBoolInt();
+            }
+            else if (p.InputType == (int)DeviceParameterTypeEnum.数值)
+            {
+                var expression = p.Rule?.JsonToEntity<NumberInputExpression>();
+                var input = value?.JsonToEntity<NumberValue>();
+                if (expression == null || input == null)
+                {
+                    throw new MsgException($"{p.ParameterName}参数错误");
+                }
+                res = expression.ValidInputs(input.Value);
+                data.NormalDouble = input.Value;
+            }
+            else if (p.InputType == (int)DeviceParameterTypeEnum.选项)
+            {
+                var expression = p.Rule?.JsonToEntity<SelectInputExpression>();
+                var input = value?.JsonToEntity<SelectValue>();
+                if (expression == null || input == null)
+                {
+                    throw new MsgException("参数错误");
+                }
+                res = expression.ValidInputs(input.Value);
+                data.NormalSelectStringJson = input.Value?.ToJson();
+            }
+            else
+            {
+                throw new MsgException("参数类型错误");
+            }
+            res = res ?? throw new MsgException("验证结果丢失");
+
+            data.StatusOK = res.OK.ToBoolInt();
+            data.Tips.AddWhenNotEmpty(res.Tips);
+            return data;
+        }
+
         private async Task<List<CheckLogItemEntity>> PrepareCheckLogItem(DeviceInputData model)
         {
-            var param_uids = model.Data.Select(x => x.ParamUID).ToList();
-            var params_list = await this._paramRepo.GetListAsync(x => param_uids.Contains(x.UID));
+            var param_uids = model.Data.NotEmptyAndDistinct(x => x.ParamUID).ToList();
+            var all_params = await this._paramRepo.GetListAsync(x => x.DeviceUID == model.DeviceUID);
+            if (param_uids.Count != all_params.Count)
+            {
+                throw new MsgException("部分参数丢失");
+            }
 
             var list = new List<CheckLogItemEntity>();
             foreach (var m in model.Data)
             {
-                var p = params_list.FirstOrDefault(x => x.UID == m.ParamUID) ??
+                var p = all_params.FirstOrDefault(x => x.UID == m.ParamUID) ??
                     throw new MsgException("参数错误，部分设备参数不存在");
                 var value = m.ValueJson;
 
@@ -122,69 +187,14 @@ namespace Hiwjcn.Service.Epc
                     Rule = p.Rule,
                     InputDataJson = value,
                     InputType = p.InputType,
-                    Tips = new List<string>()
-                }.InitSelf("log-itm");
+                    Tips = new List<string>(),
+                };
 
-                if (p.InputType == (int)DeviceParameterTypeEnum.字符)
-                {
-                    var expression = p.Rule?.JsonToEntity<StringInputExpression>();
-                    var input = value?.JsonToEntity<StringValue>();
-                    if (expression == null || input == null)
-                    {
-                        throw new MsgException("参数错误");
-                    }
-                    var res = expression.ValidInputs(input.Value);
-
-                    entity.StatusOK = res.OK.ToBoolInt();
-                    entity.Tips.AddWhenNotEmpty(res.Tips);
-                }
-                else if (p.InputType == (int)DeviceParameterTypeEnum.布尔)
-                {
-                    var expression = p.Rule?.JsonToEntity<BoolInputExpression>();
-                    var input = value?.JsonToEntity<BoolValue>();
-                    if (expression == null || input == null)
-                    {
-                        throw new MsgException("参数错误");
-                    }
-                    var res = expression.ValidInputs(input.Value);
-
-                    entity.StatusOK = res.OK.ToBoolInt();
-                    entity.Tips.AddWhenNotEmpty(res.Tips);
-                }
-                else if (p.InputType == (int)DeviceParameterTypeEnum.数值)
-                {
-                    var expression = p.Rule?.JsonToEntity<NumberInputExpression>();
-                    var input = value?.JsonToEntity<NumberValue>();
-                    if (expression == null || input == null)
-                    {
-                        throw new MsgException("参数错误");
-                    }
-                    var res = expression.ValidInputs(input.Value);
-
-                    entity.StatusOK = res.OK.ToBoolInt();
-                    entity.Tips.AddWhenNotEmpty(res.Tips);
-                }
-                else if (p.InputType == (int)DeviceParameterTypeEnum.选项)
-                {
-                    var expression = p.Rule?.JsonToEntity<SelectInputExpression>();
-                    var input = value?.JsonToEntity<SelectValue>();
-                    if (expression == null || input == null)
-                    {
-                        throw new MsgException("参数错误");
-                    }
-                    var res = expression.ValidInputs(input.Value);
-
-                    entity.StatusOK = res.OK.ToBoolInt();
-                    entity.Tips.AddWhenNotEmpty(res.Tips);
-                }
-                else
-                {
-                    throw new MsgException("参数类型错误");
-                }
+                entity = await this.ValidParamsValues(entity, p, value);
 
                 list.Add(entity);
             }
-            return list;
+            return list.Select(x => x.InitSelf("log-item")).ToList();
         }
 
         private async Task<IssueEntity> PrepareIssue(CheckLogEntity model, List<CheckLogItemEntity> items)

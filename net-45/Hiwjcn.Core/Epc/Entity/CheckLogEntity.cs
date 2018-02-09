@@ -63,6 +63,23 @@ namespace EPC.Core.Entity
 
         public virtual int InputType { get; set; }
 
+        #region 表格维度
+
+        [NotMapped]
+        public virtual double? NormalDouble { get; set; }
+
+        [NotMapped]
+        public virtual string NormalString { get; set; }
+
+        [NotMapped]
+        public virtual int? NormalBool { get; set; }
+
+        [NotMapped]
+        [Obsolete("多个值不保存json，保存多个这样的记录")]
+        public virtual string NormalSelectStringJson { get; set; }
+
+        #endregion
+
         [NotMapped]
         public virtual List<string> Tips { get; set; }
     }
