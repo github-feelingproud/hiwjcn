@@ -188,5 +188,27 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             });
         }
 
+        [HttpPost]
+        [EpcAuth]
+        public async Task<ActionResult> Comment(string data)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var model = data?.JsonToEntity<IssueOperationLogEntity>(throwIfException: false);
+                if (model == null)
+                {
+                    return GetJsonRes("参数错误");
+                }
+
+                var res = await this._issueService.AddComment(model);
+                if (res.error)
+                {
+                    return GetJsonRes(res.msg);
+                }
+
+                return GetJsonRes(string.Empty);
+            });
+        }
+
     }
 }

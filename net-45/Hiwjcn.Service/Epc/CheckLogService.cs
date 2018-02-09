@@ -193,7 +193,7 @@ namespace Hiwjcn.Service.Epc
             {
                 return null;
             }
-
+            var now = DateTime.Now;
             var data = new IssueEntity()
             {
                 Title = $"[system]设备{model.DeviceModel.Name}存在问题",
@@ -204,7 +204,8 @@ namespace Hiwjcn.Service.Epc
                 DeviceUID = model.DeviceUID,
                 AssignedUserUID = model.UserUID,
                 IsClosed = (int)YesOrNoEnum.否,
-                Start = DateTime.Now,
+                //5分钟后生效
+                Start = now.AddMinutes(5),
             }.InitSelf("isu");
 
             return await Task.FromResult(data);

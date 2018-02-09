@@ -30,6 +30,8 @@ namespace Hiwjcn.Service.Epc
         Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(string org_uid, string issue_uid, int count);
 
         Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count);
+
+        Task<_<IssueOperationLogEntity>> AddComment(IssueOperationLogEntity model);
     }
 
     public class IssueService : ServiceBase<IssueEntity>, IIssueService
@@ -47,6 +49,9 @@ namespace Hiwjcn.Service.Epc
             this._issueOperaRepo = _issueOperaRepo;
             this._userRepo = _userRepo;
         }
+
+        public async Task<_<IssueOperationLogEntity>> AddComment(IssueOperationLogEntity model) =>
+            await this._issueOperaRepo.AddEntity_(model, "op");
 
         public virtual async Task<_<IssueEntity>> AddIssue(IssueEntity model) =>
             await this._issueRepo.AddEntity_(model, "is");

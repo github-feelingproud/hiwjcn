@@ -16,7 +16,7 @@ namespace Hiwjcn.Service.Epc
     public interface IDashboardService : IServiceBase<CheckLogEntity>
     {
         Task<int> IssueCount(string org_uid, DateTime start, DateTime end);
-        
+
         Task<int> DeviceCount(string org_uid);
 
         Task<int> CheckLogCount(string org_uid, DateTime start, DateTime end);
@@ -52,9 +52,11 @@ namespace Hiwjcn.Service.Epc
         {
             return await this._logRepo.PrepareSessionAsync(async db =>
             {
+                var now = DateTime.Now;
                 var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
                 query = query.Where(x => x.OrgUID == org_uid);
                 query = query.FilterCreateDateRange(start, end, true);
+                query = query.Where(x => x.Start == null || x.Start < now);
 
                 var data = await query
                 .GroupBy(x => x.IsClosed)
@@ -77,9 +79,12 @@ namespace Hiwjcn.Service.Epc
         {
             return await this._logRepo.PrepareSessionAsync(async db =>
             {
+                var now = DateTime.Now;
                 var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
                 query = query.Where(x => x.OrgUID == org_uid);
                 query = query.FilterCreateDateRange(start, end, true);
+                query = query.Where(x => x.Start == null || x.Start < now);
+
                 if (ValidateHelper.IsPlumpString(device_uid))
                 {
                     query = query.Where(x => x.DeviceUID == device_uid);
@@ -112,10 +117,12 @@ namespace Hiwjcn.Service.Epc
         {
             return await this._logRepo.PrepareSessionAsync(async db =>
             {
+                var now = DateTime.Now;
                 var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
                 query = query.Where(x => x.OrgUID == org_uid);
                 query = query.FilterCreateDateRange(start, end, true);
                 query = query.Where(x => x.DeviceUID != null && x.DeviceUID != string.Empty);
+                query = query.Where(x => x.Start == null || x.Start < now);
 
                 var data = await query
                 .GroupBy(x => x.DeviceUID)
@@ -150,10 +157,12 @@ namespace Hiwjcn.Service.Epc
         {
             return await this._logRepo.PrepareSessionAsync(async db =>
             {
+                var now = DateTime.Now;
                 var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
                 query = query.Where(x => x.OrgUID == org_uid);
                 query = query.FilterCreateDateRange(start, end, true);
                 query = query.Where(x => x.IsClosed > 0);
+                query = query.Where(x => x.Start == null || x.Start < now);
                 if (ValidateHelper.IsPlumpString(device_uid))
                 {
                     query = query.Where(x => x.DeviceUID == device_uid);
@@ -213,10 +222,12 @@ namespace Hiwjcn.Service.Epc
         {
             return await this._logRepo.PrepareSessionAsync(async db =>
             {
+                var now = DateTime.Now;
                 var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
 
                 query = query.Where(x => x.OrgUID == org_uid);
                 query = query.Where(x => x.CreateTime >= start && x.CreateTime < end);
+                query = query.Where(x => x.Start == null || x.Start < now);
 
                 return await query.CountAsync();
             });
