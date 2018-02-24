@@ -39,16 +39,19 @@ namespace Hiwjcn.Framework.Tasks
         {
             var wakeuplist = new string[]
             {
-                "http://auth.qipeilong.net",
-                "http://auth.qipeilong.cn"
+                "http://www.qq.com"
             };
 
             foreach (var url in wakeuplist)
             {
                 try
                 {
-                    var html = HttpClientHelper.Get(url);
-                    $"唤醒网站{url}，读取内容长度为{html?.Length}".AddBusinessInfoLog();
+                    var client = Lib.net.HttpClientManager.Instance.DefaultClient;
+                    using (var response = await client.GetAsync(url))
+                    {
+                        var html = await response.Content.ReadAsStringAsync();
+                        $"唤醒网站{url}，读取内容长度为{html?.Length}".AddBusinessInfoLog();
+                    }
                 }
                 catch (Exception e)
                 {

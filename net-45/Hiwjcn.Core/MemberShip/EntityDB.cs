@@ -21,7 +21,7 @@ namespace Hiwjcn.Dal
     /// EF做映射的时候也可以数据库是int，代码里是string，
     /// 用attribute mapping测试成功，用fluent测试失败
     /// </summary>
-#if use_mysql_
+#if use_mysql
     [DbConfigurationType(typeof(MySql.Data.Entity.MySqlEFConfiguration))]
 #else
     [DbConfigurationType(typeof(Hiwjcn.Core.SqlServerConfiguration))]

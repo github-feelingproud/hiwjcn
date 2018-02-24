@@ -28,16 +28,14 @@ namespace Hiwjcn.Service.MemberShip
 
         Task<List<OrganizationEntity>> GetMyOrgEntity(params string[] user_uid);
 
-        Task<PagerData<UserEntity>> QueryMember(string org_uid, string q, int page, int pagesize);
+        Task<List<UserEntity>> AllMembers(string org_uid);
 
         Task<_<OrganizationEntity>> AddOrg(OrganizationEntity model);
 
         Task<_<int>> DeleteOrg(params string[] org_uids);
 
         Task<_<OrganizationEntity>> UpdateOrg(OrganizationEntity model);
-
-        Task<bool> CheckOwner(string org_uid, string owner_uid);
-
+        
         Task<OrganizationEntity> GetOrgByUID(string org_uid);
 
         Task<PagerData<OrganizationEntity>> QueryOrgPager(string q = null, int page = 1, int pagesize = 10);
@@ -106,9 +104,6 @@ namespace Hiwjcn.Service.MemberShip
             return res;
         }
 
-        public virtual async Task<bool> CheckOwner(string org_uid, string owner_uid) =>
-            ValidateHelper.IsPlumpString(owner_uid) && (await this.GetOrgByUID(org_uid))?.OwnerUID == owner_uid;
-
         public virtual async Task<OrganizationEntity> GetOrgByUID(string org_uid) =>
             await this._orgRepo.GetFirstAsync(x => x.UID == org_uid);
 
@@ -165,7 +160,17 @@ namespace Hiwjcn.Service.MemberShip
             old_org.OwnerUID = new_org.OwnerUID;
         }
 
-        public async Task<PagerData<UserEntity>> QueryMember(string org_uid, string q, int page, int pagesize)
+        public async Task<List<OrganizationEntity>> GetMyOrgEntity(params string[] user_uid)
+        {
+            if (!ValidateHelper.IsPlumpList(user_uid))
+            {
+                return new List<OrganizationEntity>() { };
+            }
+            user_uid = user_uid.Distinct().ToArray();
+            return await this._orgRepo.GetListAsync(x => user_uid.Contains(x.UID));
+        }
+
+        public async Task<List<UserEntity>> AllMembers(string org_uid)
         {
             return await this._orgRepo.PrepareSessionAsync(async db =>
             {
@@ -175,39 +180,26 @@ namespace Hiwjcn.Service.MemberShip
                 var query = db.Set<UserEntity>().AsNoTrackingQueryable();
                 query = query.Where(x => user_uids.Contains(x.UID));
 
-                if (ValidateHelper.IsPlumpString(q))
+                var list = await query.OrderBy(x => x.IID).Take(1000).ToListAsync();
+
+                if (ValidateHelper.IsPlumpList(list))
                 {
-                    query = query.Where(x => x.UserName == q || x.NickName.StartsWith(q) || x.UserName.StartsWith(q));
-                }
-                var data = await query.ToPagedListAsync(page, pagesize, x => x.IID);
-                if (ValidateHelper.IsPlumpList(data.DataList))
-                {
-                    var uids = data.DataList.Select(x => x.UID);
+                    var uids = list.Select(x => x.UID);
                     var orgs = await map_query.Where(x => uids.Contains(x.UserUID)).ToListAsync();
                     var roles = MemberRoleHelper.GetRoles();
-                    foreach (var m in data.DataList)
+                    foreach (var m in list)
                     {
                         var org = orgs.Where(x => x.UserUID == m.UID).FirstOrDefault();
                         if (org == null) { continue; }
 
                         m.OrgFlag = org.Flag;
                         m.OrgUID = org.OrgUID;
-                        m.OrgFlagName = string.Join(",", MemberRoleHelper.ParseRoleNames(m.OrgFlag, roles));
+                        m.OrgFlagName = string.Join(",", MemberRoleHelper.ParseRoleNames(m.OrgFlag, roles).Take(3).ToList());
                     }
                 }
 
-                return data;
+                return list;
             });
-        }
-
-        public async Task<List<OrganizationEntity>> GetMyOrgEntity(params string[] user_uid)
-        {
-            if (!ValidateHelper.IsPlumpList(user_uid))
-            {
-                return new List<OrganizationEntity>() { };
-            }
-            user_uid = user_uid.Distinct().ToArray();
-            return await this._orgRepo.GetListAsync(x => user_uid.Contains(x.UID));
         }
     }
 }

@@ -37,14 +37,13 @@ namespace EPC.Api.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> QueryMember(string q, int? page)
+        public async Task<ActionResult> AllMembers(string q)
         {
             return await RunActionAsync(async () =>
             {
-                page = CheckPage(page);
                 var org_uid = this.GetSelectedOrgUID();
 
-                var data = await this._orgService.QueryMember(org_uid, q, page.Value, this.PageSize);
+                var data = await this._orgService.AllMembers(org_uid);
 
                 return GetJson(new _()
                 {
@@ -204,7 +203,7 @@ namespace EPC.Api.Controllers
                 return GetJsonRes(string.Empty);
             });
         }
-        
+
         /// <summary>
         /// 获取所有角色和响应的值
         /// </summary>
