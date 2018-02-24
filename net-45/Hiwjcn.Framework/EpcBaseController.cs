@@ -1,5 +1,5 @@
-﻿using Hiwjcn.Service;
-using Hiwjcn.Core;
+﻿using Hiwjcn.Core;
+using Hiwjcn.Service.MemberShip;
 using Lib.cache;
 using Lib.extension;
 using Lib.helper;
@@ -10,10 +10,8 @@ using Lib.mvc.user;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Hiwjcn.Service.MemberShip;
 
 namespace Hiwjcn.Framework
 {
@@ -28,7 +26,7 @@ namespace Hiwjcn.Framework
         [NonAction]
         protected string GetSelectedOrgUID(string specify = null)
         {
-            var org_uid = new List<string>()
+            var org_uid = new string[]
             {
                 specify,
                 this.X.context.Request.QueryString[OrgCookieName],
@@ -65,7 +63,7 @@ namespace Hiwjcn.Framework
 
                 var list = await cache.GetOrSetAsync(key,
                     async () => await s.Resolve_<IOrgService>().GetMyOrgMap(loginuser.UserID),
-                    TimeSpan.FromMinutes(5));
+                    TimeSpan.FromMinutes(30));
                 list = ConvertHelper.NotNullList(list);
 
                 var org = list.Where(x => x.OrgUID == org_uid).OrderByDescending(x => x.IID).FirstOrDefault();
@@ -84,7 +82,8 @@ namespace Hiwjcn.Framework
         }
 
         [NonAction]
-        protected ActionResult AccessDeny() => GetJson(new _() { success = false, msg = "无权访问", code = "-111" });
+        protected ActionResult AccessDeny() =>
+            this.GetJson(new _() { success = false, msg = "无权访问", code = "-111" });
 
         [NonAction]
         public override ActionResult RunAction(Func<ActionResult> GetActionFunc)

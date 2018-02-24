@@ -33,6 +33,21 @@ namespace Hiwjcn.Web.Controllers
             this._cache = _cache;
         }
 
+        [HttpPost]
+        [EpcAuth]
+        public async Task<ActionResult> GetUserByName(string name)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var data = await this._userService.GetUserByName(name);
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data
+                });
+            });
+        }
+
         /// <summary>
         /// 用户列表
         /// </summary>

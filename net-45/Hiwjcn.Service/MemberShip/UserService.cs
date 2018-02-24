@@ -20,6 +20,8 @@ namespace Hiwjcn.Service.MemberShip
     public interface IUserService : IUserServiceBase<UserEntity>,
         IAutoRegistered
     {
+        Task<UserEntity> GetUserByName(string name);
+
         Task<List<UserEntity>> UserSuggest(string q, int count);
     }
 
@@ -84,5 +86,8 @@ namespace Hiwjcn.Service.MemberShip
                 return await query.OrderByDescending(x => x.IID).Take(count).ToListAsync();
             });
         }
+
+        public async Task<UserEntity> GetUserByName(string name) =>
+            await this._userRepo.GetFirstAsync(x => x.UserName == name);
     }
 }

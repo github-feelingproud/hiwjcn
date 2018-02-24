@@ -68,6 +68,7 @@ namespace Hiwjcn.Web.Controllers
                 }
             });
         }
+
         [HttpPost]
         public ActionResult SetLang(string lang)
         {

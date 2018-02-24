@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Hiwjcn.Service.MemberShip;
+using Lib.cache;
+using Hiwjcn.Core;
 
 namespace EPC.Api.Controllers
 {
@@ -20,11 +22,14 @@ namespace EPC.Api.Controllers
     /// </summary>
     public class OrgController : EpcBaseController
     {
+        private readonly ICacheProvider _cache;
         private readonly IOrgService _orgService;
 
         public OrgController(
+            ICacheProvider _cache,
             IOrgService _orgService)
         {
+            this._cache = _cache;
             this._orgService = _orgService;
         }
 
@@ -260,6 +265,9 @@ namespace EPC.Api.Controllers
                 {
                     return GetJsonRes(res.msg);
                 }
+
+                var key = CacheKeyManager.OrgListCacheKey(map.UserUID);
+                this._cache.Remove(key);
 
                 return GetJsonRes(string.Empty);
             });
