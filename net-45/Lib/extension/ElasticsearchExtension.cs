@@ -558,6 +558,30 @@ namespace Lib.extension
                 },
                 Relation = GeoShapeRelation.Within
             };
+            qc = qc && new GeoShapePolygonQuery()
+            {
+                Field = "xx",
+                Shape = new PolygonGeoShape()
+                {
+                    Coordinates = new List<IEnumerable<GeoCoordinate>>()
+                    {
+                        new List<GeoCoordinate>() { }
+                    }
+                },
+                Relation = GeoShapeRelation.Within
+            };
+            new GeoShapePointQuery()
+            {
+                Shape = new PointGeoShape() { }
+            };
+            new GeoShapeEnvelopeQuery()
+            {
+                Shape = new EnvelopeGeoShape() { }
+            };
+            new GeoShapeMultiPolygonQuery()
+            {
+                Shape = new MultiPolygonGeoShape() { }
+            };
         }
 
         public static void HowToUseAggregationsInES(this SearchDescriptor<EsExample.ProductListV2> sd)

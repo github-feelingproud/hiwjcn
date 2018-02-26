@@ -35,7 +35,7 @@ namespace Hiwjcn.Service.MemberShip
         Task<_<int>> DeleteOrg(params string[] org_uids);
 
         Task<_<OrganizationEntity>> UpdateOrg(OrganizationEntity model);
-        
+
         Task<OrganizationEntity> GetOrgByUID(string org_uid);
 
         Task<PagerData<OrganizationEntity>> QueryOrgPager(string q = null, int page = 1, int pagesize = 10);
@@ -134,6 +134,12 @@ namespace Hiwjcn.Service.MemberShip
 
         public virtual async Task<_<OrganizationMemberEntity>> AddMember(OrganizationMemberEntity model)
         {
+            var res = new _<OrganizationMemberEntity>();
+            if (await this._orgMemberRepo.GetCountAsync(x => x.OrgUID == model.OrgUID) >= 500)
+            {
+                res.SetErrorMsg("成员数达到上限");
+                return res;
+            }
             await this._orgMemberRepo.DeleteWhereAsync(x => x.UserUID == model.UserUID && x.OrgUID == model.OrgUID);
             return await this._orgMemberRepo.AddEntity_(model, "org-member");
         }

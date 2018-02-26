@@ -83,6 +83,11 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
+                if (!ValidateHelper.IsAllPlumpString(user_name, password))
+                {
+                    return GetJsonRes("用户名密码不能为空");
+                }
+
                 var data = await this.AntiRetry(user_name, async () =>
                 {
                     var res = new _<object>();

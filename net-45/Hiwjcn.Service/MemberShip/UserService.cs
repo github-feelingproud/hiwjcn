@@ -81,7 +81,7 @@ namespace Hiwjcn.Service.MemberShip
             return await this._userRepo.PrepareIQueryableAsync(async query =>
             {
                 query = query.Where(x =>
-                x.UserName.StartsWith(q) || x.UserName.StartsWith(q) ||
+                x.UserName.StartsWith(q) || x.NickName.StartsWith(q) ||
                 x.Phone == q || x.Email == q);
                 return await query.OrderByDescending(x => x.IID).Take(count).ToListAsync();
             });
