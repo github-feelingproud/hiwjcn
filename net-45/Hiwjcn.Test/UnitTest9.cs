@@ -11,12 +11,37 @@ using System.Text;
 using System.Xml;
 using Lib.net;
 using System.Threading.Tasks;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Hiwjcn.Test
 {
     [TestClass]
     public class UnitTest9
     {
+        [TestMethod]
+        public void jlkjl()
+        {
+            AssemblyName assemblyName = new AssemblyName("assemblyName");
+            AssemblyBuilder assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
+            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule("PersonModule", "Person.dll");
+            TypeBuilder typeBuilder = moduleBuilder.DefineType("Person", TypeAttributes.Public);
+            //*【不同点1】
+            MethodBuilder sayHelloMethod = typeBuilder.DefineMethod("SayHello", MethodAttributes.Public, null, null);
+            ILGenerator ilOfSayHello = sayHelloMethod.GetILGenerator();
+            ilOfSayHello.Emit(OpCodes.Ldstr, "蝈蝈");
+            ilOfSayHello.Emit(OpCodes.Call, typeof(Console).GetMethod("WriteLine", new Type[] { typeof(string) }));
+            ilOfSayHello.Emit(OpCodes.Call, typeof(Console).GetMethod("ReadLine"));
+            //没有返回值所有加OpCodes.Pop
+            ilOfSayHello.Emit(OpCodes.Pop);
+            ilOfSayHello.Emit(OpCodes.Ret);
+            Type personType = typeBuilder.CreateType();
+            //assemblyBuilder.Save("Person.dll");
+            object obj = Activator.CreateInstance(personType);
+            MethodInfo methodInfo = personType.GetMethod("SayHello");
+            //【不同点2】
+            methodInfo.Invoke(obj, null);
+        }
 
         [TestMethod]
         public void TestMfasdfasdfasdfasedfethod1()
