@@ -93,7 +93,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var data = await this._userService.UserSuggest(q, 10);
+                var data = await this._userService.UserSuggest(q, 20);
                 return GetJson(new _()
                 {
                     success = true,
