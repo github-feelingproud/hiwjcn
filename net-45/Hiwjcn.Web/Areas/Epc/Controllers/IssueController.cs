@@ -143,9 +143,13 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 if (!ValidateHelper.IsAllPlumpString(uid, open)) { return GetJsonRes("参数错误"); }
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid);
-                var data = await this._issueService.OpenOrClose(
-                    org_uid, uid, open.ToBool(),
-                    loginuser.UserID, comment ?? string.Empty);
+
+                var data = await this._issueService.OpenOrClose(uid, loginuser.UserID, !open.ToBool());
+
+                if (data.error)
+                {
+                    return GetJsonRes(data.msg);
+                }
 
                 return GetJsonRes(string.Empty);
             });
@@ -199,6 +203,11 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 {
                     return GetJsonRes("参数错误");
                 }
+                var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid);
+
+                model.UserUID = loginuser.UserID;
+                model.OrgUID = org_uid;
 
                 var res = await this._issueService.AddComment(model);
                 if (res.error)

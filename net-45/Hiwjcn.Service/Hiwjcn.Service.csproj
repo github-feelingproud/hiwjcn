@@ -88,6 +88,9 @@
     <Reference Include="Quartz, Version=3.0.1.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
       <HintPath>..\packages\Quartz.3.0.1\lib\net452\Quartz.dll</HintPath>
     </Reference>
+    <Reference Include="Shouldly, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shouldly.3.0.0\lib\net451\Shouldly.dll</HintPath>
+    </Reference>
     <Reference Include="StackExchange.Redis, Version=1.2.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\StackExchange.Redis.1.2.6\lib\net45\StackExchange.Redis.dll</HintPath>
     </Reference>
@@ -187,9 +190,7 @@
     <Compile Include="MemberShip\RoleService.cs" />
     <Compile Include="MemberShip\UserService.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Crm\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Hiwjcn.Core\Hiwjcn.Core.csproj">
       <Project>{35bcb473-b95c-4b87-a9e6-7a538719c3d9}</Project>

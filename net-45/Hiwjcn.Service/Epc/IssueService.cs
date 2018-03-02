@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Shouldly;
 
 namespace Hiwjcn.Service.Epc
 {
@@ -20,7 +21,7 @@ namespace Hiwjcn.Service.Epc
     {
         Task<_<IssueEntity>> AddIssue(IssueEntity model);
 
-        Task<_<string>> OpenOrClose(string org_uid, string uid, bool close, string user_uid, string comment);
+        Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close);
 
         Task<PagerData<IssueEntity>> QueryIssue(string org_uid,
             DateTime? start = null, DateTime? end = null,
@@ -50,60 +51,78 @@ namespace Hiwjcn.Service.Epc
             this._userRepo = _userRepo;
         }
 
-        public async Task<_<IssueOperationLogEntity>> AddComment(IssueOperationLogEntity model) =>
-            await this._issueOperaRepo.AddEntity_(model, "op");
+        public async Task<_<IssueOperationLogEntity>> AddComment(IssueOperationLogEntity model)
+        {
+            var issue = await this._issueRepo.GetFirstAsync(x => x.UID == model.IssueUID);
+            issue = issue ?? throw new ArgumentNullException("issue is null");
+            (issue.OrgUID ?? string.Empty).ShouldBe(model.OrgUID);
+
+            var res = new _<IssueOperationLogEntity>();
+            if (issue.IsClosed > 0)
+            {
+                res.SetErrorMsg("issue已经被关闭，无法评论");
+                return res;
+            }
+
+            return await this._issueOperaRepo.AddEntity_(model, "op");
+        }
 
         public virtual async Task<_<IssueEntity>> AddIssue(IssueEntity model) =>
             await this._issueRepo.AddEntity_(model, "is");
 
-        public virtual async Task<_<string>> OpenOrClose(string org_uid, string uid, bool close, string user_uid, string comment)
+
+        public virtual async Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close)
         {
-            var res = new _<string>();
-
-            var model = await this._issueRepo.GetFirstAsync(x => x.UID == uid);
-            Com.AssertNotNull(model, "issue不存在");
-            if (model.OrgUID != org_uid)
+            return await this._issueRepo.PrepareSessionAsync(async db =>
             {
-                res.SetErrorMsg("无权操作");
+                var query = db.Set<IssueEntity>().AsQueryable();
+                var res = new _<string>();
+                var now = DateTime.Now;
+
+                var issue = await this._issueRepo.GetFirstAsync(x => x.UID == issue_uid);
+                Com.AssertNotNull(issue, "issue is null");
+                if (issue.AssignedUserUID != user_uid && issue.UserUID != user_uid)
+                {
+                    res.SetErrorMsg("无权操作");
+                    return res;
+                }
+                var status = close.ToBoolInt();
+                if (issue.IsClosed == status)
+                {
+                    res.SetErrorMsg("状态无需改变");
+                    return res;
+                }
+                issue.IsClosed = status;
+                if (close)
+                {
+                    var seconds = (int)(now - (issue.Start ?? issue.CreateTime)).TotalSeconds;
+                    if (seconds >= 0)
+                    {
+                        //处理问题花了多长时间
+                        issue.SecondsToTakeToClose = seconds;
+                    }
+                }
+                else
+                {
+                    issue.SecondsToTakeToClose = 0;
+                }
+
+                var log = new IssueOperationLogEntity()
+                {
+                    UserUID = user_uid,
+                    OrgUID = issue.OrgUID,
+                    IssueUID = issue.UID,
+                    IsClosed = issue.IsClosed,
+                    Content = string.Empty
+                }.InitSelf("op");
+
+                db.Set<IssueOperationLogEntity>().Add(log);
+
+                await db.SaveChangesAsync();
+
+                res.SetSuccessData(string.Empty);
                 return res;
-            }
-
-            var status = close.ToBoolInt();
-            if (model.IsClosed == status)
-            {
-                res.SetErrorMsg("状态无需改变");
-                return res;
-            }
-            model.IsClosed = status;
-
-            if (close)
-            {
-                model.SecondsToTakeToClose = (int)(DateTime.Now - model.CreateTime).TotalSeconds;
-            }
-            else
-            {
-                model.SecondsToTakeToClose = 0;
-            }
-
-            await this._issueRepo.UpdateAsync(model);
-            //add log
-            var operation_log = new IssueOperationLogEntity()
-            {
-                OrgUID = model.OrgUID,
-                IssueUID = model.UID,
-                IsClosed = model.IsClosed,
-                UserUID = user_uid,
-                Content = comment
-            }.InitSelf("iol");
-            if (!operation_log.IsValid(out var msg))
-            {
-                res.SetErrorMsg(msg);
-                return res;
-            }
-            await this._issueOperaRepo.AddAsync(operation_log);
-
-            res.SetSuccessData(string.Empty);
-            return res;
+            });
         }
 
         public virtual async Task<PagerData<IssueEntity>> QueryIssue(string org_uid,

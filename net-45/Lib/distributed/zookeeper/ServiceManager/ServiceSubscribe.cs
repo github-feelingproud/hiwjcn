@@ -86,7 +86,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 }
                 catch (Exception e)
                 {
-                    e.AddErrorLog();
+                    e.AddErrorLog("清理无用节点错误");
                 }
             }
         }

@@ -86,6 +86,8 @@ namespace EPC.Core.Entity
         /// </summary>
         public virtual int Flag { get; set; }
 
+        public virtual int IsOwner { get; set; }
+
         /// <summary>
         /// 会员同意
         /// </summary>
