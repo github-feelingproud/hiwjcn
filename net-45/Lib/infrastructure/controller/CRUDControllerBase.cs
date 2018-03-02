@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+﻿using Lib.data;
 using Lib.mvc;
-using Lib.data;
-using Lib.helper;
-using Lib.extension;
-using Lib.cache;
-using Lib.infrastructure.entity;
-using Lib.infrastructure.entity.user;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Lib.infrastructure.controller
 {

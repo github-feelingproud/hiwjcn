@@ -148,7 +148,7 @@ namespace Hiwjcn.Web.Controllers
             new Exception("第一层错误", new Exception(DateTime.Now.ToString())).AddErrorLog();
             return Content(DateTime.Now.ToString());
         }
-        
+
         public async Task<ActionResult> es_log_list(string q)
         {
             return await RunActionAsync(async () =>
@@ -297,24 +297,11 @@ namespace Hiwjcn.Web.Controllers
         [ElasticsearchType(IdProperty = nameof(UID), Name = nameof(SuggestTest))]
         public class SuggestTest : CompletionSuggestIndexBase
         {
-            [String(Name = nameof(UID), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = nameof(UID), Index = false)]
             public virtual string UID { get; set; }
 
-            [String(Name = nameof(SearchTitle), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+            [Text(Name = nameof(SearchTitle), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
             public string SearchTitle { get; set; }
-        }
-
-        public async Task<ActionResult> suggest(string q)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var client = ElasticsearchClientManager.Instance.DefaultClient.CreateClient();
-                var index = "a_suggest_test_index";
-
-                var list = await client.SimpleCompletionSuggest<SuggestTest>(index, q);
-
-                return GetJson(list);
-            });
         }
     }
 }

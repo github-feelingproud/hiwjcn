@@ -1,14 +1,7 @@
-﻿using System;
+﻿using ICSharpCode.SharpZipLib.Zip;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
-using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.BZip2;
-using ICSharpCode.SharpZipLib.Checksums;
-using ICSharpCode.SharpZipLib.Zip.Compression;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System.Linq;
 
 namespace Lib.io
 {

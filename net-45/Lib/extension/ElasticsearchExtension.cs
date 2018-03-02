@@ -197,26 +197,7 @@ namespace Lib.extension
         /// 搜索建议
         /// https://elasticsearch.cn/article/142
         /// </summary>
-        public static IDictionary<string, Suggest[]> PhraseSuggest<T>(this IElasticClient client,
-            string index,
-            Expression<Func<T, object>> targetField, string text,
-            string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
-            where T : class, IElasticSearchIndex
-        {
-            var response = client.Suggest<T>(
-                x => x.Index(index).Phrase("phrase_suggest",
-                f => f.Field(targetField).Text(text)
-                .Highlight(h => h.PreTag(highlight_pre).PostTag(hightlight_post)).Size(size)));
-
-            response.ThrowIfException();
-
-            return response.Suggestions;
-        }
-
-        /// <summary>
-        /// 搜索建议
-        /// </summary>
-        public static IDictionary<string, Suggest[]> TermSuggest<T>(this IElasticClient client,
+        public static SuggestDictionary<T> SuggestSample<T>(this IElasticClient client,
             string index,
             Expression<Func<T, object>> targetField, string text, string analyzer = null,
             string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
@@ -230,72 +211,64 @@ namespace Lib.extension
             }
             sd = sd.Size(size);
 
-            var response = client.Suggest<T>(x => x.Index(index).Term("term_suggest", f => sd));
+            new CompletionSuggesterDescriptor<T>();
+            new PhraseSuggesterDescriptor<T>();
+
+            var response = client.Search<T>(s => s.Suggest(ss => ss
+    .Term("my-term-suggest", t => t
+        .MaxEdits(1)
+        .MaxInspections(2)
+        .MaxTermFrequency(3)
+        .MinDocFrequency(4)
+        .MinWordLength(5)
+        .PrefixLength(6)
+        .SuggestMode(SuggestMode.Always)
+        .Analyzer("standard")
+        .Field("")
+        .ShardSize(7)
+        .Size(8)
+        .Text("hello world")
+    )
+    .Completion("my-completion-suggest", c => c
+        .Contexts(ctxs => ctxs
+            .Context("color",
+                ctx => ctx.Context("")
+            )
+        )
+        .Fuzzy(f => f
+            .Fuzziness(Fuzziness.Auto)
+            .MinLength(1)
+            .PrefixLength(2)
+            .Transpositions()
+            .UnicodeAware(false)
+        )
+        .Analyzer("simple")
+        .Field("")
+        .Size(8)
+        .Prefix("")
+    )
+    .Phrase("my-phrase-suggest", ph => ph
+        .Collate(c => c
+            .Query(q => q
+                .Source("{ \"match\": { \"{{field_name}}\": \"{{suggestion}}\" }}")
+            )
+            .Params(p => p.Add("field_name", "title"))
+            .Prune()
+        )
+        .Confidence(10.1)
+        .DirectGenerator(d => d
+            .Field("")
+        )
+        .GramSize(1)
+        .Field("")
+        .Text("hello world")
+        .RealWordErrorLikelihood(0.5)
+    )
+));
 
             response.ThrowIfException();
 
-            return response.Suggestions;
-        }
-
-        /// <summary>
-        /// 搜索建议
-        /// </summary>
-        public static IDictionary<string, Suggest[]> CompletionSuggest<T>(this IElasticClient client,
-            string index,
-            Expression<Func<T, object>> targetField, string text, string analyzer = null,
-            string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
-            where T : class, IElasticSearchIndex
-        {
-            var sd = new CompletionSuggesterDescriptor<T>();
-            sd = sd.Field(targetField).Text(text);
-            if (ValidateHelper.IsPlumpString(analyzer))
-            {
-                sd = sd.Analyzer(analyzer);
-            }
-            sd = sd.Size(size);
-
-            var response = client.Suggest<T>(x => x.Index(index).Completion("completion_suggest", f => sd));
-
-            response.ThrowIfException();
-
-            return response.Suggestions;
-        }
-
-        public static async Task<List<string>> SimpleCompletionSuggest<T>(this IElasticClient client,
-            string index,
-            string keyword, string analyzer = null, int size = 20)
-            where T : CompletionSuggestIndexBase
-        {
-            var data = new List<string>();
-            if (!ValidateHelper.IsPlumpString(keyword))
-            {
-                return data;
-            }
-
-            var sd = new CompletionSuggesterDescriptor<T>();
-            sd = sd.Field(f => f.CompletionSearchTitle).Text(keyword);
-            if (ValidateHelper.IsPlumpString(analyzer))
-            {
-                sd = sd.Analyzer(analyzer);
-            }
-            //允许错4个单词
-            sd = sd.Fuzzy(f => f.Fuzziness(Fuzziness.EditDistance(4)));
-            sd = sd.Size(size);
-
-            var s_name = "p";
-
-            var response = await client.SuggestAsync<T>(x => x.Index(index).Completion(s_name, f => sd));
-            response.ThrowIfException();
-
-            var list = response.Suggestions?[s_name]?.FirstOrDefault()?.Options?.ToList();
-            if (!ValidateHelper.IsPlumpList(list))
-            {
-                return data;
-            }
-            var sggs = list.OrderByDescending(x => x.Score).Select(x => x.Text);
-            data.AddRange(sggs);
-
-            return data.Where(x => ValidateHelper.IsPlumpString(x)).Distinct().ToList();
+            return response.Suggest;
         }
 
         /// <summary>
@@ -311,55 +284,6 @@ namespace Lib.extension
                 throw new Exception("关键词高亮，但是没有指定高亮字段");
             }
             return sd.Highlight(x => x.PreTags(pre).PostTags(after).Fields(fieldHighlighters));
-        }
-
-        /// <summary>
-        /// 获取高亮对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="re"></param>
-        /// <returns></returns>
-        public static List<HighlightHit> GetHighlights<T>(this ISearchResponse<T> re)
-            where T : class, IElasticSearchIndex
-        {
-            var data = re.Highlights.Select(x => x.Value?.Select(m => m.Value).ToList()).ToList();
-            data = data.Where(x => ValidateHelper.IsPlumpList(x)).ToList();
-
-            return data.Reduce((a, b) => ConvertHelper.NotNullList(a).Concat(ConvertHelper.NotNullList(b)).ToList());
-        }
-
-        /// <summary>
-        /// 获取聚合
-        /// 升级到5.0，这个方法不可用，需要改动
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="response"></param>
-        /// <returns></returns>
-        public static Dictionary<string, List<KeyedBucket>> GetAggs<T>(this ISearchResponse<T> response)
-            where T : class, IElasticSearchIndex
-        {
-            List<KeyedBucket> C(IAggregate x)
-            {
-                if (x is BucketAggregate _BucketAggregate)
-                {
-                    var data = new List<KeyedBucket>();
-                    foreach (var i in _BucketAggregate.Items)
-                    {
-                        if (i is KeyedBucket _KeyedBucket)
-                        {
-                            if (_KeyedBucket.DocCount > 0)
-                            {
-                                data.Add(_KeyedBucket);
-                            }
-                        }
-                    }
-                    return data;
-                }
-                //老方式
-                return (x as BucketAggregate)?.Items?.Select(i => (i as KeyedBucket)).Where(i => i?.DocCount > 0).ToList();
-            }
-            var aggs = response.Aggregations?.ToDictionary(x => x.Key, x => C(x.Value));
-            return aggs.Where(x => ValidateHelper.IsPlumpList(x.Value)).ToDictionary(x => x.Key, x => x.Value);
         }
 
         /// <summary>
@@ -506,7 +430,7 @@ namespace Lib.extension
         public static SortDescriptor<T> SortByDistance<T>(this SortDescriptor<T> sort,
             Expression<Func<T, object>> field, GeoLocation point, bool desc = false) where T : class, IElasticSearchIndex
         {
-            var geo_sort = new SortGeoDistanceDescriptor<T>().PinTo(point);
+            var geo_sort = new SortGeoDistanceDescriptor<T>().Points(point);
             if (desc)
             {
                 geo_sort = geo_sort.Descending();
@@ -543,11 +467,10 @@ namespace Lib.extension
                     BottomRight = new GeoLocation(43, 56)
                 }
             };
-            qc = qc && new GeoDistanceRangeQuery()
+            qc = qc && new GeoDistanceQuery()
             {
                 Field = "Field Name",
                 Location = new GeoLocation(32, 43),
-                LessThanOrEqualTo = Distance.Kilometers(1)
             };
             qc = qc && new GeoShapeCircleQuery()
             {
@@ -587,14 +510,14 @@ namespace Lib.extension
         public static void HowToUseAggregationsInES(this SearchDescriptor<EsExample.ProductListV2> sd)
         {
             var agg = new AggregationContainer();
-            agg = new SumAggregation("", Field.Create("")) && new AverageAggregation("", Field.Create(""));
+            agg = new SumAggregation("", "") && new AverageAggregation("", "");
 
             sd = sd.Aggregations(a => a.Max("max", x => x.Field(m => m.IsGroup)));
             sd = sd.Aggregations(a => a.Stats("stats", x => x.Field(m => m.BrandId).Field(m => m.PIsRemove)));
 
             var response = ElasticsearchClientManager.Instance.DefaultClient.CreateClient().Search<EsExample.ProductListV2>(x => sd);
 
-            var stats = response.Aggs.Stats("stats");
+            var stats = response.Aggregations.Stats("stats");
             //etc
         }
 
@@ -604,7 +527,7 @@ namespace Lib.extension
 
             sd = sd.Mode(SortMode.Sum).Type("number");
             var script = "doc['price'].value * params.factor";
-            sd = sd.Script(x => x.Inline(script).Lang("painless").Params(new Dictionary<string, object>()
+            sd = sd.Script(x => x.Source(script).Lang("painless").Params(new Dictionary<string, object>()
             {
                 ["factor"] = 1.1
             }));
@@ -640,7 +563,7 @@ namespace Lib.extension
                     new GaussGeoDecayFunction() { Origin=new GeoLocation(32,4) },
                     new RandomScoreFunction { Seed = "randomstring" },
                     new WeightFunction { Weight = 1.0},
-                    new ScriptScoreFunction { Script = new ScriptQuery { File = "x" } }
+                    new ScriptScoreFunction { Script = new ScriptQuery { Source = "x" } }
                 }
             };
             sd = sd.Query(x => qs);
@@ -657,7 +580,7 @@ namespace Lib.extension
             query &= new TermQuery() { Field = "name", Value = "wj" };
 
             client.UpdateByQuery<EsExample.ProductListV2>(q => q.Query(rq => query).Script(script => script
-        .Inline("ctx._source.name = newName;")
+        .Source("ctx._source.name = newName;")
         .Params(new Dictionary<string, object>() { ["newName"] = "wj" })));
 
             //

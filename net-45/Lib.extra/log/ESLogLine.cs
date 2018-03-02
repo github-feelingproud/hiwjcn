@@ -38,55 +38,55 @@ namespace Lib.extra.log
             this.UpdateTime = this.CreateTime;
         }
 
-        [String(Name = nameof(UID), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(UID), Index = false)]
         public string UID { get; set; }
 
-        [String(Name = nameof(HostName), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(HostName), Index = false)]
         public string HostName { get; set; }
 
-        [String(Name = nameof(Identity), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(Identity), Index = false)]
         public string Identity { get; set; }
 
-        [String(Name = nameof(UserName), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(UserName), Index = false)]
         public string UserName { get; set; }
 
-        [String(Name = nameof(Domain), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(Domain), Index = false)]
         public string Domain { get; set; }
 
-        [String(Name = nameof(LoggerName), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(LoggerName), Index = false)]
         public string LoggerName { get; set; }
 
-        [Number(Name = nameof(TimeStamp), Index = NonStringIndexOption.NotAnalyzed)]
+        [Number(Name = nameof(TimeStamp), Index = false)]
         public long TimeStamp { get; set; }
 
-        [String(Name = nameof(Level), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(Level), Index = false)]
         public string Level { get; set; }
 
-        [String(Name = nameof(Thread), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(Thread), Index = false)]
         public string Thread { get; set; }
 
-        [String(Name = nameof(Message), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+        [Text(Name = nameof(Message), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
         public string Message { get; set; }
 
-        [String(Name = nameof(Throwable), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(Throwable), Index = false)]
         public string Throwable { get; set; }
 
-        [String(Name = nameof(Class), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(Class), Index = false)]
         public string Class { get; set; }
 
-        [String(Name = nameof(Method), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(Method), Index = false)]
         public string Method { get; set; }
 
-        [String(Name = nameof(File), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(File), Index = false)]
         public string File { get; set; }
 
-        [String(Name = nameof(Line), Index = FieldIndexOption.NotAnalyzed)]
+        [Text(Name = nameof(Line), Index = false)]
         public string Line { get; set; }
 
-        [Date(Name = nameof(CreateTime), Index = NonStringIndexOption.NotAnalyzed)]
+        [Date(Name = nameof(CreateTime), Index = false)]
         public DateTime CreateTime { get; set; }
 
-        [Date(Name = nameof(UpdateTime), Index = NonStringIndexOption.NotAnalyzed)]
+        [Date(Name = nameof(UpdateTime), Index = false)]
         public DateTime UpdateTime { get; set; }
     }
 }

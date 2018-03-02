@@ -76,11 +76,11 @@ namespace Lib.data.elasticsearch
             }
 
             new GeoDistanceQuery() { };
-            qc = qc && new GeoDistanceRangeQuery()
+            qc = qc && new GeoDistanceQuery()
             {
                 Field = "Location",
                 Location = new GeoLocation(32, 43),
-                LessThanOrEqualTo = Distance.Kilometers(1)
+                Distance = Distance.Kilometers(1)
             };
 
             try
@@ -145,7 +145,7 @@ namespace Lib.data.elasticsearch
             }
 
             //更具坐标排序
-            sort = sort.GeoDistance(x => x.Field(f => f.IsGroup).PinTo(new GeoLocation(52.310551, 4.404954)).Ascending());
+            sort = sort.GeoDistance(x => x.Field(f => f.IsGroup).Points(new GeoLocation(52.310551, 4.404954)).Ascending());
 
             return sort;
         }
@@ -159,14 +159,6 @@ namespace Lib.data.elasticsearch
         {
             var client = new ElasticClient(setting);
             func.Invoke(client);
-        }
-
-        private static Dictionary<string, List<KeyedBucket>> GetAggs<T>(ISearchResponse<T> response) where T : class, new()
-        {
-            return response?.Aggregations?.ToDictionary(
-                    x => x.Key,
-                    x => (x.Value as BucketAggregate)?.Items.Select(i => (i as KeyedBucket)).Where(i => i != null).ToList()
-                    )?.Where(x => ValidateHelper.IsPlumpList(x.Value)).ToDictionary(x => x.Key, x => x.Value);
         }
 
         public ISearchResponse<ProductListV2> SearchEsProducts(SearchParamModel model)
@@ -198,7 +190,7 @@ namespace Lib.data.elasticsearch
 
                 response = client.Search<ProductListV2>(x => sd);
 
-                var mx = response.Aggs.Max("");
+                var mx = response.Aggregations.Max("");
 
                 return true;
             });
@@ -217,8 +209,6 @@ namespace Lib.data.elasticsearch
             data.ItemCount = (int)(response?.Total ?? 0);
             var datalist = response?.Hits?.Select(x => x as Hit<ProductListV2>).Where(x => x != null).Select(x => x.Source).Where(x => x != null).ToList();
 
-            //聚合的数据
-            var aggs = GetAggs(response);
             data.DataList = ConvertHelper.NotNullList(data.DataList);
         }
 
@@ -228,80 +218,74 @@ namespace Lib.data.elasticsearch
         [ElasticsearchType(IdProperty = "UKey", Name = "ProductList")]
         public class ProductListV2 : IElasticSearchIndex
         {
-            [String(Name = "UKey", Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "UKey", Index = false)]
             public string UKey { get; set; }
 
-            [String(Name = "ProductId", Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public string ProductId { get; set; }
 
-            [String(Name = "TraderId", Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public string TraderId { get; set; }
 
-            [String(Name = "PlatformCatalogId", Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public string PlatformCatalogId { get; set; }
 
-            [String(Name = "BrandId", Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public string BrandId { get; set; }
 
-            [Number(Name = "PAvailability", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "PAvailability", Index = false)]
             public int PAvailability { get; set; }
 
-            [Number(Name = "PIsRemove", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "PIsRemove", Index = false)]
             public int PIsRemove { get; set; }
 
-            [Number(Name = "UpAvailability", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "UpAvailability", Index = false)]
             public int UpAvailability { get; set; }
 
-            [Number(Name = "UpIsRemove", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "UpIsRemove", Index = false)]
             public int UpIsRemove { get; set; }
 
-            [String(Name = "UserSku", Index = FieldIndexOption.NotAnalyzed)]
-            public string UserSku { get; set; }
-
-            [Number(Name = "IsGroup", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "IsGroup", Index = false)]
             public int IsGroup { get; set; }
 
-            [Number(Name = "UpiId", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "UpiId", Index = false)]
             public int UpiId { get; set; }
 
             /// <summary>
             /// 销量
             /// </summary>
-            [Number(Name = "SalesVolume", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "SalesVolume", Index = false)]
             public int SalesVolume { get; set; }
 
             /// <summary>
             /// 是否有货
             /// </summary>
-            [Number(Name = "InventoryStatus", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "InventoryStatus", Index = false)]
             public int InventoryStatus { get; set; }
 
 
-            [Number(Name = "SalesPrice", Index = NonStringIndexOption.NotAnalyzed)]
+            [Number(Name = "SalesPrice", Index = false)]
             public decimal SalesPrice { get; set; }
 
-            [String(Name = "ShopName", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+            [Text(Name = "ShopName", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
             public string ShopName { get; set; }
 
-            [String(Name = "ShopNamePinyin", Analyzer = "pinyin_analyzer", SearchAnalyzer = "pinyin_analyzer")]
-            public string ShopNamePinyin { get; set; }
-
-            [String(Name = "SeachTitle", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+            [Text(Name = "SeachTitle", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
             public string SeachTitle { get; set; }
 
             [Date(Name = "UpdatedDate")]
             public DateTime UpdatedDate { get; set; }
 
-            [String(Name = "ShowCatalogIdList", Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public string[] ShowCatalogIdList { get; set; }
 
-            [String(Name = "PlatformCatalogIdList", Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public string[] PlatformCatalogIdList { get; set; }
 
-            [String(Name = "ProductAttributes", Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public string[] ProductAttributes { get; set; }
 
-            [GeoPoint(Name = nameof(Location), LatLon = true, GeoHash = true, Validate = true)]
+            [GeoPoint(Name = nameof(Location))]
             public GeoLocation Location { get; set; }
 
             [GeoShape(Name = nameof(Area))]
@@ -397,9 +381,9 @@ namespace Lib.data.elasticsearch
             data.ItemCount = (int)response.Total;
             data.DataList = response.Documents.ToList();
 
-            var tags_agg = response.Aggs.Terms("tags");
-            var shops_agg = response.Aggs.Terms("shops");
-            var score_agg = response.Aggs.Average("score");
+            var tags_agg = response.Aggregations.Terms("tags");
+            var shops_agg = response.Aggregations.Terms("shops");
+            var score_agg = response.Aggregations.Average("score");
 
             return data;
         }
@@ -445,10 +429,10 @@ namespace Lib.data.elasticsearch
         [ElasticsearchType(IdProperty = nameof(UID), Name = nameof(CommentEs))]
         public class CommentEs : IElasticSearchIndex
         {
-            [String(Name = nameof(UID), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public virtual string UID { get; set; }
 
-            [String(Name = nameof(Comment), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+            [Text(Name = nameof(Comment), Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
             public virtual string Comment { get; set; }
 
             [Date(Name = nameof(CreateTime))]
@@ -457,38 +441,38 @@ namespace Lib.data.elasticsearch
             [Date(Name = nameof(UpdateTime))]
             public virtual DateTime UpdateTime { get; set; }
 
-            [String(Name = nameof(Images), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public virtual string[] Images { get; set; }
 
             [Object(Name = nameof(Tags))]
             public virtual TagEs[] Tags { get; set; }
 
-            [String(Name = nameof(TraderUID), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public virtual string TraderUID { get; set; }
 
-            [String(Name = nameof(TraderName), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public virtual string TraderName { get; set; }
 
-            [String(Name = nameof(UserUID), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public virtual string UserUID { get; set; }
 
-            [String(Name = nameof(UserProductUID), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public virtual string UserProductUID { get; set; }
 
             [Number(Name = nameof(Score))]
             public virtual double Score { get; set; }
 
-            [String(Name = nameof(DimensionUID), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public virtual string DimensionUID { get; set; }
 
         }
 
         public class TagEs
         {
-            [String(Name = nameof(TagUID), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = nameof(TagUID), Index = false)]
             public virtual string TagUID { get; set; }
 
-            [String(Name = nameof(TagName), Index = FieldIndexOption.NotAnalyzed)]
+            [Text(Name = "字段名", Index = false)]
             public virtual string TagName { get; set; }
         }
     }

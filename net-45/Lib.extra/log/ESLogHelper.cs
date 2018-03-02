@@ -78,7 +78,7 @@ namespace Lib.extra.log
             //排序
             var sort = new SortDescriptor<ESLogLine>();
             sort = sort.Descending(x => x.UpdateTime);
-            sort = sort.Descending(Field.Create("_score", boost: null));
+            sort = sort.Descending(new Field("", boost: null));
             sd = sd.Sort(_ => sort);
 
             //分页
@@ -95,8 +95,6 @@ namespace Lib.extra.log
             data.DataList = re.Hits.Select(x => x.Source).ToList();
             //聚合数据
             data.ExtData = new QueryExtData();
-            data.ExtData.Ass = re.GetAggs();
-            data.ExtData.Highlight = re.GetHighlights();
 
             return data;
         }
@@ -106,11 +104,6 @@ namespace Lib.extra.log
         /// </summary>
         public class QueryExtData
         {
-            /// <summary>
-            /// 分组聚合
-            /// </summary>
-            public Dictionary<string, List<KeyedBucket>> Ass { get; set; }
-
             /// <summary>
             /// 高亮
             /// </summary>
