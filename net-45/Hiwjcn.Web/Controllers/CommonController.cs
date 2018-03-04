@@ -25,7 +25,7 @@ namespace Hiwjcn.Web.Controllers
     public class CommonController : EpcBaseController
     {
         [HttpPost]
-        [EpcAuth]
+        //[EpcAuth]
         public async Task<ActionResult> Upload(string only_qiniu)
         {
             return await RunActionAsync(async () =>

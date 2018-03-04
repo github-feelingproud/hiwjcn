@@ -136,7 +136,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> CloseOrOpen(string uid, string open, string comment)
+        public async Task<ActionResult> CloseOrOpen(string uid, string open)
         {
             return await RunActionAsync(async () =>
             {

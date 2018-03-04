@@ -128,7 +128,11 @@ namespace Hiwjcn.Web.Controllers
                     res.SetSuccessData(token_data);
                     return res;
                 });
-                return GetJson(data);
+                if (data.error)
+                {
+                    return GetJsonRes(data.msg);
+                }
+                return GetJson(data.data);
             });
         }
 

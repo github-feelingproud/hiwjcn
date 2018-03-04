@@ -37,7 +37,6 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        [Obsolete, NonAction]
         public async Task<ActionResult> GetDeviceByUID(string uid)
         {
             return await RunActionAsync(async () =>
