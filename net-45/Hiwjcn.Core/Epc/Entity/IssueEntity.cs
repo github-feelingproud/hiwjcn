@@ -36,6 +36,8 @@ namespace EPC.Core.Entity
 
         public virtual string DeviceUID { get; set; }
 
+        public virtual int CommentCount { get; set; }
+
         [NotMapped]
         public virtual List<IssueOperationLogEntity> OperationLog { get; set; }
 
@@ -71,7 +73,9 @@ namespace EPC.Core.Entity
         public virtual string Content { get; set; }
 
         public virtual int IsClosed { get; set; }
-        
+
+        public virtual string Operation { get; set; }
+
         [Required]
         public virtual string UserUID { get; set; }
 

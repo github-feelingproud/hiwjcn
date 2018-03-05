@@ -47,11 +47,11 @@ namespace Hiwjcn.Service.Epc.InputsType
                 return data;
             }
 
-            if (value < this.Normal * Range[0])
+            if (value < this.Normal * (Range[0] / 100.00))
             {
                 data.Tips.AddRange(this.LowerTips ?? new List<string>());
             }
-            if (value > this.Normal * Range[1])
+            if (value > this.Normal * (Range[1] / 100.00))
             {
                 data.Tips.AddRange(this.UpperTips ?? new List<string>());
             }

@@ -103,6 +103,9 @@ namespace Lib.mvc.user
         public virtual string Email { get; set; }
 
         [DataMember]
+        public virtual string Phone { get; set; }
+
+        [DataMember]
         public virtual string HeadImgUrl { get; set; }
 
         [DataMember]

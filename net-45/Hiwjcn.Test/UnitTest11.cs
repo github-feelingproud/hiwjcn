@@ -18,6 +18,19 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest11
     {
+        public interface order
+        {
+            Task<string> get_name(string uid);
+
+            string get_count(int id);
+        }
+
+        [TestMethod]
+        public void fasdfagsfdgsdfg()
+        {
+            var tp = typeof(order);
+        }
+
         [TestMethod]
         public void TestMethod1()
         {

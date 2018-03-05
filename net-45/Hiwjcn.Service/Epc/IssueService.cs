@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using Shouldly;
 
 namespace Hiwjcn.Service.Epc
 {
@@ -55,7 +54,7 @@ namespace Hiwjcn.Service.Epc
         {
             var issue = await this._issueRepo.GetFirstAsync(x => x.UID == model.IssueUID);
             issue = issue ?? throw new ArgumentNullException("issue is null");
-            (issue.OrgUID ?? string.Empty).ShouldBe(model.OrgUID);
+            if (issue.OrgUID != model.OrgUID) { throw new Exception("org is wrong"); }
 
             var res = new _<IssueOperationLogEntity>();
             if (issue.IsClosed > 0)
@@ -113,6 +112,7 @@ namespace Hiwjcn.Service.Epc
                     OrgUID = issue.OrgUID,
                     IssueUID = issue.UID,
                     IsClosed = issue.IsClosed,
+                    Operation = close ? "close" : "open",
                     Content = string.Empty
                 }.InitSelf("op");
 
@@ -205,7 +205,6 @@ namespace Hiwjcn.Service.Epc
 
             return data;
         }
-
 
         public virtual async Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count) =>
             await this._issueRepo.QueryListAsync(

@@ -117,7 +117,11 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid);
 
-                var pager = await this._issueService.QueryIssue(org_uid, assigned_user_uid: loginuser.UserID);
+                page = this.CheckPage(page);
+
+                var pager = await this._issueService.QueryIssue(
+                    org_uid, assigned_user_uid: loginuser.UserID, 
+                    page: page.Value, pagesize: this.PageSize);
 
                 return GetJson(new _()
                 {

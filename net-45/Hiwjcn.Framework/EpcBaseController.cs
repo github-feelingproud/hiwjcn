@@ -102,7 +102,12 @@ namespace Hiwjcn.Framework
             }
             catch (NoOrgException)
             {
-                return GetJson(new _() { success = false, msg = "无权访问", code = "-111" });
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "请选择组织",
+                    code = "-111"
+                });
             }
             catch (NoLoginException)
             {
@@ -115,7 +120,12 @@ namespace Hiwjcn.Framework
             }
             catch (NoPermissionInOrgException)
             {
-                return GetJsonRes("无权操作");
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "没有权限",
+                    code = "-403"
+                });
             }
             catch (Exception e)
             {
