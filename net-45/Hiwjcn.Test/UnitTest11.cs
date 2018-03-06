@@ -12,12 +12,32 @@ using Lib.io;
 using System.Linq;
 using Lib.task;
 using Quartz;
+using Lib.rpc;
 
 namespace Hiwjcn.Test
 {
+    public interface IUser
+    {
+        Task<Lib.mvc.user.LoginUserInfo> GetLoginUserInfo(string uid, string name, int age);
+    }
+
     [TestClass]
     public class UnitTest11
     {
+        [TestMethod]
+        public async Task fasdfasdhj()
+        {
+            try
+            {
+                var client = new WebApiClient<IUser>();
+                await client.Instance.GetLoginUserInfo("uid-xxx", "name-wj", 3);
+            }
+            catch (Exception e)
+            {
+                //
+            }
+        }
+
         public interface order
         {
             Task<string> get_name(string uid);

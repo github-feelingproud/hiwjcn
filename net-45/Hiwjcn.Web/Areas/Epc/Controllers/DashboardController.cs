@@ -46,6 +46,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
+
                 var end = DateTime.Now.Date.AddDays(1);
                 var start = end.AddMonths(-2);
 
@@ -90,6 +92,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
+
                 var end = DateTime.Now.Date.AddDays(1);
                 var start = end.AddMonths(-1);
 
@@ -126,6 +130,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
+
                 var border = DateTime.Now.GetDateBorder();
 
                 var key = "dash.today_issue_count".WithCacheKeyPrefix();
@@ -149,6 +155,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
+
                 var border = DateTime.Now.GetDateBorder();
 
                 var key = "dash.today_issue_count".WithCacheKeyPrefix();

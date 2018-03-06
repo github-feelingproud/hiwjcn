@@ -42,6 +42,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
                 var data = await this._deviceService.GetDeviceByUID(org_uid, uid);
 
                 return GetJson(new _()
@@ -69,6 +71,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 page = this.CheckPage(page);
 
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
                 var pager = await this._deviceService.QueryDevice(org_uid, q, page.Value, this.PageSize);
 
                 return GetJson(new _()
@@ -92,6 +96,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
                 var model = data?.JsonToEntity<DeviceEntity>(throwIfException: false);
                 if (model == null)
@@ -102,7 +107,6 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 {
                     return GetJsonRes("设备必须配置参数");
                 }
-                var loginuser = await this.X.context.GetAuthUserAsync();
                 model.UserUID = loginuser?.UserID;
                 model.OrgUID = org_uid;
                 model.ParamsList = ConvertHelper.NotNullList(model.ParamsList);
@@ -140,6 +144,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
                 var res = await this._deviceService.DeleteDevice(org_uid, uid);
                 if (res.error)

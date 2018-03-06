@@ -43,7 +43,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.X.context.GetAuthUserAsync();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 var page = await this._pageService.GetPageByUID(uid);
                 if (page == null)
@@ -72,15 +72,15 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> Query(string q, int? page)
+        public async Task<ActionResult> Query(string q, string device_uid, int? page)
         {
             return await RunActionAsync(async () =>
             {
                 page = CheckPage(page);
-                var pagesize = 10;
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                var data = await this._pageService.QueryPager(org_uid, q, page.Value, pagesize);
+                var data = await this._pageService.QueryPager(org_uid, q, device_uid, page.Value, this.PageSize);
 
                 return GetJson(new _()
                 {
@@ -107,7 +107,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                     return GetJsonRes("参数错误");
                 }
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.X.context.GetAuthUserAsync();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 page.OrgUID = org_uid;
                 page.UserUID = loginuser?.UserID;
@@ -144,6 +144,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
                 var res = await this._pageService.DeletePage(uid);
                 if (res.error)
                 {

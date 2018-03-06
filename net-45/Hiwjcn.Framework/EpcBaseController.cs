@@ -1,4 +1,5 @@
-﻿using Hiwjcn.Core;
+﻿using EPC.Core.Entity;
+using Hiwjcn.Core;
 using Hiwjcn.Service.MemberShip;
 using Lib.cache;
 using Lib.extension;
@@ -18,6 +19,10 @@ namespace Hiwjcn.Framework
     public abstract class EpcBaseController : BaseController
     {
         protected readonly int PageSize = 10;
+
+        protected int ManagerRole => (int)(MemberRoleEnum.管理员 | MemberRoleEnum.超级管理员);
+        protected int AnyRole => 
+            (int)(MemberRoleEnum.管理员 | MemberRoleEnum.超级管理员 | MemberRoleEnum.普通成员 | MemberRoleEnum.人事管理员);
 
         public EpcBaseController() { }
 

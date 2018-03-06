@@ -45,6 +45,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 var open = default(bool?);
                 if ((just_open ?? "false").ToBool())
@@ -72,7 +73,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid);
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 var data = await this._issueService.QueryIssueOperationLog(org_uid, issue_uid, 100);
                 return GetJson(new _()
@@ -90,6 +91,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 var data = await this._issueService.TopOpenIssue(org_uid, count: 10);
 
@@ -110,17 +112,20 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> MyIssue(int? page)
+        public async Task<ActionResult> MyIssue(string open, int? page)
         {
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid);
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 page = this.CheckPage(page);
 
+                var is_open = (open ?? "true").ToBool();
+
                 var pager = await this._issueService.QueryIssue(
-                    org_uid, assigned_user_uid: loginuser.UserID, 
+                    org_uid, assigned_user_uid: loginuser.UserID,
+                    open: is_open,
                     page: page.Value, pagesize: this.PageSize);
 
                 return GetJson(new _()
@@ -135,20 +140,21 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// 打开或者关闭
         /// 翟瑞
         /// </summary>
-        /// <param name="uid"></param>
+        /// <param name="issue_uid"></param>
         /// <param name="open"></param>
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> CloseOrOpen(string uid, string open)
+        public async Task<ActionResult> CloseOrOpen(string issue_uid, string open)
         {
             return await RunActionAsync(async () =>
             {
-                if (!ValidateHelper.IsAllPlumpString(uid, open)) { return GetJsonRes("参数错误"); }
-                var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid);
+                if (!ValidateHelper.IsAllPlumpString(issue_uid, open)) { return GetJsonRes("参数错误"); }
 
-                var data = await this._issueService.OpenOrClose(uid, loginuser.UserID, !open.ToBool());
+                var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
+                var data = await this._issueService.OpenOrClose(issue_uid, loginuser.UserID, !open.ToBool());
 
                 if (data.error)
                 {
@@ -173,7 +179,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid, (int)MemberRoleEnum.超级管理员);
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
+
                 var model = data?.JsonToEntity<IssueEntity>(throwIfException: false);
                 if (model == null)
                 {
@@ -208,7 +215,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                     return GetJsonRes("参数错误");
                 }
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid);
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 model.UserUID = loginuser.UserID;
                 model.OrgUID = org_uid;

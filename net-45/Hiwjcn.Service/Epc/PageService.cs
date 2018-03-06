@@ -40,7 +40,7 @@ namespace Hiwjcn.Service.Epc
             string user_uid = null, bool enforce_date_range = true,
             int page = 1, int pagesize = 10);
 
-        Task<PagerData<PageEntity>> QueryPager(string org_uid, string q = null, int page = 1, int pagesize = 10);
+        Task<PagerData<PageEntity>> QueryPager(string org_uid, string q, string device_uid, int page, int pagesize);
     }
 
     public class PageService : IPageService
@@ -214,7 +214,7 @@ namespace Hiwjcn.Service.Epc
             });
         }
 
-        public async Task<PagerData<PageEntity>> QueryPager(string org_uid, string q = null, int page = 1, int pagesize = 10)
+        public async Task<PagerData<PageEntity>> QueryPager(string org_uid, string q, string device_uid, int page, int pagesize)
         {
             return await this._pageRepo.PrepareIQueryableAsync(async query =>
             {
@@ -222,6 +222,10 @@ namespace Hiwjcn.Service.Epc
                 if (ValidateHelper.IsPlumpString(q))
                 {
                     query = query.Where(x => x.PageTitle.Contains(q));
+                }
+                if (ValidateHelper.IsPlumpString(device_uid))
+                {
+                    query = query.Where(x => x.DeviceUID == device_uid);
                 }
                 return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
             });

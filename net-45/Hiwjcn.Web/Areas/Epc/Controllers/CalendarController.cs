@@ -45,6 +45,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
                 var data = await this._calService.GetAllEventRule(org_uid);
 
                 return GetJson(new _()
@@ -75,6 +76,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 end = end ?? border.end;
 
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
                 var res = await this._calService.QueryEvents(org_uid, start.Value, end.Value);
 
                 var data = res.Select(x => new
@@ -122,11 +125,11 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 model.HasRule = ValidateHelper.IsPlumpString(model.RRule).ToBoolInt();
 
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.X.context.GetAuthUserAsync();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
                 model.OrgUID = org_uid;
                 model.UserUID = loginuser?.UserID;
-                
+
 
                 if (ValidateHelper.IsPlumpString(model.UID))
                 {
@@ -165,6 +168,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var org_uid = this.GetSelectedOrgUID();
 
                 var res = await this._calService.DeleteEvent(org_uid, uid);
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
+
                 if (!res)
                 {
                     return GetJsonRes("删除失败");

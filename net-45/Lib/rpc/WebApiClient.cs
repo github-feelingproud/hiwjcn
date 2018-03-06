@@ -9,9 +9,23 @@ using System.Threading.Tasks;
 using Lib.helper;
 using System.Net;
 using System.Net.Http;
+using System.Web.Compilation;
 
 namespace Lib.rpc
 {
+    public static class webapihelper
+    {
+        public static readonly HttpClient _client = new HttpClient();
+
+        public static async Task<T> Request<T>(Dictionary<string, object> data)
+        {
+            using (var response = await _client.PostAsJsonAsync("", data))
+            {
+                return await response.Content.ReadAsAsync<T>();
+            }
+        }
+    }
+
     public class WebApiClient<T>
     {
         public WebApiClient()
@@ -24,18 +38,31 @@ namespace Lib.rpc
             code.AppendLine("{");
             foreach (var m in tp.GetMethods())
             {
-                code.AppendLine($"public virtual async {this.ReturnType(m)} {m.Name}({this.ParamList(m)})");
+                var return_type = this.ReturnType(m);
+
+                var param_list = this.ParamList(m);
+
+                var a = string.Join(",", param_list.Select(x => $"{x.ParameterType.FullName} {x.Name}"));
+
+                code.AppendLine($"public virtual async System.Threading.Tasks.Task<{return_type.FullName}> {m.Name}({a})");
                 code.AppendLine("{");
-                code.AppendLine($"return ({this.ReturnType(m)}){this.Request(m)};");
+                code.AppendLine("var data=new System.Collections.Generic.Dictionary<string, object>();");
+                foreach (var p in param_list)
+                {
+                    code.AppendLine($"data[\"{p.Name}\"]={p.Name};");
+                }
+                code.AppendLine($"return await Lib.rpc.webapihelper.Request<{return_type.FullName}>(data);");
                 code.AppendLine("}");
                 code.AppendLine();
             }
             code.AppendLine("}");
 
-            using (CSharpCodeProvider provider = new CSharpCodeProvider())
+            using (var provider = new CSharpCodeProvider())
             {
                 var options = new CompilerParameters();
                 options.GenerateInMemory = true;
+                var ass = AppDomain.CurrentDomain.GetAssemblies().Where(x => !x.IsDynamic).Select(x => x.Location).ToArray();
+                options.ReferencedAssemblies.AddRange(ass);
 
                 var result = provider.CompileAssemblyFromSource(options, code.ToString());
 
@@ -49,21 +76,26 @@ namespace Lib.rpc
                     throw new Exception($"动态编译错误：{str.ToString()}");
                 }
 
-                Type codeType = result.CompiledAssembly.GetType(cls);
+                var codeType = result.CompiledAssembly.GetType(cls);
                 //codeType.InvokeMember("Run", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.Public, null, null, null);
                 this.Instance = (T)Activator.CreateInstance(codeType);
 
             }
         }
 
-        private string ReturnType(MethodInfo m)
+        private Type ReturnType(MethodInfo m)
         {
-            throw new NotImplementedException();
+            var t = m.ReturnType;
+            if (!t.IsGenericType || t.BaseType != typeof(Task)) { throw new Exception("must be async function"); }
+            var data_types = t.GetGenericArguments().ToList();
+            if (data_types.Count != 1) { throw new Exception("data type"); }
+            return data_types.First();
         }
 
-        private string ParamList(MethodInfo m)
+        private List<ParameterInfo> ParamList(MethodInfo m)
         {
-            throw new NotImplementedException();
+            var ps = m.GetParameters().ToList();
+            return ps;
         }
 
         public static readonly HttpClient _client = new HttpClient();

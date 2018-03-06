@@ -47,6 +47,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 }
 
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
                 var model = await this._logService.QueryLastCheckLogTime(org_uid, uids, DateTime.Now.AddMonths(-1));
                 return GetJson(new _()
                 {
@@ -62,9 +64,10 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var org_uids = this.GetSelectedOrgUID();
+                var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                var data = await this._logService.QueryCheckLog(org_uids, 30);
+                var data = await this._logService.QueryCheckLog(org_uid, 30);
 
                 return GetJson(new _()
                 {
@@ -94,7 +97,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 }
 
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid);
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 model.OrgUID = org_uid;
                 model.UserUID = loginuser?.UserID;
