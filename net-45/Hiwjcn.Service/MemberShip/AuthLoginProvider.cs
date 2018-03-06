@@ -18,18 +18,16 @@ namespace Hiwjcn.Service.MemberShip
     { }
 
     public class UserLoginService :
-        UserLoginServiceBase<UserEntity, UserOneTimeCodeEntity, RolePermissionEntity, UserRoleEntity, UserDepartmentEntity, DepartmentRoleEntity, PermissionEntity>,
+        UserLoginServiceBase<UserEntity, UserOneTimeCodeEntity, RolePermissionEntity, UserRoleEntity, PermissionEntity>,
         IUserLoginService
     {
         public UserLoginService(
-            IMSRepository<UserDepartmentEntity> _userDepartmentRepo,
-            IMSRepository<DepartmentRoleEntity> _departmentRoleRepo,
             IMSRepository<UserEntity> _userRepo,
             IMSRepository<UserOneTimeCodeEntity> _oneTimeCodeRepo,
             IMSRepository<RolePermissionEntity> _rolePermissionRepo,
             IMSRepository<UserRoleEntity> _userRoleRepo,
             IMSRepository<PermissionEntity> _perRepo) :
-            base(_userDepartmentRepo, _departmentRoleRepo, _userRepo, _oneTimeCodeRepo, _rolePermissionRepo, _userRoleRepo, _perRepo)
+            base(_userRepo, _oneTimeCodeRepo, _rolePermissionRepo, _userRoleRepo, _perRepo)
         {
             //
         }

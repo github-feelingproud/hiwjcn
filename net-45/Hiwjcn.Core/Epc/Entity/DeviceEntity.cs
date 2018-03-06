@@ -4,6 +4,7 @@ using Lib.infrastructure.entity.user;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPC.Core.Entity
 {
@@ -14,6 +15,7 @@ namespace EPC.Core.Entity
         /// <summary>
         /// 设备名称
         /// </summary>
+        [Required(ErrorMessage = "设备名不能为空")]
         public virtual string Name { get; set; }
 
         /// <summary>
@@ -24,11 +26,13 @@ namespace EPC.Core.Entity
         /// <summary>
         /// 最后编辑人
         /// </summary>
+        [Required(ErrorMessage = "用户信息丢失")]
         public virtual string UserUID { get; set; }
 
         /// <summary>
         /// 所属组织
         /// </summary>
+        [Required(ErrorMessage = "组织信息丢失")]
         public virtual string OrgUID { get; set; }
 
         /// <summary>

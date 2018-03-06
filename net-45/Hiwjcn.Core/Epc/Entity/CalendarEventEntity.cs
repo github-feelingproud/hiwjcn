@@ -16,19 +16,20 @@ namespace EPC.Core.Entity
 
         public virtual int Priority { get; set; }
 
+        [Required(ErrorMessage = "规则不能为空")]
         public virtual string RRule { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "标题不能为空")]
         public virtual string Summary { get; set; }
 
         public virtual string Content { get; set; }
 
         public virtual string Location { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "用户ID为空")]
         public virtual string UserUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "组织ID为空")]
         public virtual string OrgUID { get; set; }
 
         public virtual int HasRule { get; set; }
@@ -46,8 +47,10 @@ namespace EPC.Core.Entity
     [Table("tb_event_device")]
     public class EventDeviceEntity : BaseEntity, IEpcDBTable
     {
+        [Required]
         public virtual string EventUID { get; set; }
 
+        [Required]
         public virtual string DeviceUID { get; set; }
     }
 }

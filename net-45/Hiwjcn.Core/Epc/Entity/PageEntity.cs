@@ -11,13 +11,13 @@ namespace EPC.Core.Entity
     [Table("tb_page")]
     public class PageEntity : BaseEntity, IEpcDBTable
     {
-        [Required]
+        [Required(ErrorMessage = "用户ID为空")]
         public virtual string UserUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "标题不能为空")]
         public virtual string PageTitle { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "描述不能为空")]
         public virtual string PageDescription { get; set; }
 
         public virtual string PageMetaJson { get; set; }
@@ -40,7 +40,7 @@ namespace EPC.Core.Entity
 
         public virtual string PagePassword { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "页面名称不能为空")]
         [Index(IsUnique = true)]
         public virtual string PageName { get; set; }
 
@@ -48,7 +48,7 @@ namespace EPC.Core.Entity
 
         public virtual int Sort { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "页面分组为空")]
         public virtual string PageGroup { get; set; } = string.Empty;
 
         public virtual int PageLanguage { get; set; }
@@ -56,10 +56,10 @@ namespace EPC.Core.Entity
         public virtual bool ShowWhen(DateTime time) =>
             (this.PageStartTime == null || this.PageStartTime < time) &&
             (this.PageEndTime == null || this.PageEndTime > time);
-
+        
         public virtual string DeviceUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "组织信息为空")]
         public virtual string OrgUID { get; set; }
 
         [NotMapped]

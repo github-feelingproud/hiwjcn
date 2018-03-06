@@ -53,10 +53,6 @@ namespace Hiwjcn.Dal
 
         public virtual DbSet<PermissionEntity> PermissionEntity { get; set; }
 
-        public virtual DbSet<DepartmentEntity> DepartmentEntity { get; set; }
-        public virtual DbSet<UserDepartmentEntity> UserDepartmentEntity { get; set; }
-        public virtual DbSet<DepartmentRoleEntity> DepartmenetRoleEntity { get; set; }
-
         public virtual DbSet<ReqLogEntity> ReqLogEntity { get; set; }
         public virtual DbSet<CacheHitLogEntity> CacheHitLogEntity { get; set; }
 

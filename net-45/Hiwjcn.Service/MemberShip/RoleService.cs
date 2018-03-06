@@ -58,31 +58,6 @@ namespace Hiwjcn.Service.MemberShip
         }
     }
 
-    public interface IDepartmentService :
-        IDepartmentServiceBase<DepartmentEntity, UserDepartmentEntity, DepartmentRoleEntity>,
-        IAutoRegistered
-    {
-        //
-    }
-
-    public class DepartmentService :
-        DepartmentServiceBase<DepartmentEntity, UserDepartmentEntity, DepartmentRoleEntity>,
-        IDepartmentService
-    {
-        public DepartmentService(
-            IMSRepository<DepartmentEntity> _departmentRepo,
-            IMSRepository<UserDepartmentEntity> _userDepartmentRepo,
-            IMSRepository<DepartmentRoleEntity> _departmentRoleRepo) :
-            base(_departmentRepo, _userDepartmentRepo, _departmentRoleRepo)
-        { }
-
-        public override void UpdateDepartmentEntity(ref DepartmentEntity old_department, ref DepartmentEntity new_department)
-        {
-            old_department.DepartmentName = new_department.DepartmentName;
-            old_department.Description = new_department.Description;
-        }
-    }
-
     public interface IPermissionService : IPermissionServiceBase<PermissionEntity>,
         IAutoRegistered
     { }

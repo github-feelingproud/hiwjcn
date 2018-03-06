@@ -31,18 +31,19 @@ namespace EPC.Core.Entity
         /// <summary>
         /// 设备UID
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "设备ID丢失")]
         public virtual string DeviceUID { get; set; }
 
         /// <summary>
         /// 参数名称，比如水温，电压
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "参数名不能为空")]
         public virtual string ParameterName { get; set; }
 
         /// <summary>
         /// 参数的输入规则，4种
         /// </summary>
+        [Required(ErrorMessage = "参数规则不能为空")]
         public virtual string Rule { get; set; }
 
         /// <summary>

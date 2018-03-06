@@ -15,13 +15,13 @@ namespace EPC.Core.Entity
     [Table("tb_check_log")]
     public class CheckLogEntity : TimeEntityBase, IEpcDBTable
     {
-        [Required]
+        [Required(ErrorMessage = "组织信息丢失")]
         public virtual string OrgUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "用户信息丢失")]
         public virtual string UserUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "设备信息丢失")]
         public virtual string DeviceUID { get; set; }
 
         public virtual int StatusOK { get; set; }
@@ -43,20 +43,22 @@ namespace EPC.Core.Entity
     [Table("tb_check_log_item")]
     public class CheckLogItemEntity : TimeEntityBase, IEpcDBTable
     {
-        [Required]
+        [Required(ErrorMessage = "点检记录丢失")]
         public virtual string CheckUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "设备信息丢失")]
         public virtual string DeviceUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "设备参数丢失")]
         public virtual string ParameterUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "设备参数名丢失")]
         public virtual string ParameterName { get; set; }
 
+        [Required(ErrorMessage = "设备参数规则丢失")]
         public virtual string Rule { get; set; }
 
+        [Required(ErrorMessage = "点检数据丢失")]
         public virtual string InputDataJson { get; set; }
 
         public virtual int StatusOK { get; set; }

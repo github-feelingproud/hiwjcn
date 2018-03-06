@@ -174,34 +174,4 @@ namespace Lib.infrastructure.entity.user
         [StringLength(100), Required]
         public virtual string RoleID { get; set; }
     }
-
-    [Serializable]
-    public class DepartmentEntityBase : TreeEntityBase
-    {
-        [Required]
-        [Index(IsUnique = true)]
-        public virtual string DepartmentName { get; set; }
-
-        public virtual string Description { get; set; }
-    }
-
-    [Serializable]
-    public class UserDepartmentEntityBase : BaseEntity
-    {
-        [Required]
-        public virtual string UserUID { get; set; }
-
-        [Required]
-        public virtual string DepartmentUID { get; set; }
-    }
-
-    [Serializable]
-    public class DepartmentRoleEntityBase : BaseEntity
-    {
-        [Required]
-        public virtual string DepartmentUID { get; set; }
-
-        [Required]
-        public virtual string RoleUID { get; set; }
-    }
 }

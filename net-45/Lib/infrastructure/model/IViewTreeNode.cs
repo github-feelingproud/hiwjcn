@@ -56,9 +56,6 @@ namespace Lib.infrastructure.model
         public static implicit operator IViewTreeNode(RoleEntityBase data) =>
             IViewTreeNode.FromTreeData(data, x => x.RoleName);
 
-        public static implicit operator IViewTreeNode(DepartmentEntityBase data) =>
-            IViewTreeNode.FromTreeData(data, x => x.DepartmentName);
-
         public static implicit operator IViewTreeNode(MenuEntityBase data) =>
             IViewTreeNode.FromTreeData(data, x => x.MenuName);
 

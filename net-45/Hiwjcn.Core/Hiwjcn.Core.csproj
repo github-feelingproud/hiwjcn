@@ -104,7 +104,6 @@
     <Compile Include="MemberShip\Entity\AuthClients.cs" />
     <Compile Include="MemberShip\Entity\MenuEntity.cs" />
     <Compile Include="MemberShip\Entity\ReqLogEntity.cs" />
-    <Compile Include="MemberShip\Entity\DepartmentEntity.cs" />
     <Compile Include="MemberShip\Entity\SystemEntity.cs" />
     <Compile Include="MemberShip\Entity\UserEntity.cs" />
     <Compile Include="EnumsBundle.cs" />

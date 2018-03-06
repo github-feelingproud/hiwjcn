@@ -13,17 +13,17 @@ namespace EPC.Core.Entity
     [Table("tb_issue")]
     public class IssueEntity : TimeEntityBase, IEpcDBTable
     {
-        [Required]
+        [Required(ErrorMessage = "标题不能为空")]
         public virtual string Title { get; set; }
 
         public virtual string Content { get; set; }
 
         public virtual string ContentMarkdown { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "组织ID为空")]
         public virtual string OrgUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "用户ID为空")]
         public virtual string UserUID { get; set; }
 
         public virtual string AssignedUserUID { get; set; }
@@ -64,10 +64,10 @@ namespace EPC.Core.Entity
     [Table("tb_issue_operation_log")]
     public class IssueOperationLogEntity : TimeEntityBase, IEpcDBTable
     {
-        [Required]
+        [Required(ErrorMessage = "组织ID为空")]
         public virtual string OrgUID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "工单ID为空")]
         public virtual string IssueUID { get; set; }
 
         public virtual string Content { get; set; }
@@ -76,7 +76,7 @@ namespace EPC.Core.Entity
 
         public virtual string Operation { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "用户ID为空")]
         public virtual string UserUID { get; set; }
 
         [NotMapped]
