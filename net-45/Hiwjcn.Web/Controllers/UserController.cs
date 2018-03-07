@@ -108,11 +108,8 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<UserEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var model = data?.JsonToEntity<UserEntity>(throwIfException: false) ?? throw new NoParamException();
+
                 var res = await this._login.ChangePwd(model);
                 if (res.error)
                 {
@@ -132,11 +129,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<UserEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var model = data?.JsonToEntity<UserEntity>(throwIfException: false) ?? throw new NoParamException();
 
                 var res = await this._userService.UpdateUser(model);
                 if (res.error)

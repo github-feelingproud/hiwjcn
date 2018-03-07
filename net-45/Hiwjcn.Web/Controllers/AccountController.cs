@@ -1,4 +1,5 @@
-﻿using Hiwjcn.Core.Domain.User;
+﻿using Hiwjcn.Core;
+using Hiwjcn.Core.Domain.User;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.MemberShip;
 using Lib.cache;
@@ -233,11 +234,8 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var user = data?.JsonToEntity<UserEntity>(throwIfException: false);
-                if (user == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var user = data?.JsonToEntity<UserEntity>(throwIfException: false) ?? throw new NoParamException();
+
                 var res = await this._login.RegisterUser(user);
                 if (res.error)
                 {

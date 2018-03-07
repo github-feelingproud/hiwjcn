@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace Hiwjcn.Core
 {
+    public class NoParamException : ArgumentNullException
+    {
+        public NoParamException() : base("参数错误")
+        {
+            //
+        }
+    }
+
     public class NoOrgException : Exception
     {
         public NoOrgException() : base("没有加入组织")

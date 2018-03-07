@@ -1,4 +1,5 @@
-﻿using Hiwjcn.Core.Domain;
+﻿using Hiwjcn.Core;
+using Hiwjcn.Core.Domain;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.MemberShip;
 using Lib.extension;
@@ -113,11 +114,8 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var menu = data?.JsonToEntity<MenuEntity>(throwIfException: false);
-                if (menu == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var menu = data?.JsonToEntity<MenuEntity>(throwIfException: false) ?? throw new NoParamException();
+
                 if (ValidateHelper.IsPlumpString(menu.UID))
                 {
                     var res = await this._menuService.UpdateMenu(menu);

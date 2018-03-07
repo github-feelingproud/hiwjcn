@@ -14,6 +14,7 @@ using Lib.mvc.auth;
 using Lib.helper;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {
@@ -98,11 +99,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
-                var model = data?.JsonToEntity<DeviceEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var model = data?.JsonToEntity<DeviceEntity>(throwIfException: false) ?? throw new NoParamException();
+
                 if (!ValidateHelper.IsPlumpList(model.ParamsList))
                 {
                     return GetJsonRes("设备必须配置参数");

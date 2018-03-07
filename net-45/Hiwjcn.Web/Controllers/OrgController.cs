@@ -93,11 +93,8 @@ namespace EPC.Api.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<OrganizationEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var model = data?.JsonToEntity<OrganizationEntity>(throwIfException: false) ?? throw new NoParamException();
+
                 if (ValidateHelper.IsPlumpString(model.UID))
                 {
                     var res = await this._orgService.UpdateOrg(model);

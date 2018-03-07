@@ -17,6 +17,7 @@ using Ical.Net.DataTypes;
 using Ical.Net.Serialization.DataTypes;
 using Ical.Net;
 using Hiwjcn.Service.Epc;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {
@@ -110,11 +111,9 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<CalendarEventEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var model = data?.JsonToEntity<CalendarEventEntity>(throwIfException: false) ??
+                throw new NoParamException();
+
                 if (model.ByDay != null && model.ByDay.Value > 0)
                 {
                     var rrule = new RecurrencePattern(FrequencyType.Daily, model.ByDay.Value);

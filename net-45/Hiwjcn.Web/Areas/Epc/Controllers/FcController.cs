@@ -15,6 +15,7 @@ using Hiwjcn.Service;
 using Hiwjcn.Service.Epc.InputsType;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {
@@ -40,11 +41,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var uids = data?.JsonToEntity<string[]>(throwIfException: false);
-                if (!ValidateHelper.IsPlumpList(uids))
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var uids = data?.JsonToEntity<string[]>(throwIfException: false) ??
+                throw new NoParamException();
 
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
@@ -90,11 +88,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<DeviceInputData>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var model = data?.JsonToEntity<DeviceInputData>(throwIfException: false) ??
+                throw new NoParamException();
 
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);

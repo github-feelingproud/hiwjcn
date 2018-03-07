@@ -14,6 +14,7 @@ using Lib.mvc.auth;
 using Lib.helper;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {
@@ -101,11 +102,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var page = data?.JsonToEntity<PageEntity>();
-                if (page == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var page = data?.JsonToEntity<PageEntity>() ?? throw new NoParamException();
+
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 

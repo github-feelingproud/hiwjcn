@@ -21,7 +21,7 @@ namespace Hiwjcn.Framework
         protected readonly int PageSize = 10;
 
         protected int ManagerRole => (int)(MemberRoleEnum.管理员 | MemberRoleEnum.超级管理员);
-        protected int AnyRole => 
+        protected int AnyRole =>
             (int)(MemberRoleEnum.管理员 | MemberRoleEnum.超级管理员 | MemberRoleEnum.普通成员 | MemberRoleEnum.人事管理员);
 
         public EpcBaseController() { }
@@ -93,7 +93,52 @@ namespace Hiwjcn.Framework
         [NonAction]
         public override ActionResult RunAction(Func<ActionResult> GetActionFunc)
         {
-            return base.RunAction(GetActionFunc);
+            try
+            {
+                var data = GetActionFunc.Invoke();
+
+                return data;
+            }
+            catch (NoParamException)
+            {
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "参数错误",
+                    code = "-100"
+                });
+            }
+            catch (NoOrgException)
+            {
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "请选择组织",
+                    code = "-111"
+                });
+            }
+            catch (NoLoginException)
+            {
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "没有登录",
+                    code = "-401"
+                });
+            }
+            catch (NoPermissionInOrgException)
+            {
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "没有权限",
+                    code = "-403"
+                });
+            }
+            catch (Exception e)
+            {
+                return this.WhenError(e);
+            }
         }
 
         [NonAction]
@@ -104,6 +149,15 @@ namespace Hiwjcn.Framework
                 var data = await GetActionFunc.Invoke();
 
                 return data;
+            }
+            catch (NoParamException)
+            {
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "参数错误",
+                    code = "-100"
+                });
             }
             catch (NoOrgException)
             {

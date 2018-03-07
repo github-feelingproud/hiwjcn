@@ -1,4 +1,5 @@
-﻿using Hiwjcn.Core.Domain.User;
+﻿using Hiwjcn.Core;
+using Hiwjcn.Core.Domain.User;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.MemberShip;
 using Lib.extension;
@@ -22,7 +23,7 @@ namespace Hiwjcn.Web.Controllers
         {
             this._perService = _perService;
         }
-        
+
         [HttpPost]
         [EpcAuth]
         public async Task<ActionResult> Query()
@@ -79,11 +80,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<PermissionEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数为空");
-                }
+                var model = data?.JsonToEntity<PermissionEntity>(throwIfException: false) ?? throw new NoParamException();
 
                 if (ValidateHelper.IsPlumpString(model.UID))
                 {

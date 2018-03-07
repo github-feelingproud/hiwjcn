@@ -1,6 +1,5 @@
 ﻿using Hiwjcn.Core.Data;
 using Hiwjcn.Core.Domain.Auth;
-using Hiwjcn.Core.Domain.User;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc.InputsType;
 using Hiwjcn.Service.MemberShip;
@@ -16,7 +15,6 @@ using Lib.extra.log;
 using Lib.helper;
 using Lib.mvc;
 using Lib.mvc.attr;
-using Lib.mvc.user;
 using Nest;
 using Polly;
 using Polly.CircuitBreaker;
@@ -276,21 +274,7 @@ namespace Hiwjcn.Web.Controllers
 
         public ActionResult FindAllActions()
         {
-            try
-            {
-                foreach (var t in this.GetType().Assembly.GetTypes())
-                {
-                    //
-                    if (t.BaseType != null && t.BaseType == typeof(WebCore.MvcLib.Controller.UserBaseController))
-                    {
-                        //
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
+            this.GetType().Assembly.ScanAllAssignedPermissionOnThisAssembly();
             return View();
         }
 

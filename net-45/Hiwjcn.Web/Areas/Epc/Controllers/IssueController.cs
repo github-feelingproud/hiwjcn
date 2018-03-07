@@ -13,6 +13,7 @@ using EPC.Core.Entity;
 using Lib.helper;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {
@@ -181,11 +182,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
-                var model = data?.JsonToEntity<IssueEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var model = data?.JsonToEntity<IssueEntity>(throwIfException: false) ?? throw new NoParamException();
+
                 if (ValidateHelper.IsPlumpString(model.UID))
                 {
                     throw new NotImplementedException();
@@ -209,11 +207,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<IssueOperationLogEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数错误");
-                }
+                var model = data?.JsonToEntity<IssueOperationLogEntity>(throwIfException: false) ?? throw new NoParamException();
+
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 

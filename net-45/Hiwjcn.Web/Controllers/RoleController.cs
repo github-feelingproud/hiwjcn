@@ -94,11 +94,8 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<RoleEntity>(throwIfException: false);
-                if (model == null)
-                {
-                    return GetJsonRes("参数为空");
-                }
+                var model = data?.JsonToEntity<RoleEntity>(throwIfException: false) ?? throw new NoParamException();
+
                 model.PermissionIds = model.PermissionIds ?? new List<string>() { };
                 List<RolePermissionEntity> CreateMap(string role_uid)
                 {
