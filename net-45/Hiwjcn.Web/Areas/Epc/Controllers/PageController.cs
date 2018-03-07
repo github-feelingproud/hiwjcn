@@ -105,7 +105,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var page = data?.JsonToEntity<PageEntity>() ?? throw new NoParamException();
 
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
                 page.OrgUID = org_uid;
                 page.UserUID = loginuser?.UserID;
@@ -142,7 +142,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
                 var res = await this._pageService.DeletePage(uid);
                 if (res.error)

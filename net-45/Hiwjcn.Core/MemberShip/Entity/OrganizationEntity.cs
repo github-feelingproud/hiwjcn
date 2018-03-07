@@ -17,10 +17,10 @@ namespace EPC.Core.Entity
     [Serializable]
     public enum MemberRoleEnum : int
     {
-        超级管理员 = 1 << 0,
-        管理员 = 1 << 1,
-        人事管理员 = 1 << 2,
+        管理员 = 1 << 0,
+
         普通成员 = 1 << 3,
+
         [Description("观察者-只能看")]
         观察者 = 1 << 4
     }

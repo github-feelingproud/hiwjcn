@@ -92,10 +92,10 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 throw new NoParamException();
 
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+                var loginuser = await this.ValidMember(org_uid, this.MemberRole);
 
                 model.OrgUID = org_uid;
-                model.UserUID = loginuser?.UserID;
+                model.UserUID = loginuser.UserID;
 
                 var res = await this._logService.SubmitCheckLog(model);
                 if (res.error)

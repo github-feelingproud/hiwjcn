@@ -153,7 +153,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 if (!ValidateHelper.IsAllPlumpString(issue_uid, open)) { return GetJsonRes("参数错误"); }
 
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+                var loginuser = await this.ValidMember(org_uid, this.MemberRole);
 
                 var data = await this._issueService.OpenOrClose(issue_uid, loginuser.UserID, !open.ToBool());
 
@@ -180,7 +180,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
+                var loginuser = await this.ValidMember(org_uid, this.MemberRole);
 
                 var model = data?.JsonToEntity<IssueEntity>(throwIfException: false) ?? throw new NoParamException();
 
@@ -210,7 +210,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var model = data?.JsonToEntity<IssueOperationLogEntity>(throwIfException: false) ?? throw new NoParamException();
 
                 var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+                var loginuser = await this.ValidMember(org_uid, this.MemberRole);
 
                 model.UserUID = loginuser.UserID;
                 model.OrgUID = org_uid;

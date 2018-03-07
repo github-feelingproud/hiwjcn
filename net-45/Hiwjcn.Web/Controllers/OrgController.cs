@@ -47,6 +47,7 @@ namespace EPC.Api.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
                 var data = await this._orgService.AllMembers(org_uid);
 
@@ -106,7 +107,7 @@ namespace EPC.Api.Controllers
                     {
                         OrgUID = res.data.UID,
                         UserUID = res.data.OwnerUID,
-                        Flag = (int)MemberRoleEnum.超级管理员,
+                        Flag = (int)MemberRoleEnum.管理员,
                         MemberApproved = (int)YesOrNoEnum.是,
                         OrgApproved = (int)YesOrNoEnum.是,
                     };
@@ -123,7 +124,7 @@ namespace EPC.Api.Controllers
                     {
                         OrgUID = res.data.UID,
                         UserUID = res.data.OwnerUID,
-                        Flag = (int)MemberRoleEnum.超级管理员,
+                        Flag = (int)MemberRoleEnum.管理员,
                         MemberApproved = (int)YesOrNoEnum.是,
                         OrgApproved = (int)YesOrNoEnum.是,
                     };
@@ -248,6 +249,7 @@ namespace EPC.Api.Controllers
                 }
 
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
                 var map = new OrganizationMemberEntity()
                 {
@@ -283,6 +285,7 @@ namespace EPC.Api.Controllers
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
 
                 var res = await this._orgService.RemoveMember(org_uid, user_uid);
                 if (res.error)

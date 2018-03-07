@@ -20,9 +20,20 @@ namespace Hiwjcn.Framework
     {
         protected readonly int PageSize = 10;
 
-        protected int ManagerRole => (int)(MemberRoleEnum.管理员 | MemberRoleEnum.超级管理员);
-        protected int AnyRole =>
-            (int)(MemberRoleEnum.管理员 | MemberRoleEnum.超级管理员 | MemberRoleEnum.普通成员 | MemberRoleEnum.人事管理员);
+        /// <summary>
+        /// 管理员
+        /// </summary>
+        protected int ManagerRole => (int)(MemberRoleEnum.管理员);
+
+        /// <summary>
+        /// 管理员或者普通成员
+        /// </summary>
+        protected int MemberRole => (int)(MemberRoleEnum.管理员 | MemberRoleEnum.普通成员);
+
+        /// <summary>
+        /// 所有
+        /// </summary>
+        protected int AnyRole => (int)(MemberRoleEnum.管理员 | MemberRoleEnum.普通成员 | MemberRoleEnum.观察者);
 
         public EpcBaseController() { }
 
@@ -77,7 +88,8 @@ namespace Hiwjcn.Framework
                     //没有加入组织
                     throw new NoOrgException();
                 }
-                if (flag != null && !PermissionHelper.HasPermission(org.Flag, flag.Value))
+                //多个权限只要有一个就算通过
+                if (flag != null && !PermissionHelper.HasPermission(flag.Value, org.Flag))
                 {
                     //没有权限
                     throw new NoPermissionInOrgException();
