@@ -26,6 +26,9 @@ namespace EPC.Core.Entity
 
         public virtual int StatusOK { get; set; }
 
+        [DataType(DataType.Text)]
+        public virtual string TipsJson { get; set; }
+
         [NotMapped]
         public virtual List<string> Tips { get; set; }
 

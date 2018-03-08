@@ -1,4 +1,5 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
+using Lib.helper;
 using System;
 using System.Collections.Generic;
 
@@ -49,11 +50,11 @@ namespace Hiwjcn.Service.Epc.InputsType
 
             if (value < this.Normal * (Range[0] / 100.00))
             {
-                data.Tips.AddRange(this.LowerTips ?? new List<string>());
+                data.Tips.AddWhenNotEmpty(this.LowerTips ?? new List<string>());
             }
             if (value > this.Normal * (Range[1] / 100.00))
             {
-                data.Tips.AddRange(this.UpperTips ?? new List<string>());
+                data.Tips.AddWhenNotEmpty(this.UpperTips ?? new List<string>());
             }
 
             return data;

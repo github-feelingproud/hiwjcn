@@ -99,10 +99,6 @@ namespace Hiwjcn.Framework
         }
 
         [NonAction]
-        protected ActionResult AccessDeny() =>
-            this.GetJson(new _() { success = false, msg = "无权访问", code = "-111" });
-
-        [NonAction]
         public override ActionResult RunAction(Func<ActionResult> GetActionFunc)
         {
             try

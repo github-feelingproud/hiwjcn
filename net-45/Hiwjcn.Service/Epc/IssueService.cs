@@ -63,7 +63,17 @@ namespace Hiwjcn.Service.Epc
                 return res;
             }
 
-            return await this._issueOperaRepo.AddEntity_(model, "op");
+            res = await this._issueOperaRepo.AddEntity_(model, "op");
+
+            {
+                //更新评论数
+                var status = new string[] { "open", "close" };
+                issue.CommentCount = await this._issueOperaRepo.GetCountAsync(x =>
+                x.OrgUID == issue.OrgUID && x.IssueUID == issue.UID && !status.Contains(x.Operation));
+                await this._issueRepo.UpdateAsync(issue);
+            }
+
+            return res;
         }
 
         public virtual async Task<_<IssueEntity>> AddIssue(IssueEntity model) =>

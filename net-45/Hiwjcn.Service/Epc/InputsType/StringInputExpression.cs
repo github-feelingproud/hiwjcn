@@ -1,4 +1,5 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
+using Lib.helper;
 using System;
 using System.Collections.Generic;
 
@@ -35,11 +36,11 @@ namespace Hiwjcn.Service.Epc.InputsType
             var data = new ValidResult();
             if (value == this.Normal)
             {
-                data.Tips.AddRange(this.EqualTips ?? new List<string>());
+                data.Tips.AddWhenNotEmpty(this.EqualTips ?? new List<string>());
             }
             else
             {
-                data.Tips.AddRange(this.NotEqualTips ?? new List<string>());
+                data.Tips.AddWhenNotEmpty(this.NotEqualTips ?? new List<string>());
             }
 
             return data;

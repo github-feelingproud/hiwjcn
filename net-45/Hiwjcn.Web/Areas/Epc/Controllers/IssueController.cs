@@ -184,6 +184,9 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
 
                 var model = data?.JsonToEntity<IssueEntity>(throwIfException: false) ?? throw new NoParamException();
 
+                model.OrgUID = org_uid;
+                model.UserUID = loginuser.UserID;
+
                 if (ValidateHelper.IsPlumpString(model.UID))
                 {
                     throw new NotImplementedException();

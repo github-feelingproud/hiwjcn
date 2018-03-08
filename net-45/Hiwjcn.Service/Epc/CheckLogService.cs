@@ -25,7 +25,7 @@ namespace Hiwjcn.Service.Epc
 
         Task<_<List<CheckInputDataResult>>> SubmitCheckLog(DeviceInputData model);
 
-        Task<List<CheckLogEntity>> QueryCheckLog(string org_uid, int count);
+        Task<List<CheckLogEntity>> QueryCheckLog(string org_uid, int? max_id, int count);
     }
 
     public class CheckLogService : ServiceBase<CheckLogEntity>, ICheckLogService
@@ -87,6 +87,7 @@ namespace Hiwjcn.Service.Epc
 
             //汇总所有提示
             items.ForEach(x => data.Tips.AddWhenNotEmpty(x.Tips));
+            data.TipsJson = data.Tips.ToJson();
 
             if (!data.IsValid(out var msg))
             {
@@ -300,15 +301,19 @@ namespace Hiwjcn.Service.Epc
             });
         }
 
-        public async Task<List<CheckLogEntity>> QueryCheckLog(string org_uid, int count)
+        public async Task<List<CheckLogEntity>> QueryCheckLog(string org_uid, int? max_id, int count)
         {
             return await this._logRepo.PrepareSessionAsync(async db =>
             {
                 var log_query = db.Set<CheckLogEntity>().AsNoTrackingQueryable();
                 var device_query = db.Set<DeviceEntity>().AsNoTrackingQueryable();
 
-                var data = await log_query.Where(x => x.OrgUID == org_uid)
-                .OrderByDescending(x => x.IID).Take(count).ToListAsync();
+                log_query = log_query.Where(x => x.OrgUID == org_uid);
+                if (max_id != null && max_id > 0)
+                {
+                    log_query = log_query.Where(x => x.IID < max_id);
+                }
+                var data = await log_query.OrderByDescending(x => x.IID).Take(count).ToListAsync();
 
                 if (ValidateHelper.IsPlumpList(data))
                 {

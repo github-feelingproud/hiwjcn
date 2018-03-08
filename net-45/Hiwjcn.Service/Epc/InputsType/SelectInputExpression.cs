@@ -52,17 +52,17 @@ namespace Hiwjcn.Service.Epc.InputsType
             var list = ConvertHelper.NotNullList(value);
             if (list.AllEqual(this.Normal))
             {
-                data.Tips.AddRange(this.EqualTips ?? new List<string>());
+                data.Tips.AddWhenNotEmpty(this.EqualTips ?? new List<string>());
             }
             else
             {
                 if (list.AnyEqual(this.Normal))
                 {
-                    data.Tips.AddRange(this.AnyEqualTips ?? new List<string>());
+                    data.Tips.AddWhenNotEmpty(this.AnyEqualTips ?? new List<string>());
                 }
                 else
                 {
-                    data.Tips.AddRange(this.NotEqualTips ?? new List<string>());
+                    data.Tips.AddWhenNotEmpty(this.NotEqualTips ?? new List<string>());
                 }
             }
 

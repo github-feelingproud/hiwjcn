@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Lib.mvc;
-using Lib.io;
-using Lib.extension;
-using Lib.helper;
-using Lib.data.ef;
-using Lib.mvc.auth;
-using EPC.Core.Entity;
-using Hiwjcn.Service;
-using Hiwjcn.Service.Epc.InputsType;
+﻿using Hiwjcn.Core;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc;
-using Hiwjcn.Core;
+using Hiwjcn.Service.Epc.InputsType;
+using Lib.extension;
+using Lib.mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {
@@ -58,14 +50,14 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
 
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> QueryCheckLog()
+        public async Task<ActionResult> QueryCheckLog(int? max_id)
         {
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                var data = await this._logService.QueryCheckLog(org_uid, 30);
+                var data = await this._logService.QueryCheckLog(org_uid, max_id, this.PageSize);
 
                 return GetJson(new _()
                 {
