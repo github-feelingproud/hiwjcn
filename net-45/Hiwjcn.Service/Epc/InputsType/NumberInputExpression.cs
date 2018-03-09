@@ -42,7 +42,7 @@ namespace Hiwjcn.Service.Epc.InputsType
         public override ValidResult ValidInputs(double value)
         {
             var data = new ValidResult();
-            if (this.Range == null || this.Range.Length != 2)
+            if (this.Range?.Length != 2)
             {
                 data.ValidErrors.Add("设备没有设置误差范围，无法验证提交数据");
                 return data;

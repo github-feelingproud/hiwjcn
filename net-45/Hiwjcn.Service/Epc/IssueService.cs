@@ -27,6 +27,10 @@ namespace Hiwjcn.Service.Epc
             string user_uid = null, string assigned_user_uid = null, bool? open = true,
             string q = null, int page = 1, int pagesize = 10);
 
+        Task<PagerData<IssueEntity>> MyIssue(
+            string org_uid, string user_uid, string assigned_user_uid,
+            int page, int pagesize);
+
         Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(string org_uid, string issue_uid, int count);
 
         Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count);
@@ -79,6 +83,55 @@ namespace Hiwjcn.Service.Epc
         public virtual async Task<_<IssueEntity>> AddIssue(IssueEntity model) =>
             await this._issueRepo.AddEntity_(model, "is");
 
+        public async Task<PagerData<IssueEntity>> MyIssue(string org_uid, string user_uid, string assigned_user_uid,
+            int page, int pagesize)
+        {
+            if (new string[] { user_uid, assigned_user_uid }.Count(x => ValidateHelper.IsPlumpString(x)) != 1)
+            {
+                throw new Exception("发起人和被指派人只能传入一个参数");
+            }
+            return await this._issueRepo.PrepareSessionAsync(async db =>
+            {
+                var now = DateTime.Now;
+                var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
+                query = query.Where(x => x.OrgUID == org_uid);
+                query = query.Where(x => x.Start == null || x.Start < now);
+
+                if (ValidateHelper.IsPlumpString(user_uid))
+                {
+                    query = query.Where(x => x.UserUID == user_uid);
+                }
+                if (ValidateHelper.IsPlumpString(assigned_user_uid))
+                {
+                    query = query.Where(x => x.AssignedUserUID == assigned_user_uid);
+                }
+
+                var data = new PagerData<IssueEntity>();
+                data.Page = page;
+                data.PageSize = pagesize;
+                data.ItemCount = await query.CountAsync();
+                data.DataList = await query.OrderBy(x => x.IsClosed).OrderByDescending(x => x.CreateTime).ToListAsync();
+
+                if (ValidateHelper.IsPlumpList(data.DataList))
+                {
+                    var uids = data.DataList.Select(x => x.DeviceUID).ToList();
+                    var devices = await db.Set<DeviceEntity>().AsNoTrackingQueryable().Where(x => uids.Contains(x.UID)).ToListAsync();
+
+                    var user_uids = data.DataList.SelectMany(x => new string[] { x.UserUID, x.AssignedUserUID })
+                    .NotEmptyAndDistinct(x => x).ToList();
+                    var users = await this._userRepo.GetListAsync(x => user_uids.Contains(x.UID));
+
+                    foreach (var m in data.DataList)
+                    {
+                        m.DeviceModel = devices.FirstOrDefault(x => x.UID == m.DeviceUID);
+                        m.UserModel = users.FirstOrDefault(x => x.UID == m.UserUID);
+                        m.AssignedUserModel = users.FirstOrDefault(x => x.UID == m.AssignedUserUID);
+                    }
+                }
+
+                return data;
+            });
+        }
 
         public virtual async Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close)
         {

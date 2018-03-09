@@ -113,7 +113,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> MyIssue(string open, int? page)
+        public async Task<ActionResult> MyIssue(string byme, int? page)
         {
             return await RunActionAsync(async () =>
             {
@@ -122,11 +122,22 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
 
                 page = this.CheckPage(page);
 
-                var is_open = (open ?? "true").ToBool();
+                var user_uid = string.Empty;
+                var assigned_user_uid = string.Empty;
 
-                var pager = await this._issueService.QueryIssue(
-                    org_uid, assigned_user_uid: loginuser.UserID,
-                    open: is_open,
+                if ((byme ?? "false").ToBool())
+                {
+                    //我开启的
+                    user_uid = loginuser.UserID;
+                }
+                else
+                {
+                    //指派给我的
+                    assigned_user_uid = loginuser.UserID;
+                }
+
+                var pager = await this._issueService.MyIssue(org_uid,
+                    user_uid: user_uid, assigned_user_uid: assigned_user_uid,
                     page: page.Value, pagesize: this.PageSize);
 
                 return GetJson(new _()
