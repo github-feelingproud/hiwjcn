@@ -54,15 +54,17 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                     open = true;
                 }
 
-                var pager = await this._issueService.QueryIssue(org_uid,
+                var data = await this._issueService.QueryIssue(org_uid,
                     start: start, end: end,
                     open: open, q: q,
                     page: page.Value, pagesize: this.PageSize);
 
+                data.DataList = await this._issueService._LoadPagerExtraData(data.DataList);
+
                 return GetJson(new _()
                 {
                     success = true,
-                    data = pager
+                    data = data
                 });
             });
         }
@@ -136,14 +138,16 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                     assigned_user_uid = loginuser.UserID;
                 }
 
-                var pager = await this._issueService.MyIssue(org_uid,
+                var data = await this._issueService.MyIssue(org_uid,
                     user_uid: user_uid, assigned_user_uid: assigned_user_uid,
                     page: page.Value, pagesize: this.PageSize);
+
+                data.DataList = await _issueService._LoadPagerExtraData(data.DataList);
 
                 return GetJson(new _()
                 {
                     success = true,
-                    data = pager
+                    data = data
                 });
             });
         }

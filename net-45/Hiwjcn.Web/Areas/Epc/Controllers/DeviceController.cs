@@ -45,12 +45,14 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                var data = await this._deviceService.GetDeviceByUID(org_uid, uid);
+                var model = await this._deviceService.GetDeviceByUID(org_uid, uid);
+
+                model = (await this._deviceService._LoadDeviceExtraData(new List<DeviceEntity>() { model })).First();
 
                 return GetJson(new _()
                 {
                     success = true,
-                    data = data
+                    data = model
                 });
             });
         }
@@ -74,12 +76,37 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                var pager = await this._deviceService.QueryDevice(org_uid, q, page.Value, this.PageSize);
+                var data = await this._deviceService.QueryDevice(org_uid, q, page.Value, this.PageSize);
+
+                data.DataList = await this._deviceService._LoadDeviceExtraData(data.DataList);
 
                 return GetJson(new _()
                 {
                     success = true,
-                    data = pager
+                    data = data
+                });
+            });
+        }
+
+        [HttpPost]
+        [EpcAuth]
+        public async Task<ActionResult> QueryAll(string q, int? page)
+        {
+            return await RunActionAsync(async () =>
+            {
+                page = this.CheckPage(page);
+
+                var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
+                var data = await this._deviceService.QueryAll(org_uid);
+
+                data = await this._deviceService._LoadDeviceExtraData(data);
+
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data
                 });
             });
         }

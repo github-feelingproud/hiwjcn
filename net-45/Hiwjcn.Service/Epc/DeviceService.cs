@@ -27,7 +27,11 @@ namespace Hiwjcn.Service.Epc
             string q = null,
             int page = 1, int pagesize = 10);
 
+        Task<List<DeviceEntity>> QueryAll(string org_uid);
+
         Task<_<string>> DeleteDevice(string org_uid, string uid);
+
+        Task<List<DeviceEntity>> _LoadDeviceExtraData(List<DeviceEntity> data);
     }
 
     public class DeviceService : ServiceBase<DeviceEntity>, IDeviceService
@@ -185,14 +189,6 @@ namespace Hiwjcn.Service.Epc
 
                 var data = await query.ToPagedListAsync(page, pagesize, x => x.IID);
 
-                var uids = data.DataList.Select(x => x.UID);
-                var list = await this._deviceParamRepo.GetListAsync(x => uids.Contains(x.DeviceUID));
-
-                foreach (var m in data.DataList)
-                {
-                    m.ParamsList = list.Where(x => x.DeviceUID == m.UID).ToList();
-                }
-
                 return data;
             });
         }
@@ -213,11 +209,34 @@ namespace Hiwjcn.Service.Epc
         public async Task<DeviceEntity> GetDeviceByUID(string org_uid, string uid)
         {
             var model = await this._deviceRepo.GetFirstAsync(x => x.UID == uid);
-            if (model == null || model.OrgUID != org_uid) { return null; }
-
-            model.ParamsList = await this._deviceParamRepo.GetListAsync(x => x.DeviceUID == model.UID);
+            if (model == null || model.OrgUID != org_uid) { throw new Exception("has no permission to load data"); }
 
             return model;
+        }
+
+        public async Task<List<DeviceEntity>> QueryAll(string org_uid)
+        {
+            var data = await this._deviceRepo.GetListAsync(x => x.OrgUID == org_uid, count: 1000);
+            data = data.OrderByDescending(x => x.IID).ToList();
+            return data;
+        }
+
+        public async Task<List<DeviceEntity>> _LoadDeviceExtraData(List<DeviceEntity> data)
+        {
+            if (!ValidateHelper.IsPlumpList(data))
+            {
+                return data;
+            }
+
+            var uids = data.Select(x => x.UID);
+            var list = await this._deviceParamRepo.GetListAsync(x => uids.Contains(x.DeviceUID));
+
+            foreach (var m in data)
+            {
+                m.ParamsList = list.Where(x => x.DeviceUID == m.UID).ToList();
+            }
+
+            return data;
         }
     }
 }

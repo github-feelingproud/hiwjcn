@@ -23,8 +23,7 @@ namespace Hiwjcn.Service.Epc
         Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close);
 
         Task<PagerData<IssueEntity>> QueryIssue(string org_uid,
-            DateTime? start = null, DateTime? end = null,
-            string user_uid = null, string assigned_user_uid = null, bool? open = true,
+            DateTime? start = null, DateTime? end = null, bool? open = true,
             string q = null, int page = 1, int pagesize = 10);
 
         Task<PagerData<IssueEntity>> MyIssue(
@@ -36,19 +35,24 @@ namespace Hiwjcn.Service.Epc
         Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count);
 
         Task<_<IssueOperationLogEntity>> AddComment(IssueOperationLogEntity model);
+
+        Task<List<IssueEntity>> _LoadPagerExtraData(List<IssueEntity> data);
     }
 
     public class IssueService : ServiceBase<IssueEntity>, IIssueService
     {
+        private readonly IEpcRepository<DeviceEntity> _deviceRepo;
         private readonly IEpcRepository<IssueEntity> _issueRepo;
         private readonly IEpcRepository<IssueOperationLogEntity> _issueOperaRepo;
         private readonly IMSRepository<UserEntity> _userRepo;
 
         public IssueService(
+            IEpcRepository<DeviceEntity> _deviceRepo,
             IEpcRepository<IssueEntity> _issueRepo,
             IEpcRepository<IssueOperationLogEntity> _issueOperaRepo,
             IMSRepository<UserEntity> _userRepo)
         {
+            this._deviceRepo = _deviceRepo;
             this._issueRepo = _issueRepo;
             this._issueOperaRepo = _issueOperaRepo;
             this._userRepo = _userRepo;
@@ -112,23 +116,6 @@ namespace Hiwjcn.Service.Epc
                 data.ItemCount = await query.CountAsync();
                 data.DataList = await query.OrderBy(x => x.IsClosed).OrderByDescending(x => x.CreateTime).ToListAsync();
 
-                if (ValidateHelper.IsPlumpList(data.DataList))
-                {
-                    var uids = data.DataList.Select(x => x.DeviceUID).ToList();
-                    var devices = await db.Set<DeviceEntity>().AsNoTrackingQueryable().Where(x => uids.Contains(x.UID)).ToListAsync();
-
-                    var user_uids = data.DataList.SelectMany(x => new string[] { x.UserUID, x.AssignedUserUID })
-                    .NotEmptyAndDistinct(x => x).ToList();
-                    var users = await this._userRepo.GetListAsync(x => user_uids.Contains(x.UID));
-
-                    foreach (var m in data.DataList)
-                    {
-                        m.DeviceModel = devices.FirstOrDefault(x => x.UID == m.DeviceUID);
-                        m.UserModel = users.FirstOrDefault(x => x.UID == m.UserUID);
-                        m.AssignedUserModel = users.FirstOrDefault(x => x.UID == m.AssignedUserUID);
-                    }
-                }
-
                 return data;
             });
         }
@@ -189,8 +176,7 @@ namespace Hiwjcn.Service.Epc
         }
 
         public virtual async Task<PagerData<IssueEntity>> QueryIssue(string org_uid,
-            DateTime? start = null, DateTime? end = null,
-            string user_uid = null, string assigned_user_uid = null, bool? open = true,
+            DateTime? start = null, DateTime? end = null, bool? open = true,
             string q = null, int page = 1, int pagesize = 10)
         {
             return await this._issueRepo.PrepareSessionAsync(async db =>
@@ -212,14 +198,6 @@ namespace Hiwjcn.Service.Epc
                         query = query.Where(x => x.IsClosed > 0);
                     }
                 }
-                if (ValidateHelper.IsPlumpString(user_uid))
-                {
-                    query = query.Where(x => x.UserUID == user_uid);
-                }
-                if (ValidateHelper.IsPlumpString(assigned_user_uid))
-                {
-                    query = query.Where(x => x.AssignedUserUID == assigned_user_uid);
-                }
                 if (ValidateHelper.IsPlumpString(q))
                 {
                     query = query.Where(x => x.Title.Contains(q));
@@ -227,25 +205,28 @@ namespace Hiwjcn.Service.Epc
 
                 var data = await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
 
-                if (ValidateHelper.IsPlumpList(data.DataList))
-                {
-                    var uids = data.DataList.Select(x => x.DeviceUID).ToList();
-                    var devices = await db.Set<DeviceEntity>().AsNoTrackingQueryable().Where(x => uids.Contains(x.UID)).ToListAsync();
-
-                    var user_uids = data.DataList.SelectMany(x => new string[] { x.UserUID, x.AssignedUserUID })
-                    .NotEmptyAndDistinct(x => x).ToList();
-                    var users = await this._userRepo.GetListAsync(x => user_uids.Contains(x.UID));
-
-                    foreach (var m in data.DataList)
-                    {
-                        m.DeviceModel = devices.FirstOrDefault(x => x.UID == m.DeviceUID);
-                        m.UserModel = users.FirstOrDefault(x => x.UID == m.UserUID);
-                        m.AssignedUserModel = users.FirstOrDefault(x => x.UID == m.AssignedUserUID);
-                    }
-                }
-
                 return data;
             });
+        }
+
+        public async Task<List<IssueEntity>> _LoadPagerExtraData(List<IssueEntity> data)
+        {
+            if (ValidateHelper.IsPlumpList(data))
+            {
+                var device_uids = data.Select(x => x.DeviceUID).ToList();
+                var devices = await this._deviceRepo.GetListAsync(x => device_uids.Contains(x.UID));
+
+                var user_uids = data.SelectMany(x => new string[] { x.UserUID, x.AssignedUserUID }).NotEmptyAndDistinct(x => x).ToList();
+                var users = await this._userRepo.GetListAsync(x => user_uids.Contains(x.UID));
+
+                foreach (var m in data)
+                {
+                    m.DeviceModel = devices.FirstOrDefault(x => x.UID == m.DeviceUID);
+                    m.UserModel = users.FirstOrDefault(x => x.UID == m.UserUID);
+                    m.AssignedUserModel = users.FirstOrDefault(x => x.UID == m.AssignedUserUID);
+                }
+            }
+            return data;
         }
 
         public virtual async Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(
@@ -271,7 +252,7 @@ namespace Hiwjcn.Service.Epc
 
         public virtual async Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count) =>
             await this._issueRepo.QueryListAsync(
-                where: x => x.OrgUID == org_uid,
+                where: x => x.OrgUID == org_uid && x.IsClosed <= 0,
                 orderby: x => x.IID, Desc: true,
                 count: count);
     }
