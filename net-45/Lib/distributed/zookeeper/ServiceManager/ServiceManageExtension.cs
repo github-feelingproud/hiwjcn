@@ -8,5 +8,6 @@ namespace Lib.distributed.zookeeper.ServiceManager
 {
     public static class ServiceManageExtension
     {
+        //
     }
 }

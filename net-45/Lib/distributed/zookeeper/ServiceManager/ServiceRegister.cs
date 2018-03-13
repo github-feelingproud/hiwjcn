@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Reflection;
-using Lib.distributed.zookeeper;
-using Polly;
+﻿using Lib.helper;
 using Lib.rpc;
-using Lib.helper;
 using org.apache.zookeeper;
-using Lib.extension;
-using System.ServiceModel;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
@@ -35,7 +26,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
         private async Task RegisterService()
         {
             var list = new List<AddressModel>();
-            foreach (var m in ServiceHostManager.GetContractInfo())
+            foreach (var m in ServiceHostManager.Host.GetContractInfo())
             {
                 var model = new AddressModel()
                 {

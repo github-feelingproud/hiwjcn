@@ -16,6 +16,8 @@ namespace Hiwjcn.Api
 {
     public class Startup
     {
+        public static IContainer ioc_container;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -45,10 +47,10 @@ namespace Hiwjcn.Api
             // in the ServiceCollection. Mix and match as needed.
             builder.Populate(services);
 
-            var container = builder.Build();
+            Startup.ioc_container = builder.Build();
 
             //services.AddAutofac();
-            return new AutofacServiceProvider(container);
+            return new AutofacServiceProvider(Startup.ioc_container);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,7 +61,8 @@ namespace Hiwjcn.Api
         {
             new LoggerFactory();
 
-            loggerFactory.AddLog4Net("log4net.config");
+            loggerFactory.AddConsole();
+            //loggerFactory.AddLog4Net("log4net.config");
             loggerFactory.CreateLogger("").LogInformation("");
 
             if (env.IsDevelopment())

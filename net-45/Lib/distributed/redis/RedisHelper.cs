@@ -1,19 +1,11 @@
-﻿using Lib.core;
-using Newtonsoft.Json;
+﻿using Lib.data;
+using Lib.helper;
 using StackExchange.Redis;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using Lib.extension;
-using Polly.CircuitBreaker;
-using System.Configuration;
-using Polly;
 using System.Threading.Tasks;
-using Lib.data;
-using Lib.helper;
 
 namespace Lib.distributed.redis
 {

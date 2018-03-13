@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Polly;
+using System;
 using System.Threading.Tasks;
-using Lib.data;
-using StackExchange.Redis;
-using System.Threading;
-using Polly;
 
 namespace Lib.distributed.redis
 {
