@@ -267,7 +267,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\hiwjcn.sql" />
     <Content Include="App_Data\sitemap.xml" />
     <Content Include="App_Data\Plugins\插件目录.js" />
     <Content Include="ErrorPage\403.html" />
