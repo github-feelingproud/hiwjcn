@@ -47,15 +47,6 @@ namespace Lib.mvc
         /// <summary>
         /// 获取IP
         /// </summary>
-        [Obsolete("用context扩展")]
-        public static string Ip(this HttpRequest req)
-        {
-            return RequestHelper.GetCurrentIpAddress(req);
-        }
-
-        /// <summary>
-        /// 获取IP
-        /// </summary>
         public static string Ip(this HttpContext context)
         {
             return RequestHelper.GetCurrentIpAddress(context.Request);

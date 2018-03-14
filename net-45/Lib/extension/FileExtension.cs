@@ -14,6 +14,20 @@ namespace Lib.extension
     public static class FileExtension
     {
         /// <summary>
+        /// 读取字节数组
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static byte[] GetBytes(this Stream s)
+        {
+            s.Seek(0, SeekOrigin.Begin);
+            var bs = new byte[s.Length];
+            s.Read(bs, 0, bs.Length);
+
+            return bs;
+        }
+
+        /// <summary>
         /// bitmap转byte数组
         /// </summary>
         public static byte[] ToBytes(this Bitmap bm, ImageFormat formart) =>

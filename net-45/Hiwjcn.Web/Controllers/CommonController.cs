@@ -284,13 +284,13 @@ namespace Hiwjcn.Web.Controllers
             {
                 var qr = new QrCode();
                 var b = qr.GetQrCodeBytes(con ?? string.Empty);
-                
+
                 this.X.context.Response.SetResponseNoCache();
 
                 return File(b, "image/Png");
             });
         }
-        
+
         /// <summary>
         /// 读取图片
         /// </summary>
