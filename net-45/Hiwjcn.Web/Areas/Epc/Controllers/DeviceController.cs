@@ -130,8 +130,9 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
 
                 if (!ValidateHelper.IsPlumpList(model.ParamsList))
                 {
-                    return GetJsonRes("设备必须配置参数");
+                    throw new NoParamException();
                 }
+
                 model.UserUID = loginuser?.UserID;
                 model.OrgUID = org_uid;
                 model.ParamsList = ConvertHelper.NotNullList(model.ParamsList);

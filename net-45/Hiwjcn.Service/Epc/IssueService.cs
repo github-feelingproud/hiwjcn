@@ -30,6 +30,10 @@ namespace Hiwjcn.Service.Epc
             string org_uid, string user_uid, string assigned_user_uid,
             int page, int pagesize);
 
+        Task<PagerData<IssueEntity>> MyIssueV2(
+            string org_uid, string user_uid, bool? open,
+            int page, int pagesize);
+
         Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(string org_uid, string issue_uid, int count);
 
         Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count);
@@ -120,6 +124,39 @@ namespace Hiwjcn.Service.Epc
             });
         }
 
+        public async Task<PagerData<IssueEntity>> MyIssueV2(string org_uid, string user_uid, bool? open, int page, int pagesize)
+        {
+            return await this._issueRepo.PrepareSessionAsync(async db =>
+            {
+                var now = DateTime.Now;
+                var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
+                query = query.Where(x => x.OrgUID == org_uid);
+                query = query.Where(x => x.Start == null || x.Start < now);
+
+                query = query.Where(x => x.UserUID == user_uid || x.AssignedUserUID == user_uid);
+
+                if (open != null)
+                {
+                    if (open.Value)
+                    {
+                        query = query.Where(x => x.IsClosed <= 0);
+                    }
+                    else
+                    {
+                        query = query.Where(x => x.IsClosed > 0);
+                    }
+                }
+
+                var data = new PagerData<IssueEntity>();
+                data.Page = page;
+                data.PageSize = pagesize;
+                data.ItemCount = await query.CountAsync();
+                data.DataList = await query.OrderBy(x => x.IsClosed).OrderByDescending(x => x.CreateTime).ToListAsync();
+
+                return data;
+            });
+        }
+
         public virtual async Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close)
         {
             return await this._issueRepo.PrepareSessionAsync(async db =>
@@ -128,8 +165,9 @@ namespace Hiwjcn.Service.Epc
                 var res = new _<string>();
                 var now = DateTime.Now;
 
-                var issue = await this._issueRepo.GetFirstAsync(x => x.UID == issue_uid);
+                var issue = await query.FirstOrDefaultAsync(x => x.UID == issue_uid);
                 Com.AssertNotNull(issue, "issue is null");
+
                 if (issue.AssignedUserUID != user_uid && issue.UserUID != user_uid)
                 {
                     res.SetErrorMsg("无权操作");
@@ -255,5 +293,6 @@ namespace Hiwjcn.Service.Epc
                 where: x => x.OrgUID == org_uid && x.IsClosed <= 0,
                 orderby: x => x.IID, Desc: true,
                 count: count);
+
     }
 }

@@ -29,7 +29,7 @@ namespace Hiwjcn.Framework
             //缓存
             if (ValidateHelper.IsPlumpString(ConfigHelper.Instance.RedisConnectionString))
             {
-                builder.UseCacheProvider<RedisCacheProvider>();
+                builder.UseCacheProvider<RedisCacheProvider_>();
             }
             else
             {

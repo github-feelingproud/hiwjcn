@@ -115,7 +115,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> MyIssue(string byme, int? page)
+        public async Task<ActionResult> MyIssue(string open, int? page)
         {
             return await RunActionAsync(async () =>
             {
@@ -124,22 +124,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
 
                 page = this.CheckPage(page);
 
-                var user_uid = string.Empty;
-                var assigned_user_uid = string.Empty;
-
-                if ((byme ?? "false").ToBool())
-                {
-                    //我开启的
-                    user_uid = loginuser.UserID;
-                }
-                else
-                {
-                    //指派给我的
-                    assigned_user_uid = loginuser.UserID;
-                }
-
-                var data = await this._issueService.MyIssue(org_uid,
-                    user_uid: user_uid, assigned_user_uid: assigned_user_uid,
+                var data = await this._issueService.MyIssueV2(org_uid,
+                    user_uid: loginuser.UserID, open: (open ?? "true").ToBool(),
                     page: page.Value, pagesize: this.PageSize);
 
                 data.DataList = await _issueService._LoadPagerExtraData(data.DataList);
@@ -165,7 +151,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                if (!ValidateHelper.IsAllPlumpString(issue_uid, open)) { return GetJsonRes("参数错误"); }
+                if (!ValidateHelper.IsAllPlumpString(issue_uid, open)) { throw new NoParamException(); }
 
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.MemberRole);
