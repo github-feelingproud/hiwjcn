@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Hiwjcn.Core;
 
 namespace Hiwjcn.Service.Epc
 {
@@ -209,7 +210,7 @@ namespace Hiwjcn.Service.Epc
         public async Task<DeviceEntity> GetDeviceByUID(string org_uid, string uid)
         {
             var model = await this._deviceRepo.GetFirstAsync(x => x.UID == uid);
-            if (model == null || model.OrgUID != org_uid) { throw new Exception("has no permission to load data"); }
+            if (model == null || model.OrgUID != org_uid) { throw new DataNotExistException("数据不存在"); }
 
             return model;
         }

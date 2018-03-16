@@ -155,14 +155,6 @@ namespace Lib.mvc
         }
 
         [DataMember]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string UserToken { get; set; }
-
-        [DataMember]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string SafeCode { get; set; }
-
-        [DataMember]
         public bool Success { get; set; } = false;
 
         [DataMember]
@@ -173,38 +165,6 @@ namespace Lib.mvc
 
         [DataMember]
         public T Data { get; set; }
-
-        [DataMember]
-        public int Total { get; set; }
-
-        [Obsolete("使用没有参数的构造函数")]
-        public ResultMsg(T data, bool success, string errorCode, string errorMsg, string userToken)
-        {
-            this.Data = data;
-            this.Success = success;
-            this.ErrorMsg = errorMsg;
-            this.ErrorCode = errorCode;
-            this.UserToken = userToken;
-        }
-
-        [Obsolete("使用没有参数的构造函数")]
-        public ResultMsg(bool success, string errorCode, string errorMsg, string userToken)
-        {
-            this.Success = success;
-            this.ErrorMsg = errorMsg;
-            this.ErrorCode = errorCode;
-            this.UserToken = userToken;
-        }
-
-        [Obsolete("使用没有参数的构造函数")]
-        public ResultMsg(bool success, string errorCode, string errorMsg)
-        {
-            this.Success = success;
-            this.ErrorMsg = errorMsg;
-            this.ErrorCode = errorCode;
-        }
-
-        public ResultMsg() { }
     }
 
     /// <summary>
@@ -216,7 +176,7 @@ namespace Lib.mvc
         {
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
 
             var response = context.HttpContext.Response;
@@ -240,20 +200,6 @@ namespace Lib.mvc
                 var json = JsonHelper.ObjectToJson(Data);
                 response.Write(json);
             }
-        }
-    }
-
-    /// <summary>
-    /// 登录
-    /// </summary>
-    public class LoginResult : ActionResult
-    {
-        public override void ExecuteResult(ControllerContext context)
-        {
-            string url = ConvertHelper.GetString(context.HttpContext.Request.Url);
-            url = EncodingHelper.UrlEncode(url);
-            context.HttpContext.Response.Redirect("/account/login/?next=" + url);
-            context.HttpContext.ApplicationInstance.CompleteRequest();
         }
     }
 

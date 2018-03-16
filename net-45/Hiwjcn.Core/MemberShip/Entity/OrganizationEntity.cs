@@ -64,6 +64,9 @@ namespace EPC.Core.Entity
 
         [Required]
         public virtual string OwnerUID { get; set; }
+        
+        [Required]
+        public virtual string UserUID { get; set; }
 
         public virtual int MemeberCount { get; set; }
 

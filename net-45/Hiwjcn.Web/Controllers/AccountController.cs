@@ -161,27 +161,6 @@ namespace Hiwjcn.Web.Controllers
         }
 
         /// <summary>
-        /// 登录账户
-        /// </summary>
-        /// <returns></returns>
-        [RequestLog]
-        public async Task<ActionResult> Login(string url, string @continue, string next, string callback)
-        {
-            return await RunActionAsync(async () =>
-            {
-                url = new string[] { url, @continue, next, callback, "/" }.FirstNotEmpty_();
-
-                var auth_user = await this.X.context.GetAuthUserAsync();
-                if (auth_user != null)
-                {
-                    return Redirect(url);
-                }
-
-                return View();
-            });
-        }
-
-        /// <summary>
         /// 退出地址
         /// </summary>
         /// <returns></returns>
@@ -213,27 +192,25 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var loginuser = await this.X.context.GetAuthUserAsync();
-                return GetJson(new _() { success = loginuser != null, data = loginuser });
+                var loginuser = await this.GetLoginUserAsync();
+                return GetJson(new _() { success = true, data = loginuser });
             });
         }
 
         [HttpGet]
-        public async Task<ActionResult> LoginUser()
-        {
-            return await RunActionAsync(async () =>
-            {
-                var loginuser = await this.X.context.GetAuthUserAsync();
-
-                return GetJsonp(new _() { success = loginuser != null, data = loginuser });
-            });
-        }
+        public async Task<ActionResult> LoginUser() => await this.GetLoginUserInfo();
 
         [HttpPost]
         public async Task<ActionResult> Reg(string data)
         {
             return await RunActionAsync(async () =>
             {
+                var loginuser = await this.GetLoginUserInfo();
+                if (loginuser != null)
+                {
+                    return GetJsonRes("已经登录，不能注册");
+                }
+
                 var user = data?.JsonToEntity<UserEntity>(throwIfException: false) ?? throw new NoParamException();
 
                 var res = await this._login.RegisterUser(user);

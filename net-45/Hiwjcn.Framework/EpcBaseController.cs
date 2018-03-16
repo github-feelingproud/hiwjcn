@@ -63,7 +63,7 @@ namespace Hiwjcn.Framework
             this.X.context.SetCookie(OrgCookieName, uid, expires_minutes: TimeSpan.FromDays(365).TotalMinutes);
 
         [NonAction]
-        protected async Task<LoginUserInfo> ValidMember(string org_uid, int? flag = null)
+        protected async Task<LoginUserInfo> GetLoginUserAsync()
         {
             var loginuser = await this.X.context.GetAuthUserAsync();
             if (loginuser == null)
@@ -71,6 +71,14 @@ namespace Hiwjcn.Framework
                 //没有登录
                 throw new NoLoginException();
             }
+
+            return loginuser;
+        }
+
+        [NonAction]
+        protected async Task<LoginUserInfo> ValidMember(string org_uid, int? flag = null)
+        {
+            var loginuser = await this.GetLoginUserAsync();
 
             using (var s = IocContext.Instance.Scope())
             {

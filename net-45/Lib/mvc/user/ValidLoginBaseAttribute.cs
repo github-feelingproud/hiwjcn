@@ -142,7 +142,7 @@ namespace Lib.mvc.user
         {
             context.BeginRequest += (sender, e) =>
             {
-                var loginuser = HttpContext.Current.GetAuthUser();
+                HttpContext.Current.Ip();
             };
             context.EndRequest += (sender, e) => { };
         }

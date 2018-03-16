@@ -96,6 +96,10 @@ namespace EPC.Api.Controllers
             {
                 var model = data?.JsonToEntity<OrganizationEntity>(throwIfException: false) ?? throw new NoParamException();
 
+                var loginuser = await this.GetLoginUserAsync();
+
+                model.UserUID = loginuser.UserID;
+
                 if (ValidateHelper.IsPlumpString(model.UID))
                 {
                     var res = await this._orgService.UpdateOrg(model);
@@ -110,6 +114,7 @@ namespace EPC.Api.Controllers
                         Flag = (int)MemberRoleEnum.管理员,
                         MemberApproved = (int)YesOrNoEnum.是,
                         OrgApproved = (int)YesOrNoEnum.是,
+                        IsOwner = (int)YesOrNoEnum.是
                     };
                     await this._orgService.AddMember(map);
                 }
@@ -166,7 +171,7 @@ namespace EPC.Api.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var loginuser = await this.X.context.GetAuthUserAsync();
+                var loginuser = await this.GetLoginUserAsync();
                 var map = await this._orgService.GetMyOrgMap(loginuser?.UserID);
                 var data = await this._orgService.GetMyOrgEntity(map.Select(x => x.OrgUID).ToArray());
 
@@ -194,7 +199,7 @@ namespace EPC.Api.Controllers
                     return GetJsonRes("无效参数");
                 }
 
-                var loginuser = await this.X.context.GetAuthUserAsync();
+                var loginuser = await this.GetLoginUserAsync();
                 var data = await this._orgService.GetMyOrgMap(loginuser?.UserID);
                 if (!data.Select(x => x.OrgUID).Contains(org_uid))
                 {
