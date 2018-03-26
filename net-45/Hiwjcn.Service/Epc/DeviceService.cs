@@ -210,7 +210,7 @@ namespace Hiwjcn.Service.Epc
         public async Task<DeviceEntity> GetDeviceByUID(string org_uid, string uid)
         {
             var model = await this._deviceRepo.GetFirstAsync(x => x.UID == uid);
-            if (model == null || model.OrgUID != org_uid) { throw new DataNotExistException("数据不存在"); }
+            if (model?.OrgUID != org_uid) { throw new DataNotExistException("数据不存在"); }
 
             return model;
         }

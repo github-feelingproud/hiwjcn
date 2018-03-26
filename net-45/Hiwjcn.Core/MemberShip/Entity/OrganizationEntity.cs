@@ -64,7 +64,7 @@ namespace EPC.Core.Entity
 
         [Required]
         public virtual string OwnerUID { get; set; }
-        
+
         [Required]
         public virtual string UserUID { get; set; }
 
@@ -72,6 +72,12 @@ namespace EPC.Core.Entity
 
         [NotMapped]
         public virtual UserEntity OwnerModel { get; set; }
+
+        [NotMapped]
+        public virtual string OwnerNickName { get => this.OwnerModel?.NickName; }
+
+        [NotMapped]
+        public virtual string OwnerEmail { get => this.OwnerModel?.Email; }
     }
 
     [Serializable]

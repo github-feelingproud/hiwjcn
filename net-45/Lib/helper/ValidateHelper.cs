@@ -360,23 +360,19 @@ namespace Lib.helper
         #region 判断是否是空数据
 
         /// <summary>
-        /// 判断是否是有值的list
+        /// string dict都是list
         /// </summary>
-        public static bool IsPlumpList<T>(IEnumerable<T> list) => list?.Any() ?? false;
+        public static bool IsNotEmpty<T>(IEnumerable<T> list) => list?.Any() ?? false;
 
         /// <summary>
-        /// 包含长度大于0的item，并把他们找出来
+        /// 判断是否是有值的list
         /// </summary>
-        public static bool IsPlumpListAfterFilterMeaninglessData(IEnumerable<string> list, out List<string> filtered)
-        {
-            filtered = ConvertHelper.NotNullList(list).Where(x => IsPlumpString(x)).ToList();
-            return filtered.Any();
-        }
+        public static bool IsPlumpList<T>(IEnumerable<T> list) => ValidateHelper.IsNotEmpty(list);
 
         /// <summary>
         /// 判断是否是有值的字典
         /// </summary>
-        public static bool IsPlumpDict<K, V>(IDictionary<K, V> dict) => dict?.Any() ?? false;
+        public static bool IsPlumpDict<K, V>(IDictionary<K, V> dict) => ValidateHelper.IsNotEmpty(dict);
 
         /// <summary>
         /// 去除两端空格后判断是否是非空字符串
@@ -386,14 +382,14 @@ namespace Lib.helper
         /// <summary>
         /// 判断是否是非空字符串
         /// </summary>
-        public static bool IsPlumpString(string str) => (str?.Length ?? 0) > 0;
+        public static bool IsPlumpString(string str) => ValidateHelper.IsNotEmpty(str);
 
         /// <summary>
         /// 判断是否都是非空字符串
         /// </summary>
         public static bool IsAllPlumpString(params string[] strs)
         {
-            if (!IsPlumpList(strs)) { throw new Exception("至少需要一个参数"); }
+            if (!IsPlumpList(strs)) { throw new ArgumentNullException("至少需要一个参数"); }
             return strs.All(x => IsPlumpString(x));
         }
 
@@ -402,7 +398,7 @@ namespace Lib.helper
         /// </summary>
         public static bool IsAnyPlumpString(params string[] strs)
         {
-            if (!IsPlumpList(strs)) { throw new Exception("至少需要一个参数"); }
+            if (!IsPlumpList(strs)) { throw new ArgumentNullException("至少需要一个参数"); }
             return strs.Any(x => IsPlumpString(x));
         }
         #endregion

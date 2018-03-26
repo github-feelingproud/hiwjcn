@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hiwjcn.Core
 {
     /// <summary>
-    /// 传单错误
+    /// 传参错误
     /// </summary>
     public class NoParamException : ArgumentNullException
     {
@@ -36,7 +32,19 @@ namespace Hiwjcn.Core
     public class NoOrgException : Exception
     {
         public NoOrgException(string msg = null) :
-            base(msg ?? "没有加入组织")
+            base(msg ?? "没有选择组织")
+        {
+            //
+        }
+    }
+
+    /// <summary>
+    /// 没有小组信息
+    /// </summary>
+    public class NoProjectException : Exception
+    {
+        public NoProjectException(string msg = null) :
+            base(msg ?? "没有选择小组")
         {
             //
         }
@@ -49,6 +57,30 @@ namespace Hiwjcn.Core
     {
         public NoPermissionInOrgException(string msg = null) :
             base(msg ?? "没有许可进行操作")
+        {
+            //
+        }
+    }
+
+    /// <summary>
+    /// 没有权限
+    /// </summary>
+    public class NoPermissionException : Exception
+    {
+        public NoPermissionException(string msg = null) :
+            base(msg ?? "没有权限")
+        {
+            //
+        }
+    }
+
+    /// <summary>
+    /// 没有scope
+    /// </summary>
+    public class NoScopeException : Exception
+    {
+        public NoScopeException(string msg = null) :
+            base(msg ?? "没有scope")
         {
             //
         }
