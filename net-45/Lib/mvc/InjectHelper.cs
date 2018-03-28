@@ -7,8 +7,30 @@ using System.Reflection;
 using Lib.core;
 using Lib.helper;
 
-namespace Lib.mvc.inject
+namespace Lib.mvc.test.inject
 {
+    /// <summary>
+    /// 注入
+    /// classname的格式：（namespace.classname,assemblyname）
+    /// </summary>
+    public class InjectAttribute : System.Attribute
+    {
+        public string ClassName { get; set; }
+    }
+
+    public class LoadNavigationBeforeActionExecutingAttribute : RunBeforeAttribute
+    {
+        public override void Run(System.Web.Mvc.Controller controller)
+        {
+            //dosomething
+        }
+    }
+
+    public abstract class RunBeforeAttribute : System.Attribute
+    {
+        public abstract void Run(Controller controller);
+    }
+
     /// <summary>
     /// 注入框架
     /// </summary>

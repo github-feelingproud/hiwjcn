@@ -1,16 +1,9 @@
-﻿using System;
+﻿using Lib.extension;
+using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using Lib.extension;
-using Lib.core;
-using Lib.helper;
-using System.Configuration;
 
-namespace Lib.mvc
+namespace Lib.helper
 {
     public static class SignHelper
     {
