@@ -96,9 +96,7 @@ namespace Lib.helper
             {
                 try
                 {
-                    var context = Com.TryGetContext(_context);
-
-                    var kv = context.Request.QueryString.ToDict()
+                    var kv = _context.Request.QueryString.ToDict()
                         .Where(x => ValidateHelper.IsPlumpString(x.Key) && x.Key.ToLower() != pageKey.ToLower())
                         .ToDictionary(x => x.Key, x => ConvertHelper.GetString(x.Value));
                     this.UrlParams.AddDict(kv);

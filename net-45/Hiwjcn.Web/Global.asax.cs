@@ -209,9 +209,7 @@ namespace Hiwjcn.Web
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
             //设置请求的唯一ID
-            Com.SetNewRequestID();
-            //开启跨域
-            HttpContext.Current.AllowCrossDomainAjax();
+            HttpContext.Current.SetNewRequestID();
         }
         #endregion
 

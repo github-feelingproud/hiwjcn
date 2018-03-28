@@ -153,21 +153,17 @@ namespace Lib.mvc.user
             this._CookieTokenEncryption = _CookieTokenEncryption ?? new DefaultCookieTokenEncryption();
         }
 
-        public string GetCookieUID(HttpContext context = null)
+        public string GetCookieUID(HttpContext context)
         {
-            context = Com.TryGetContext(context);
-
             return context.GetCookie(this.COOKIE_LOGIN_UID);
         }
 
-        public string GetCookieTokenRaw(HttpContext context = null)
+        public string GetCookieTokenRaw(HttpContext context)
         {
-            context = Com.TryGetContext(context);
-
             return context.GetCookie(this.COOKIE_LOGIN_TOKEN);
         }
 
-        public string GetCookieToken(HttpContext context = null)
+        public string GetCookieToken(HttpContext context)
         {
             var data = this.GetCookieTokenRaw(context);
             if (!ValidateHelper.IsPlumpString(data))
@@ -178,9 +174,8 @@ namespace Lib.mvc.user
             return this._CookieTokenEncryption.Decrypt(data);
         }
 
-        public void SetUserLogin(HttpContext context = null, LoginUserInfo loginuser = null)
+        public void SetUserLogin(HttpContext context, LoginUserInfo loginuser)
         {
-            context = Com.TryGetContext(context);
             if (loginuser == null) { throw new ArgumentNullException("登陆状态为空"); }
             if (this.CookieExpiresMinutes <= 0) { throw new Exception("cookie过期时间必须大于0，请修改配置"); }
 
@@ -196,13 +191,13 @@ namespace Lib.mvc.user
             //保存到session
             context.Session.SetObjectAsJson(this.LOGIN_USER_SESSION, loginuser);
             //保存到cookie
-            if (this.GetCookieUID() != loginuser.UserID)
+            if (this.GetCookieUID(context) != loginuser.UserID)
             {
                 context.SetCookie(this.COOKIE_LOGIN_UID, loginuser.UserID,
                     domain: this.COOKIE_DOMAIN,
                     expires_minutes: this.CookieExpiresMinutes);
             }
-            if (this.GetCookieToken() != loginuser.LoginToken)
+            if (this.GetCookieToken(context) != loginuser.LoginToken)
             {
                 var data = this._CookieTokenEncryption.Encrypt(loginuser.LoginToken);
 
@@ -212,37 +207,19 @@ namespace Lib.mvc.user
             }
         }
 
-        public void SetUserLogout(HttpContext context = null)
+        public void SetUserLogout(HttpContext context)
         {
-            context = Com.TryGetContext(context);
-
             context.Session.RemoveSession(this.LOGIN_USER_SESSION);
             //清空其他cookie操作
             //CookieHelper.RemoveResponseCookies(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN });
-            if (ValidateHelper.IsPlumpString(this.GetCookieTokenRaw()))
+            if (ValidateHelper.IsPlumpString(this.GetCookieTokenRaw(context)))
             {
                 context.RemoveCookie(this.COOKIE_LOGIN_TOKEN, domain: this.COOKIE_DOMAIN);
             }
-            if (ValidateHelper.IsPlumpString(this.GetCookieUID()))
+            if (ValidateHelper.IsPlumpString(this.GetCookieUID(context)))
             {
                 context.RemoveCookie(this.COOKIE_LOGIN_UID, domain: this.COOKIE_DOMAIN);
             }
-        }
-
-        [Obsolete("即将失效")]
-        public LoginUserInfo GetLoginUser(HttpContext context = null)
-        {
-            context = Com.TryGetContext(context);
-
-            var model = context.Session.GetObjectFromJsonOrDefault<LoginUserInfo>(this.LOGIN_USER_SESSION);
-            var cookie_uid = this.GetCookieUID(context);
-            var cookie_token = this.GetCookieToken(context);
-
-            if (model != null && model.UserID == cookie_uid && model.LoginToken == cookie_token)
-            {
-                return model;
-            }
-            return null;
         }
     }
 

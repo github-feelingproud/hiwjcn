@@ -71,15 +71,7 @@ namespace Lib.helper
         /// </summary>
         /// <returns></returns>
         public static dynamic DynamicObj() => new System.Dynamic.ExpandoObject();
-
-        /// <summary>
-        /// 尝试获取请求上下文
-        /// </summary>
-        /// <param name="_context"></param>
-        /// <returns></returns>
-        public static HttpContext TryGetContext(HttpContext _context) =>
-            _context ?? System.Web.HttpContext.Current ?? throw new Exception("无法获取上下文对象");
-
+        
         /// <summary>
         /// 把对象可读属性读出来变成字典
         /// </summary>
@@ -348,18 +340,7 @@ namespace Lib.helper
             sortlist.Sort(new MyStringComparer());
             return SecureHelper.GetMD5(string.Join("{*}", sortlist));
         }
-
-        /// <summary>
-        /// 设置请求ID
-        /// </summary>
-        public static void SetNewRequestID() => HttpContext.Current.Items["req_guid"] = GetUUID();
-
-        /// <summary>
-        /// 获取请求ID
-        /// </summary>
-        /// <returns></returns>
-        public static string GetRequestID() => ConvertHelper.GetString(HttpContext.Current.Items["req_guid"]);
-
+        
         /// <summary>
         /// 获取对象占用内存大小
         /// </summary>

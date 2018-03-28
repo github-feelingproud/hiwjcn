@@ -33,7 +33,7 @@ namespace Hiwjcn.Framework
                 var model = new ReqLogEntity();
 
                 model.ReqTime = (DateTime.Now - start).TotalMilliseconds;
-                model.ReqID = Com.GetRequestID();
+                model.ReqID = context.GetRequestID();
 
                 model.ReqRefURL = ConvertHelper.GetString(context.Request.UrlReferrer);
                 model.ReqURL = ConvertHelper.GetString(context.Request.Url);

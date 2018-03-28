@@ -379,7 +379,7 @@
     <Compile Include="mvc\MvcExtension.cs" />
     <Compile Include="mvc\plugin\BasePaymentController.cs" />
     <Compile Include="mvc\plugin\BasePluginController.cs" />
-    <Compile Include="mvc\RequestHelper.cs" />
+    <Compile Include="mvc\RequestExtension.cs" />
     <Compile Include="mvc\ResponseExtension.cs" />
     <Compile Include="mvc\ServerHelper.cs" />
     <Compile Include="mvc\SessionExtension.cs" />

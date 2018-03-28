@@ -130,21 +130,4 @@ namespace Lib.mvc.user
             });
         }
     }
-
-    public class ValidLoginModule : IHttpModule
-    {
-        public void Dispose()
-        {
-            //dispose
-        }
-
-        public void Init(HttpApplication context)
-        {
-            context.BeginRequest += (sender, e) =>
-            {
-                HttpContext.Current.Ip();
-            };
-            context.EndRequest += (sender, e) => { };
-        }
-    }
 }

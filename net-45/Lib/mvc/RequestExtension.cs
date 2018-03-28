@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Lib.mvc
 {
-    public static class RequestHelper
+    public static class RequestExtension
     {
         #region 获取get，post数据
         /// <summary>
@@ -16,7 +16,7 @@ namespace Lib.mvc
         /// <param name="Request"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string GetGetString(HttpRequest Request, string key, string deft = "")
+        public static string GetGetString(this HttpRequest Request, string key, string deft = "")
         {
             return Request.QueryString[key] ?? deft;
         }
@@ -26,7 +26,7 @@ namespace Lib.mvc
         /// <param name="Request"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string GetPostString(HttpRequest Request, string key, string deft = "")
+        public static string GetPostString(this HttpRequest Request, string key, string deft = "")
         {
             return Request.Form[key] ?? deft;
         }
@@ -36,7 +36,7 @@ namespace Lib.mvc
         /// <param name="Request"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string GetParamsString(HttpRequest Request, string key, string deft = "")
+        public static string GetParamsString(this HttpRequest Request, string key, string deft = "")
         {
             return Request.Params[key] ?? deft;
         }
@@ -46,11 +46,11 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public static string GetBaseUrl(HttpRequest request)
+        public static string GetBaseUrl(this HttpRequest request)
         {
             return request.Url.Scheme + "://" + request.Url.Authority + request.ApplicationPath;
         }
-        public static string GetCurrentUrl(HttpRequest request)
+        public static string GetCurrentUrl(this HttpRequest request)
         {
             //string url = GetBaseUrl(request)+request.Url.Scheme + request.Path +"/"+ request.QueryString;
             //Debug.Write(url);
@@ -62,7 +62,7 @@ namespace Lib.mvc
         /// <param name="Request"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string MapPath(HttpRequest Request, string path)
+        public static string MapPath(this HttpRequest Request, string path)
         {
             return ConvertHelper.GetString(Request.MapPath(path));
         }
@@ -71,19 +71,19 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="Request"></param>
         /// <returns></returns>
-        public static bool IsPost(HttpRequest Request)
+        public static bool IsPost(this HttpRequest Request)
         {
             return Request.HttpMethod?.ToUpper() == "POST";
         }
-        public static bool IsGet(HttpRequest Request)
+        public static bool IsGet(this HttpRequest Request)
         {
             return Request.HttpMethod?.ToUpper() == "GET";
         }
-        public static bool IsAjax(HttpRequest Request)
+        public static bool IsAjax(this HttpRequest Request)
         {
             return Request.Headers["X-Requested-With"]?.ToUpper() == "XMLHttpRequest";
         }
-        public static bool IsSSL(HttpRequest Request)
+        public static bool IsSSL(this HttpRequest Request)
         {
             return Request.IsSecureConnection;
         }
@@ -92,7 +92,7 @@ namespace Lib.mvc
         /// 获得上次请求的url
         /// </summary>
         /// <returns></returns>
-        public static string GetUrlReferrer(HttpRequest Request)
+        public static string GetUrlReferrer(this HttpRequest Request)
         {
             //string re=HttpContext.Current.Request.Headers["referrer"];
             var uri = Request.UrlReferrer;
@@ -103,7 +103,7 @@ namespace Lib.mvc
         /// 获得请求的原始url
         /// </summary>
         /// <returns></returns>
-        public static string GetRawUrl(HttpRequest Request)
+        public static string GetRawUrl(this HttpRequest Request)
         {
             return ConvertHelper.GetString(Request.RawUrl);
         }
@@ -113,7 +113,7 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="Request"></param>
         /// <returns></returns>
-        public static string GetCurrentIpAddress(HttpRequest Request)
+        public static string GetCurrentIpAddress(this HttpRequest Request)
         {
             var result = string.Empty;
             //The X-Forwarded-For (XFF) HTTP header field is a de facto standard
@@ -156,29 +156,30 @@ namespace Lib.mvc
             return result;
         }
 
-        public static string[] GetUserLanguages(HttpRequest Request)
+        public static string[] GetUserLanguages(this HttpRequest Request)
         {
             return Request.UserLanguages;
         }
-        public static string GetUserAgent(HttpRequest Request)
+        public static string GetUserAgent(this HttpRequest Request)
         {
             return ConvertHelper.GetString(Request.UserAgent);
         }
-        public static string GetUserHostName(HttpRequest Request)
+        public static string GetUserHostName(this HttpRequest Request)
         {
             return ConvertHelper.GetString(Request.UserHostName);
         }
-        public static string GetUserHost(HttpRequest Request)
+        public static string GetUserHost(this HttpRequest Request)
         {
             return ConvertHelper.GetString(Request.Url.Host);
         }
-        public static bool IsSearchEnginesGet()
+
+        public static bool IsSearchEnginesGet(this HttpRequest Request)
         {
-            if (HttpContext.Current.Request.UrlReferrer == null)
+            if (Request.UrlReferrer == null)
                 return false;
 
             string[] SearchEngine = { "google", "yahoo", "msn", "baidu", "sogou", "sohu", "sina", "163", "lycos", "tom", "yisou", "iask", "soso", "gougou", "zhongsou" };
-            string tmpReferrer = HttpContext.Current.Request.UrlReferrer.ToString().ToLower();
+            string tmpReferrer = Request.UrlReferrer.ToString().ToLower();
             return SearchEngine.Any(x => tmpReferrer.Contains(x));
         }
 
@@ -188,9 +189,9 @@ namespace Lib.mvc
         /// 获得请求的浏览器类型
         /// </summary>
         /// <returns></returns>
-        public static string GetBrowserType()
+        public static string GetBrowserType(this HttpRequest Request)
         {
-            string type = HttpContext.Current.Request.Browser.Type;
+            string type = Request.Browser.Type;
             if (string.IsNullOrEmpty(type) || type == "unknown")
                 return "未知";
 
@@ -201,9 +202,9 @@ namespace Lib.mvc
         /// 获得请求的浏览器名称
         /// </summary>
         /// <returns></returns>
-        public static string GetBrowserName()
+        public static string GetBrowserName(this HttpRequest Request)
         {
-            string name = HttpContext.Current.Request.Browser.Browser;
+            string name = Request.Browser.Browser;
             if (string.IsNullOrEmpty(name) || name == "unknown")
                 return "未知";
 
@@ -214,9 +215,9 @@ namespace Lib.mvc
         /// 获得请求的浏览器版本
         /// </summary>
         /// <returns></returns>
-        public static string GetBrowserVersion()
+        public static string GetBrowserVersion(this HttpRequest Request)
         {
-            string version = HttpContext.Current.Request.Browser.Version;
+            string version = Request.Browser.Version;
             if (string.IsNullOrEmpty(version) || version == "unknown")
                 return "未知";
 
@@ -227,10 +228,10 @@ namespace Lib.mvc
         /// 获得请求客户端的操作系统类型
         /// </summary>
         /// <returns></returns>
-        public static string GetOSType()
+        public static string GetOSType(this HttpRequest Request)
         {
             string type = "未知";
-            string userAgent = HttpContext.Current.Request.UserAgent;
+            string userAgent = Request.UserAgent;
 
             if (userAgent.Contains("NT 6.1"))
             {
@@ -304,9 +305,9 @@ namespace Lib.mvc
         /// 获得请求客户端的操作系统名称
         /// </summary>
         /// <returns></returns>
-        public static string GetOSName()
+        public static string GetOSName(this HttpRequest Request)
         {
-            string name = HttpContext.Current.Request.Browser.Platform;
+            string name = Request.Browser.Platform;
             if (string.IsNullOrEmpty(name))
                 return "未知";
 
@@ -317,10 +318,10 @@ namespace Lib.mvc
         /// 判断是否是浏览器请求
         /// </summary>
         /// <returns></returns>
-        public static bool IsBrowser()
+        public static bool IsBrowser(this HttpRequest Request)
         {
             var list = new string[] { "ie", "chrome", "mozilla", "netscape", "firefox", "opera" };
-            string name = GetBrowserName();
+            string name = GetBrowserName(Request);
             return list.Any(x => name.Contains(x));
         }
 

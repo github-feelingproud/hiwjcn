@@ -7,6 +7,7 @@ using System.Web;
 using System.Linq;
 using Common.Logging;
 using System.Diagnostics;
+using Lib.mvc;
 
 namespace Lib.extension
 {
@@ -205,7 +206,7 @@ namespace Lib.extension
                     return new { msg = "非Web环境" };
                 }
 
-                var req_id = Com.GetRequestID();
+                var req_id = context.GetRequestID();
                 var method = context.Request.HttpMethod;
                 var header = context.Request.Headers.ToDict();
                 var url = context.Request.Url.ToString();

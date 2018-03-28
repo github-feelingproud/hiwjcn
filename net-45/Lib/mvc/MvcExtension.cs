@@ -31,6 +31,17 @@ namespace Lib.mvc
         }
 
         /// <summary>
+        /// 设置请求ID
+        /// </summary>
+        public static void SetNewRequestID(this HttpContext context) => context.Items["req_guid"] = Com.GetUUID();
+
+        /// <summary>
+        /// 获取请求ID
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRequestID(this HttpContext context) => ConvertHelper.GetString(context.Items["req_guid"]);
+
+        /// <summary>
         /// 获取类似/home/index的url
         /// </summary>
         public static string ActionUrl(this RouteData route)
@@ -45,54 +56,6 @@ namespace Lib.mvc
         }
 
         /// <summary>
-        /// 获取IP
-        /// </summary>
-        public static string Ip(this HttpContext context)
-        {
-            return RequestHelper.GetCurrentIpAddress(context.Request);
-        }
-
-        /// <summary>
-        /// 是否是post
-        /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public static bool IsPost(this HttpRequest req)
-        {
-            return RequestHelper.IsPost(req);
-        }
-
-        /// <summary>
-        /// 是否是ajax
-        /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public static bool IsAjax(this HttpRequest req)
-        {
-            return RequestHelper.IsAjax(req);
-        }
-
-        /// <summary>
-        /// 获取根目录
-        /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public static string GetBaseUrl(this HttpRequest req)
-        {
-            return RequestHelper.GetBaseUrl(req);
-        }
-
-        /// <summary>
-        /// 获取当前访问地址
-        /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public static string GetCurrentUrl(this HttpRequest req)
-        {
-            return RequestHelper.GetCurrentUrl(req);
-        }
-
-        /// <summary>
         /// 获取上传文件的字节数组
         /// </summary>
         /// <param name="file"></param>
@@ -101,16 +64,6 @@ namespace Lib.mvc
         {
             var bs = IOHelper.GetPostFileBytesAndDispose(file);
             return bs;
-        }
-
-        /// <summary>
-        /// 是否是SSL
-        /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public static bool IsSSL(this HttpRequest req)
-        {
-            return RequestHelper.IsSSL(req);
         }
 
         /// <summary>
@@ -142,7 +95,7 @@ namespace Lib.mvc
         /// <returns></returns>
         public static Dictionary<string, string> PostToDict(this HttpContext context) =>
             context.Request.Form.ToDict();
-        
+
         /// <summary>
         /// 获取这个程序集中所用到的所有权限
         /// </summary>\
