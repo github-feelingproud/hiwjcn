@@ -25,6 +25,15 @@ namespace Lib.extension
             }
         }
 
+        public static List<T> AddRange_<T>(this List<T> list, params T[] items)
+        {
+            if (ValidateHelper.IsPlumpList(items))
+            {
+                list.AddRange(items);
+            }
+            return list;
+        }
+
         /// <summary>
         /// 取第一个非空
         /// </summary>

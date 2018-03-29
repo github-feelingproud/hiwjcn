@@ -243,7 +243,6 @@
     <Compile Include="distributed\redis\RedisFireWall.cs" />
     <Compile Include="cache\ICacheProvider.cs" />
     <Compile Include="cache\MemoryCacheProvider.cs" />
-    <Compile Include="cache\MultiLayerCache.cs" />
     <Compile Include="cache\RedisCacheProvider.cs" />
     <Compile Include="core\CircuitBreaker.cs" />
     <Compile Include="core\CpuTimeLogger.cs" />
@@ -393,7 +392,6 @@
     <Compile Include="helper\ConvertHelper.cs" />
     <Compile Include="helper\ValidateHelper.cs" />
     <Compile Include="io\DrawVerifyCode.cs" />
-    <Compile Include="io\FileDownload.cs" />
     <Compile Include="io\FileUpload.cs" />
     <Compile Include="io\ZipHelper.cs" />
     <Compile Include="io\FileModel.cs" />

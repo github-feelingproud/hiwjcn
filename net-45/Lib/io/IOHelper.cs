@@ -128,8 +128,6 @@ namespace Lib.io
         /// <summary>
         /// 先试用contenttype获取扩展名，再使用filename获取扩展名
         /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
         public static string GetFileExtension(string ContentType, string FileName)
         {
             var ext = string.Empty;

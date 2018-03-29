@@ -155,8 +155,6 @@ namespace Lib.helper
             {
                 byte[] inputByteArray;
                 inputByteArray = _encoding.GetBytes(Text);
-                //des.Key = ASCIIEncoding.ASCII.GetBytes(System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(sKey, "md5").Substring(0, 8));
-                //des.IV = ASCIIEncoding.ASCII.GetBytes(System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(sKey, "md5").Substring(0, 8));
                 des.Key = Convert.FromBase64String(txtKey);
                 des.IV = Convert.FromBase64String(txtIV);
                 using (var ms = new MemoryStream())
@@ -192,8 +190,6 @@ namespace Lib.helper
                     i = Convert.ToInt32(Text.Substring(x * 2, 2), 16);
                     inputByteArray[x] = (byte)i;
                 }
-                //des.Key = ASCIIEncoding.ASCII.GetBytes(System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(sKey, "md5").Substring(0, 8));
-                //des.IV = ASCIIEncoding.ASCII.GetBytes(System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(sKey, "md5").Substring(0, 8));
                 des.Key = Convert.FromBase64String(txtKey);
                 des.IV = Convert.FromBase64String(txtIV);
                 using (var ms = new MemoryStream())
