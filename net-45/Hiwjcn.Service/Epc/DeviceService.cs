@@ -72,9 +72,6 @@ namespace Hiwjcn.Service.Epc
                     case (int)DeviceParameterTypeEnum.数值:
                         input = m.Rule?.JsonToEntity<NumberInputExpression>(throwIfException: false);
                         break;
-                    case (int)DeviceParameterTypeEnum.选项:
-                        input = m.Rule?.JsonToEntity<SelectInputExpression>(throwIfException: false);
-                        break;
                     default:
                         break;
                 }

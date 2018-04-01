@@ -48,11 +48,11 @@ namespace Hiwjcn.Service.Epc.InputsType
                 return data;
             }
 
-            if (value < this.Normal * (Range[0] / 100.00))
+            if (value < this.Normal * (1.00 - (Range[0] / 100.00)))
             {
                 data.Tips.AddWhenNotEmpty(this.LowerTips ?? new List<string>());
             }
-            if (value > this.Normal * (Range[1] / 100.00))
+            if (value > this.Normal * (1.00 + (Range[1] / 100.00)))
             {
                 data.Tips.AddWhenNotEmpty(this.UpperTips ?? new List<string>());
             }

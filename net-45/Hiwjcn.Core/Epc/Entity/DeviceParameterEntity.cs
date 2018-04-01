@@ -20,8 +20,6 @@ namespace EPC.Core.Entity
         字符 = 2,
         //比如开关是否打开，如果不是就提示信息
         布尔 = 3,
-        //比如锅炉状态，几种状态
-        选项 = 4,
     }
 
     [Serializable]

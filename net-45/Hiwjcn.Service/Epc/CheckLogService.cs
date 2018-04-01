@@ -142,17 +142,6 @@ namespace Hiwjcn.Service.Epc
                 res = expression.ValidInputs(input.Value);
                 data.NormalDouble = input.Value;
             }
-            else if (p.InputType == (int)DeviceParameterTypeEnum.选项)
-            {
-                var expression = p.Rule?.JsonToEntity<SelectInputExpression>();
-                var input = value?.JsonToEntity<SelectValue>();
-                if (expression == null || input == null)
-                {
-                    throw new MsgException("参数错误");
-                }
-                res = expression.ValidInputs(input.Value);
-                data.NormalSelectStringJson = input.Value?.ToJson();
-            }
             else
             {
                 throw new MsgException("参数类型错误");

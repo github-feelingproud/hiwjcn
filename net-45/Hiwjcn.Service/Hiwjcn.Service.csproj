@@ -169,7 +169,6 @@
     <Compile Include="Epc\InputsType\DeviceInputData.cs" />
     <Compile Include="Epc\InputsType\InputExpression.cs" />
     <Compile Include="Epc\InputsType\NumberInputExpression.cs" />
-    <Compile Include="Epc\InputsType\SelectInputExpression.cs" />
     <Compile Include="Epc\InputsType\StringInputExpression.cs" />
     <Compile Include="Epc\IssueService.cs" />
     <Compile Include="Epc\PageService.cs" />
