@@ -33,7 +33,7 @@ namespace Lib.mq.rabbitmq
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(1)
             };
 
-            _connection = new Lazy<IConnection>(() =>
+            this._connection = new Lazy<IConnection>(() =>
             {
                 var con = _factory.CreateConnection();
                 con.ConnectionShutdown += (sender, args) => { };
