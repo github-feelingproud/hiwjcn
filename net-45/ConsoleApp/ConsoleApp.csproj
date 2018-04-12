@@ -118,7 +118,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ES.cs" />
     <Compile Include="FleckWS.cs" />
     <Compile Include="Im.cs" />
     <Compile Include="JobManager.cs" />

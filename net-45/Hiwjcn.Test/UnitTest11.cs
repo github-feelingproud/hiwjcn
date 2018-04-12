@@ -13,6 +13,10 @@ using System.Linq;
 using Lib.task;
 using Quartz;
 using Lib.rpc;
+using System.Threading;
+using Lib.distributed.zookeeper.ServiceManager;
+using System.Diagnostics;
+using Lib.distributed.zookeeper;
 
 namespace Hiwjcn.Test
 {
@@ -24,6 +28,55 @@ namespace Hiwjcn.Test
     [TestClass]
     public class UnitTest11
     {
+        [TestMethod]
+        public async Task fafafasdfhga()
+        {
+            await Task.Run(() =>
+            {
+                var con = new AlwaysOnZooKeeperClient("es.qipeilong.net:2181");
+                con.OnConnected += () =>
+                {
+                    Debug.Write(nameof(con.OnConnected));
+                };
+                con.OnError += (e) =>
+                {
+                    Debug.Write(nameof(con.OnError));
+                };
+                con.OnRecconected += () =>
+                {
+                    Debug.Write(nameof(con.OnRecconected));
+                };
+                con.OnUnConnected += () =>
+                {
+                    Debug.Write(nameof(con.OnUnConnected));
+                };
+            });
+            //
+            var i = 0;
+        }
+
+        [TestMethod]
+        public void fasdfhga()
+        {
+            var _lz = new Lazy_<ServiceSubscribe>(() => new ServiceSubscribe("es.qipeilong.net:2181"));
+
+            foreach (var m in Com.Range(10))
+            {
+                try
+                {
+                    var service = _lz.Value.ResolveSvc<IUser>() ?? throw new Exception("服务下线");
+                }
+                catch (Exception e)
+                {
+                    //
+                }
+            }
+
+            var _client_lock = new ManualResetEvent(false);
+            _client_lock.WaitOne(TimeSpan.FromSeconds(5));
+            _client_lock.WaitOne(TimeSpan.FromSeconds(5));
+        }
+
         [TestMethod]
         public async Task fasdfasdhj()
         {
