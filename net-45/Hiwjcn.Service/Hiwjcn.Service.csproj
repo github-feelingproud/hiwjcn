@@ -172,7 +172,6 @@
     <Compile Include="Epc\InputsType\StringInputExpression.cs" />
     <Compile Include="Epc\IssueService.cs" />
     <Compile Include="Epc\PageService.cs" />
-    <Compile Include="MemberShip\AuthClientService.cs" />
     <Compile Include="MemberShip\AuthTokenService.cs" />
     <Compile Include="MemberShip\MemberShipDashboardService.cs" />
     <Compile Include="MemberShip\OrgService.cs" />

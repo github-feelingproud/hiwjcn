@@ -124,9 +124,6 @@ namespace Lib.mvc.user
         public virtual DateTime TokenExpire { get; set; }
 
         [DataMember]
-        public virtual List<string> Scopes { get; set; }
-
-        [DataMember]
         public virtual List<string> Roles { get; set; }
 
         [DataMember]
@@ -173,7 +170,6 @@ namespace Lib.mvc.user
         {
             loginuser.Roles?.Clear();
             loginuser.Permissions?.Clear();
-            loginuser.Scopes?.Clear();
         }
 
         /// <summary>
@@ -190,14 +186,7 @@ namespace Lib.mvc.user
         /// </summary>
         public static bool HasPermission(this LoginUserInfo loginuser, string permission) =>
             ValidateHelper.IsPlumpList(loginuser.Permissions) && loginuser.Permissions.Contains(permission);
-
-
-        /// <summary>
-        /// 判断是否有scope
-        /// </summary>
-        public static bool HasScope(this LoginUserInfo loginuser, string scope) =>
-            ValidateHelper.IsPlumpList(loginuser.Scopes) && loginuser.Scopes.Contains(scope);
-
+        
         /// <summary>
         /// 添加额外信息
         /// </summary>

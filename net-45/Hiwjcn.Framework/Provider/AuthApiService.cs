@@ -17,29 +17,19 @@ using System.Threading.Tasks;
 namespace Hiwjcn.Bll.Auth
 {
     public class AuthApiService :
-        AuthApiServiceFromDbBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>
+        AuthApiServiceFromDbBase<AuthToken>
     {
         private readonly Lazy<IActorRef> LogActor;
 
         public AuthApiService(
             IAuthLoginProvider _loginService,
             ICacheProvider _cache,
-            IMSRepository<AuthClient> _clientRepo,
-            IMSRepository<AuthScope> _scopeRepo,
-            IMSRepository<AuthToken> _tokenRepo,
-            IMSRepository<AuthCode> _codeRepo,
-            IMSRepository<AuthTokenScope> _tokenScopeRepo) :
-            base(_loginService, _cache, _clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
+            IMSRepository<AuthToken> _tokenRepo) :
+            base(_loginService, _cache, _tokenRepo)
         {
             this.LogActor = new Lazy<IActorRef>(() => ActorsManager<CacheHitLogActor>.Instance.DefaultClient);
         }
-
-        public override string AuthClientCacheKey(string client) => CacheKeyManager.AuthClientKey(client);
-
-        public override string AuthScopeCacheKey(string scope) => CacheKeyManager.AuthScopeKey(scope);
-
-        public override string AuthSSOUserInfoCacheKey(string user_uid) => CacheKeyManager.AuthSSOUserInfoKey(user_uid);
-
+        
         public override string AuthTokenCacheKey(string token) => CacheKeyManager.AuthTokenKey(token);
 
         public override string AuthUserInfoCacheKey(string user_uid) => CacheKeyManager.AuthUserInfoKey(user_uid);

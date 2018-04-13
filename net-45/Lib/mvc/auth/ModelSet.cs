@@ -35,14 +35,5 @@ namespace Lib.mvc.auth
 
         [DataMember]
         public virtual string[] TokenUID { get; set; }
-
-        [DataMember]
-        public virtual string[] SSOUserUID { get; set; }
-
-        [DataMember]
-        public virtual string[] ClientUID { get; set; }
-
-        [DataMember]
-        public virtual string[] ScopeUID { get; set; }
     }
 }

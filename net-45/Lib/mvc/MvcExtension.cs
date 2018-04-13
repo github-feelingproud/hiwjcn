@@ -99,10 +99,9 @@ namespace Lib.mvc
         /// <summary>
         /// 获取这个程序集中所用到的所有权限
         /// </summary>\
-        public static (List<string> permissions, List<string> scopes) ScanAllAssignedPermissionOnThisAssembly(this Assembly ass)
+        public static List<string> ScanAllAssignedPermissionOnThisAssembly(this Assembly ass)
         {
             var permission_list = new List<string>();
-            var scope_list = new List<string>();
             var tps = ass.GetTypes();
             tps = tps.Where(x => x.IsNormalClass() && x.IsAssignableTo_<Controller>()).ToArray();
             foreach (var t in tps)
@@ -117,17 +116,11 @@ namespace Lib.mvc
                     {
                         permission_list.AddRange(pers);
                     }
-                    var scopes = attr.Scope?.Split(',').ToList();
-                    if (ValidateHelper.IsPlumpList(scopes))
-                    {
-                        scope_list.AddRange(scopes);
-                    }
                 }
             }
             permission_list = permission_list.Distinct().Where(x => ValidateHelper.IsPlumpString(x)).ToList();
-            scope_list = scope_list.Distinct().Where(x => ValidateHelper.IsPlumpString(x)).ToList();
 
-            return (permission_list, scope_list);
+            return permission_list;
         }
     }
 }

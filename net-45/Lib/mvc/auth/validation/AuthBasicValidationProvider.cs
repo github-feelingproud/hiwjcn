@@ -43,9 +43,8 @@ namespace Lib.mvc.auth.validation
             try
             {
                 var access_token = this._dataProvider.GetToken(context);
-                var client_id = this._dataProvider.GetClientID(context);
 
-                var loginuser = await this.api.GetLoginUserInfoByTokenAsync(client_id: client_id, access_token: access_token);
+                var loginuser = await this.api.GetLoginUserInfoByTokenAsync(access_token: access_token);
 
                 if (loginuser.error)
                 {

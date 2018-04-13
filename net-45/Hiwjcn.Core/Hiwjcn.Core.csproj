@@ -93,11 +93,7 @@
     <Compile Include="Epc\EpcEntityDB.cs" />
     <Compile Include="Epc\EpcRepo.cs" />
     <Compile Include="Epc\Model\DashboardModel.cs" />
-    <Compile Include="MemberShip\Data\Auth\AuthClientRepository.cs" />
-    <Compile Include="MemberShip\Data\Auth\AuthCodeRepository.cs" />
-    <Compile Include="MemberShip\Data\Auth\AuthScopeRepository.cs" />
     <Compile Include="MemberShip\Data\Auth\AuthTokenRepository.cs" />
-    <Compile Include="MemberShip\Data\Auth\AuthTokenScopeRepository.cs" />
     <Compile Include="MemberShip\EntityDB.cs" />
     <Compile Include="MemberShip\Entity\OrganizationEntity.cs" />
     <Compile Include="MemberShip\MemberShipRepo.cs" />

@@ -24,42 +24,23 @@ using Hiwjcn.Core.Data;
 
 namespace Hiwjcn.Service.MemberShip
 {
-    public interface IAuthService : IAuthServiceBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>,
+    public interface IAuthService : IAuthServiceBase<AuthToken>,
         IAutoRegistered
     {
 
     }
 
     public class AuthService :
-        AuthServiceBase<AuthClient, AuthScope, AuthToken, AuthCode, AuthTokenScope>,
+        AuthServiceBase<AuthToken>,
         IAuthService
     {
         public AuthService(
             IEventPublisher _publisher,
             IMSRepository<AuthToken> _AuthTokenRepository,
-            IMSRepository<AuthTokenScope> _AuthTokenScopeRepository,
-            IMSRepository<AuthScope> _AuthScopeRepository,
-            IMSRepository<AuthCode> _AuthCodeRepository,
-            IMSRepository<AuthClient> _AuthClientRepository,
             ICacheProvider _cache) :
-            base(_cache, _AuthClientRepository, _AuthScopeRepository, _AuthTokenRepository, _AuthCodeRepository, _AuthTokenScopeRepository)
+            base(_AuthTokenRepository)
         {
             //
         }
-
-        public override string AuthClientCacheKey(string client) =>
-            CacheKeyManager.AuthClientKey(client);
-
-        public override string AuthScopeCacheKey(string scope) =>
-            CacheKeyManager.AuthScopeKey(scope);
-
-        public override string AuthSSOUserInfoCacheKey(string user_uid) =>
-            CacheKeyManager.AuthSSOUserInfoKey(user_uid);
-
-        public override string AuthTokenCacheKey(string token) =>
-            CacheKeyManager.AuthTokenKey(token);
-
-        public override string AuthUserInfoCacheKey(string user_uid) =>
-            CacheKeyManager.AuthUserInfoKey(user_uid);
     }
 }

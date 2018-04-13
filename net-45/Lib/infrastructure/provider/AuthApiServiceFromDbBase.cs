@@ -21,42 +21,37 @@ using Lib.infrastructure.model;
 
 namespace Lib.infrastructure.provider
 {
-    public abstract class AuthApiServiceFromDbBase<ClientBase, ScopeBase, TokenBase, CodeBase, TokenScopeBase> :
-        AuthServiceBase<ClientBase, ScopeBase, TokenBase, CodeBase, TokenScopeBase>,
+    public abstract class AuthApiServiceFromDbBase<TokenBase> :
+        AuthServiceBase<TokenBase>,
         IAuthApi
-        where ClientBase : AuthClientBase, new()
-        where ScopeBase : AuthScopeBase, new()
         where TokenBase : AuthTokenBase, new()
-        where CodeBase : AuthCodeBase, new()
-        where TokenScopeBase : AuthTokenScopeBase, new()
     {
-        private readonly object AuthApiServiceFromDB = new object();
-
+        protected readonly ICacheProvider _cache;
         protected readonly IAuthLoginProvider _loginService;
 
         public AuthApiServiceFromDbBase(
             IAuthLoginProvider _loginService,
             ICacheProvider _cache,
-            IEFRepository<ClientBase> _clientRepo,
-            IEFRepository<ScopeBase> _scopeRepo,
-            IEFRepository<TokenBase> _tokenRepo,
-            IEFRepository<CodeBase> _codeRepo,
-            IEFRepository<TokenScopeBase> _tokenScopeRepo) :
-            base(_cache, _clientRepo, _scopeRepo, _tokenRepo, _codeRepo, _tokenScopeRepo)
+            IEFRepository<TokenBase> _tokenRepo) :
+            base(_tokenRepo)
         {
+            this._cache = _cache;
             this._loginService = _loginService;
+
+            this.ClearTokenCacheCallback = x => this._cache.Remove(this.AuthTokenCacheKey(x));
+            this.ClearUserTokenCallback = x => this._cache.Remove(this.AuthUserInfoCacheKey(x));
         }
 
         public abstract Task CacheHitLog(string cache_key, CacheHitStatusEnum status);
 
-        public virtual async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
+        public virtual async Task<_<TokenModel>> CreateAccessTokenAsync(string user_uid)
         {
             var res = new _<TokenModel>();
 
-            var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAccessTokenAsync)}";
-            var p = new { client_id, client_secret, code, grant_type }.ToJson();
+            var func = $"{nameof(CreateAccessTokenAsync)}";
+            var p = new { user_uid }.ToJson();
 
-            var data = await this.CreateTokenAsync(client_id, client_secret, code);
+            var data = await this.CreateTokenAsync(user_uid);
             if (data.error)
             {
                 $"获取token异常|{data.msg}|{func}|{p}".AddBusinessInfoLog();
@@ -78,14 +73,14 @@ namespace Lib.infrastructure.provider
             return res;
         }
 
-        public virtual async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string client_id, string access_token)
+        public virtual async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string access_token)
         {
             var data = new _<LoginUserInfo>();
 
-            var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetLoginUserInfoByTokenAsync)}";
-            var p = new { client_id, access_token }.ToJson();
+            var func = $"{nameof(GetLoginUserInfoByTokenAsync)}";
+            var p = new { access_token }.ToJson();
 
-            if (!ValidateHelper.IsAllPlumpString(access_token, client_id))
+            if (!ValidateHelper.IsAllPlumpString(access_token))
             {
                 $"验证token异常|参数为空|{func}|{p}".AddBusinessInfoLog();
 
@@ -103,7 +98,7 @@ namespace Lib.infrastructure.provider
             {
                 hit_status = CacheHitStatusEnum.NotHit;
 
-                return await this.FindTokenAsync(client_id, access_token);
+                return await this.FindTokenAsync(access_token);
             }, cache_expire);
 
             //统计缓存命中
@@ -143,97 +138,31 @@ namespace Lib.infrastructure.provider
             loginuser.LoginToken = token.UID;
             loginuser.RefreshToken = token.RefreshToken;
             loginuser.TokenExpire = token.ExpiryTime;
-            loginuser.Scopes = token.ScopesInfoJson?.JsonToEntity<ScopeInfoModel[]>(throwIfException: false)?.Select(x => x.name).ToList();
 
             data.SetSuccessData(loginuser);
 
             return data;
         }
 
-        public virtual async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
-        {
-            var data = new _<string>();
+        public virtual async Task<_<LoginUserInfo>> ValidUserByOneTimeCodeAsync(string phone, string sms) =>
+            await this._loginService.LoginByCode(phone, sms);
 
-            var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAuthCodeByOneTimeCodeAsync)}";
-            var p = new { client_id, scopes, phone, sms }.ToJson();
-
-            var loginuser = await this._loginService.LoginByCode(phone, sms);
-            if (loginuser.error)
-            {
-                $"验证码登录失败|{loginuser.msg}|{func}|{p}".AddBusinessInfoLog();
-
-                data.SetErrorMsg(loginuser.msg);
-                return data;
-            }
-            var scopeslist = AuthHelper.ParseScopes(scopes);
-            if (!ValidateHelper.IsPlumpList(scopeslist))
-            {
-                scopeslist = (await this._scopeRepo.GetListAsync(null)).Select(x => x.Name).ToList();
-            }
-
-            var code = await this.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
-            if (code.error)
-            {
-                $"创建Code失败|{code.msg}|{func}|{p}".AddBusinessInfoLog();
-
-                data.SetErrorMsg(code.msg);
-                return data;
-            }
-
-            data.SetSuccessData(code.data.UID);
-            return data;
-        }
-
-        public virtual async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password)
-        {
-            var data = new _<string>();
-
-            var func = $"{nameof(AuthApiServiceFromDB)}.{nameof(GetAuthCodeByPasswordAsync)}";
-            var p = new { client_id, scopes, username, password }.ToJson();
-
-            var loginuser = await this._loginService.LoginByPassword(username, password);
-            if (loginuser.error)
-            {
-                $"密码登录失败|{loginuser.msg}|{func}|{p}".AddBusinessInfoLog();
-
-                data.SetErrorMsg(loginuser.msg);
-                return data;
-            }
-            var scopeslist = AuthHelper.ParseScopes(scopes);
-            if (!ValidateHelper.IsPlumpList(scopeslist))
-            {
-                scopeslist = (await this._scopeRepo.GetListAsync(null)).Select(x => x.Name).ToList();
-            }
-
-            var code = await this.CreateCodeAsync(client_id, scopeslist, loginuser.data.UserID);
-            if (code.error)
-            {
-                $"创建Code失败|{code.msg}|{func}|{p}".AddBusinessInfoLog();
-
-                data.SetErrorMsg(code.msg);
-                return data;
-            }
-
-            data.SetSuccessData(code.data.UID);
-            return data;
-        }
+        public virtual async Task<_<LoginUserInfo>> ValidUserByPasswordAsync(string username, string password) =>
+            await this._loginService.LoginByPassword(username, password);
 
         public virtual async Task<_<string>> RemoveCacheAsync(CacheBundle data)
         {
-            var res = new _<string>();
             if (data == null)
             {
-                res.SetErrorMsg("缓存key参数为空");
-                return res;
+                throw new ArgumentNullException("缓存key参数为空");
             }
+
+            var res = new _<string>();
 
             var keys = new List<string>();
 
             keys.AddWhenNotEmpty(data.UserUID?.Select(x => this.AuthUserInfoCacheKey(x)));
             keys.AddWhenNotEmpty(data.TokenUID?.Select(x => this.AuthTokenCacheKey(x)));
-            keys.AddWhenNotEmpty(data.SSOUserUID?.Select(x => this.AuthSSOUserInfoCacheKey(x)));
-            keys.AddWhenNotEmpty(data.ClientUID?.Select(x => this.AuthClientCacheKey(x)));
-            keys.AddWhenNotEmpty(data.ScopeUID?.Select(x => this.AuthScopeCacheKey(x)));
 
             foreach (var key in keys.Distinct())
             {
@@ -246,6 +175,10 @@ namespace Lib.infrastructure.provider
 
             return res;
         }
+
+        public abstract string AuthTokenCacheKey(string token);
+
+        public abstract string AuthUserInfoCacheKey(string user_uid);
 
     }
 }

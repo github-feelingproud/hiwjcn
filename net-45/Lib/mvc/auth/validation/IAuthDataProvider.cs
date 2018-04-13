@@ -18,9 +18,5 @@ namespace Lib.mvc.auth.validation
     public interface IAuthDataProvider
     {
         string GetToken(HttpContext context);
-
-        string GetClientID(HttpContext context);
-
-        string GetClientSecurity(HttpContext context);
     }
 }

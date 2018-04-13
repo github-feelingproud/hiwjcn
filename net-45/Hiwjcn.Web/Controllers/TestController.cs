@@ -38,13 +38,13 @@ namespace Hiwjcn.Web.Controllers
     public class TestController : EpcBaseController
     {
         private readonly IEventPublisher _IEventPublisher;
-        private readonly IMSRepository<AuthClient> _clientRepo;
+        private readonly IMSRepository<AuthToken> _clientRepo;
         private readonly IUserService _IUserService;
 
         public TestController(
             IEventPublisher pub,
             IUserService _IUserService,
-            IMSRepository<AuthClient> _clientRepo)
+            IMSRepository<AuthToken> _clientRepo)
         {
             this._IEventPublisher = pub;
             this._IUserService = _IUserService;

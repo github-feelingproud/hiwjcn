@@ -22,16 +22,16 @@ namespace Lib.mvc.auth.api
     public interface IAuthApiWcfServiceContract
     {
         [OperationContract]
-        Task<_<TokenModel>> GetAccessToken(string client_id, string client_secret, string code, string grant_type);
+        Task<_<TokenModel>> GetAccessToken(string user_uid);
 
         [OperationContract]
-        Task<_<LoginUserInfo>> GetLoginUserInfoByToken(string client_id, string access_token);
+        Task<_<LoginUserInfo>> GetLoginUserInfoByToken(string access_token);
 
         [OperationContract]
-        Task<_<string>> GetAuthCodeByOneTimeCode(string client_id, List<string> scopes, string phone, string sms);
+        Task<_<LoginUserInfo>> ValidUserByOneTimeCode(string phone, string sms);
 
         [OperationContract]
-        Task<_<string>> GetAuthCodeByPassword(string client_id, List<string> scopes, string username, string password);
+        Task<_<LoginUserInfo>> ValidUserByPassword(string username, string password);
 
         [OperationContract]
         Task<_<string>> RemoveCache(CacheBundle data);
@@ -53,38 +53,38 @@ namespace Lib.mvc.auth.api
             }
         }
 
-        private ServiceClient<IAuthApiWcfServiceContract> Client() => 
+        private ServiceClient<IAuthApiWcfServiceContract> Client() =>
             new ServiceClient<IAuthApiWcfServiceContract>(this.url);
 
-        public async Task<_<TokenModel>> GetAccessTokenAsync(string client_id, string client_secret, string code, string grant_type)
+        public async Task<_<TokenModel>> CreateAccessTokenAsync(string user_uid)
         {
             using (var client = this.Client())
             {
-                return await client.Instance.GetAccessToken(client_id, client_secret, code, grant_type);
+                return await client.Instance.GetAccessToken(user_uid);
             }
         }
 
-        public async Task<_<string>> GetAuthCodeByOneTimeCodeAsync(string client_id, List<string> scopes, string phone, string sms)
+        public async Task<_<LoginUserInfo>> ValidUserByOneTimeCodeAsync(string phone, string sms)
         {
             using (var client = this.Client())
             {
-                return await client.Instance.GetAuthCodeByOneTimeCode(client_id, scopes, phone, sms);
+                return await client.Instance.ValidUserByOneTimeCode(phone, sms);
             }
         }
 
-        public async Task<_<string>> GetAuthCodeByPasswordAsync(string client_id, List<string> scopes, string username, string password)
+        public async Task<_<LoginUserInfo>> ValidUserByPasswordAsync(string username, string password)
         {
             using (var client = this.Client())
             {
-                return await client.Instance.GetAuthCodeByPassword(client_id, scopes, username, password);
+                return await client.Instance.ValidUserByPassword(username, password);
             }
         }
 
-        public async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string client_id, string access_token)
+        public async Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string access_token)
         {
             using (var client = this.Client())
             {
-                return await client.Instance.GetLoginUserInfoByToken(client_id, access_token);
+                return await client.Instance.GetLoginUserInfoByToken(access_token);
             }
         }
 

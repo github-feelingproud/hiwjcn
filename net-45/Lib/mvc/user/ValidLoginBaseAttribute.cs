@@ -24,12 +24,7 @@ namespace Lib.mvc.user
         /// 权限，逗号隔开
         /// </summary>
         public string Permission { get; set; }
-
-        /// <summary>
-        /// auth scope
-        /// </summary>
-        public string Scope { get; set; }
-
+        
         /// <summary>
         /// 获取登录用户
         /// </summary>
@@ -73,16 +68,6 @@ namespace Lib.mvc.user
             if (ValidateHelper.IsPlumpString(this.Permission))
             {
                 if (this.Permission.Split(',').Where(x => x?.Length > 0).Any(x => !loginuser.HasPermission(x)))
-                {
-                    this.WhenNoPermission(ref filterContext);
-                    return;
-                }
-            }
-
-            //检查scope
-            if (ValidateHelper.IsPlumpString(this.Scope))
-            {
-                if (this.Scope.Split(',').Where(x => x?.Length > 0).Any(x => !loginuser.HasScope(x)))
                 {
                     this.WhenNoPermission(ref filterContext);
                     return;

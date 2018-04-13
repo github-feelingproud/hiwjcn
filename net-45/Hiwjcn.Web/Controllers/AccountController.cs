@@ -18,8 +18,6 @@ namespace Hiwjcn.Web.Controllers
 {
     public class AccountController : EpcBaseController
     {
-        private readonly IReadOnlyCollection<string> DefaultScopes = new List<string>() { }.AsReadOnly();
-
         private readonly IAuthLoginProvider _IAuthLoginService;
         private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
@@ -92,21 +90,20 @@ namespace Hiwjcn.Web.Controllers
                 var data = await this.AntiRetry(user_name, async () =>
                 {
                     var res = new _<object>();
-                    var client_id = this._dataProvider.GetClientID(this.X.context);
-                    var client_security = this._dataProvider.GetClientSecurity(this.X.context);
-                    var code = await this._authApi.GetAuthCodeByPasswordAsync(client_id, this.DefaultScopes.ToList(), user_name, password);
-                    if (code.error)
+                    var user = await this._authApi.ValidUserByPasswordAsync(user_name, password);
+                    if (user.error)
                     {
-                        res.SetErrorMsg(code.msg);
+                        res.SetErrorMsg(user.msg);
                         return res;
                     }
-                    var token = await this._authApi.GetAccessTokenAsync(client_id, client_security, code.data, string.Empty);
+                    var token = await this._authApi.CreateAccessTokenAsync(user.data.UserID);
                     if (token.error)
                     {
                         res.SetErrorMsg(token.msg);
                         return res;
                     }
-                    var user = await this._authApi.GetLoginUserInfoByTokenAsync(client_id, token.data.Token);
+                    //reload user
+                    user = await this._authApi.GetLoginUserInfoByTokenAsync(token.data.Token);
                     if (user.error)
                     {
                         res.SetErrorMsg(user.msg);
