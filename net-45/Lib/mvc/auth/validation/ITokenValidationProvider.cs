@@ -42,7 +42,7 @@ namespace Lib.mvc.auth.validation
         public virtual void WhenUserNotLogin(HttpContext context)
         {
             if (xx) { return; }
-            using (var s = IocContext.Instance.Scope())
+            using (var s = AutofacIocContext.Instance.Scope())
             {
                 s.ResolveOptional_<LoginStatus>()?.SetUserLogout(context);
             }
@@ -51,7 +51,7 @@ namespace Lib.mvc.auth.validation
         public virtual void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
         {
             if (xx) { return; }
-            using (var s = IocContext.Instance.Scope())
+            using (var s = AutofacIocContext.Instance.Scope())
             {
                 s.ResolveOptional_<LoginStatus>()?.SetUserLogin(context, loginuser);
             }

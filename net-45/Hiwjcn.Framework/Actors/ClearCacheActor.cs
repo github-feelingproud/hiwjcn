@@ -36,7 +36,7 @@ namespace Hiwjcn.Framework.Actors
             {
                 return;
             }
-            IocContext.Instance.Scope(x =>
+            AutofacIocContext.Instance.Scope(x =>
             {
                 var cache = x.Resolve_<ICacheProvider>();
                 foreach (var key in list)

@@ -31,7 +31,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             try
             {
-                IocContext.Instance.Scope(s =>
+                AutofacIocContext.Instance.Scope(s =>
                 {
                     var repo = s.Resolve_<IMSRepository<AuthToken>>();
                     repo.PrepareSession(db =>

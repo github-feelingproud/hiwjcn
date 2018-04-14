@@ -21,7 +21,7 @@ namespace Lib.cache
             //如果读缓存，读到就返回
             if (UseCache)
             {
-                return IocContext.Instance.Scope(x =>
+                return AutofacIocContext.Instance.Scope(x =>
                 {
                     return x.Resolve_<ICacheProvider>().GetOrSet(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
                 });
@@ -38,7 +38,7 @@ namespace Lib.cache
             //如果读缓存，读到就返回
             if (UseCache)
             {
-                return await IocContext.Instance.ScopeAsync(async x =>
+                return await AutofacIocContext.Instance.ScopeAsync(async x =>
                 {
                     return await x.Resolve_<ICacheProvider>().GetOrSetAsync(key, dataSource, TimeSpan.FromMinutes(expires_minutes));
                 });
@@ -52,7 +52,7 @@ namespace Lib.cache
         /// <param name="key"></param>
         public static void RemoveCache(string key)
         {
-            IocContext.Instance.Scope(x =>
+            AutofacIocContext.Instance.Scope(x =>
             {
                 x.Resolve_<ICacheProvider>().Remove(key);
                 return true;

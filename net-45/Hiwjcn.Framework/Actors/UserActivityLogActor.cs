@@ -24,7 +24,7 @@ namespace Hiwjcn.Framework.Actors
                         msg.AddBusinessInfoLog();
                         return;
                     }
-                    IocContext.Instance.Scope(s =>
+                    AutofacIocContext.Instance.Scope(s =>
                     {
                         s.Resolve_<IMSRepository<UserActivityEntity>>().Add(x);
                         return true;

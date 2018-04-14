@@ -20,7 +20,7 @@ namespace Lib.data
         public static string RedisPreventTryLogin(string key, Func<bool> func)
         {
             var time = DateTime.Now.AddMinutes(-30);
-            return IocContext.Instance.Scope(s =>
+            return AutofacIocContext.Instance.Scope(s =>
             {
                 using (var cache = s.Resolve_<ICacheProvider>())
                 {

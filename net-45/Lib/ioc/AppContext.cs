@@ -14,20 +14,41 @@ using Lib.extension;
 using System.Data;
 using System.Data.Entity;
 using Lib.mq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lib.ioc
 {
+    public class IocContext : IDisposable
+    {
+        private readonly Lazy_<IServiceProvider> root;
+
+        public IocContext()
+        { }
+
+        public IServiceScope Scope() => root.Value.CreateScope();
+
+        public bool IsRegistered<T>(string name)
+        {
+            return root.Value.GetService<T>() != null;
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /// <summary>
     /// IOC容器
     /// https://autofac.org/
     /// http://autofac.readthedocs.io/en/latest/getting-started/index.html
     /// </summary>
-    public class IocContext : IDisposable
+    public class AutofacIocContext : IDisposable
     {
         /// <summary>
         /// 默认实例
         /// </summary>
-        public static readonly IocContext Instance = new IocContext();
+        public static readonly AutofacIocContext Instance = new AutofacIocContext();
 
         private readonly Lazy_<IContainer> _lazy;
 
@@ -41,7 +62,7 @@ namespace Lib.ioc
         /// </summary>
         private readonly List<IDependencyRegistrar> ExtraRegistrars = new List<IDependencyRegistrar>();
 
-        public IocContext()
+        public AutofacIocContext()
         {
             this._lazy = new Lazy_<IContainer>(() =>
             {
@@ -73,7 +94,7 @@ namespace Lib.ioc
         /// 添加额外的注册（这个操作要尽量早执行）
         /// </summary>
         /// <param name="reg"></param>
-        public IocContext AddExtraRegistrar(IDependencyRegistrar reg)
+        public AutofacIocContext AddExtraRegistrar(IDependencyRegistrar reg)
         {
             if (this._lazy.IsValueCreated)
             {
@@ -167,7 +188,8 @@ namespace Lib.ioc
             }
         }
     }
-    
+
+    [Obsolete("将被中间件替代")]
     public class RequestScopeModule : IHttpModule
     {
         public void Dispose()
@@ -179,7 +201,7 @@ namespace Lib.ioc
         {
             context.BeginRequest += (sender, e) =>
             {
-                HttpContext.Current.SetAutofacScope(IocContext.Instance.Scope());
+                HttpContext.Current.SetAutofacScope(AutofacIocContext.Instance.Scope());
             };
 
             context.EndRequest += (sender, e) =>

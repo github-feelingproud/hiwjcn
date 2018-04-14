@@ -80,7 +80,7 @@ namespace Hiwjcn.Framework
         {
             var loginuser = await this.GetLoginUserAsync();
 
-            using (var s = IocContext.Instance.Scope())
+            using (var s = AutofacIocContext.Instance.Scope())
             {
                 var cache = s.Resolve_<ICacheProvider>();
                 var key = CacheKeyManager.OrgListCacheKey(loginuser.UserID);

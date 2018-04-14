@@ -53,7 +53,7 @@ namespace Lib.mvc.attr
             //URL作为key
             URL = ConvertHelper.GetString(filterContext.HttpContext.Request.Url);
 
-            var data = IocContext.Instance.Scope(x => x.Resolve_<ICacheProvider>().Get<string>(URL));
+            var data = AutofacIocContext.Instance.Scope(x => x.Resolve_<ICacheProvider>().Get<string>(URL));
 
             if (data.Success)
             {

@@ -95,7 +95,7 @@ namespace Lib.core
             try
             {
                 //IOC
-                IocContext.Instance.Dispose();
+                AutofacIocContext.Instance.Dispose();
             }
             catch (Exception e)
             {

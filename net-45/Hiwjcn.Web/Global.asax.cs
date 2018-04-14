@@ -48,9 +48,9 @@ namespace Hiwjcn.Web
                     }*/
 
                     //添加依赖注入
-                    IocContext.Instance.AddExtraRegistrar(new CommonDependencyRegister());
-                    IocContext.Instance.AddExtraRegistrar(new FullDependencyRegistrar());
-                    IocContext.Instance.OnContainerBuilding += (ref ContainerBuilder builder) =>
+                    AutofacIocContext.Instance.AddExtraRegistrar(new CommonDependencyRegister());
+                    AutofacIocContext.Instance.AddExtraRegistrar(new FullDependencyRegistrar());
+                    AutofacIocContext.Instance.OnContainerBuilding += (ref ContainerBuilder builder) =>
                     {
                         Func<LoginStatus> CookieProvider = () => new LoginStatus($"auth_user_uid", $"auth_user_token", $"auth_user_session");
 
@@ -73,7 +73,7 @@ namespace Hiwjcn.Web
                     //用AutoFac接管控制器生成，从而实现依赖注入
                     //ControllerBuilder.Current.SetControllerFactory(typeof(AutoFacControllerFactory));
                     //使用autofac生成控制器
-                    DependencyResolver.SetResolver(IocContext.Instance.Container.AutofacDependencyResolver_());
+                    DependencyResolver.SetResolver(AutofacIocContext.Instance.Container.AutofacDependencyResolver_());
 
                     try
                     {
@@ -144,7 +144,7 @@ namespace Hiwjcn.Web
                 ActorsFactory.Dispose();
                 //关闭的时候不等待任务完成
                 TaskManager.Dispose();
-                IocContext.Instance.Dispose();
+                AutofacIocContext.Instance.Dispose();
                 LibReleaseHelper.DisposeAll();
 
                 //记录程序关闭

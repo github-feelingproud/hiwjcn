@@ -24,7 +24,7 @@ namespace Hiwjcn.Framework.Actors
 
                     $"缓存命中情况：{x.ToJson()}".AddBusinessInfoLog();
 
-                    IocContext.Instance.Scope(s =>
+                    AutofacIocContext.Instance.Scope(s =>
                     {
                         s.Resolve_<IMSRepository<CacheHitLogEntity>>().Add(x);
                         return true;

@@ -58,7 +58,7 @@ namespace Lib.data.ef
         /// </summary>
         public void PrepareSession(Action<DbContext> callback)
         {
-            IocContext.Instance.Scope(x =>
+            AutofacIocContext.Instance.Scope(x =>
             {
                 using (var db = GetDbContext(x))
                 {
@@ -71,7 +71,7 @@ namespace Lib.data.ef
 
         public async Task PrepareSessionAsync(Func<DbContext, Task> callback)
         {
-            await IocContext.Instance.ScopeAsync(async x =>
+            await AutofacIocContext.Instance.ScopeAsync(async x =>
             {
                 using (var db = GetDbContext(x))
                 {

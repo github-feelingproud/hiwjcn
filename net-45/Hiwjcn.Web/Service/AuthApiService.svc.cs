@@ -21,7 +21,7 @@ namespace Hiwjcn.Web.Service
     public class AuthApiService : IAuthApiWcfServiceContract
     {
         private async Task<T> X<T>(Func<IAuthApi, Task<T>> func) =>
-            await IocContext.Instance.ScopeAsync(async s => await func.Invoke(s.Resolve_<IAuthApi>()));
+            await AutofacIocContext.Instance.ScopeAsync(async s => await func.Invoke(s.Resolve_<IAuthApi>()));
 
         public async Task<_<TokenModel>> GetAccessToken(string user_uid)
         {
