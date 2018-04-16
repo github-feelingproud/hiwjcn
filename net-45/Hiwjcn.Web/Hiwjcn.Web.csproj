@@ -211,9 +211,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Log\" />
-    <Folder Include="Areas\Crm\Controllers\" />
-    <Folder Include="Areas\Crm\Models\" />
-    <Folder Include="Areas\Crm\Views\Shared\" />
     <Folder Include="Areas\Epc\Models\" />
     <Folder Include="Areas\Epc\Views\Shared\" />
     <Folder Include="Areas\Epc\Views\X\" />
@@ -232,7 +229,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\FullDependencyRegistrar.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Areas\Crm\CrmAreaRegistration.cs" />
     <Compile Include="Areas\Epc\Controllers\CalendarController.cs" />
     <Compile Include="Areas\Epc\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Epc\Controllers\DeviceController.cs" />
@@ -350,7 +346,6 @@
     <Content Include="App_Data\Config\sentry.config" />
     <Content Include="App_Data\Config\elk_sentry.config" />
     <Content Include="Areas\Epc\Views\web.config" />
-    <Content Include="Areas\Crm\Views\web.config" />
     <None Include="Properties\PublishProfiles\iis.pubxml" />
     <None Include="Properties\PublishProfiles\xx.pubxml" />
     <Content Include="Views\Simple_CRUD\SimpleList.cshtml" />

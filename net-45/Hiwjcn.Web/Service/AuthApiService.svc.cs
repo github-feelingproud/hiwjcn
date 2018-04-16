@@ -20,14 +20,19 @@ namespace Hiwjcn.Web.Service
     /// </summary>
     public class AuthApiService : IAuthApiWcfServiceContract
     {
-        private async Task<T> X<T>(Func<IAuthApi, Task<T>> func) =>
-            await AutofacIocContext.Instance.ScopeAsync(async s => await func.Invoke(s.Resolve_<IAuthApi>()));
+        private async Task<T> X<T>(Func<IAuthApi, Task<T>> func)
+        {
+            using (var s = AutofacIocContext.Instance.Scope())
+            {
+                return await func.Invoke(s.Resolve_<IAuthApi>());
+            }
+        }
 
         public async Task<_<TokenModel>> GetAccessToken(string user_uid)
         {
             return await this.X(async s => await s.CreateAccessTokenAsync(user_uid));
         }
-        
+
         public async Task<_<LoginUserInfo>> ValidUserByOneTimeCode(string phone, string sms)
         {
             return await this.X(async s => await s.ValidUserByOneTimeCodeAsync(phone, sms));

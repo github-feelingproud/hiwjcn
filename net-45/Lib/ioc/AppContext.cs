@@ -20,21 +20,33 @@ namespace Lib.ioc
 {
     public class IocContext : IDisposable
     {
-        private readonly Lazy_<IServiceProvider> root;
+        public static readonly IocContext Instance = new IocContext();
 
-        public IocContext()
-        { }
+        private IServiceProvider _root;
 
-        public IServiceScope Scope() => root.Value.CreateScope();
+        public IocContext() { }
 
-        public bool IsRegistered<T>(string name)
+        public IocContext SetRootContainer(IServiceProvider root)
         {
-            return root.Value.GetService<T>() != null;
+            this._root = root;
+            return this;
+        }
+
+        public IServiceProvider Container => this._root ?? throw new Exception("没有设置依赖注入容器");
+
+        public IServiceScope Scope() => this.Container.CreateScope();
+
+        public bool IsRegistered<T>()
+        {
+            using (var s = this.Scope())
+            {
+                return s.ServiceProvider.GetService<T>() != null;
+            }
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //
         }
     }
 

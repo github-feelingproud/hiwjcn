@@ -8,6 +8,8 @@ using System.Linq;
 using Common.Logging;
 using System.Diagnostics;
 using Lib.mvc;
+using Microsoft.Extensions.Logging;
+using Lib.ioc;
 
 namespace Lib.extension
 {
@@ -16,6 +18,24 @@ namespace Lib.extension
     /// </summary>
     public static class CommonLoggingExtension
     {
+        public static void UseLogger(string name, Action<ILogger> func)
+        {
+            using (var s = IocContext.Instance.Scope())
+            {
+                var logger = s.Resolve_<ILoggerFactory>();
+                func.Invoke(logger.CreateLogger(name));
+            }
+        }
+
+        public static void UseLogger<T>(Action<ILogger> func)
+        {
+            using (var s = IocContext.Instance.Scope())
+            {
+                var logger = s.Resolve_<ILoggerFactory>();
+                func.Invoke(logger.CreateLogger<T>());
+            }
+        }
+
         //缓存各种logger
         public static readonly Dictionary<string, ILog> _str_logger_factory = new Dictionary<string, ILog>();
         public static readonly Dictionary<Type, ILog> _type_logger_factory = new Dictionary<Type, ILog>();

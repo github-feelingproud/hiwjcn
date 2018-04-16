@@ -309,4 +309,18 @@ namespace Lib.net
             NetCardInfo().Select(x => x.GetPhysicalAddress()?.ToString()).Where(x => ValidateHelper.IsPlumpString(x)).ToList();
 
     }
+
+    public sealed class JsonContent : StringContent
+    {
+        private const string MediaType = "application/json";
+
+        public JsonContent(object value, Encoding encoding = null) :
+            base(
+                (value ?? throw new ArgumentNullException(nameof(value))).ToJson(), 
+                encoding ?? Encoding.UTF8, 
+                MediaType)
+        {
+            //
+        }
+    }
 }

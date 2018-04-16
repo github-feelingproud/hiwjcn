@@ -114,55 +114,6 @@ namespace Hiwjcn.Test
             }
         }
 
-        class mmmm : IDisposable
-        {
-            public void Dispose()
-            {
-                //
-            }
-        }
-
-        [TestMethod]
-        public void fslkhahfla()
-        {
-            try
-            {
-                AutofacIocContext.Instance.OnContainerBuilding += (ref ContainerBuilder builder) =>
-                {
-                    builder.RegisterType<SqlConnection>().As<IDbConnection>();
-                    builder.RegisterType<mmmm>().As<IDisposable>();
-                };
-
-                AutofacIocContext.Instance.Scope(x =>
-                {
-                    x.Resolve<IDisposable>();
-                    return true;
-                });
-
-                var c = AutofacIocContext.Instance.Scope(x =>
-                {
-                    var con = x.Resolve<IDbConnection>();
-                    return con;
-                });
-
-                c.ConnectionString = "User ID=sa;Initial Catalog=Parties_InquirySys;Data Source=db.qipeilong.net;Password=1q2w3e4r5T;Connect Timeout=20";
-
-                c.Open();
-
-                c.Dispose();
-
-                c.ConnectionString = "User ID=sa;Initial Catalog=Parties_InquirySys;Data Source=db.qipeilong.net;Password=1q2w3e4r5T;Connect Timeout=20";
-
-                c.Open();
-
-                c.Dispose();
-            }
-            catch (Exception e)
-            {
-                //
-            }
-        }
-
         public AutoResetEvent autoevent = new AutoResetEvent(true);
         public ManualResetEvent manualevent = new ManualResetEvent(true);
         [TestMethod]

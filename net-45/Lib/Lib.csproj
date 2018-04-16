@@ -319,6 +319,8 @@
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\model\ScopeInfoModel.cs" />
     <Compile Include="infrastructure\service\user\UserLoginServiceBase.cs" />
+    <Compile Include="ioc\AutofacExtension.cs" />
+    <Compile Include="ioc\ClassFinderExtension.cs" />
     <Compile Include="mvc\auth\AuthConfigExtension.cs" />
     <Compile Include="rpc\FancyClient.cs" />
     <Compile Include="rpc\WebApiClient.cs" />
