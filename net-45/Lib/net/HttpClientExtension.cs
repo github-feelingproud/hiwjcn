@@ -17,9 +17,6 @@ namespace Lib.net
 {
     public static class HttpClientExtension
     {
-        public static async Task<HttpResponseMessage> PostAsJsonAsync_<T>(this HttpClient client, string url, T data) =>
-            await client.PostAsJsonAsync(url, data);
-
         public static void SetCookies(this HttpClientHandler handler, List<Cookie> cookies, Uri uri = null)
         {
             if (handler.CookieContainer == null)
@@ -85,6 +82,12 @@ namespace Lib.net
         }
 
         public static string GetMethodString(this RequestMethodEnum m) => m.ToString();
+
+        [Obsolete]
+        public static Task<HttpResponseMessage> PostAsJsonAsync_<T>(this HttpClient client, T data)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// 下载文件

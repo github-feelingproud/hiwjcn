@@ -13,19 +13,6 @@ using System.Web.Compilation;
 
 namespace Lib.rpc
 {
-    public static class webapihelper
-    {
-        public static readonly HttpClient _client = new HttpClient();
-
-        public static async Task<T> Request<T>(Dictionary<string, object> data)
-        {
-            using (var response = await _client.PostAsJsonAsync("", data))
-            {
-                return await response.Content.ReadAsAsync<T>();
-            }
-        }
-    }
-
     public class WebApiClient<T>
     {
         public WebApiClient()

@@ -27,11 +27,7 @@ namespace Hiwjcn.Service.Epc
             string q = null, int page = 1, int pagesize = 10);
 
         Task<PagerData<IssueEntity>> MyIssue(
-            string org_uid, string user_uid, string assigned_user_uid,
-            int page, int pagesize);
-
-        Task<PagerData<IssueEntity>> MyIssueV2(
-            string org_uid, string user_uid, bool? open,
+            string org_uid, string user_uid, string assigned_user_uid, bool? open,
             int page, int pagesize);
 
         Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(string org_uid, string issue_uid, int count);
@@ -91,19 +87,17 @@ namespace Hiwjcn.Service.Epc
         public virtual async Task<_<IssueEntity>> AddIssue(IssueEntity model) =>
             await this._issueRepo.AddEntity_(model, "is");
 
-        public async Task<PagerData<IssueEntity>> MyIssue(string org_uid, string user_uid, string assigned_user_uid,
+        public async Task<PagerData<IssueEntity>> MyIssue(string org_uid,
+            string user_uid, string assigned_user_uid, bool? open,
             int page, int pagesize)
         {
-            if (new string[] { user_uid, assigned_user_uid }.Count(x => ValidateHelper.IsPlumpString(x)) != 1)
-            {
-                throw new Exception("发起人和被指派人只能传入一个参数");
-            }
             return await this._issueRepo.PrepareSessionAsync(async db =>
             {
                 var now = DateTime.Now;
                 var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
                 query = query.Where(x => x.OrgUID == org_uid);
-                query = query.Where(x => x.Start == null || x.Start < now);
+                //对于客户端，所有issue都显示，即便没有超过5分钟
+                //query = query.Where(x => x.Start == null || x.Start < now);
 
                 if (ValidateHelper.IsPlumpString(user_uid))
                 {
@@ -113,28 +107,6 @@ namespace Hiwjcn.Service.Epc
                 {
                     query = query.Where(x => x.AssignedUserUID == assigned_user_uid);
                 }
-
-                var data = new PagerData<IssueEntity>();
-                data.Page = page;
-                data.PageSize = pagesize;
-                data.ItemCount = await query.CountAsync();
-                data.DataList = await query.OrderBy(x => x.IsClosed).OrderByDescending(x => x.CreateTime).ToListAsync();
-
-                return data;
-            });
-        }
-
-        public async Task<PagerData<IssueEntity>> MyIssueV2(string org_uid, string user_uid, bool? open, int page, int pagesize)
-        {
-            return await this._issueRepo.PrepareSessionAsync(async db =>
-            {
-                var now = DateTime.Now;
-                var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
-                query = query.Where(x => x.OrgUID == org_uid);
-                query = query.Where(x => x.Start == null || x.Start < now);
-
-                query = query.Where(x => x.UserUID == user_uid || x.AssignedUserUID == user_uid);
-
                 if (open != null)
                 {
                     if (open.Value)
@@ -156,7 +128,7 @@ namespace Hiwjcn.Service.Epc
                 return data;
             });
         }
-
+        
         public virtual async Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close)
         {
             return await this._issueRepo.PrepareSessionAsync(async db =>

@@ -26,6 +26,9 @@ namespace EPC.Core.Entity
 
         public virtual string Location { get; set; }
 
+        [Required(ErrorMessage = "设备信息不能为空")]
+        public virtual string DeviceUID { get; set; }
+
         [Required(ErrorMessage = "用户ID为空")]
         public virtual string UserUID { get; set; }
 

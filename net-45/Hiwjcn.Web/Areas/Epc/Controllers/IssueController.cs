@@ -107,15 +107,13 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         }
 
         /// <summary>
-        /// 翟瑞
-        /// 我的问题
+        /// 我完成的issue
         /// </summary>
-        /// <param name="org_uid"></param>
         /// <param name="page"></param>
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> MyIssue(string open, int? page)
+        public async Task<ActionResult> MyClosedIssue(int? page)
         {
             return await RunActionAsync(async () =>
             {
@@ -124,9 +122,71 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
 
                 page = this.CheckPage(page);
 
-                var data = await this._issueService.MyIssueV2(org_uid,
-                    user_uid: loginuser.UserID, open: (open ?? "true").ToBool(),
-                    page: page.Value, pagesize: this.PageSize);
+                var data = await this._issueService.MyIssue(org_uid,
+                    user_uid: null,
+                    assigned_user_uid: loginuser.UserID,
+                    open: false,
+                    page: page.Value,
+                    pagesize: this.PageSize);
+
+                data.DataList = await _issueService._LoadPagerExtraData(data.DataList);
+
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data
+                });
+            });
+        }
+
+        /// <summary>
+        /// 我的待处理
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        [HttpPost, EpcAuth]
+        public async Task<ActionResult> MyOpenedIssue(int? page)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
+                page = this.CheckPage(page);
+
+                var data = await this._issueService.MyIssue(org_uid,
+                    user_uid: null,
+                    assigned_user_uid: loginuser.UserID,
+                    open: true,
+                    page: page.Value,
+                    pagesize: this.PageSize);
+
+                data.DataList = await _issueService._LoadPagerExtraData(data.DataList);
+
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data
+                });
+            });
+        }
+
+        [HttpPost, EpcAuth]
+        public async Task<ActionResult> IssueSendByMe(int? page)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid, this.AnyRole);
+
+                page = this.CheckPage(page);
+
+                var data = await this._issueService.MyIssue(org_uid,
+                    user_uid: loginuser.UserID,
+                    assigned_user_uid: null,
+                    open: null,
+                    page: page.Value,
+                    pagesize: this.PageSize);
 
                 data.DataList = await _issueService._LoadPagerExtraData(data.DataList);
 

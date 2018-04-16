@@ -10,7 +10,6 @@ using Lib.data.elasticsearch;
 using Lib.distributed.redis;
 using Lib.events;
 using Lib.extension;
-using Lib.extra.api;
 using Lib.extra.log;
 using Lib.helper;
 using Lib.mvc;
@@ -255,12 +254,6 @@ namespace Hiwjcn.Web.Controllers
             var model = db.ListRightPop<TBColumns>("UserOperationLog");
 
             return Content("");
-        }
-
-        public async Task<ActionResult> Baidu(string q, string from = "auto", string to = "en")
-        {
-            var data = await BaiduTranslateHelper.BaiduTranslate(q, from, to);
-            return Content(data);
         }
 
         public ActionResult Pinyin(string str)

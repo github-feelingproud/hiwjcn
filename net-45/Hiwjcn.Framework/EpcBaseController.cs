@@ -151,6 +151,15 @@ namespace Hiwjcn.Framework
                     code = "-403"
                 });
             }
+            catch (NotImplementedException)
+            {
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "功能没有实现",
+                    code = "-1111"
+                });
+            }
             catch (Exception e)
             {
                 return this.WhenError(e);
@@ -200,6 +209,15 @@ namespace Hiwjcn.Framework
                     success = false,
                     msg = "没有权限",
                     code = "-403"
+                });
+            }
+            catch (NotImplementedException)
+            {
+                return GetJson(new _()
+                {
+                    success = false,
+                    msg = "功能没有实现",
+                    code = "-1111"
                 });
             }
             catch (Exception e)
