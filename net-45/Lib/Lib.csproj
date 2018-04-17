@@ -319,6 +319,7 @@
     <Compile Include="infrastructure\extension\CalendarExtension.cs" />
     <Compile Include="infrastructure\model\ScopeInfoModel.cs" />
     <Compile Include="infrastructure\service\user\UserLoginServiceBase.cs" />
+    <Compile Include="ioc\AutofacConfigExtension.cs" />
     <Compile Include="ioc\AutofacExtension.cs" />
     <Compile Include="ioc\ClassFinderExtension.cs" />
     <Compile Include="mvc\auth\AuthConfigExtension.cs" />
@@ -387,7 +388,7 @@
     <Compile Include="infrastructure\service\user\PermissionServiceBase.cs" />
     <Compile Include="infrastructure\service\user\RoleServiceBase.cs" />
     <Compile Include="infrastructure\service\user\UserServiceBase.cs" />
-    <Compile Include="ioc\AppContextExtension.cs" />
+    <Compile Include="ioc\IocContextExtension.cs" />
     <Compile Include="ioc\BaseDependencyRegistrar.cs" />
     <Compile Include="ioc\DependencyRegistrarBase.cs" />
     <Compile Include="ioc\IAutoRegistered.cs" />
@@ -437,7 +438,7 @@
     <Compile Include="mvc\SessionExtension.cs" />
     <Compile Include="data\IRepository.cs" />
     <Compile Include="infrastructure\IServiceBase.cs" />
-    <Compile Include="ioc\AppContext.cs" />
+    <Compile Include="ioc\IocContext.cs" />
     <Compile Include="io\ImageHelper.cs" />
     <Compile Include="io\OfficeHelper.cs" />
     <Compile Include="io\IOHelper.cs" />

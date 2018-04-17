@@ -40,7 +40,7 @@ namespace Lib.ioc
         {
             using (var s = this.Scope())
             {
-                return s.ServiceProvider.GetService<T>() != null;
+                return s.ServiceProvider.GetServices<T>().Any();
             }
         }
 

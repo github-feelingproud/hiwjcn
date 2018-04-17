@@ -23,18 +23,31 @@ namespace Lib.extension
             using (var s = IocContext.Instance.Scope())
             {
                 var logger = s.Resolve_<ILoggerFactory>();
-                func.Invoke(logger.CreateLogger(name));
+                try
+                {
+                    func.Invoke(logger.CreateLogger(name));
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.GetInnerExceptionAsJson());
+                }
             }
         }
 
-        public static void UseLogger<T>(Action<ILogger> func)
-        {
-            using (var s = IocContext.Instance.Scope())
-            {
-                var logger = s.Resolve_<ILoggerFactory>();
-                func.Invoke(logger.CreateLogger<T>());
-            }
-        }
+        public static void UseLogger<T>(Action<ILogger> func) =>
+            UseLogger(typeof(T).FullName, func);
+
+        public static void AddLog__(this Exception e, string logger) =>
+            UseLogger(logger, x => x.LogError(e, e.Message));
+
+        public static void AddInfo__(this string msg, string logger) =>
+            UseLogger(logger, x => x.LogInformation(msg));
+
+        public static void AddWarning__(this string msg, string logger) =>
+            UseLogger(logger, x => x.LogWarning(msg));
+
+        public static void AddDebug__(this string msg, string logger) =>
+            UseLogger(logger, x => x.LogDebug(msg));
 
         //缓存各种logger
         public static readonly Dictionary<string, ILog> _str_logger_factory = new Dictionary<string, ILog>();

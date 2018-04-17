@@ -25,6 +25,9 @@ namespace Lib.ioc
         /// </summary>
         public static AutofacDependencyResolver AutofacDependencyResolver_(this IContainer context) =>
             new AutofacDependencyResolver(context);
+        
+        //public static IServiceProvider AsServiceProvider(this IContainer context) => 
+        //    new AutofacServiceProvider(context);
 
         /// <summary>
         /// 找出所有实例
