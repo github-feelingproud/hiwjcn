@@ -106,6 +106,13 @@ namespace Hiwjcn.Framework
             return loginuser;
         }
 
+        /// <summary>
+        /// json转为实体
+        /// </summary>
+        [NonAction]
+        protected T JsonToEntity_<T>(string json, string msg = null) where T : class =>
+            json?.JsonToEntityOrDefault<T>() ?? throw new NoParamException(msg ?? "参数错误");
+
         [NonAction]
         public override ActionResult RunAction(Func<ActionResult> GetActionFunc)
         {

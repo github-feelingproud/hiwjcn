@@ -50,13 +50,6 @@ namespace Hiwjcn.Test
         }
 
         [TestMethod]
-        public async Task fasdfkaskdfhaskdfhajshdf()
-        {
-            var bs = await HttpClientManager.Instance.DefaultClient.DownloadBytes("http://hiwjcn.qiniudn.com/tools.png");
-            System.IO.File.WriteAllBytes("d:\\m.png", bs);
-        }
-
-        [TestMethod]
         public void TestMfasdfasdfasdfasdfethod1()
         {
             try

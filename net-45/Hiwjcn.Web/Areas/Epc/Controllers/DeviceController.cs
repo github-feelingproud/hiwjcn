@@ -125,8 +125,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             {
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
-
-                var model = data?.JsonToEntity<DeviceEntity>(throwIfException: false) ?? throw new NoParamException();
+                
+                var model = this.JsonToEntity_<DeviceEntity>(data);
 
                 if (!ValidateHelper.IsPlumpList(model.ParamsList))
                 {

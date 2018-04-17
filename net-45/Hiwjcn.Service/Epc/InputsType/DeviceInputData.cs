@@ -27,11 +27,29 @@ namespace Hiwjcn.Service.Epc.InputsType
         public List<DataModel> Data { get; set; }
     }
 
+    /// <summary>
+    /// 点检返回数据
+    /// </summary>
     public class CheckInputDataResult
     {
+        /// <summary>
+        /// 参数UID
+        /// </summary>
         public string ParamUID { get; set; }
+
+        /// <summary>
+        /// 参数名称
+        /// </summary>
         public string ParamName { get; set; }
+
+        /// <summary>
+        /// 状态是否正常
+        /// </summary>
         public bool StatusOk { get; set; }
+
+        /// <summary>
+        /// 异常提示
+        /// </summary>
         public List<string> Tips { get; set; }
     }
 

@@ -208,7 +208,7 @@ namespace Hiwjcn.Web.Controllers
                     return GetJsonRes("已经登录，不能注册");
                 }
 
-                var user = data?.JsonToEntity<UserEntity>(throwIfException: false) ?? throw new NoParamException();
+                var user = this.JsonToEntity_<UserEntity>(data);
 
                 var res = await this._login.RegisterUser(user);
                 if (res.error)

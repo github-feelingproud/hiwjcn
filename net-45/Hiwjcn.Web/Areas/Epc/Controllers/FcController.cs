@@ -33,8 +33,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var uids = data?.JsonToEntity<string[]>(throwIfException: false) ??
-                throw new NoParamException();
+                var uids = this.JsonToEntity_<string[]>(data);
 
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
@@ -80,8 +79,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<DeviceInputData>(throwIfException: false) ??
-                throw new NoParamException();
+                var model = this.JsonToEntity_<DeviceInputData>(data);
 
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.MemberRole);

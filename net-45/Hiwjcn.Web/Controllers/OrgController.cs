@@ -94,7 +94,7 @@ namespace EPC.Api.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<OrganizationEntity>(throwIfException: false) ?? throw new NoParamException();
+                var model = this.JsonToEntity_<OrganizationEntity>(data);
 
                 var loginuser = await this.GetLoginUserAsync();
 

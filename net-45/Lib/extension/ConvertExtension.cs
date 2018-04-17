@@ -122,6 +122,12 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// json转为实体，出现异常就返回默认值
+        /// </summary>
+        public static T JsonToEntityOrDefault<T>(this string json) =>
+            json.JsonToEntity<T>(throwIfException: false);
+
+        /// <summary>
         /// 映射
         /// </summary>
         public static T MapTo<T>(this object data) => MapperHelper.GetMappedEntity<T>(data);

@@ -80,7 +80,7 @@ namespace Hiwjcn.Web.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<PermissionEntity>(throwIfException: false) ?? throw new NoParamException();
+                var model = this.JsonToEntity_<PermissionEntity>(data);
 
                 if (ValidateHelper.IsPlumpString(model.UID))
                 {

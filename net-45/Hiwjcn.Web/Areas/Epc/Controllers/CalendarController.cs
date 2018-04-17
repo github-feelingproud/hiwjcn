@@ -111,8 +111,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         {
             return await RunActionAsync(async () =>
             {
-                var model = data?.JsonToEntity<CalendarEventEntity>(throwIfException: false) ??
-                throw new NoParamException();
+                var model = this.JsonToEntity_<CalendarEventEntity>(data);
 
                 if (model.ByDay != null && model.ByDay.Value > 0)
                 {
