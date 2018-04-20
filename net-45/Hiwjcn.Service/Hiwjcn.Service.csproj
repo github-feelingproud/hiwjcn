@@ -179,7 +179,7 @@
     <Compile Include="MemberShip\OrgService.cs" />
     <Compile Include="MemberShip\SystemService.cs" />
     <Compile Include="MemberShip\TokenEventHandler.cs" />
-    <Compile Include="MemberShip\AuthLoginProvider.cs" />
+    <Compile Include="MemberShip\UserLoginService.cs" />
     <Compile Include="MemberShip\ClearDataBaseService.cs" />
     <Compile Include="MemberShip\MenuService.cs" />
     <Compile Include="MyService.cs" />

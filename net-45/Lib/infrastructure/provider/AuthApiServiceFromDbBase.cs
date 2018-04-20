@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.cache;
-using Lib.infrastructure.service;
-using Lib.infrastructure.entity;
-using Lib.mvc;
-using Lib.mvc.user;
+﻿using Lib.cache;
+using Lib.data.ef;
 using Lib.extension;
 using Lib.helper;
-using Lib.mvc.auth;
-using Lib.data;
-using Lib.core;
-using System.Data.Entity;
-using Lib.data.ef;
-using Lib.infrastructure.service.user;
 using Lib.infrastructure.entity.auth;
-using Lib.infrastructure.model;
+using Lib.infrastructure.service.user;
+using Lib.mvc;
+using Lib.mvc.auth;
+using Lib.mvc.user;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lib.infrastructure.provider
 {
@@ -27,16 +20,13 @@ namespace Lib.infrastructure.provider
         where TokenBase : AuthTokenBase, new()
     {
         protected readonly ICacheProvider _cache;
-        protected readonly IAuthLoginProvider _loginService;
 
         public AuthApiServiceFromDbBase(
-            IAuthLoginProvider _loginService,
             ICacheProvider _cache,
             IEFRepository<TokenBase> _tokenRepo) :
             base(_tokenRepo)
         {
             this._cache = _cache;
-            this._loginService = _loginService;
 
             this.ClearTokenCacheCallback = x => this._cache.Remove(this.AuthTokenCacheKey(x));
             this.ClearUserTokenCallback = x => this._cache.Remove(this.AuthUserInfoCacheKey(x));
@@ -48,14 +38,9 @@ namespace Lib.infrastructure.provider
         {
             var res = new _<TokenModel>();
 
-            var func = $"{nameof(CreateAccessTokenAsync)}";
-            var p = new { user_uid }.ToJson();
-
             var data = await this.CreateTokenAsync(user_uid);
             if (data.error)
             {
-                $"获取token异常|{data.msg}|{func}|{p}".AddBusinessInfoLog();
-
                 res.SetErrorMsg(data.msg);
                 return res;
             }
@@ -77,13 +62,8 @@ namespace Lib.infrastructure.provider
         {
             var data = new _<LoginUserInfo>();
 
-            var func = $"{nameof(GetLoginUserInfoByTokenAsync)}";
-            var p = new { access_token }.ToJson();
-
             if (!ValidateHelper.IsAllPlumpString(access_token))
             {
-                $"验证token异常|参数为空|{func}|{p}".AddBusinessInfoLog();
-
                 data.SetErrorMsg("参数为空");
                 return data;
             }
@@ -106,8 +86,6 @@ namespace Lib.infrastructure.provider
 
             if (token == null)
             {
-                $"token不存在|{func}|{p}".AddBusinessInfoLog();
-
                 data.SetErrorMsg("token不存在");
                 return data;
             }
@@ -119,7 +97,7 @@ namespace Lib.infrastructure.provider
             {
                 hit_status = CacheHitStatusEnum.NotHit;
 
-                var user = await this._loginService.GetLoginUserInfoByUserUID(token.UserUID);
+                var user = await this.GetLoginUserInfoByUserUID(token.UserUID);
 
                 return user;
             }, cache_expire);
@@ -129,8 +107,6 @@ namespace Lib.infrastructure.provider
 
             if (loginuser == null)
             {
-                $"用户不存在|{func}|{p}".AddBusinessInfoLog();
-
                 data.SetErrorMsg("用户不存在");
                 return data;
             }
@@ -144,11 +120,11 @@ namespace Lib.infrastructure.provider
             return data;
         }
 
-        public virtual async Task<_<LoginUserInfo>> ValidUserByOneTimeCodeAsync(string phone, string sms) =>
-            await this._loginService.LoginByCode(phone, sms);
+        public abstract Task<LoginUserInfo> GetLoginUserInfoByUserUID(string uid);
 
-        public virtual async Task<_<LoginUserInfo>> ValidUserByPasswordAsync(string username, string password) =>
-            await this._loginService.LoginByPassword(username, password);
+        public abstract Task<_<LoginUserInfo>> ValidUserByOneTimeCodeAsync(string phone, string sms);
+
+        public abstract Task<_<LoginUserInfo>> ValidUserByPasswordAsync(string username, string password);
 
         public virtual async Task<_<string>> RemoveCacheAsync(CacheBundle data)
         {

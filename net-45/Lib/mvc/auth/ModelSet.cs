@@ -8,13 +8,6 @@ using System.Threading.Tasks;
 namespace Lib.mvc.auth
 {
     [Serializable]
-    public class UserRolePermission
-    {
-        public virtual List<string> Permissions { get; set; }
-        public virtual List<string> Roles { get; set; }
-    }
-
-    [Serializable]
     [DataContract]
     public class TokenModel
     {

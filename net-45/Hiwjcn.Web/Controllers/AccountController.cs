@@ -18,23 +18,17 @@ namespace Hiwjcn.Web.Controllers
 {
     public class AccountController : EpcBaseController
     {
-        private readonly IAuthLoginProvider _IAuthLoginService;
-        private readonly IUserLoginService _login;
         private readonly IAuthApi _authApi;
-        private readonly IAuthDataProvider _dataProvider;
+        private readonly IUserLoginService _login;
         private readonly ICacheProvider _cache;
 
         public AccountController(
-            IAuthLoginProvider _IAuthLoginService,
-            IUserLoginService _login,
             IAuthApi _authApi,
-            IAuthDataProvider _dataProvider,
+            IUserLoginService _login,
             ICacheProvider _cache)
         {
-            this._IAuthLoginService = _IAuthLoginService;
             this._login = _login;
             this._authApi = _authApi;
-            this._dataProvider = _dataProvider;
             this._cache = _cache;
         }
 
@@ -142,18 +136,6 @@ namespace Hiwjcn.Web.Controllers
             {
                 await Task.FromResult(1);
                 throw new NotImplementedException();
-            });
-        }
-
-        [HttpPost]
-        [RequestLog]
-        public async Task<ActionResult> SendOneTimeCode(string phone)
-        {
-            return await RunActionAsync(async () =>
-            {
-                var data = await this._IAuthLoginService.SendOneTimeCode(phone);
-
-                return GetJsonRes(data.msg);
             });
         }
 

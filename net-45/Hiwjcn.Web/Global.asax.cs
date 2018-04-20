@@ -1,11 +1,10 @@
 ﻿using Autofac;
 using EPC.Core;
-using Hiwjcn.Bll.Auth;
 using Hiwjcn.Dal;
 using Hiwjcn.Framework;
 using Hiwjcn.Framework.Factory;
+using Hiwjcn.Framework.Provider;
 using Hiwjcn.Framework.Tasks;
-using Hiwjcn.Service.MemberShip;
 using Hiwjcn.Web.App_Start;
 using Lib.core;
 using Lib.data.ef;
@@ -52,16 +51,16 @@ namespace Hiwjcn.Web
                     AutofacIocContext.Instance.AddExtraRegistrar(new FullDependencyRegistrar());
                     AutofacIocContext.Instance.OnContainerBuilding += (ref ContainerBuilder builder) =>
                     {
-                        Func<LoginStatus> CookieProvider = () => new LoginStatus($"auth_user_uid", $"auth_user_token", $"auth_user_session");
+                        Func<LoginStatus> _ = () => new LoginStatus($"auth_user_uid", $"auth_user_token", $"auth_user_session");
 
                         var server_host = string.Empty;
                         if (ValidateHelper.IsPlumpString(server_host))
                         {
-                            builder.AuthBasicServerConfig<AuthLoginProvider>(() => new AuthServerConfig(server_host), CookieProvider);
+                            builder.AuthBasicServerConfig(() => new AuthServerConfig(server_host), _);
                         }
                         else
                         {
-                            builder.AuthBasicConfig<AuthLoginProvider, AuthApiService>(CookieProvider);
+                            builder.AuthBasicConfig<AuthApiProvider>(_);
                         }
                     };
 

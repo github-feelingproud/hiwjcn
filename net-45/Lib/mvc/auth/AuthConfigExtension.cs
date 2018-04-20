@@ -11,36 +11,31 @@ namespace Lib.mvc.auth
         /// <summary>
         /// 配置auth
         /// </summary>
-        public static void AuthBasicServerConfig<LoginProvider>(this ContainerBuilder builder, Func<AuthServerConfig> serverProvider,
+        public static void AuthBasicServerConfig(this ContainerBuilder builder, Func<AuthServerConfig> serverProvider,
             Func<LoginStatus> cookieProvider = null)
-            where LoginProvider : class, IAuthLoginProvider
         {
             builder.Register(_ => serverProvider.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
-            builder.AuthConfig<LoginProvider, AppOrWebAuthDataProvider, AuthApiFromWcf>(cookieProvider);
+            builder.AuthConfig<AppOrWebAuthDataProvider, AuthApiFromWcf>(cookieProvider);
         }
 
         /// <summary>
         /// 配置auth
         /// </summary>
-        public static void AuthBasicConfig<LoginProvider, AuthApiProvider>(this ContainerBuilder builder,
+        public static void AuthBasicConfig<AuthApiProvider>(this ContainerBuilder builder,
             Func<LoginStatus> cookieProvider = null)
-            where LoginProvider : class, IAuthLoginProvider
             where AuthApiProvider : class, IAuthApi
         {
-            builder.AuthConfig<LoginProvider, AppOrWebAuthDataProvider, AuthApiProvider>(cookieProvider);
+            builder.AuthConfig<AppOrWebAuthDataProvider, AuthApiProvider>(cookieProvider);
         }
 
         /// <summary>
         /// 配置auth
         /// </summary>
-        public static void AuthConfig<LoginProvider, TokenProvider, AuthApiProvider>(this ContainerBuilder builder,
+        public static void AuthConfig<TokenProvider, AuthApiProvider>(this ContainerBuilder builder,
             Func<LoginStatus> cookieProvider = null)
-            where LoginProvider : class, IAuthLoginProvider
             where TokenProvider : class, IAuthDataProvider
             where AuthApiProvider : class, IAuthApi
         {
-            //登录逻辑
-            builder.RegisterType<LoginProvider>().AsSelf().As<IAuthLoginProvider>();
             //从那里拿token和client信息
             builder.RegisterType<TokenProvider>().AsSelf().As<IAuthDataProvider>();
             //怎么创建token scope等

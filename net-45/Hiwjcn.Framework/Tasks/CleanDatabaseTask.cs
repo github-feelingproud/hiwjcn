@@ -1,13 +1,10 @@
-﻿using Lib.extension;
-using Lib.net;
+﻿using Hiwjcn.Service.MemberShip;
+using Lib.core;
+using Lib.extension;
+using Lib.ioc;
 using Lib.task;
 using Quartz;
 using System;
-using System.Threading;
-using Lib.core;
-using Lib.ioc;
-using Hiwjcn.Bll;
-using Hiwjcn.Service.MemberShip;
 using System.Threading.Tasks;
 
 namespace Hiwjcn.Framework.Tasks

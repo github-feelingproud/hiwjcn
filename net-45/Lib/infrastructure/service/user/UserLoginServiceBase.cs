@@ -26,6 +26,8 @@ namespace Lib.infrastructure.service.user
         Task<_<UserBase>> ChangePwd(UserBase model);
 
         Task<UserBase> LoadPermission(UserBase model);
+
+        Task<UserBase> GetUserByUID(string uid);
     }
 
     /// <summary>
@@ -135,7 +137,7 @@ namespace Lib.infrastructure.service.user
 
         public virtual async Task<UserBase> LoadPermission(UserBase model)
         {
-            if (model == null) { return model; }
+            if (model == null) { throw new ArgumentNullException(nameof(UserBase)); }
 
             await this._userRepo.PrepareSessionAsync(async db =>
             {
@@ -194,5 +196,7 @@ namespace Lib.infrastructure.service.user
             data.SetSuccessData(code);
             return data;
         }
+
+        public async Task<UserBase> GetUserByUID(string uid) => await this._userRepo.GetFirstAsync(x => x.UID == uid);
     }
 }
