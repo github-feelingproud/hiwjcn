@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EPC.Core.Entity;
+using Hiwjcn.Core.Domain.User;
 
 namespace EPC.Core.Model
 {
@@ -31,6 +32,12 @@ namespace EPC.Core.Model
     public class CheckLogGroupBy
     {
         public string DeviceUID { get; set; }
+
+        public string UserUID { get; set; }
+
+        public UserEntity UserModel { get; set; }
+
+        public string UserName { get => this.UserModel?.NickName; }
 
         public DateTime LastCheckTime { get; set; }
 

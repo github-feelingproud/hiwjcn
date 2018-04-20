@@ -123,6 +123,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             });
         }
 
+        [NonAction]
         [HttpPost]
         [EpcAuth]
         public async Task<ActionResult> TodayIssueCount()
@@ -190,6 +191,30 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                         check_count,
                         member
                     }
+                });
+            });
+        }
+
+        [HttpPost, EpcAuth]
+        public async Task<ActionResult> TopWorkHardWorker()
+        {
+            return await RunActionAsync(async () =>
+            {
+                var org_uid = this.GetSelectedOrgUID();
+
+                var now = DateTime.Now;
+                var key = "dash.topworkharduser".WithCacheKeyPrefix();
+
+                var data = await this._cache.GetOrSetAsync(key,
+                    async () => await this._dashService.CheckLogGroupByUser(org_uid, now.AddMonths(-3), now, 10),
+                    TimeSpan.FromMinutes(10));
+
+                data = ConvertHelper.NotNullList(data);
+
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data,
                 });
             });
         }

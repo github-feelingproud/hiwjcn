@@ -1,6 +1,8 @@
 ﻿using EPC.Core;
 using EPC.Core.Entity;
 using EPC.Core.Model;
+using Hiwjcn.Core.Data;
+using Hiwjcn.Core.Domain.User;
 using Lib.data.ef;
 using Lib.helper;
 using Lib.infrastructure;
@@ -33,19 +35,24 @@ namespace Hiwjcn.Service.Epc
             DateTime start, DateTime end, string device_uid = null, string user_uid = null);
 
         Task<List<CheckLogGroupBy>> DeviceLastCheckTime(string org_uid, string[] device_uid, DateTime recent);
+
+        Task<List<CheckLogGroupBy>> CheckLogGroupByUser(string org_uid, DateTime start, DateTime end, int top_count);
     }
 
     public class DashboardService : ServiceBase<CheckLogEntity>, IDashboardService
     {
         private readonly IEpcRepository<CheckLogEntity> _logRepo;
         private readonly IEpcRepository<CheckLogItemEntity> _logItemRepo;
+        private readonly IMSRepository<UserEntity> _userRepo;
 
         public DashboardService(
             IEpcRepository<CheckLogEntity> _logRepo,
-            IEpcRepository<CheckLogItemEntity> _logItemRepo)
+            IEpcRepository<CheckLogItemEntity> _logItemRepo,
+            IMSRepository<UserEntity> _userRepo)
         {
             this._logRepo = _logRepo;
             this._logItemRepo = _logItemRepo;
+            this._userRepo = _userRepo;
         }
 
         public async Task<List<IssueGroupBy>> IssueCountGroupByStatus(string org_uid, DateTime start, DateTime end)
@@ -255,6 +262,40 @@ namespace Hiwjcn.Service.Epc
                 query = query.Where(x => x.CreateTime >= start && x.CreateTime < end);
 
                 return await query.CountAsync();
+            });
+        }
+
+        public async Task<List<CheckLogGroupBy>> CheckLogGroupByUser(string org_uid, DateTime start, DateTime end, int top_count)
+        {
+            return await this._logRepo.PrepareSessionAsync(async db =>
+            {
+                var query = db.Set<CheckLogEntity>().AsNoTrackingQueryable();
+
+                query = query.Where(x => x.OrgUID == org_uid);
+                query = query.Where(x => x.CreateTime >= start && x.CreateTime < end);
+
+                var data = await query.GroupBy(x => x.UserUID)
+                .Select(x => new { x.Key, Count = x.Count() })
+                .OrderByDescending(x => x.Count)
+                .Take(top_count).ToListAsync();
+
+                var list = data.Select(x => new CheckLogGroupBy()
+                {
+                    UserUID = x.Key,
+                    Count = x.Count
+                }).ToList();
+
+                if (ValidateHelper.IsPlumpList(list))
+                {
+                    var userids = list.Select(x => x.UserUID).ToArray();
+                    var userlist = await this._userRepo.GetListAsync(x => userids.Contains(x.UID));
+                    foreach (var m in list)
+                    {
+                        m.UserModel = userlist.FirstOrDefault(x => x.UID == m.UserUID);
+                    }
+                }
+
+                return list;
             });
         }
     }
