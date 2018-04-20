@@ -51,7 +51,7 @@ namespace Hiwjcn.Framework.Tasks
                 };
                 using (var timer = new CpuTimeLogger(logger))
                 {
-                    AutofacIocContext.Instance.Scope(s =>
+                    using (var s = AutofacIocContext.Instance.Scope())
                     {
                         var worker = s.Resolve_<IClearDataBaseService>();
                         /* 这里不要清理，这里关联的用户是usermodel，开启会删除重要数据！！！
@@ -67,8 +67,7 @@ namespace Hiwjcn.Framework.Tasks
                         worker.ClearPermission();
                         worker.ClearTag();
                         worker.ClearUser();*/
-                        return true;
-                    });
+                    }
                 }
             }
             catch (Exception e)

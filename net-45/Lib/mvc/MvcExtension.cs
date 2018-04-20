@@ -22,7 +22,7 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="route"></param>
         /// <returns></returns>
-        public static (string area, string controller, string action) GetA_C_A(this RouteData route)
+        public static (string area, string controller, string action) GetRouteInfo(this RouteData route)
         {
             var AreaName = ConvertHelper.GetString(route.Values["Area"]);
             var ControllerName = ConvertHelper.GetString(route.Values["Controller"]);
@@ -46,7 +46,7 @@ namespace Lib.mvc
         /// </summary>
         public static string ActionUrl(this RouteData route)
         {
-            var data = route.GetA_C_A();
+            var data = route.GetRouteInfo();
             var sp = new string[] { data.area, data.controller, data.action }.Where(x => ValidateHelper.IsPlumpString(x)).ToList();
             if (!ValidateHelper.IsPlumpList(sp))
             {

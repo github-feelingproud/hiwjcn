@@ -38,11 +38,11 @@ namespace Hiwjcn.Framework
                 model.ReqRefURL = ConvertHelper.GetString(context.Request.UrlReferrer);
                 model.ReqURL = ConvertHelper.GetString(context.Request.Url);
 
-                var route = filterContext.RouteData.GetA_C_A();
+                var route = filterContext.RouteData.GetRouteInfo();
 
-                model.AreaName = route.area?.ToLower();
-                model.ControllerName = route.controller?.ToLower();
-                model.ActionName = route.action?.ToLower();
+                model.AreaName = route.area;
+                model.ControllerName = route.controller;
+                model.ActionName = route.action;
 
                 model.ReqMethod = filterContext.HttpContext.Request.HttpMethod;
 

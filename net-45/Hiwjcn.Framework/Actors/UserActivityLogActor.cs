@@ -24,11 +24,10 @@ namespace Hiwjcn.Framework.Actors
                         msg.AddBusinessInfoLog();
                         return;
                     }
-                    AutofacIocContext.Instance.Scope(s =>
+                    using (var s = AutofacIocContext.Instance.Scope())
                     {
                         s.Resolve_<IMSRepository<UserActivityEntity>>().Add(x);
-                        return true;
-                    });
+                    }
                 }
                 catch (Exception e)
                 {

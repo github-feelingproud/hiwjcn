@@ -24,11 +24,10 @@ namespace Hiwjcn.Framework.Actors
 
                     $"缓存命中情况：{x.ToJson()}".AddBusinessInfoLog();
 
-                    AutofacIocContext.Instance.Scope(s =>
+                    using (var s = AutofacIocContext.Instance.Scope())
                     {
                         s.Resolve_<IMSRepository<CacheHitLogEntity>>().Add(x);
-                        return true;
-                    });
+                    }
                 }
                 catch (Exception e)
                 {

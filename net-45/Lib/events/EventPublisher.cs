@@ -60,15 +60,14 @@ namespace Lib.events
                 $"无法触发事件，没有在ioc中注册{typeof(IConsumer<T>)}的实例".AddBusinessInfoLog();
                 return;
             }
-            AutofacIocContext.Instance.Scope(x =>
+            using (var s = AutofacIocContext.Instance.Scope())
             {
-                var subscriptions = x.ResolveAll<IConsumer<T>>();
+                var subscriptions = s.ResolveAll<IConsumer<T>>();
                 foreach (var sub in subscriptions)
                 {
                     PublishToConsumer(sub, eventMessage);
                 }
-                return true;
-            });
+            }
         }
 
     }

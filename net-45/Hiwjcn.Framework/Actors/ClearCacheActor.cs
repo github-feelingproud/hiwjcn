@@ -36,15 +36,14 @@ namespace Hiwjcn.Framework.Actors
             {
                 return;
             }
-            AutofacIocContext.Instance.Scope(x =>
+            using (var s = AutofacIocContext.Instance.Scope())
             {
-                var cache = x.Resolve_<ICacheProvider>();
+                var cache = s.Resolve_<ICacheProvider>();
                 foreach (var key in list)
                 {
                     cache.Remove(key);
                 }
-                return true;
-            });
+            }
         }
 
     }

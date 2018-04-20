@@ -26,12 +26,11 @@ namespace Hiwjcn.Framework.Tasks
             try
             {
                 var expire = DateTime.Now.AddDays(-30);
-                AutofacIocContext.Instance.Scope(s =>
+                using (var s = AutofacIocContext.Instance.Scope())
                 {
                     s.Resolve_<IMSRepository<ReqLogEntity>>().DeleteWhere(x => x.CreateTime < expire);
                     s.Resolve_<IMSRepository<CacheHitLogEntity>>().DeleteWhere(x => x.CreateTime < expire);
-                    return true;
-                });
+                }
             }
             catch (Exception e)
             {

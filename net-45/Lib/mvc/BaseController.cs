@@ -178,17 +178,16 @@ namespace Lib.mvc
         #endregion
 
         #region action处理
-        
+
         [NonAction]
         protected virtual ActionResult WhenError(Exception e)
         {
-            var (area, controller, action) = this.RouteData.GetA_C_A();
             e.AddLog(this.GetType());
-            
+
             //捕获的错误
             return GetJsonRes(e.GetInnerExceptionAsJson());
         }
-        
+
         [NonAction]
         public virtual ActionResult RunAction(Func<ActionResult> GetActionFunc)
         {
@@ -201,7 +200,7 @@ namespace Lib.mvc
                 return WhenError(e);
             }
         }
-        
+
         [NonAction]
         public virtual async Task<ActionResult> RunActionAsync(Func<Task<ActionResult>> GetActionFunc)
         {
@@ -214,7 +213,7 @@ namespace Lib.mvc
                 return WhenError(e);
             }
         }
-        
+
         #endregion
 
     }

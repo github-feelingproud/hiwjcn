@@ -31,7 +31,7 @@ namespace Hiwjcn.Framework.Tasks
         {
             try
             {
-                AutofacIocContext.Instance.Scope(s =>
+                using (var s = AutofacIocContext.Instance.Scope())
                 {
                     var repo = s.Resolve_<IMSRepository<AuthToken>>();
                     repo.PrepareSession(db =>
@@ -42,10 +42,8 @@ namespace Hiwjcn.Framework.Tasks
                         //delete tokens
                         token_set.RemoveRange(token_set.Where(x => x.ExpiryTime < now));
                         db.SaveChanges();
-                        
                     });
-                    return true;
-                });
+                }
                 "成功清理过期token，以及相关信息".AddBusinessInfoLog();
             }
             catch (Exception e)

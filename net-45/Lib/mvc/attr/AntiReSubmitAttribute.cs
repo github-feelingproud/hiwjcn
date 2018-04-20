@@ -30,10 +30,10 @@ namespace Lib.mvc.attr
 
             var dict = new SortedDictionary<string, string>(reqparams, new MyStringComparer());
             var submitData = dict.ToUrlParam();
-            var (AreaName, ControllerName, ActionName) = filterContext.RouteData.GetA_C_A();
+            var (AreaName, ControllerName, ActionName) = filterContext.RouteData.GetRouteInfo();
             submitData = $"{AreaName}/{ControllerName}/{ActionName}/:{submitData}";
             //读取缓存
-            AutofacIocContext.Instance.Scope(s =>
+            using (var s = AutofacIocContext.Instance.Scope())
             {
                 using (var cache = s.Resolve_<ICacheProvider>())
                 {
@@ -43,7 +43,7 @@ namespace Lib.mvc.attr
                         if (data.Result == submitData)
                         {
                             filterContext.Result = ResultHelper.BadRequest(this.ErrorMessage);
-                            return true;
+                            return;
                         }
                     }
                     //10秒钟不能提交相同的数据
@@ -51,8 +51,7 @@ namespace Lib.mvc.attr
                     if (CacheSeconds == 0) { throw new Exception("缓存时间不能为0"); }
                     cache.Set(key, submitData, TimeSpan.FromSeconds(CacheSeconds));
                 }
-                return true;
-            });
+            }
             base.OnActionExecuting(filterContext);
         }
     }

@@ -290,7 +290,6 @@
     <Compile Include="distributed\zookeeper\ZooKeeperClientExtension.cs" />
     <Compile Include="distributed\zookeeper\ZooKeeperConfigSection.cs" />
     <Compile Include="cache\CacheExtension.cs" />
-    <Compile Include="cache\CacheManager.cs" />
     <Compile Include="distributed\redis\RedisFireWall.cs" />
     <Compile Include="cache\ICacheProvider.cs" />
     <Compile Include="cache\MemoryCacheProvider.cs" />

@@ -20,7 +20,7 @@ namespace Lib.data
         public static string RedisPreventTryLogin(string key, Func<bool> func)
         {
             var time = DateTime.Now.AddMinutes(-30);
-            return AutofacIocContext.Instance.Scope(s =>
+            using (var s = AutofacIocContext.Instance.Scope())
             {
                 using (var cache = s.Resolve_<ICacheProvider>())
                 {
@@ -38,9 +38,9 @@ namespace Lib.data
                         list.Add(DateTime.Now);
                     }
                     cache.Set(key, list, TimeSpan.FromSeconds(Math.Abs((DateTime.Now - time).TotalSeconds)));
-                    return "";
+                    return string.Empty;
                 }
-            });
+            }
         }
     }
 }

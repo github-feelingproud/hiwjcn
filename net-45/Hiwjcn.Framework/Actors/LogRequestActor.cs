@@ -22,10 +22,10 @@ namespace Hiwjcn.Framework.Actors
                 try
                 {
                     x.Init("reqlog");
-                    AutofacIocContext.Instance.Scope(s =>
+                    using (var s = AutofacIocContext.Instance.Scope())
                     {
-                        return s.Resolve_<IMSRepository<ReqLogEntity>>().Add(x);
-                    });
+                        s.Resolve_<IMSRepository<ReqLogEntity>>().Add(x);
+                    }
                 }
                 catch (Exception e)
                 {

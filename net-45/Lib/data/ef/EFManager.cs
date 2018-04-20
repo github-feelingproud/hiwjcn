@@ -58,15 +58,14 @@ namespace Lib.data.ef
         /// </summary>
         public void PrepareSession(Action<DbContext> callback)
         {
-            AutofacIocContext.Instance.Scope(x =>
+            using (var s = AutofacIocContext.Instance.Scope())
             {
-                using (var db = GetDbContext(x))
+                using (var db = GetDbContext(s))
                 {
                     //执行回调
                     callback.Invoke(db);
                 }
-                return true;
-            });
+            }
         }
 
         public async Task PrepareSessionAsync(Func<DbContext, Task> callback)
