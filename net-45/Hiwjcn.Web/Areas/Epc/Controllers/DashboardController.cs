@@ -123,32 +123,6 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             });
         }
 
-        [NonAction]
-        [HttpPost]
-        [EpcAuth]
-        public async Task<ActionResult> TodayIssueCount()
-        {
-            return await RunActionAsync(async () =>
-            {
-                var org_uid = this.GetSelectedOrgUID();
-                var loginuser = await this.ValidMember(org_uid, this.ManagerRole);
-
-                var border = DateTime.Now.GetDateBorder();
-
-                var key = "dash.today_issue_count".WithCacheKeyPrefix();
-
-                var data = await this._cache.GetOrSetAsync(key,
-                    async () => await this._dashService.IssueCount(org_uid, border.start, border.end),
-                    TimeSpan.FromMinutes(5));
-
-                return GetJson(new _()
-                {
-                    success = true,
-                    data = data
-                });
-            });
-        }
-
         [HttpPost]
         [EpcAuth]
         public async Task<ActionResult> CountBox()

@@ -353,13 +353,14 @@
     <Content Include="App_Data\Config\sentry.config" />
     <Content Include="App_Data\Config\elk_sentry.config" />
     <Content Include="Areas\Epc\Views\web.config" />
-    <None Include="Properties\PublishProfiles\iis.pubxml" />
-    <None Include="Properties\PublishProfiles\xx.pubxml" />
     <Content Include="Views\Simple_CRUD\SimpleList.cshtml" />
     <Content Include="Views\Shared\lang_select.cshtml" />
     <Content Include="Views\Shared\Limited.cshtml" />
     <Content Include="Views\Shared\Analysis.cshtml" />
     <Content Include="Views\Shared\pager.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
