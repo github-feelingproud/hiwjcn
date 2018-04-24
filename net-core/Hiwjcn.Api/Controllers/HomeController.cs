@@ -15,6 +15,7 @@ using SixLabors.ImageSharp;
 using Microsoft.AspNetCore.Http;
 using Autofac;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Hiwjcn.Api.Controllers
 {
@@ -24,12 +25,17 @@ namespace Hiwjcn.Api.Controllers
         {
             optionsBuilder.UseMySQL("");
             optionsBuilder.UseNpgsql("");
+
+            this.Database.EnsureCreated();
+
             base.OnConfiguring(optionsBuilder);
         }
 
     }
     public class ServiceClient<T> : ClientBase<T>, IDisposable where T : class
-    { }
+    {
+
+    }
 
     public class xx : ActionFilterAttribute
     {
@@ -49,7 +55,7 @@ namespace Hiwjcn.Api.Controllers
             {
                 var data = s.Resolve<IHttpContextAccessor>();
             }
-            
+
             //HttpContext.RequestServices.GetService(null);
         }
 

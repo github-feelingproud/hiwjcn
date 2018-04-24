@@ -9,11 +9,15 @@ using Lib.extension;
 using System.Data.Entity.Infrastructure;
 using Dapper;
 using System.Linq.Expressions;
+using System.Data.Entity.Validation;
 
 namespace Lib.data.ef
 {
     public static class EFExtension
     {
+        public static List<DbEntityValidationResult> GetValidationErrors_(this DbContext db) =>
+            db.GetValidationErrors().ToList();
+
         public static List<T> GetListEnsureMaxCount<T>(this IRepository<T> repo,
             Expression<Func<T, bool>> where, int count, string error_msg)
             where T : IDBTable

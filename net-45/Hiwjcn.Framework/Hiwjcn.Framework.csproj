@@ -39,6 +39,9 @@
     <Reference Include="Autofac, Version=4.6.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.6.2\lib\net45\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
@@ -163,6 +166,7 @@
     <Compile Include="DataBaseInitData.cs" />
     <Compile Include="EpcBaseController.cs" />
     <Compile Include="Factory\ActorsFactory.cs" />
+    <Compile Include="MapperContext.cs" />
     <Compile Include="Provider\AuthApiProvider.cs" />
     <Compile Include="Tasks\CleanDatabaseTask.cs" />
     <Compile Include="Tasks\ClearExpiredTokenTask.cs" />

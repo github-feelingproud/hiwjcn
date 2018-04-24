@@ -24,21 +24,7 @@ namespace Lib.data.ef
         {
             this.db_name = name;
         }
-
-        /// <summary>
-        /// 获取错误
-        /// </summary>
-        /// <returns></returns>
-        public string GetValidationErrors()
-        {
-            var errors = string.Empty;
-            PrepareSession(db =>
-            {
-                errors = db.GetValidationErrors().ToJson();
-            });
-            return errors;
-        }
-
+        
         /// <summary>
         /// 获取实体对象
         /// </summary>
@@ -80,40 +66,6 @@ namespace Lib.data.ef
                 return true;
             });
         }
-
-        /// <summary>
-        /// 准备IQueryable用于linq查询
-        /// Where方法里不是func而是expression，
-        /// 这个不会用来执行只会用来分析表达式树，不会出现空指针现象（x.age==18）
-        /// </summary>
-        public void PrepareIQueryable<T>(Func<IQueryable<T>, bool> callback, bool track = true)
-            where T : class, IDBTable
-        {
-            PrepareSession(session =>
-            {
-                //用来查询，所以不要跟踪实体状态
-                //NopCommerce:
-                //Gets a table with "no tracking" enabled (EF feature) 
-                //Use it only when you load record(s) only for read-only operations
-                var query = session.Set<T>().AsQueryableTrackingOrNot(track);
-                callback.Invoke(query);
-            });
-        }
-
-        public async Task PrepareIQueryableAsync<T>(Func<IQueryable<T>, Task<bool>> callback, bool track = true)
-            where T : class, IDBTable
-        {
-            await PrepareSessionAsync(async session =>
-            {
-                //用来查询，所以不要跟踪实体状态
-                //NopCommerce:
-                //Gets a table with "no tracking" enabled (EF feature) 
-                //Use it only when you load record(s) only for read-only operations
-                var query = session.Set<T>().AsQueryableTrackingOrNot(track);
-                await callback.Invoke(query);
-            });
-        }
-
     }
 
     partial class EFManager
@@ -121,12 +73,6 @@ namespace Lib.data.ef
         /// <summary>
         /// 取消EF首次访问数据库的System.Data.Entity.CreateDatabaseIfNotExists策略
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="db"></param>
-        public static void SetNoInitializer<T>(T db) where T : DbContext, new()
-        {
-            SetNoInitializer<T>();
-        }
         public static void SetNoInitializer<T>() where T : DbContext, new()
         {
             Database.SetInitializer<T>(new NullDatabaseInitializer<T>());

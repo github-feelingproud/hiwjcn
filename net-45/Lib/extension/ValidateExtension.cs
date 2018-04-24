@@ -16,19 +16,8 @@ namespace Lib.extension
         /// </summary>
         /// <param name="arr"></param>
         /// <returns></returns>
-        public static bool IsAllPlumpString(this IEnumerable<string> arr) => 
+        public static bool IsAllPlumpString(this IEnumerable<string> arr) =>
             ValidateHelper.IsAllPlumpString(arr.ToArray());
-
-        /// <summary>
-        /// 判断是否满足数据库约束
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public static bool IsValid<T>(this T model) where T : IDBTable
-        {
-            return model.IsValid(out var err);
-        }
 
         /// <summary>
         /// 判断是否满足数据库约束
@@ -39,7 +28,7 @@ namespace Lib.extension
         /// <returns></returns>
         public static bool IsValid<T>(this T model, out string err) where T : IDBTable
         {
-            err = model.GetValidError();
+            err = model.GetValidErrors().FirstOrDefault();
             return !ValidateHelper.IsPlumpString(err);
         }
 
@@ -49,21 +38,8 @@ namespace Lib.extension
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string GetValidError<T>(this T model) where T : IDBTable
-        {
-            return model.GetValidErrors().FirstOrDefault();
-        }
-
-        /// <summary>
-        /// 获取验证错误
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="model"></param>
-        /// <returns></returns>
         public static List<string> GetValidErrors<T>(this T model) where T : IDBTable
-        {
-            return ValidateHelper.CheckEntity_(model);
-        }
+            => ValidateHelper.CheckEntity_(model);
 
         /// <summary>
         /// 用正则匹配
@@ -72,60 +48,43 @@ namespace Lib.extension
         /// <param name="pattern"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static bool IsMatchedByPattern(this string s, string pattern, RegexOptions options = RegexOptions.IgnoreCase)
-        {
-            return RegexHelper.IsMatch(s, pattern, options);
-        }
+        public static bool IsMatchedByPattern(this string s, string pattern, RegexOptions options = RegexOptions.IgnoreCase) =>
+            RegexHelper.IsMatch(s, pattern, options);
 
         /// <summary>
         /// 是手机号
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsMobilePhone(this string s)
-        {
-            return ValidateHelper.IsMobilePhone(s);
-        }
+        public static bool IsMobilePhone(this string s) => ValidateHelper.IsMobilePhone(s);
 
         /// <summary>
         /// 是否是域名
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsDomain(this string s)
-        {
-            return ValidateHelper.IsDomain(s);
-        }
+        public static bool IsDomain(this string s) => ValidateHelper.IsDomain(s);
 
         /// <summary>
         /// 是否是中文
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsChinese(this string s)
-        {
-            return ValidateHelper.IsChinese(s);
-        }
+        public static bool IsChinese(this string s) => ValidateHelper.IsChinese(s);
 
         /// <summary>
         /// 判断是否是中文字符串
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsChineaseStr(this string s)
-        {
-            return ValidateHelper.IsChineaseStr(s);
-        }
+        public static bool IsChineaseStr(this string s) => ValidateHelper.IsChineaseStr(s);
 
         /// <summary>
         /// 是否是身份证号
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsIDCardNo(this string s)
-        {
-            return ValidateHelper.IsIDCardNo(s);
-        }
+        public static bool IsIDCardNo(this string s) => ValidateHelper.IsIDCardNo(s);
 
         /// <summary>
         /// 是否是IP
