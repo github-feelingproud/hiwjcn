@@ -1,6 +1,6 @@
 ﻿using Lib.helper;
-using Lib.rpc;
 using org.apache.zookeeper;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,9 +12,12 @@ namespace Lib.distributed.zookeeper.ServiceManager
     public class ServiceRegister : ServiceManageBase
     {
         private readonly string _node_id;
+        private readonly Func<List<ContractModel>> _contracts;
 
-        public ServiceRegister(string host) : base(host)
+        public ServiceRegister(string host, Func<List<ContractModel>> _contracts) : base(host)
         {
+            this._contracts = _contracts ?? throw new ArgumentNullException(nameof(_contracts));
+
             this._node_id = this.Client.getSessionId().ToString();
 
             this.Retry().Execute(() => this.Reg());
@@ -26,12 +29,12 @@ namespace Lib.distributed.zookeeper.ServiceManager
         private async Task RegisterService()
         {
             var list = new List<AddressModel>();
-            foreach (var m in ServiceHostManager.Host.GetContractInfo())
+            foreach (var m in this._contracts.Invoke())
             {
                 var model = new AddressModel()
                 {
-                    Url = m.url,
-                    ServiceNodeName = ServiceManageHelper.ParseServiceName(m.contract),
+                    Url = m.Url,
+                    ServiceNodeName = ServiceManageHelper.ParseServiceName(m.Contract),
                     EndpointNodeName = ServiceManageHelper.EndpointNodeName(this._node_id),
                 };
                 list.Add(model);

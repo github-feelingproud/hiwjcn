@@ -43,6 +43,14 @@ namespace Lib.distributed.zookeeper.ServiceManager
             {
                 //清理无用节点
                 AsyncHelper_.RunSync(() => this.ClearDeadNodes());
+            }
+            catch (Exception e)
+            {
+                throw new Exception("清理无用节点失败", e);
+            }
+
+            try
+            {
                 //读取节点并添加监视
                 AsyncHelper_.RunSync(() => this.WalkNodeAndWatch(this._base_path));
             }
@@ -108,7 +116,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             }
             catch (Exception e)
             {
-                e.AddErrorLog();
+                e.AddErrorLog($"订阅节点{path}失败");
             }
         }
 
@@ -139,7 +147,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             }
             catch (Exception e)
             {
-                e.AddErrorLog();
+                e.AddErrorLog($"读取节点数据失败：{path}");
             }
         }
 
