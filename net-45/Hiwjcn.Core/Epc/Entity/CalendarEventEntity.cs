@@ -45,15 +45,4 @@ namespace EPC.Core.Entity
         [NotMapped]
         public virtual int? ByDay { get; set; }
     }
-
-    [Serializable]
-    [Table("tb_event_device")]
-    public class EventDeviceEntity : BaseEntity, IEpcDBTable
-    {
-        [Required]
-        public virtual string EventUID { get; set; }
-
-        [Required]
-        public virtual string DeviceUID { get; set; }
-    }
 }

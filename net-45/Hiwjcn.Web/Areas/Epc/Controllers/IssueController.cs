@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Lib.mvc;
-using System.Threading.Tasks;
-using Hiwjcn.Service;
-using Lib.infrastructure.helper;
-using Lib.infrastructure.model;
-using Lib.extension;
-using EPC.Core.Entity;
-using Lib.helper;
+﻿using EPC.Core.Entity;
+using Hiwjcn.Core;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc;
-using Hiwjcn.Core;
+using Lib.extension;
+using Lib.helper;
+using Lib.mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {
@@ -30,18 +25,9 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
             this._issueService = _issueService;
         }
 
-        /// <summary>
-        /// 显示列表
-        /// </summary>
-        /// <param name="org_uid"></param>
-        /// <param name="q"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [EpcAuth]
-        public async Task<ActionResult> Query(string q, string just_open, DateTime? start, DateTime? end, int? page)
+        [HttpPost, EpcAuth]
+        public async Task<ActionResult> QueryList(int? max_id,
+            string device_uid, string just_open, DateTime? start, DateTime? end)
         {
             return await RunActionAsync(async () =>
             {
@@ -54,12 +40,10 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                     open = true;
                 }
 
-                var data = await this._issueService.QueryIssue(org_uid,
-                    start: start, end: end,
-                    open: open, q: q,
-                    page: page.Value, pagesize: this.PageSize);
+                var data = await this._issueService.QueryIssueList(org_uid, max_id, this.PageSize,
+                    device_uid: device_uid, start: start, end: end, open: open);
 
-                data.DataList = await this._issueService._LoadPagerExtraData(data.DataList);
+                data = await this._issueService._LoadPagerExtraData(data);
 
                 return GetJson(new _()
                 {
@@ -96,7 +80,8 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                var data = await this._issueService.TopOpenIssue(org_uid, count: 10);
+                var data = await this._issueService.QueryIssueList(
+                    org_uid: org_uid, max_id: null, pagesize: this.PageSize);
 
                 return GetJson(new _()
                 {

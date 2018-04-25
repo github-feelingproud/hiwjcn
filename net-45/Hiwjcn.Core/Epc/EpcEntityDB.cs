@@ -29,7 +29,6 @@ namespace EPC.Core
         #region model对应的实体
 
         public virtual DbSet<CalendarEventEntity> CalendarEventEntity { get; set; }
-        public virtual DbSet<EventDeviceEntity> EventDeviceEntity { get; set; }
 
         public virtual DbSet<IssueEntity> IssueEntity { get; set; }
         public virtual DbSet<IssueOperationLogEntity> IssueOperationLogEntity { get; set; }

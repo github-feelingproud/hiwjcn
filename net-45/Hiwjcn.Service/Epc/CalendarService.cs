@@ -19,8 +19,6 @@ namespace Hiwjcn.Service.Epc
     {
         Task<int> GetMaxRRuleCount(string org_uid);
 
-        Task<CalendarEventEntity> GetEvent(string org_uid, string uid);
-
         Task<List<CalendarEventEntity>> GetAllEventRule(string org_uid);
 
         Task<bool> DeleteEvent(string org_uid, string uid);
@@ -30,8 +28,6 @@ namespace Hiwjcn.Service.Epc
         Task<_<string>> UpdateEvent(CalendarEventEntity model);
 
         Task<List<CalendarEventEntity>> QueryEvents(string org_uid, DateTime start, DateTime end);
-
-        Task<List<string>> GetRelativeDeviceUID(string org_uid, string event_uid);
     }
 
     public class CalendarService : ServiceBase<CalendarEventEntity>,
@@ -40,21 +36,15 @@ namespace Hiwjcn.Service.Epc
         private readonly int MaxRRuleCount = (ConfigurationManager.AppSettings["MaxRRuleCount"] ?? "100").ToInt(100);
 
         private readonly IEpcRepository<CalendarEventEntity> _calendarRepo;
-        private readonly IEpcRepository<EventDeviceEntity> _eventDeviceRepo;
 
         public CalendarService(
-            IEpcRepository<CalendarEventEntity> _calendarRepo,
-            IEpcRepository<EventDeviceEntity> _eventDeviceRepo)
+            IEpcRepository<CalendarEventEntity> _calendarRepo)
         {
             this._calendarRepo = _calendarRepo;
-            this._eventDeviceRepo = _eventDeviceRepo;
         }
 
         public virtual async Task<int> GetMaxRRuleCount(string org_uid) => await Task.FromResult(this.MaxRRuleCount);
-
-        public virtual async Task<CalendarEventEntity> GetEvent(string org_uid, string uid) =>
-            await this._calendarRepo.GetFirstAsync(x => x.OrgUID == org_uid && x.UID == uid);
-
+        
         public virtual async Task<bool> DeleteEvent(string org_uid, string uid)
         {
             if (!ValidateHelper.IsAllPlumpString(org_uid, uid)) { throw new Exception("参数错误"); }
@@ -99,6 +89,7 @@ namespace Hiwjcn.Service.Epc
             Com.AssertNotNull(e, "事件不存在");
             e.Summary = model.Summary;
             e.Content = model.Content;
+            e.DeviceUID = model.DeviceUID;
             e.RRule = model.RRule;
             e.HasRule = ValidateHelper.IsPlumpString(model.RRule).ToBoolInt();
             e.DateStart = model.DateStart.Date;
@@ -108,12 +99,6 @@ namespace Hiwjcn.Service.Epc
             if (!e.IsValid(out var msg))
             {
                 data.SetErrorMsg(msg);
-                return data;
-            }
-            
-            if (await this._calendarRepo.GetCountAsync(x => x.OrgUID == model.OrgUID && x.HasRule > 0 && x.UID != model.UID) >= await this.GetMaxRRuleCount(e.OrgUID))
-            {
-                data.SetErrorMsg("规则数量达到上限");
                 return data;
             }
 
@@ -172,6 +157,7 @@ namespace Hiwjcn.Service.Epc
 
                     foreach (var e in es)
                     {
+                        //复制一份
                         var m = x.ToJson().JsonToEntity<CalendarEventEntity>();
                         m.DateStart = e.Period.StartTime.AsSystemLocal;
                         m.DateEnd = m.DateStart + e.Period.Duration;
@@ -188,12 +174,6 @@ namespace Hiwjcn.Service.Epc
             errors.AddErrorLogIfNotEmpty();
 
             return list.OrderBy(x => x.DateStart).ToList();
-        }
-
-        public virtual async Task<List<string>> GetRelativeDeviceUID(string org_uid, string event_uid)
-        {
-            var list = await this._eventDeviceRepo.GetListAsync(x => x.EventUID == event_uid);
-            return list.Select(x => x.DeviceUID).ToList();
         }
 
         public async Task<List<CalendarEventEntity>> GetAllEventRule(string org_uid)

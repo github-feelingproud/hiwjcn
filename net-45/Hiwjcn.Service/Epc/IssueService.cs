@@ -21,19 +21,17 @@ namespace Hiwjcn.Service.Epc
         Task<_<IssueEntity>> AddIssue(IssueEntity model);
 
         Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close);
+        
+        Task<List<IssueEntity>> QueryIssueList(string org_uid, int? max_id, int pagesize,
+            string device_uid = null, DateTime? start = null, DateTime? end = null, bool? open = null);
 
-        Task<PagerData<IssueEntity>> QueryIssue(string org_uid,
-            DateTime? start = null, DateTime? end = null, bool? open = true,
-            string q = null, int page = 1, int pagesize = 10);
-
+        [Obsolete("不使用count分页")]
         Task<PagerData<IssueEntity>> MyIssue(
             string org_uid, string user_uid, string assigned_user_uid, bool? open,
             int page, int pagesize);
 
         Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(string org_uid, string issue_uid, int count);
-
-        Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count);
-
+        
         Task<_<IssueOperationLogEntity>> AddComment(IssueOperationLogEntity model);
 
         Task<List<IssueEntity>> _LoadPagerExtraData(List<IssueEntity> data);
@@ -128,7 +126,7 @@ namespace Hiwjcn.Service.Epc
                 return data;
             });
         }
-        
+
         public virtual async Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close)
         {
             return await this._issueRepo.PrepareSessionAsync(async db =>
@@ -185,9 +183,8 @@ namespace Hiwjcn.Service.Epc
             });
         }
 
-        public virtual async Task<PagerData<IssueEntity>> QueryIssue(string org_uid,
-            DateTime? start = null, DateTime? end = null, bool? open = true,
-            string q = null, int page = 1, int pagesize = 10)
+        public virtual async Task<List<IssueEntity>> QueryIssueList(string org_uid, int? max_id, int pagesize,
+            string device_uid = null, DateTime? start = null, DateTime? end = null, bool? open = null)
         {
             return await this._issueRepo.PrepareSessionAsync(async db =>
             {
@@ -195,8 +192,13 @@ namespace Hiwjcn.Service.Epc
                 var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
                 query = query.Where(x => x.OrgUID == org_uid);
                 query = query.Where(x => x.Start == null || x.Start < now);
-
                 query = query.FilterCreateDateRange(start, end);
+
+                if (max_id != null)
+                {
+                    query = query.Where(x => x.IID < max_id);
+                }
+
                 if (open != null)
                 {
                     if (open.Value)
@@ -208,12 +210,12 @@ namespace Hiwjcn.Service.Epc
                         query = query.Where(x => x.IsClosed > 0);
                     }
                 }
-                if (ValidateHelper.IsPlumpString(q))
+                if (ValidateHelper.IsPlumpString(device_uid))
                 {
-                    query = query.Where(x => x.Title.Contains(q));
+                    query = query.Where(x => x.DeviceUID == device_uid);
                 }
 
-                var data = await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
+                var data = await query.OrderByDescending(x => x.IID).Take(pagesize).ToListAsync();
 
                 return data;
             });
@@ -259,12 +261,6 @@ namespace Hiwjcn.Service.Epc
 
             return data;
         }
-
-        public virtual async Task<List<IssueEntity>> TopOpenIssue(string org_uid, int count) =>
-            await this._issueRepo.QueryListAsync(
-                where: x => x.OrgUID == org_uid && x.IsClosed <= 0,
-                orderby: x => x.IID, Desc: true,
-                count: count);
-
+        
     }
 }
