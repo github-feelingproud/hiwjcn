@@ -86,6 +86,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                     x.UID,
                     x.Summary,
                     x.Content,
+                    x.DeviceUID,
                     Start = x.DateStart.ToDateString(),
                     End = x.DateEnd.Value.ToDateString(),
                     x.Color
