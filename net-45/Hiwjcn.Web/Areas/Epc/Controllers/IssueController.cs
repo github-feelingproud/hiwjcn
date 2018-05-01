@@ -26,6 +26,24 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         }
 
         [HttpPost, EpcAuth]
+        public async Task<ActionResult> QueryIssue(string uid)
+        {
+            return await RunActionAsync(async () =>
+            {
+                var org_uid = this.GetSelectedOrgUID();
+                var loginuser = await this.ValidMember(org_uid);
+
+                var data = await this._issueService.QueryIssueByUID(org_uid, uid);
+
+                return GetJson(new _()
+                {
+                    success = true,
+                    data = data
+                });
+            });
+        }
+
+        [HttpPost, EpcAuth]
         public async Task<ActionResult> QueryList(int? max_id,
             string device_uid, string just_open, DateTime? start, DateTime? end)
         {
@@ -98,23 +116,21 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <returns></returns>
         [HttpPost]
         [EpcAuth]
-        public async Task<ActionResult> MyClosedIssue(int? page)
+        public async Task<ActionResult> MyClosedIssue(int? max_id)
         {
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                page = this.CheckPage(page);
-
-                var data = await this._issueService.MyIssue(org_uid,
+                var data = await this._issueService.MyIssue_(org_uid,
                     user_uid: null,
                     assigned_user_uid: loginuser.UserID,
                     open: false,
-                    page: page.Value,
+                    max_id: max_id,
                     pagesize: this.PageSize);
 
-                data.DataList = await _issueService._LoadPagerExtraData(data.DataList);
+                data = await _issueService._LoadPagerExtraData(data);
 
                 return GetJson(new _()
                 {
@@ -130,23 +146,21 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <param name="page"></param>
         /// <returns></returns>
         [HttpPost, EpcAuth]
-        public async Task<ActionResult> MyOpenedIssue(int? page)
+        public async Task<ActionResult> MyOpenedIssue(int? max_id)
         {
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                page = this.CheckPage(page);
-
-                var data = await this._issueService.MyIssue(org_uid,
+                var data = await this._issueService.MyIssue_(org_uid,
                     user_uid: null,
                     assigned_user_uid: loginuser.UserID,
                     open: true,
-                    page: page.Value,
+                    max_id: max_id,
                     pagesize: this.PageSize);
 
-                data.DataList = await _issueService._LoadPagerExtraData(data.DataList);
+                data = await _issueService._LoadPagerExtraData(data);
 
                 return GetJson(new _()
                 {
@@ -157,23 +171,21 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         }
 
         [HttpPost, EpcAuth]
-        public async Task<ActionResult> IssueSendByMe(int? page)
+        public async Task<ActionResult> IssueSendByMe(int? max_id)
         {
             return await RunActionAsync(async () =>
             {
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                page = this.CheckPage(page);
-
-                var data = await this._issueService.MyIssue(org_uid,
+                var data = await this._issueService.MyIssue_(org_uid,
                     user_uid: loginuser.UserID,
                     assigned_user_uid: null,
                     open: null,
-                    page: page.Value,
+                    max_id: max_id,
                     pagesize: this.PageSize);
-
-                data.DataList = await _issueService._LoadPagerExtraData(data.DataList);
+                
+                data = await _issueService._LoadPagerExtraData(data);
 
                 return GetJson(new _()
                 {

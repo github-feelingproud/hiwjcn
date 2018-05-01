@@ -18,10 +18,12 @@ namespace Hiwjcn.Service.Epc
 {
     public interface IIssueService : IServiceBase<IssueEntity>
     {
+        Task<IssueEntity> QueryIssueByUID(string org_uid, string uid);
+
         Task<_<IssueEntity>> AddIssue(IssueEntity model);
 
         Task<_<string>> OpenOrClose(string issue_uid, string user_uid, bool close);
-        
+
         Task<List<IssueEntity>> QueryIssueList(string org_uid, int? max_id, int pagesize,
             string device_uid = null, DateTime? start = null, DateTime? end = null, bool? open = null);
 
@@ -30,8 +32,12 @@ namespace Hiwjcn.Service.Epc
             string org_uid, string user_uid, string assigned_user_uid, bool? open,
             int page, int pagesize);
 
+        Task<List<IssueEntity>> MyIssue_(
+            string org_uid, string user_uid, string assigned_user_uid, bool? open,
+            int? max_id, int pagesize);
+
         Task<List<IssueOperationLogEntity>> QueryIssueOperationLog(string org_uid, string issue_uid, int count);
-        
+
         Task<_<IssueOperationLogEntity>> AddComment(IssueOperationLogEntity model);
 
         Task<List<IssueEntity>> _LoadPagerExtraData(List<IssueEntity> data);
@@ -84,6 +90,49 @@ namespace Hiwjcn.Service.Epc
 
         public virtual async Task<_<IssueEntity>> AddIssue(IssueEntity model) =>
             await this._issueRepo.AddEntity_(model, "is");
+
+        public async Task<List<IssueEntity>> MyIssue_(
+            string org_uid, string user_uid, string assigned_user_uid, bool? open,
+            int? max_id, int pagesize)
+        {
+            return await this._issueRepo.PrepareSessionAsync(async db =>
+            {
+                var now = DateTime.Now;
+                var query = db.Set<IssueEntity>().AsNoTrackingQueryable();
+                query = query.Where(x => x.OrgUID == org_uid);
+                //对于客户端，所有issue都显示，即便没有超过5分钟
+                //query = query.Where(x => x.Start == null || x.Start < now);
+
+                if (max_id != null && max_id.Value >= 0)
+                {
+                    query = query.Where(x => x.IID < max_id);
+                }
+
+                if (ValidateHelper.IsPlumpString(user_uid))
+                {
+                    query = query.Where(x => x.UserUID == user_uid);
+                }
+                if (ValidateHelper.IsPlumpString(assigned_user_uid))
+                {
+                    query = query.Where(x => x.AssignedUserUID == assigned_user_uid);
+                }
+                if (open != null)
+                {
+                    if (open.Value)
+                    {
+                        query = query.Where(x => x.IsClosed <= 0);
+                    }
+                    else
+                    {
+                        query = query.Where(x => x.IsClosed > 0);
+                    }
+                }
+
+                var data = await query.OrderByDescending(x => x.IID).Take(pagesize).ToListAsync();
+
+                return data;
+            });
+        }
 
         public async Task<PagerData<IssueEntity>> MyIssue(string org_uid,
             string user_uid, string assigned_user_uid, bool? open,
@@ -194,7 +243,7 @@ namespace Hiwjcn.Service.Epc
                 query = query.Where(x => x.Start == null || x.Start < now);
                 query = query.FilterCreateDateRange(start, end);
 
-                if (max_id != null)
+                if (max_id != null && max_id.Value >= 0)
                 {
                     query = query.Where(x => x.IID < max_id);
                 }
@@ -261,6 +310,8 @@ namespace Hiwjcn.Service.Epc
 
             return data;
         }
-        
+
+        public async Task<IssueEntity> QueryIssueByUID(string org_uid, string uid) =>
+            await this._issueRepo.GetFirstAsync(x => x.OrgUID == org_uid && x.UID == uid);
     }
 }
