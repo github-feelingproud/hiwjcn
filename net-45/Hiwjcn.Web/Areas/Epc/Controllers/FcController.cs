@@ -1,8 +1,6 @@
-﻿using Hiwjcn.Core;
-using Hiwjcn.Framework;
+﻿using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc;
 using Hiwjcn.Service.Epc.InputsType;
-using Lib.extension;
 using Lib.mvc;
 using System;
 using System.Linq;

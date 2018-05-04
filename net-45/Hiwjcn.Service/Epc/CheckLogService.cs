@@ -50,7 +50,9 @@ namespace Hiwjcn.Service.Epc
             this._userRepo = _userRepo;
         }
 
-        private void CheckInputData(DeviceInputData model)
+        #region helper
+
+        private void __CheckInputData(DeviceInputData model)
         {
             if (!ValidateHelper.IsPlumpString(model.OrgUID))
             {
@@ -74,7 +76,7 @@ namespace Hiwjcn.Service.Epc
             }
         }
 
-        private async Task<CheckLogEntity> PrepareCheckLog(DeviceInputData model, List<CheckLogItemEntity> items)
+        private async Task<CheckLogEntity> __PrepareCheckLog(DeviceInputData model, List<CheckLogItemEntity> items)
         {
             var data = new CheckLogEntity()
             {
@@ -103,7 +105,7 @@ namespace Hiwjcn.Service.Epc
             return await Task.FromResult(data);
         }
 
-        private async Task<CheckLogItemEntity> ValidParamsValues(CheckLogItemEntity data,
+        private async Task<CheckLogItemEntity> __ValidParamsValues(CheckLogItemEntity data,
             DeviceParameterEntity p, string value)
         {
             await Task.FromResult(1);
@@ -153,7 +155,7 @@ namespace Hiwjcn.Service.Epc
             return data;
         }
 
-        private async Task<List<CheckLogItemEntity>> PrepareCheckLogItem(DeviceInputData model)
+        private async Task<List<CheckLogItemEntity>> __PrepareCheckLogItem(DeviceInputData model)
         {
             var param_uids = model.Data.NotEmptyAndDistinct(x => x.ParamUID).ToList();
             var all_params = await this._paramRepo.GetListAsync(x => x.DeviceUID == model.DeviceUID);
@@ -180,14 +182,14 @@ namespace Hiwjcn.Service.Epc
                     Tips = new List<string>(),
                 };
 
-                entity = await this.ValidParamsValues(entity, p, value);
+                entity = await this.__ValidParamsValues(entity, p, value);
 
                 list.Add(entity);
             }
             return list.Select(x => x.InitSelf("log-item")).ToList();
         }
 
-        private async Task<IssueEntity> PrepareIssue(CheckLogEntity model, List<CheckLogItemEntity> items)
+        private async Task<IssueEntity> __PrepareIssue(CheckLogEntity model, List<CheckLogItemEntity> items)
         {
             if (model.StatusOK > 0)
             {
@@ -211,20 +213,51 @@ namespace Hiwjcn.Service.Epc
             return await Task.FromResult(data);
         }
 
+        private async Task __SaveCheckLogDataOrThrow(CheckLogEntity log, IEnumerable<CheckLogItemEntity> items, IssueEntity issue = null)
+        {
+            await this._logRepo.PrepareSessionAsync(async db =>
+            {
+                db.Set<CheckLogEntity>().Add(log);
+                db.Set<CheckLogItemEntity>().AddRange(items);
+                if (issue != null)
+                {
+                    db.Set<IssueEntity>().Add(issue);
+                }
+
+                var count = await db.SaveChangesAsync();
+                if (count <= 0)
+                {
+                    throw new MsgException("点检数据未能保存成功");
+                }
+            });
+        }
+
+        #endregion
+
         public async Task<_<List<CheckInputDataResult>>> SubmitCheckLog(DeviceInputData model)
         {
             var data = new _<List<CheckInputDataResult>>();
+            var steps = new List<string>();
 
             try
             {
+                steps.Add($"设备点检参数：{model?.ToJson()}");
+
                 //检查输入
-                this.CheckInputData(model);
+                this.__CheckInputData(model);
+                steps.Add("数据检查没有问题");
 
-                //拼接数据
-                var items = await this.PrepareCheckLogItem(model);
-                var log = await this.PrepareCheckLog(model, items);
+                //生成详情
+                var items = await this.__PrepareCheckLogItem(model);
+                steps.Add($"生成点检详细数据：{items?.ToJson()}");
 
-                var issue = await this.PrepareIssue(log, items);
+                //生成点检主记录
+                var log = await this.__PrepareCheckLog(model, items);
+                steps.Add($"生成点检数据：{log?.ToJson()}");
+
+                //生成工单
+                var issue = await this.__PrepareIssue(log, items);
+                steps.Add($"生成工单：{issue?.ToJson()}");
 
                 //数据关联
                 foreach (var m in items)
@@ -233,17 +266,8 @@ namespace Hiwjcn.Service.Epc
                 }
 
                 //保存数据
-                var count = await this._logRepo.PrepareSessionAsync(async db =>
-                {
-                    db.Set<CheckLogEntity>().Add(log);
-                    db.Set<CheckLogItemEntity>().AddRange(items);
-                    if (issue != null)
-                    {
-                        db.Set<IssueEntity>().Add(issue);
-                    }
-
-                    return await db.SaveChangesAsync();
-                });
+                await this.__SaveCheckLogDataOrThrow(log, items, issue: issue);
+                steps.Add("保存数据");
 
                 //获取返回
                 var res = items.Select(x => new CheckInputDataResult()
@@ -253,17 +277,21 @@ namespace Hiwjcn.Service.Epc
                     StatusOk = x.StatusOK.ToBool(),
                     Tips = x.Tips
                 }).ToList();
+
                 data.SetSuccessData(res);
                 return data;
             }
             catch (MsgException e)
             {
+                steps.Add(e.Message);
+
                 data.SetErrorMsg(e.Message);
                 return data;
             }
             catch (Exception e)
             {
-                throw new Exception($"提交点检数据错误：{model?.ToJson()}", e);
+                steps.Add($"捕获异常信息：{e.GetInnerExceptionAsJson()}");
+                throw new Exception($"提交点检数据错误：{steps.ToJson()}", e);
             }
         }
 

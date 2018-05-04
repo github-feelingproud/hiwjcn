@@ -165,6 +165,7 @@
     <Compile Include="AopBoundle.cs" />
     <Compile Include="Epc\CalendarService.cs" />
     <Compile Include="Epc\CheckLogService.cs" />
+    <Compile Include="Epc\CheckLogServiceBase.cs" />
     <Compile Include="Epc\DashboardService.cs" />
     <Compile Include="Epc\DeviceService.cs" />
     <Compile Include="Epc\InputsType\BoolInputExpression.cs" />

@@ -15,17 +15,11 @@ namespace Hiwjcn.Service.Epc
 {
     public interface IPageService : IAutoRegistered
     {
-        Task<bool> CheckPageOwner(string user_uid, string page_uid);
+        Task<_<PageEntity>> AddPage(PageEntity page);
 
-        Task<bool> CheckPageOwner(string user_uid, List<string> page_uids);
+        Task<_<PageEntity>> UpdatePage(PageEntity model);
 
-        Task<_<string>> AddPage(PageEntity page);
-
-        Task<_<string>> UpdatePage(PageEntity model);
-
-        Task<_<string>> DeletePage(params string[] page_uids);
-
-        Task<_<string>> HideOrShowPages(bool show, params string[] page_uids);
+        Task<_<int>> DeletePage(params string[] page_uids);
 
         Task<List<PageEntity>> GetPagesByGroup(string group);
 
@@ -33,14 +27,7 @@ namespace Hiwjcn.Service.Epc
 
         Task<PageEntity> GetPageByUID(string uid);
 
-        Task<PagerData<PageEntity>> RemovedPages(
-            string user_uid, int page = 1, int pagesize = 10);
-
-        Task<PagerData<PageEntity>> QueryPages(
-            string user_uid = null, bool enforce_date_range = true,
-            int page = 1, int pagesize = 10);
-
-        Task<PagerData<PageEntity>> QueryPager(string org_uid, string q, string device_uid, int page, int pagesize);
+        Task<List<PageEntity>> QueryList(string org_uid, string q, string device_uid, int? max_id, int pagesize);
     }
 
     public class PageService : IPageService
@@ -56,22 +43,9 @@ namespace Hiwjcn.Service.Epc
             this._deviceRepo = _deviceRepo;
         }
 
-        public virtual async Task<bool> CheckPageOwner(string user_uid, string page_uid) =>
-            await this.CheckPageOwner(user_uid, new List<string>() { page_uid });
-
-        public virtual async Task<bool> CheckPageOwner(string user_uid, List<string> page_uids)
+        public virtual async Task<_<PageEntity>> AddPage(PageEntity page)
         {
-            if (!ValidateHelper.IsPlumpString(user_uid) || !ValidateHelper.IsPlumpList(page_uids))
-            {
-                throw new Exception("无法检查页面所有者，参数错误");
-            }
-            var pages = await this._pageRepo.GetListAsync(x => page_uids.Contains(x.UID));
-            return pages.All(x => x.UserUID == user_uid);
-        }
-
-        public virtual async Task<_<string>> AddPage(PageEntity page)
-        {
-            var data = new _<string>();
+            var data = new _<PageEntity>();
             page.Init("page");
             if (!page.IsValid(out var msg))
             {
@@ -87,15 +61,15 @@ namespace Hiwjcn.Service.Epc
 
             if (await this._pageRepo.AddAsync(page) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(page);
                 return data;
             }
             throw new Exception("保存页面失败");
         }
 
-        public virtual async Task<_<string>> UpdatePage(PageEntity model)
+        public virtual async Task<_<PageEntity>> UpdatePage(PageEntity model)
         {
-            var data = new _<string>();
+            var data = new _<PageEntity>();
             var page = await this._pageRepo.GetFirstAsync(x => x.UID == model.UID);
             Com.AssertNotNull(page, "页面不存在");
             this.UpdatePageEntity(ref page, ref model);
@@ -107,44 +81,24 @@ namespace Hiwjcn.Service.Epc
             }
             if (await this._pageRepo.UpdateAsync(page) > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(page);
                 return data;
             }
 
             throw new Exception("更新页面失败");
         }
 
-        public virtual async Task<_<string>> DeletePage(params string[] page_uids)
+        public virtual async Task<_<int>> DeletePage(params string[] page_uids)
         {
-            var data = new _<string>();
+            var data = new _<int>();
             if (!ValidateHelper.IsPlumpList(page_uids)) { throw new Exception("参数错误"); }
-            if (await this._pageRepo.DeleteWhereAsync(x => page_uids.Contains(x.UID)) > 0)
+            var count = await this._pageRepo.DeleteWhereAsync(x => page_uids.Contains(x.UID));
+            if (count > 0)
             {
-                data.SetSuccessData(string.Empty);
+                data.SetSuccessData(count);
                 return data;
             }
             throw new Exception("删除页面错误");
-        }
-
-        public virtual async Task<_<string>> HideOrShowPages(bool show, params string[] page_uids)
-        {
-            if (!ValidateHelper.IsPlumpList(page_uids)) { throw new Exception("参数错误"); }
-            var data = new _<string>();
-            var pages = show ?
-                await this._pageRepo.GetListAsync(x => page_uids.Contains(x.UID) && x.IsRemove > 0) :
-                await this._pageRepo.GetListAsync(x => page_uids.Contains(x.UID) && x.IsRemove <= 0);
-
-            if (ValidateHelper.IsPlumpList(pages))
-            {
-                foreach (var m in pages)
-                {
-                    m.IsRemove = show.ToBoolInt();
-                }
-                await this._pageRepo.UpdateAsync(pages.ToArray());
-            }
-
-            data.SetSuccessData(string.Empty);
-            return data;
         }
 
         public virtual async Task<List<PageEntity>> GetPagesByGroup(string group)
@@ -176,45 +130,8 @@ namespace Hiwjcn.Service.Epc
             return page;
         }
 
-        public virtual async Task<PagerData<PageEntity>> RemovedPages(
-            string user_uid, int page = 1, int pagesize = 10)
-        {
-            return await this._pageRepo.PrepareIQueryableAsync(async query =>
-            {
-                var now = DateTime.Now;
-
-                query = query.Where(x => x.IsRemove > 0);
-                query = query.Where(x => x.UserUID == user_uid);
-
-                return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
-            });
-        }
-
-        public virtual async Task<PagerData<PageEntity>> QueryPages(
-            string user_uid = null, bool enforce_date_range = true,
-            int page = 1, int pagesize = 10)
-        {
-            return await this._pageRepo.PrepareIQueryableAsync(async query =>
-            {
-                var now = DateTime.Now;
-
-                query = query.Where(x => x.IsRemove <= 0);
-                if (enforce_date_range)
-                {
-                    query = query.Where(x => x.PageStartTime == null || x.PageStartTime < now);
-                    query = query.Where(x => x.PageEndTime == null || x.PageEndTime > now);
-                }
-
-                if (ValidateHelper.IsPlumpString(user_uid))
-                {
-                    query = query.Where(x => x.UserUID == user_uid);
-                }
-
-                return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
-            });
-        }
-
-        public async Task<PagerData<PageEntity>> QueryPager(string org_uid, string q, string device_uid, int page, int pagesize)
+        public virtual async Task<List<PageEntity>> QueryList(string org_uid, string q, string device_uid,
+            int? max_id, int pagesize)
         {
             return await this._pageRepo.PrepareIQueryableAsync(async query =>
             {
@@ -227,7 +144,14 @@ namespace Hiwjcn.Service.Epc
                 {
                     query = query.Where(x => x.DeviceUID == device_uid);
                 }
-                return await query.ToPagedListAsync(page, pagesize, x => x.CreateTime);
+                if (max_id != null && max_id.Value >= 0)
+                {
+                    query = query.Where(x => x.IID < max_id);
+                }
+
+                var data = await query.OrderByDescending(x => x.IID).Take(pagesize).ToListAsync();
+
+                return data;
             });
         }
 

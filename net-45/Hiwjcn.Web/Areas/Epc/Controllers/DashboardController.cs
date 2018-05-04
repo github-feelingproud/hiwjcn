@@ -1,22 +1,15 @@
-﻿using System;
+﻿using Hiwjcn.Framework;
+using Hiwjcn.Service.Epc;
+using Hiwjcn.Service.MemberShip;
+using Lib.cache;
+using Lib.extension;
+using Lib.helper;
+using Lib.mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 using System.Threading.Tasks;
-using Lib.mvc.auth.api;
-using Lib.mvc.auth.validation;
-using Lib.mvc.auth;
-using Lib.mvc;
-using Lib.extension;
-using Lib.mvc.user;
-using EPC.Core.Entity;
-using Hiwjcn.Service;
-using Lib.cache;
-using Lib.helper;
-using Hiwjcn.Service.MemberShip;
-using Hiwjcn.Framework;
-using Hiwjcn.Service.Epc;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {

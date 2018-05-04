@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Lib.mvc;
-using System.Threading.Tasks;
-using Hiwjcn.Service;
-using Lib.infrastructure.helper;
-using Lib.infrastructure.model;
-using Lib.extension;
-using EPC.Core.Entity;
-using Lib.mvc.auth;
-using Lib.helper;
+﻿using EPC.Core.Entity;
+using Hiwjcn.Core;
 using Hiwjcn.Framework;
 using Hiwjcn.Service.Epc;
-using Hiwjcn.Core;
+using Lib.extension;
+using Lib.helper;
+using Lib.mvc;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Hiwjcn.Web.Areas.Epc.Controllers
 {
@@ -67,21 +59,16 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
         /// <summary>
         /// 页面列表
         /// </summary>
-        /// <param name="org_uid"></param>
-        /// <param name="q"></param>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [EpcAuth]
-        public async Task<ActionResult> Query(string q, string device_uid, int? page)
+        [HttpPost, EpcAuth]
+        public async Task<ActionResult> QueryList(string q, string device_uid, int? max_id)
         {
             return await RunActionAsync(async () =>
             {
-                page = CheckPage(page);
                 var org_uid = this.GetSelectedOrgUID();
                 var loginuser = await this.ValidMember(org_uid, this.AnyRole);
 
-                var data = await this._pageService.QueryPager(org_uid, q, device_uid, page.Value, this.PageSize);
+                var data = await this._pageService.QueryList(org_uid, q, device_uid,
+                    max_id: max_id, pagesize: this.PageSize);
 
                 return GetJson(new _()
                 {
