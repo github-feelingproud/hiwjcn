@@ -179,8 +179,11 @@ namespace Lib.data.elasticsearch
 
                 sd = sd.Aggregations(agg => agg
                 .Terms(NAMEOF_ShowCatalogIdList, av => av.Field(NAMEOF_ShowCatalogIdList).Size(1000))
-                .Terms(NAMEOF_BrandId, av => av.Field(NAMEOF_BrandId).Size(1000))
-                .Terms(NAMEOF_ProductAttributes, av => av.Field(NAMEOF_ProductAttributes).Size(1000)));
+                .Terms(NAMEOF_BrandId, av => av.Field(NAMEOF_BrandId).Order(x => x.CountDescending()).Size(1000))
+                .Terms(NAMEOF_ProductAttributes,
+                //妈的 这什么鬼
+                av => av.Field(NAMEOF_ProductAttributes)
+                .Aggregations(m => m.Average("", d => d.Field(""))).Order(xx => xx.Descending("")).Size(1000)));
 
                 sd = sd.Sort(x => BuildSort(model));
 
@@ -191,13 +194,11 @@ namespace Lib.data.elasticsearch
                 response = client.Search<ProductListV2>(x => sd);
 
                 var mx = response.Aggregations.Max("");
+                var avg = response.Aggregations.Average("");
 
                 return true;
             });
-            if (response == null || !response.IsValid || response.OriginalException != null)
-            {
-                throw new Exception("ES 挂了");
-            }
+            response.ThrowIfException();
             return response;
         }
 
@@ -207,7 +208,7 @@ namespace Lib.data.elasticsearch
 
             var response = SearchEsProducts(model);
             data.ItemCount = (int)(response?.Total ?? 0);
-            var datalist = response?.Hits?.Select(x => x as Hit<ProductListV2>).Where(x => x != null).Select(x => x.Source).Where(x => x != null).ToList();
+            var datalist = response.Documents.ToList();
 
             data.DataList = ConvertHelper.NotNullList(data.DataList);
         }

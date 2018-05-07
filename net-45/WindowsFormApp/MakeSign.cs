@@ -26,25 +26,7 @@ namespace WindowsFormApp
             try
             {
                 this.button1.Enabled = false;
-
-                var sign_req_key = "sign";
-                var url = ConvertHelper.GetString(this.textBox1.Text);
-                if (!url.IsURL())
-                {
-                    MessageBox.Show("请输入URL");
-                    return;
-                }
-                var param = url.ExtractUrlParams();
-                var sign = param.GetSign("www_qipeilong_cn", sign_req_key);
-                param[sign_req_key] = sign.sign;
-
-                var req_url = $"{url.Split('?')[0]}?{param.ToUrlParam()}";
-                var json = await HttpClientHelper.PostAsync(req_url, null);
-
-                this.textBox4.Text = sign.sign_data;
-                this.textBox3.Text = param.GetValueOrDefault(sign_req_key);
-                this.textBox2.Text = json;
-                Clipboard.SetText(json);
+                Clipboard.SetText("x");
                 MessageBox.Show("结果已经复制");
             }
             catch (Exception err)

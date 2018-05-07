@@ -11,26 +11,26 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            IocContext.Instance.AddExtraRegistrar(new CommonDependencyRegister());
+            AutofacIocContext.Instance.AddExtraRegistrar(new CommonDependencyRegister());
 
             try
             {
                 var con = new AlwaysOnZooKeeperClient("es.qipeilong.net:2181");
                 con.OnConnected += () =>
                 {
-                    Debug.Write(nameof(con.OnConnected));
+                    Console.WriteLine(nameof(con.OnConnected));
                 };
                 con.OnError += (e) =>
                 {
-                    Debug.Write(nameof(con.OnError));
+                    Console.WriteLine(nameof(con.OnError));
                 };
                 con.OnRecconected += () =>
                 {
-                    Debug.Write(nameof(con.OnRecconected));
+                    Console.WriteLine(nameof(con.OnRecconected));
                 };
                 con.OnUnConnected += () =>
                 {
-                    Debug.Write(nameof(con.OnUnConnected));
+                    Console.WriteLine(nameof(con.OnUnConnected));
                 };
 
                 //ES.IndexFiles();
