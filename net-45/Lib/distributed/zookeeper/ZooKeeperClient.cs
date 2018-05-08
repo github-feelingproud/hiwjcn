@@ -15,16 +15,17 @@ namespace Lib.distributed.zookeeper
     {
         protected bool IsDisposing = false;
         private ZooKeeper _client;
-
+        //param
         protected readonly string _host;
         protected readonly TimeSpan _timeout;
         protected readonly Watcher _connection_status_watcher;
-
+        //lock
         private readonly ManualResetEvent _client_lock = new ManualResetEvent(false);
         private readonly object _create_client_lock = new object();
-
+        //event
         public event Action OnConnected;
         public event Action OnUnConnected;
+        public event Action OnSessionExpired;
         public event Action<Exception> OnError;
 
         public ZooKeeperClient(ZooKeeperConfigSection configuration) :
@@ -37,6 +38,7 @@ namespace Lib.distributed.zookeeper
         {
             this._host = host ?? throw new ArgumentNullException(nameof(host));
             this._timeout = timeout ?? TimeSpan.FromSeconds(30);
+            /*
             this._connection_status_watcher = new ReconnectionWatcher(() =>
             {
                 //服务可用
@@ -47,6 +49,36 @@ namespace Lib.distributed.zookeeper
                 //服务不可用
                 this._client_lock.Reset();
                 this.OnUnConnected?.Invoke();
+            });*/
+            this._connection_status_watcher = new ConnectionStatusWatcher(status =>
+            {
+                this._client_lock.Reset();
+                switch (status)
+                {
+                    case Watcher.Event.KeeperState.SyncConnected:
+                    case Watcher.Event.KeeperState.ConnectedReadOnly:
+                        //服务可用
+                        this._client_lock.Set();
+                        this.OnConnected?.Invoke();
+                        break;
+
+                    case Watcher.Event.KeeperState.Disconnected:
+                        //链接丢失，等待再次连接
+                        this.OnUnConnected?.Invoke();
+                        break;
+
+                    case Watcher.Event.KeeperState.Expired:
+                        //session过期，重新创建客户端
+                        this.OnSessionExpired?.Invoke();
+                        break;
+
+                    case Watcher.Event.KeeperState.AuthFailed:
+                        //验证错误没必要再试尝试
+                        this.Dispose();
+                        var e = new Exception("zk auth验证失败，已经销毁所有链接");
+                        e.AddErrorLog();
+                        throw e;
+                }
             });
 
             //connect
@@ -68,11 +100,6 @@ namespace Lib.distributed.zookeeper
                     }
                 }
             }
-        }
-
-        public bool IsAlive
-        {
-            get => this._client?.getState() == ZooKeeper.States.CONNECTED;
         }
 
         public ZooKeeper Client { get => this.GetClientManager(); }

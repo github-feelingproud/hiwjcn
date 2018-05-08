@@ -8,13 +8,17 @@ namespace Lib.distributed.zookeeper
 
         public AlwaysOnZooKeeperClient(string host) : base(host)
         {
-            this.OnUnConnected += () => this.ReConnect();
+            //只有session过期才重新创建client，否则等待client自动尝试重连
+            this.OnSessionExpired += () => this.ReConnect();
         }
 
         protected virtual void ReConnect()
         {
-            //销毁的时候取消重试链接
-            if (this.IsDisposing) { return; }
+            if (this.IsDisposing)
+            {
+                //销毁的时候取消重试链接
+                return;
+            }
 
             this.CloseClient();
             this.CreateClient();

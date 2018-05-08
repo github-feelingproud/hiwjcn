@@ -18,19 +18,23 @@ namespace ConsoleApp
                 var con = new AlwaysOnZooKeeperClient("es.qipeilong.net:2181");
                 con.OnConnected += () =>
                 {
-                    Console.WriteLine(nameof(con.OnConnected));
+                    Console.WriteLine("链接成功" + DateTime.Now);
                 };
                 con.OnError += (e) =>
                 {
-                    Console.WriteLine(nameof(con.OnError));
+                    Console.WriteLine("链接异常" + e.Message + DateTime.Now);
+                };
+                con.OnSessionExpired += () =>
+                {
+                    Console.WriteLine("session过期" + DateTime.Now);
                 };
                 con.OnRecconected += () =>
                 {
-                    Console.WriteLine(nameof(con.OnRecconected));
+                    Console.WriteLine("重新链接" + DateTime.Now);
                 };
                 con.OnUnConnected += () =>
                 {
-                    Console.WriteLine(nameof(con.OnUnConnected));
+                    Console.WriteLine("链接断开" + DateTime.Now);
                 };
 
                 //ES.IndexFiles();
