@@ -22,7 +22,7 @@ namespace Lib.distributed.zookeeper
 
             this.CloseClient();
             this.CreateClient();
-            this.OnRecconected.Invoke();
+            this.OnRecconected?.Invoke();
         }
 
         public override void Dispose()
