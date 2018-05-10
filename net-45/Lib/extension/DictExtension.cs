@@ -31,11 +31,6 @@ namespace Lib.extension
         /// <summary>
         /// 把一个字典加入另一个字典，重复就覆盖
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
-        /// <param name="dict"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
         public static Dictionary<K, V> AddDict<K, V>(this Dictionary<K, V> dict, Dictionary<K, V> data)
         {
             foreach (var kv in data)
@@ -58,12 +53,6 @@ namespace Lib.extension
         /// <summary>
         /// 获取值
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
-        /// <param name="dict"></param>
-        /// <param name="key"></param>
-        /// <param name="deft"></param>
-        /// <returns></returns>
         public static V GetValueOrDefault<K, V>(this Dictionary<K, V> dict, K key, V deft = default(V))
         {
             if (dict.ContainsKey(key))

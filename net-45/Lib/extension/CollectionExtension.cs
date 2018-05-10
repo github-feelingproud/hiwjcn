@@ -188,13 +188,22 @@ namespace Lib.extension
         /// <summary>
         /// 空集合就抛异常
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="msg"></param>
-        /// <returns></returns>
         public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> list, string msg = null)
         {
             if (!list.Any()) { throw new Exception(msg ?? "不允许的空集合"); }
+            return list;
+        }
+
+        /// <summary>
+        /// 集合数量超出最大值就抛出异常
+        /// </summary>
+        public static IEnumerable<T> EnsureMaxCount<T>(this IEnumerable<T> list, int max, string msg = null)
+        {
+            var count = list.Count();
+            if (count > max)
+            {
+                throw new Exception(msg ?? $"集合数量({count})超过了允许最大值：{max}");
+            }
             return list;
         }
 
