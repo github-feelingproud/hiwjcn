@@ -91,12 +91,15 @@ namespace Lib.extension
         /// <summary>
         /// 如果没有打开链接就打开链接
         /// </summary>
-        public static void OpenIfClosedWithRetry(this IDbConnection con, int retryCount = 1)
+        public static IDbConnection OpenIfClosedWithRetry(this IDbConnection con, int retryCount = 1)
         {
             if (con.State == ConnectionState.Closed)
             {
-                new Action(() => con.Open()).InvokeWithRetryAndWait<Exception>(retryCount, i => TimeSpan.FromMilliseconds(i * 100));
+                var func = new Action(() => con.Open());
+
+                func.InvokeWithRetryAndWait<Exception>(retryCount, i => TimeSpan.FromMilliseconds(i * 100));
             }
+            return con;
         }
 
         /// <summary>
@@ -375,7 +378,7 @@ namespace Lib.extension
                 transaction: transaction, commandTimeout: commandTimeout).FirstOrDefault();
         }
     }
-    
+
     /// <summary>
     /// 对Ado的扩展
     /// </summary>

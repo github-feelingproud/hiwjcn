@@ -271,10 +271,8 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void fasdfajlkjkhfasdjhf()
         {
-            using (var con = new SqlConnection("User Iout=20"))
+            using (var con = new SqlConnection("User Iout=20").OpenIfClosedWithRetry(2))
             {
-                con.OpenIfClosedWithRetry(2);
-
                 try
                 {
                     var count = con.ExecuteScalar("select count(1) from t_inquiry where provinceid=@id and quoteuid = @uid",

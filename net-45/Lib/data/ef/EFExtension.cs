@@ -73,9 +73,8 @@ namespace Lib.data.ef
         {
             var sql = context.GetCreateTableScript();
 
-            using (context.Database.Connection)
+            using (context.Database.Connection.OpenIfClosedWithRetry())
             {
-                context.Database.Connection.OpenIfClosedWithRetry();
                 using (var t = context.Database.Connection.StartTransaction())
                 {
                     try
