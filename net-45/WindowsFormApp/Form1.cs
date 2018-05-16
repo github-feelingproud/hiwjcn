@@ -50,7 +50,7 @@ namespace WindowsFormApp
                     MessageBox.Show("URL格式不正确");
                     return;
                 }
-                var sign_key = "www_qipeilong_cn";
+                var sign_key = "***";
                 var dict = new SortedDictionary<string, string>(new MyStringComparer());
                 foreach (var p in sp[1].Split('&'))
                 {

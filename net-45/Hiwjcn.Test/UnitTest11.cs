@@ -33,7 +33,7 @@ namespace Hiwjcn.Test
         {
             await Task.Run(() =>
             {
-                var con = new AlwaysOnZooKeeperClient("es.qipeilong.net:2181");
+                var con = new AlwaysOnZooKeeperClient("");
                 con.OnConnected += () =>
                 {
                     Debug.Write(nameof(con.OnConnected));
@@ -58,7 +58,7 @@ namespace Hiwjcn.Test
         [TestMethod]
         public void fasdfhga()
         {
-            var _lz = new Lazy_<ServiceSubscribe>(() => new ServiceSubscribe("es.qipeilong.net:2181"));
+            var _lz = new Lazy_<ServiceSubscribe>(() => new ServiceSubscribe(""));
 
             foreach (var m in Com.Range(10))
             {

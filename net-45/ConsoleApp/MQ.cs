@@ -19,7 +19,7 @@ namespace ConsoleApp
             {
                 AutomaticRecoveryEnabled = true,
                 UseBackgroundThreadsForIO = true,
-                HostName = "mq.qipeilong.net",
+                HostName = "**",
                 UserName = "admin",
                 Password = "mypass",
                 VirtualHost = "/",

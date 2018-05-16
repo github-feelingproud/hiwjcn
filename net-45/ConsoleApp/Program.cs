@@ -15,7 +15,7 @@ namespace ConsoleApp
 
             try
             {
-                var con = new AlwaysOnZooKeeperClient("es.qipeilong.net:2181");
+                var con = new AlwaysOnZooKeeperClient("");
                 con.OnConnected += () =>
                 {
                     Console.WriteLine("链接成功" + DateTime.Now);
