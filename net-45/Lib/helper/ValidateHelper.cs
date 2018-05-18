@@ -389,7 +389,10 @@ namespace Lib.helper
         /// </summary>
         public static bool IsAllPlumpString(params string[] strs)
         {
-            if (!IsPlumpList(strs)) { throw new ArgumentNullException("至少需要一个参数"); }
+            if (!IsPlumpList(strs))
+            {
+                throw new ArgumentNullException("至少需要一个参数");
+            }
             return strs.All(x => IsPlumpString(x));
         }
 
@@ -398,7 +401,10 @@ namespace Lib.helper
         /// </summary>
         public static bool IsAnyPlumpString(params string[] strs)
         {
-            if (strs == null) { throw new ArgumentNullException($"{nameof(IsAnyPlumpString)}.{strs}为null"); }
+            if (!IsPlumpList(strs))
+            {
+                return false;
+            }
             return strs.Any(x => IsPlumpString(x));
         }
         #endregion
