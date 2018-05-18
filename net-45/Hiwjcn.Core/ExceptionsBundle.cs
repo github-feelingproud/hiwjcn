@@ -122,4 +122,16 @@ namespace Hiwjcn.Core
         }
     }
 
+    /// <summary>
+    /// 没有同意服务协议
+    /// </summary>
+    public class DisAggreeLisenceException : Exception
+    {
+        public DisAggreeLisenceException(string msg = null) :
+            base(msg ?? "未接受服务协议")
+        {
+            //
+        }
+    }
+
 }

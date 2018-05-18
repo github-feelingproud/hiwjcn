@@ -1,8 +1,10 @@
 ﻿using Hiwjcn.Framework;
 using Lib.distributed.zookeeper;
+using Lib.distributed.zookeeper.ServiceManager;
 using Lib.extension;
 using Lib.ioc;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ConsoleApp
@@ -15,10 +17,12 @@ namespace ConsoleApp
 
             try
             {
-                var con = new AlwaysOnZooKeeperClient("");
+                var con = new ServiceRegister("***", () => new List<ContractModel>() { });
+
                 con.OnConnected += () =>
                 {
                     Console.WriteLine("链接成功" + DateTime.Now);
+                    Console.WriteLine("============================");
                 };
                 con.OnError += (e) =>
                 {
@@ -28,7 +32,7 @@ namespace ConsoleApp
                 {
                     Console.WriteLine("session过期" + DateTime.Now);
                 };
-                con.OnRecconected += () =>
+                con.OnRecconecting += () =>
                 {
                     Console.WriteLine("重新链接" + DateTime.Now);
                 };

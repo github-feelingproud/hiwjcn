@@ -43,7 +43,7 @@ namespace ConsoleApp
                 var host = "**";
                 //docker run --name some-zookeeper --restart always -p 2181:2181 -d zookeeper
                 client = new ServiceSubscribe(host);
-                client.OnRecconected += () => { Console.WriteLine("重新链接"); };
+                client.OnRecconecting += () => { Console.WriteLine("重新链接"); };
                 client.OnServiceChanged += () =>
                 {
                     Console.WriteLine("服务发生更改");

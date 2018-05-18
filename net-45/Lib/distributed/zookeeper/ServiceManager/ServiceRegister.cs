@@ -1,8 +1,8 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
 using org.apache.zookeeper;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Lib.distributed.zookeeper.ServiceManager
@@ -18,11 +18,27 @@ namespace Lib.distributed.zookeeper.ServiceManager
         {
             this._contracts = _contracts ?? throw new ArgumentNullException(nameof(_contracts));
 
-            this.Retry().Execute(() => this.Reg());
-            this.OnRecconected += () => this.Reg();
+            //链接成功后调用注册
+            this.OnConnected += () => this.Reg();
+            //尝试打开链接
+            this.CreateClient();
         }
 
-        public void Reg() => AsyncHelper_.RunSync(() => this.RegisterService());
+        public void Reg()
+        {
+            try
+            {
+                Task.Factory.StartNew(async () =>
+                {
+                    await this.RetryAsync().ExecuteAsync(async () => await this.RegisterService());
+                }).Wait();
+            }
+            catch (Exception e)
+            {
+                var err = new Exception("注册服务失败", e);
+                err.AddErrorLog();
+            }
+        }
 
         private async Task RegisterService()
         {
@@ -35,8 +51,11 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 EndpointNodeName = ServiceManageHelper.EndpointNodeName(_node_id),
             }).ToList();
 
+            var now = DateTime.Now;
             foreach (var m in list)
             {
+                m.UpdateTime = now;
+
                 var service_path = this._base_path + "/" + m.ServiceNodeName;
                 await this.Client.EnsurePath(service_path);
 

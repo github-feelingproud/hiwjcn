@@ -398,7 +398,7 @@ namespace Lib.helper
         /// </summary>
         public static bool IsAnyPlumpString(params string[] strs)
         {
-            if (!IsPlumpList(strs)) { throw new ArgumentNullException("至少需要一个参数"); }
+            if (strs == null) { throw new ArgumentNullException($"{nameof(IsAnyPlumpString)}.{strs}为null"); }
             return strs.Any(x => IsPlumpString(x));
         }
         #endregion

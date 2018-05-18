@@ -35,23 +35,25 @@ namespace Lib.distributed.zookeeper.ServiceManager
             this._service_path_level = this._base_path_level + 1;
             this._endpoint_path_level = this._service_path_level + 1;
 
-            try
-            {
-                this.Retry().Execute(() => this.InitBasePath());
-            }
-            catch (Exception e)
-            {
-                throw new Exception("尝试创建服务注册base path失败", e);
-            }
+            //链接上了初始化root目录
+            this.OnConnected += () => this.InitBasePath();
         }
 
         protected void InitBasePath()
         {
-            var client = this.GetClientManager();
-            Task.Factory.StartNew(async () =>
+            try
             {
-                await client.EnsurePath(this._base_path);
-            }).Wait();
+                var client = this.GetClientManager();
+                Task.Factory.StartNew(async () =>
+                {
+                    await this.RetryAsync().ExecuteAsync(async () => await client.EnsurePath(this._base_path));
+                }).Wait();
+            }
+            catch (Exception e)
+            {
+                var err = new Exception("尝试创建服务注册base path失败", e);
+                err.AddErrorLog();
+            }
         }
 
         protected Policy Retry() => ServiceManageHelper.RetryPolicy();

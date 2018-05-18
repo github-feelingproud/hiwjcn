@@ -30,8 +30,10 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 return this.WatchNodeChanges(e);
             });
 
-            this.Init();
+            //链接上了就获取服务信息
             this.OnConnected += () => this.Init();
+            //打开链接
+            this.CreateClient();
         }
 
         /// <summary>
@@ -42,21 +44,29 @@ namespace Lib.distributed.zookeeper.ServiceManager
             try
             {
                 //清理无用节点
-                AsyncHelper_.RunSync(() => this.ClearDeadNodes());
+                Task.Factory.StartNew(async () =>
+                {
+                    await this.RetryAsync().ExecuteAsync(async () => await this.ClearDeadNodes());
+                }).Wait();
             }
             catch (Exception e)
             {
-                throw new Exception("清理无用节点失败", e);
+                var err = new Exception("清理无用节点失败", e);
+                err.AddErrorLog();
             }
 
             try
             {
                 //读取节点并添加监视
-                AsyncHelper_.RunSync(() => this.WalkNodeAndWatch(this._base_path));
+                Task.Factory.StartNew(async () =>
+                {
+                    await this.RetryAsync().ExecuteAsync(async () => await this.WalkNodeAndWatch(this._base_path));
+                }).Wait();
             }
             catch (Exception e)
             {
-                throw new Exception("订阅服务节点失败", e);
+                var err = new Exception("订阅服务节点失败", e);
+                err.AddErrorLog();
             }
         }
 
