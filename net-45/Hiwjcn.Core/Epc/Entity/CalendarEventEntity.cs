@@ -12,6 +12,9 @@ namespace EPC.Core.Entity
     {
         public virtual DateTime DateStart { get; set; }
 
+        /// <summary>
+        /// 字段定义可为空，其实不可以为空
+        /// </summary>
         public virtual DateTime? DateEnd { get; set; }
 
         public virtual int Priority { get; set; }

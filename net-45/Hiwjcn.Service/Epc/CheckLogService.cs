@@ -26,6 +26,8 @@ namespace Hiwjcn.Service.Epc
         Task<_<List<CheckInputDataResult>>> SubmitCheckLog(DeviceInputData model);
 
         Task<List<CheckLogEntity>> QueryCheckLog(string org_uid, int? max_id, int count);
+
+        Task<List<CheckLogEntity>> QueryDeviceCheckLogWithinRange(string[] device_uids, DateTime start, DateTime end, int count);
     }
 
     public class CheckLogService : ServiceBase<CheckLogEntity>, ICheckLogService
@@ -348,6 +350,20 @@ namespace Hiwjcn.Service.Epc
                 }
 
                 return data;
+            });
+        }
+
+        public async Task<List<CheckLogEntity>> QueryDeviceCheckLogWithinRange(string[] device_uids, DateTime start, DateTime end, int count)
+        {
+            if (!ValidateHelper.IsPlumpList(device_uids)) { return new List<CheckLogEntity>(); }
+            return await this._logRepo.PrepareIQueryableAsync(async query =>
+            {
+                query = query.Where(x => device_uids.Contains(x.DeviceUID));
+                query = query.Where(x => x.CreateTime >= start && x.CreateTime < end);
+
+                var list = await query.OrderByDescending(x => x.IID).Take(count).ToListAsync();
+
+                return list;
             });
         }
     }

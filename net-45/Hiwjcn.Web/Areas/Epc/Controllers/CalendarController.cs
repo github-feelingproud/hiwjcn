@@ -8,6 +8,7 @@ using Lib.extension;
 using Lib.helper;
 using Lib.mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -21,11 +22,14 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
     public class CalendarController : EpcBaseController
     {
         private readonly ICalendarService _calService;
+        private readonly ICheckLogService _checklogService;
 
         public CalendarController(
-            ICalendarService _calService)
+            ICalendarService _calService,
+            ICheckLogService _checklogService)
         {
             this._calService = _calService;
+            this._checklogService = _checklogService;
         }
 
         /// <summary>
@@ -74,6 +78,14 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
 
                 var res = await this._calService.QueryEvents(org_uid, start.Value, end.Value);
 
+                var device_uids = res.Select(x => x.DeviceUID).Where(x => ValidateHelper.IsPlumpString(x)).ToArray();
+                var checklog = await this._checklogService.QueryDeviceCheckLogWithinRange(device_uids, start.Value, end.Value, 1000);
+
+                List<CheckLogEntity> FindCheckLog(string device_uid, DateTime event_start, DateTime event_end) =>
+                checklog
+                .Where(x => x.DeviceUID == device_uid)
+                .Where(x => x.CreateTime >= event_start && x.CreateTime < event_end).ToList();
+
                 var data = res.Select(x => new
                 {
                     x.UID,
@@ -82,6 +94,7 @@ namespace Hiwjcn.Web.Areas.Epc.Controllers
                     x.DeviceUID,
                     Start = x.DateStart.ToDateString(),
                     End = x.DateEnd.Value.ToDateString(),
+                    CheckLog = FindCheckLog(x.DeviceUID, x.DateStart, x.DateEnd.Value),
                     x.Color
                 }).ToList();
 
