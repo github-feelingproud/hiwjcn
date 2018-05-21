@@ -20,75 +20,24 @@ using Lib.distributed.zookeeper;
 
 namespace Hiwjcn.Test
 {
-    public interface IUser
-    {
-        Task<Lib.mvc.user.LoginUserInfo> GetLoginUserInfo(string uid, string name, int age);
-    }
-
     [TestClass]
     public class UnitTest11
     {
         [TestMethod]
-        public async Task fafafasdfhga()
+        public async Task fasdfhga()
         {
-            await Task.Run(() =>
-            {
-                var con = new AlwaysOnZooKeeperClient("");
-                con.OnConnected += () =>
-                {
-                    Debug.Write(nameof(con.OnConnected));
-                };
-                con.OnError += (e) =>
-                {
-                    Debug.Write(nameof(con.OnError));
-                };
-                con.OnRecconected += () =>
-                {
-                    Debug.Write(nameof(con.OnRecconected));
-                };
-                con.OnUnConnected += () =>
-                {
-                    Debug.Write(nameof(con.OnUnConnected));
-                };
-            });
-            //
-            var i = 0;
-        }
+            var data = new int[] { 1, 2 };
+            var ran = new Random((int)DateTime.Now.Ticks);
 
-        [TestMethod]
-        public void fasdfhga()
-        {
-            var _lz = new Lazy_<ServiceSubscribe>(() => new ServiceSubscribe(""));
+            var all_data = Com.Range(20).Select(d => Task.Run(() => Com.Range(10000)
+                   .Select(x => ran.Choice(data))
+                   .GroupBy(x => x)
+                   .Select(x => new { item = x.Key, count = x.Count() })
+                   .ToList()));
 
-            foreach (var m in Com.Range(10))
-            {
-                try
-                {
-                    var service = _lz.Value.ResolveSvc<IUser>() ?? throw new Exception("服务下线");
-                }
-                catch (Exception e)
-                {
-                    //
-                }
-            }
+            var res_data = await Task.WhenAll(all_data);
+            
 
-            var _client_lock = new ManualResetEvent(false);
-            _client_lock.WaitOne(TimeSpan.FromSeconds(5));
-            _client_lock.WaitOne(TimeSpan.FromSeconds(5));
-        }
-
-        [TestMethod]
-        public async Task fasdfasdhj()
-        {
-            try
-            {
-                var client = new WebApiClient<IUser>();
-                await client.Instance.GetLoginUserInfo("uid-xxx", "name-wj", 3);
-            }
-            catch (Exception e)
-            {
-                //
-            }
         }
 
         public interface order

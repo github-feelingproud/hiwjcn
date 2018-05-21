@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Castle.DynamicProxy;
 using Lib.extension;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Castle.DynamicProxy;
-using Hiwjcn.Bll;
-using Lib.helper;
-using Hiwjcn.Core.Domain.User;
+using System;
 
 namespace Hiwjcn.Test
 {
