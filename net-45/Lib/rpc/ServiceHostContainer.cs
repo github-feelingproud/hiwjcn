@@ -1,4 +1,5 @@
 ﻿using Lib.core;
+using Lib.distributed.zookeeper.ServiceManager;
 using Lib.extension;
 using Lib.helper;
 using System;
@@ -26,9 +27,9 @@ namespace Lib.rpc
         //host container
         private readonly List<ServiceHost> _hosts = new List<ServiceHost>();
 
-        public List<(Type contract, string url)> GetContractInfo()
+        public List<ContractModel> GetContractInfo()
         {
-            var data = new List<(Type contract, string url)>();
+            var data = new List<ContractModel>();
 
             foreach (var host in this._hosts)
             {
@@ -38,7 +39,7 @@ namespace Lib.rpc
                     var u = ep.Address?.Uri?.AbsoluteUri;
                     if (c == null || !ValidateHelper.IsPlumpString(u)) { continue; }
 
-                    data.Add((c, u));
+                    data.Add(new ContractModel(c, u));
                 }
             }
 
