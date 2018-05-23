@@ -42,7 +42,7 @@ namespace ConsoleApp
         {
             try
             {
-                ServiceHostManager.StartService("http://localhost:10000/", typeof(WCF).Assembly);
+                ServiceHostManager.Host.StartService("http://localhost:10000/", typeof(WCF).Assembly);
                 Console.WriteLine("服务已启动");
                 Console.ReadKey();
             }

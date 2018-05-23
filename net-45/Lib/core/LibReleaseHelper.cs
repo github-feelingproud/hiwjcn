@@ -35,7 +35,7 @@ namespace Lib.core
             try
             {
                 //wcf service host
-                ServiceHostManager.DisposeService();
+                ServiceHostManager.Host.Dispose();
             }
             catch (Exception e)
             {

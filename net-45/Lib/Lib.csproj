@@ -324,6 +324,7 @@
     <Compile Include="ioc\ClassFinderExtension.cs" />
     <Compile Include="mvc\auth\AuthConfigExtension.cs" />
     <Compile Include="rpc\FancyClient.cs" />
+    <Compile Include="rpc\ServiceHostContainer.cs" />
     <Compile Include="rpc\WebApiClient.cs" />
     <Compile Include="task\QuartzExtension.cs" />
     <Compile Include="task\TaskContainer.cs" />
