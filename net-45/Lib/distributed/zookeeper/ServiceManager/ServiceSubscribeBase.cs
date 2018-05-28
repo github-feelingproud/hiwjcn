@@ -3,11 +3,14 @@ using Lib.helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Lib.distributed.zookeeper.ServiceManager
 {
     public abstract class ServiceSubscribeBase : ServiceManageBase
     {
+        protected readonly ManualResetEvent _client_ready = new ManualResetEvent(false);
+
         protected readonly List<AddressModel> _endpoints = new List<AddressModel>();
         protected readonly Random _ran = new Random((int)DateTime.Now.Ticks);
 
@@ -17,8 +20,10 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
         public IReadOnlyList<AddressModel> AllService() => this._endpoints.AsReadOnly();
 
-        public AddressModel Resolve<T>()
+        public AddressModel Resolve<T>(TimeSpan timeout)
         {
+            this._client_ready.WaitOneOrThrow(timeout, $"超时：{timeout}，客户端尚未完成服务订阅");
+
             var name = ServiceManageHelper.ParseServiceName<T>();
             var list = this._endpoints.Where(x => x.ServiceNodeName == name).ToList();
             if (ValidateHelper.IsPlumpList(list))
@@ -37,6 +42,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             return null;
         }
 
-        public string ResolveSvc<T>() => this.Resolve<T>()?.Url;
+        public string ResolveSvc<T>(TimeSpan? timeout = null) =>
+            this.Resolve<T>(timeout ?? TimeSpan.FromSeconds(20))?.Url;
     }
 }

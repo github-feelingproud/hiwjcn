@@ -68,6 +68,9 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 var err = new Exception("订阅服务节点失败", e);
                 err.AddErrorLog();
             }
+
+            //订阅完成
+            this._client_ready.Set();
         }
 
         /// <summary>
