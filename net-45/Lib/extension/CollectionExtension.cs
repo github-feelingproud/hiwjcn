@@ -356,25 +356,8 @@ namespace Lib.extension
         /// </summary>
         public static T GetItem<T>(this IList<T> list, int index, T deft = default(T))
         {
-            if (index < 0 || index > list.Count - 1)
-            {
-                return deft;
-            }
-            return list[index];
-        }
-
-        /// <summary>
-        /// 生成bootstrap的表格html，未完成
-        /// </summary>
-        public static string ToBootStrapTableHtml<T>(this IEnumerable<T> list) where T : class
-        {
-            var html = new StringBuilder();
-            var props = typeof(T).GetProperties();
-            foreach (var m in list)
-            {
-
-            }
-            return html.ToString();
+            if (index >= 0 && index <= list.Count - 1) { return list[index]; }
+            return deft;
         }
 
         /// <summary>
@@ -429,7 +412,7 @@ namespace Lib.extension
         /// <summary>
         /// 取出一批数据
         /// </summary>
-        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> list, int size)
+        public static IEnumerable<IEnumerable<T>> Batch<T>([NotNull]this IEnumerable<T> list, int size)
         {
             if (size <= 0) { throw new Exception("batch size必须大于0"); }
             var temp = new List<T>();

@@ -493,13 +493,23 @@ namespace Lib.extension
                 },
                 Relation = GeoShapeRelation.Within
             };
-            new GeoShapePointQuery()
+            qc = qc && new GeoDistanceQuery()
             {
-                Shape = new PointGeoShape() { }
+                Field = "Location",
+                Location = new GeoLocation(32, 43),
+                Distance = Distance.Kilometers(1)
             };
-            new GeoShapeEnvelopeQuery()
+            qc &= new GeoShapeEnvelopeQuery()
             {
-                Shape = new EnvelopeGeoShape() { }
+                Field = "Location",
+                Shape = new EnvelopeGeoShape(new List<GeoCoordinate>() { }),
+                Relation = GeoShapeRelation.Intersects,
+            };
+            qc &= new GeoShapePointQuery()
+            {
+                Field = "Location",
+                Shape = new PointGeoShape(new GeoCoordinate(32, 32)),
+                Relation = GeoShapeRelation.Intersects
             };
             new GeoShapeMultiPolygonQuery()
             {
@@ -521,7 +531,7 @@ namespace Lib.extension
             //etc
         }
 
-        public static void SortWithScripts<T>(this SortDescriptor<T> sort) where T : class, IElasticSearchIndex
+        public static void HowToSortWithScripts<T>(this SortDescriptor<T> sort) where T : class, IElasticSearchIndex
         {
             var sd = new SortScriptDescriptor<T>();
 
@@ -539,7 +549,7 @@ namespace Lib.extension
         /// https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/function-score-query-usage.html
         /// </summary>
         /// <param name="sd"></param>
-        public static void FunctionQuery(this SearchDescriptor<EsExample.ProductListV2> sd)
+        public static void HowToUseFunctionQuery(this SearchDescriptor<EsExample.ProductListV2> sd)
         {
             var qs = new FunctionScoreQuery()
             {

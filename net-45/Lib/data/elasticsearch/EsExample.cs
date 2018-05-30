@@ -15,6 +15,7 @@ namespace Lib.data.elasticsearch
     /// <summary>
     /// ES例子
     /// </summary>
+    [Obsolete("代码例子")]
     public class EsExample
     {
         private QueryContainer BuildQuery(SearchParamModel model)
@@ -81,6 +82,18 @@ namespace Lib.data.elasticsearch
                 Field = "Location",
                 Location = new GeoLocation(32, 43),
                 Distance = Distance.Kilometers(1)
+            };
+            qc &= new GeoShapeEnvelopeQuery()
+            {
+                Field = "Location",
+                Shape = new EnvelopeGeoShape(new List<GeoCoordinate>() { }),
+                Relation = GeoShapeRelation.Intersects,
+            };
+            qc &= new GeoShapePointQuery()
+            {
+                Field = "Location",
+                Shape = new PointGeoShape(new GeoCoordinate(32, 32)),
+                Relation = GeoShapeRelation.Intersects
             };
 
             try
@@ -290,7 +303,7 @@ namespace Lib.data.elasticsearch
             public GeoLocation Location { get; set; }
 
             [GeoShape(Name = nameof(Area))]
-            public GeoLocation Area { get; set; }
+            public List<GeoLocation> Area { get; set; }
         }
 
         public class SearchParamModel
