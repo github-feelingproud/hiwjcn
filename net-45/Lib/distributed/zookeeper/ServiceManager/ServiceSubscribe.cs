@@ -18,6 +18,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
         private readonly Watcher _node_watcher;
 
         public event Action OnServiceChanged;
+        public event Action OnSubscribeFinished;
 
         public ServiceSubscribe(string host) : base(host)
         {
@@ -46,7 +47,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 //清理无用节点
                 Task.Factory.StartNew(async () =>
                 {
-                    await this.RetryAsync().ExecuteAsync(async () => await this.ClearDeadNodes());
+                    await this.RetryAsync().ExecuteAsync(async () =>
+                    await this.ClearDeadNodes());
                 }).Wait();
             }
             catch (Exception e)
@@ -60,7 +62,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 //读取节点并添加监视
                 Task.Factory.StartNew(async () =>
                 {
-                    await this.RetryAsync().ExecuteAsync(async () => await this.WalkNodeAndWatch(this._base_path));
+                    await this.RetryAsync().ExecuteAsync(async () =>
+                    await this.WalkNodeAndWatch(this._base_path));
                 }).Wait();
             }
             catch (Exception e)
@@ -69,6 +72,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
                 err.AddErrorLog();
             }
 
+            //订阅完成
+            this.OnSubscribeFinished?.Invoke();
             //订阅完成
             this._client_ready.Set();
         }
