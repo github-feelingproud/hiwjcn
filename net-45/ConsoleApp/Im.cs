@@ -71,7 +71,7 @@ namespace ConsoleApp
 
             client.BeginAccept(res =>
             {
-                Task.Factory.FromAsync(res, r => { });
+                //
             }, null);
         }
     }

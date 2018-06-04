@@ -19,7 +19,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             this._contracts = _contracts ?? throw new ArgumentNullException(nameof(_contracts));
 
             //链接成功后调用注册
-            this.OnConnectedAsync += async () => await this.Reg();
+            this.OnConnectedAsync += this.Reg;
             //尝试打开链接
             this.CreateClient();
         }

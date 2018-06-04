@@ -27,19 +27,16 @@ namespace Lib.distributed.zookeeper
         /// <summary>
         /// 链接成功
         /// </summary>
-        public event Action OnConnected;
         public event Func<Task> OnConnectedAsync;
 
         /// <summary>
         /// 链接丢失，zk将自动重试链接
         /// </summary>
-        public event Action OnUnConnected;
         public event Func<Task> OnUnConnectedAsync;
 
         /// <summary>
         /// session过期，zk将放弃链接
         /// </summary>
-        public event Action OnSessionExpired;
         public event Func<Task> OnSessionExpiredAsync;
 
         /// <summary>
@@ -67,19 +64,16 @@ namespace Lib.distributed.zookeeper
                     case Watcher.Event.KeeperState.ConnectedReadOnly:
                         //服务可用
                         this._client_lock.Set();
-                        this.OnConnected?.Invoke();
                         if (this.OnConnectedAsync != null) { await this.OnConnectedAsync.Invoke(); }
                         break;
 
                     case Watcher.Event.KeeperState.Disconnected:
                         //链接丢失，等待再次连接
-                        this.OnUnConnected?.Invoke();
                         if (this.OnUnConnectedAsync != null) { await this.OnUnConnectedAsync.Invoke(); }
                         break;
 
                     case Watcher.Event.KeeperState.Expired:
                         //session过期，重新创建客户端
-                        this.OnSessionExpired?.Invoke();
                         if (this.OnSessionExpiredAsync != null) { await this.OnSessionExpiredAsync.Invoke(); }
                         break;
 
@@ -155,7 +149,7 @@ namespace Lib.distributed.zookeeper
             {
                 if (this._client != null)
                 {
-                    Task.Factory.StartNew(async () => await this._client.closeAsync()).Wait();
+                    Task.Run(async () => await this._client.closeAsync()).Wait();
                 }
             }
             catch (Exception e)

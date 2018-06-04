@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Lib.distributed.zookeeper
 {
@@ -7,15 +8,15 @@ namespace Lib.distributed.zookeeper
         /// <summary>
         /// 尝试再次链接，也许还没连上
         /// </summary>
-        public event Action OnRecconecting;
+        public event Func<Task> OnRecconectingAsync;
 
         public AlwaysOnZooKeeperClient(string host) : base(host)
         {
             //只有session过期才重新创建client，否则等待client自动尝试重连
-            this.OnSessionExpired += () => this.ReConnect();
+            this.OnSessionExpiredAsync += this.ReConnect;
         }
 
-        protected virtual void ReConnect()
+        protected async Task ReConnect()
         {
             if (this.IsDisposing)
             {
@@ -25,7 +26,10 @@ namespace Lib.distributed.zookeeper
 
             this.CloseClient();
             this.CreateClient();
-            this.OnRecconecting?.Invoke();
+
+            if (this.OnRecconectingAsync != null) { await this.OnRecconectingAsync.Invoke(); }
+
+            await Task.FromResult(1);
         }
 
         public override void Dispose()

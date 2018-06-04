@@ -17,8 +17,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
         private readonly Watcher _children_watcher;
         private readonly Watcher _node_watcher;
 
-        public event Action OnServiceChanged;
-        public event Action OnSubscribeFinished;
+        public event Func<Task> OnServiceChangedAsync;
+        public event Func<Task> OnSubscribeFinishedAsync;
 
         public ServiceSubscribe(string host) : base(host)
         {
@@ -32,7 +32,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             });
 
             //链接上了就获取服务信息
-            this.OnConnectedAsync += async () => await this.Init();
+            this.OnConnectedAsync += this.Init;
             //打开链接
             this.CreateClient();
         }
@@ -67,7 +67,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             }
 
             //订阅完成
-            this.OnSubscribeFinished?.Invoke();
+            if (this.OnSubscribeFinishedAsync != null) { await this.OnSubscribeFinishedAsync.Invoke(); }
             //订阅完成
             this._client_ready.Set();
         }
@@ -155,7 +155,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
 
                 this._endpoints.RemoveWhere_(x => x.FullPathName == data.FullPathName);
                 this._endpoints.Add(data);
-                this.OnServiceChanged?.Invoke();
+
+                if (this.OnServiceChangedAsync != null) { await this.OnServiceChangedAsync.Invoke(); }
             }
             catch (Exception e)
             {
@@ -171,7 +172,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             this._endpoints.RemoveWhere_(
                 x => x.ServiceNodeName == data.service_name && x.EndpointNodeName == data.endpoint_name);
 
-            this.OnServiceChanged?.Invoke();
+            if (this.OnServiceChangedAsync != null) { await this.OnServiceChangedAsync.Invoke(); }
 
             await Task.FromResult(1);
         }
