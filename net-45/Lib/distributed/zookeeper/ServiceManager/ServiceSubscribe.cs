@@ -32,7 +32,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
             });
 
             //链接上了就获取服务信息
-            this.OnConnected += () => this.Init();
+            this.OnConnectedAsync += async () => await this.Init();
             //打开链接
             this.CreateClient();
         }
@@ -40,16 +40,13 @@ namespace Lib.distributed.zookeeper.ServiceManager
         /// <summary>
         /// 初始化
         /// </summary>
-        private void Init()
+        public async Task Init()
         {
             try
             {
                 //清理无用节点
-                Task.Factory.StartNew(async () =>
-                {
-                    await this.RetryAsync().ExecuteAsync(async () =>
-                    await this.ClearDeadNodes());
-                }).Wait();
+                await this.RetryAsync().ExecuteAsync(async () =>
+                await this.ClearDeadNodes());
             }
             catch (Exception e)
             {
@@ -60,11 +57,8 @@ namespace Lib.distributed.zookeeper.ServiceManager
             try
             {
                 //读取节点并添加监视
-                Task.Factory.StartNew(async () =>
-                {
-                    await this.RetryAsync().ExecuteAsync(async () =>
-                    await this.WalkNodeAndWatch(this._base_path));
-                }).Wait();
+                await this.RetryAsync().ExecuteAsync(async () =>
+                await this.WalkNodeAndWatch(this._base_path));
             }
             catch (Exception e)
             {
