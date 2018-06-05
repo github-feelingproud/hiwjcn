@@ -19,7 +19,7 @@ namespace ConsoleApp
             {
                 var con = new ServiceRegister("***", () => new List<ContractModel>() { });
 
-                con.OnConnected += () =>
+                con.OnConnectedAsync += async () =>
                 {
                     Console.WriteLine("链接成功" + DateTime.Now);
                     Console.WriteLine("============================");
@@ -28,15 +28,15 @@ namespace ConsoleApp
                 {
                     Console.WriteLine("链接异常" + e.Message + DateTime.Now);
                 };
-                con.OnSessionExpired += () =>
+                con.OnSessionExpiredAsync += async () =>
                 {
                     Console.WriteLine("session过期" + DateTime.Now);
                 };
-                con.OnRecconecting += () =>
+                con.OnRecconectingAsync += async () =>
                 {
                     Console.WriteLine("重新链接" + DateTime.Now);
                 };
-                con.OnUnConnected += () =>
+                con.OnUnConnectedAsync += async () =>
                 {
                     Console.WriteLine("链接断开" + DateTime.Now);
                 };

@@ -12,6 +12,7 @@ using ZXing.Rendering;
 using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
 using ImageProcessor.Imaging;
+using ZXing.QrCode.Internal;
 
 namespace Lib.io
 {
@@ -24,29 +25,32 @@ namespace Lib.io
         public const int BARCODE_SIZE_WIDTH = 300;
         public const int BARCODE_SIZE_HEIGHT = 100;
 
-        public string Charset { private get; set; }
-        public ImageFormat Formart { private get; set; }
-        public int? Margin { private get; set; }
+        public QrCode()
+        {
+            //初始化参数
+        }
 
-        public string _charset { get => this.Charset ?? "UTF-8"; }
-        public ImageFormat _formart { get => this.Formart ?? ImageFormat.Png; }
-        public int _margin { get => this.Margin ?? 1; }
+        public string Charset { get; set; } = "UTF-8";
+        public ImageFormat Formart { get; set; } = ImageFormat.Png;
+        public int Margin { get; set; } = 1;
+        public ErrorCorrectionLevel ErrorCorrectionLevel { get; set; } = ErrorCorrectionLevel.H;
 
         /// <summary>
         /// 二维码
         /// </summary>
-        public byte[] GetQrCodeBytes(string content, int size = QRCODE_SIZE)
+        public byte[] GetQrCodeBytes(string content,
+            int size = QRCODE_SIZE)
         {
             content = ConvertHelper.GetString(content);
 
             var option = new QrCodeEncodingOptions()
             {
-                CharacterSet = this._charset,
+                CharacterSet = this.Charset,
                 DisableECI = true,
-                ErrorCorrection = ZXing.QrCode.Internal.ErrorCorrectionLevel.H,
+                ErrorCorrection = this.ErrorCorrectionLevel ?? ErrorCorrectionLevel.H,
                 Width = size,
                 Height = size,
-                Margin = this._margin
+                Margin = this.Margin
             };
 
             var writer = new BarcodeWriter()
@@ -58,23 +62,24 @@ namespace Lib.io
             //生成bitmap
             using (var bm = writer.Write(content))
             {
-                return bm.ToBytes(this._formart);
+                return bm.ToBytes(this.Formart);
             }
         }
 
         /// <summary>
         /// 条码
         /// </summary>
-        public byte[] GetBarCodeBytes(string content, int width = BARCODE_SIZE_WIDTH, int height = BARCODE_SIZE_HEIGHT)
+        public byte[] GetBarCodeBytes(string content,
+            int width = BARCODE_SIZE_WIDTH, int height = BARCODE_SIZE_HEIGHT)
         {
             content = ConvertHelper.GetString(content);
 
             var options = new QrCodeEncodingOptions()
             {
-                CharacterSet = this._charset,
+                CharacterSet = this.Charset,
                 Width = width,
                 Height = height,
-                Margin = this._margin,
+                Margin = this.Margin,
                 // 是否是纯码，如果为 false，则会在图片下方显示数字
                 PureBarcode = false,
             };
@@ -87,14 +92,14 @@ namespace Lib.io
 
             using (var bm = writer.Write(content))
             {
-                return bm.ToBytes(this._formart);
+                return bm.ToBytes(this.Formart);
             }
         }
 
         /// <summary>
         /// 识别二维码
         /// </summary>
-        public string DistinguishQrImage(byte[] b)
+        public string ReadQrCodeText(byte[] b)
         {
             using (var stream = new MemoryStream(b))
             {
@@ -103,7 +108,26 @@ namespace Lib.io
                     var reader = new BarcodeReader();
                     reader.Options = new DecodingOptions()
                     {
-                        CharacterSet = this._charset,
+                        CharacterSet = this.Charset,
+                        TryHarder = true
+                    };
+                    var res = reader.Decode(bm);
+                    return res.Text;
+                }
+            }
+        }
+
+        [Obsolete("解码。。。。。？")]
+        public string ReadBarCodeText(byte[] b)
+        {
+            using (var stream = new MemoryStream(b))
+            {
+                using (var bm = new Bitmap(stream))
+                {
+                    var reader = new BarcodeReader();
+                    reader.Options = new DecodingOptions()
+                    {
+                        CharacterSet = this.Charset,
                         TryHarder = true
                     };
                     var res = reader.Decode(bm);
@@ -115,14 +139,9 @@ namespace Lib.io
 
     public static class QrCodeExtension
     {
-        /// <summary>
-        /// 识别二维码
-        /// </summary>
-        public static string DistinguishQrImage(this QrCode coder, string img_path) =>
-            coder.DistinguishQrImage(File.ReadAllBytes(img_path));
 
         /// <summary>
-        /// 带图标二维码
+        /// 带图标二维码，加上图标后请把容错级别调高，这样可以提高识别成功率
         /// </summary>
         public static byte[] GetQrCodeWithIconBytes(this QrCode coder,
             string content, string icon_path, int size = QrCode.QRCODE_SIZE)
@@ -143,7 +162,7 @@ namespace Lib.io
                         }
                     }
                 }
-                return bm.ToBytes(coder._formart);
+                return bm.ToBytes(coder.Formart);
             }
         }
 

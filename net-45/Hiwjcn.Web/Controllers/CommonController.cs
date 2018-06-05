@@ -322,7 +322,7 @@ namespace Hiwjcn.Web.Controllers
                 byte[] b = IOHelper.GetPostFileBytesAndDispose(file);
                 if (!ValidateHelper.IsPlumpList(b)) { return Content(string.Empty); }
                 QrCode qr = new QrCode();
-                string str = qr.DistinguishQrImage(b);
+                string str = qr.ReadQrCodeText(b);
                 if (ValidateHelper.IsPlumpString(str))
                 {
                     return Content(str);
