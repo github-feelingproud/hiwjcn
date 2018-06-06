@@ -197,6 +197,7 @@ namespace Lib.extension
         /// 搜索建议
         /// https://elasticsearch.cn/article/142
         /// </summary>
+        [Obsolete("只是为了演示用法")]
         public static SuggestDictionary<T> SuggestSample<T>(this IElasticClient client,
             string index,
             Expression<Func<T, object>> targetField, string text, string analyzer = null,
@@ -456,6 +457,7 @@ namespace Lib.extension
         /// ES空间搜索
         /// </summary>
         /// <param name="qc"></param>
+        [Obsolete("只是为了演示用法")]
         public static void HowToFilterByDistance(this QueryContainer qc)
         {
             qc = qc && new GeoBoundingBoxQuery()
@@ -511,13 +513,43 @@ namespace Lib.extension
                 Shape = new PointGeoShape(new GeoCoordinate(32, 32)),
                 Relation = GeoShapeRelation.Intersects
             };
-            new GeoShapeMultiPolygonQuery()
+            qc &= new GeoShapeMultiPolygonQuery()
             {
-                Shape = new MultiPolygonGeoShape() { }
+                Field = "location",
+                Shape = new MultiPolygonGeoShape(new List<List<List<GeoCoordinate>>>() { }) { },
+                Relation = GeoShapeRelation.Intersects
+            };
+            //使用场景：一个销售区域支持多个配送闭环范围，查询当前位置在不在配送范围内
+            var model = new
+            {
+                nested_sales_area = new object[]
+                {
+                    new
+                    {
+                        cordinates=new List<GeoCoordinate>(){ }
+                    },
+                    new
+                    {
+                        cordinates=new List<GeoCoordinate>(){ }
+                    },
+                }
+            };
+            var nested_query = new QueryContainer();
+            nested_query &= new GeoShapePointQuery()
+            {
+                Field = "nested_sales_area.cordinates",
+                Shape = new PointGeoShape(new GeoCoordinate(32, 32)),
+                Relation = GeoShapeRelation.Intersects
+            };
+            qc &= new NestedQuery()
+            {
+                Path = "nested_sales_area",
+                Query = nested_query
             };
         }
 
-        public static void HowToUseAggregationsInES(this SearchDescriptor<EsExample.ProductListV2> sd)
+        [Obsolete("只是为了演示用法")]
+        public static void HowToUseAggregationsInES(this SearchDescriptor<ProductListEsIndexModel> sd)
         {
             var agg = new AggregationContainer();
             agg = new SumAggregation("", "") && new AverageAggregation("", "");
@@ -525,12 +557,13 @@ namespace Lib.extension
             sd = sd.Aggregations(a => a.Max("max", x => x.Field(m => m.IsGroup)));
             sd = sd.Aggregations(a => a.Stats("stats", x => x.Field(m => m.BrandId).Field(m => m.PIsRemove)));
 
-            var response = ElasticsearchClientManager.Instance.DefaultClient.CreateClient().Search<EsExample.ProductListV2>(x => sd);
+            var response = ElasticsearchClientManager.Instance.DefaultClient.CreateClient().Search<ProductListEsIndexModel>(x => sd);
 
             var stats = response.Aggregations.Stats("stats");
             //etc
         }
 
+        [Obsolete("只是为了演示用法")]
         public static void HowToSortWithScripts<T>(this SortDescriptor<T> sort) where T : class, IElasticSearchIndex
         {
             var sd = new SortScriptDescriptor<T>();
@@ -545,11 +578,46 @@ namespace Lib.extension
             sort.Script(x => sd.Descending());
         }
 
+        [Obsolete("只是为了演示用法")]
+        public static void HowToUseNestedQuery(this QueryContainer qc)
+        {
+            var attr_list = new List<AttrParam>();
+            if (ValidateHelper.IsPlumpList(attr_list))
+            {
+                var attr_query = new QueryContainer();
+                foreach (var attr in attr_list)
+                {
+                    attr_query = attr_query || new TermQuery() { Field = $"ProductAttributes.{attr.UID}", Value = attr.value };
+                }
+                qc = qc && new NestedQuery()
+                {
+                    Path = "ProductAttributes",
+                    Query = attr_query
+                };
+            }
+        }
+
+        [Obsolete("只是为了演示用法")]
+        public static void HowToUseNestedSort(this SortDescriptor<ProductListEsIndexModel> sort)
+        {
+            sort = sort
+           .Field(x => x.Field($"field.fieldxx")
+           .Order(Nest.SortOrder.Descending)
+           .Mode(SortMode.Max)
+           .NestedPath("xxpath")
+           //.NestedFilter(q => q.Term(m => m.Field("").Value(""))));
+           .NestedFilter(q => q.Terms(m =>
+           m.Field($"")
+           .Terms(new List<string>() { })
+           )));
+        }
+
         /// <summary>
         /// https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/function-score-query-usage.html
         /// </summary>
         /// <param name="sd"></param>
-        public static void HowToUseFunctionQuery(this SearchDescriptor<EsExample.ProductListV2> sd)
+        [Obsolete("只是为了演示用法")]
+        public static void HowToUseFunctionQuery(this SearchDescriptor<ProductListEsIndexModel> sd)
         {
             var qs = new FunctionScoreQuery()
             {
@@ -579,24 +647,126 @@ namespace Lib.extension
             sd = sd.Query(x => qs);
             sd = sd.Sort(x => x.Descending(s => s.UpdatedDate));
             sd = sd.Skip(0).Take(10);
-            new ElasticClient().Search<EsExample.ProductListV2>(_ => sd);
+            new ElasticClient().Search<ProductListEsIndexModel>(_ => sd);
         }
 
-        public static void UpdateDoc(IElasticClient client)
+        [Obsolete("只是为了演示用法")]
+        public static void HowToUseInnerAgg()
         {
-            //https://stackoverflow.com/questions/42210930/nest-how-to-use-updatebyquery
+            var sd = new SearchDescriptor<ProductListEsIndexModel>();
+            sd = sd.Aggregations(agg => agg
+                .Terms("NAMEOF_ShowCatalogIdList", av => av.Field("NAMEOF_ShowCatalogIdList").Size(1000))
+                .Terms("NAMEOF_BrandId", av => av.Field("NAMEOF_BrandId").Order(x => x.CountDescending()).Size(1000))
+                .Terms("NAMEOF_ProductAttributes",
+                //妈的 这什么鬼
+                av => av.Field("NAMEOF_ProductAttributes")
+                .Aggregations(m => m.Average("", d => d.Field(""))).Order(xx => xx.Descending("")).Size(1000)));
+        }
 
+        /// <summary>
+        /// https://stackoverflow.com/questions/42210930/nest-how-to-use-updatebyquery
+        /// </summary>
+        /// <param name="client"></param>
+        [Obsolete("只是为了演示用法")]
+        public static void HowToUpdateDocByScriptQuery(IElasticClient client)
+        {
             var query = new QueryContainer();
             query &= new TermQuery() { Field = "name", Value = "wj" };
 
-            client.UpdateByQuery<EsExample.ProductListV2>(q => q.Query(rq => query).Script(script => script
+            client.UpdateByQuery<ProductListEsIndexModel>(q => q.Query(rq => query).Script(script => script
         .Source("ctx._source.name = newName;")
         .Params(new Dictionary<string, object>() { ["newName"] = "wj" })));
 
             //
-            client.Update(DocumentPath<EsExample.ProductListV2>.Id(""),
-                x => x.Index("").Type<EsExample.ProductListV2>().Doc(new EsExample.ProductListV2() { }));
+            client.Update(DocumentPath<ProductListEsIndexModel>.Id(""),
+                x => x.Index("").Type<ProductListEsIndexModel>().Doc(new ProductListEsIndexModel() { }));
         }
 
+    }
+
+    [Obsolete("只是为了演示用法")]
+    [ElasticsearchType(IdProperty = "UKey", Name = "ProductList")]
+    public class ProductListEsIndexModel : IElasticSearchIndex
+    {
+        [Text(Name = "UKey", Index = false)]
+        public string UKey { get; set; }
+
+        [Text(Name = "字段名", Index = false)]
+        public string ProductId { get; set; }
+
+        [Text(Name = "字段名", Index = false)]
+        public string TraderId { get; set; }
+
+        [Text(Name = "字段名", Index = false)]
+        public string PlatformCatalogId { get; set; }
+
+        [Text(Name = "字段名", Index = false)]
+        public string BrandId { get; set; }
+
+        [Number(Name = "PAvailability", Index = false)]
+        public int PAvailability { get; set; }
+
+        [Number(Name = "PIsRemove", Index = false)]
+        public int PIsRemove { get; set; }
+
+        [Number(Name = "UpAvailability", Index = false)]
+        public int UpAvailability { get; set; }
+
+        [Number(Name = "UpIsRemove", Index = false)]
+        public int UpIsRemove { get; set; }
+
+        [Number(Name = "IsGroup", Index = false)]
+        public int IsGroup { get; set; }
+
+        [Number(Name = "UpiId", Index = false)]
+        public int UpiId { get; set; }
+
+        /// <summary>
+        /// 销量
+        /// </summary>
+        [Number(Name = "SalesVolume", Index = false)]
+        public int SalesVolume { get; set; }
+
+        /// <summary>
+        /// 是否有货
+        /// </summary>
+        [Number(Name = "InventoryStatus", Index = false)]
+        public int InventoryStatus { get; set; }
+
+
+        [Number(Name = "SalesPrice", Index = false)]
+        public decimal SalesPrice { get; set; }
+
+        [Text(Name = "ShopName", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+        public string ShopName { get; set; }
+
+        [Text(Name = "SeachTitle", Analyzer = "ik_max_word", SearchAnalyzer = "ik_max_word")]
+        public string SeachTitle { get; set; }
+
+        [Date(Name = "UpdatedDate")]
+        public DateTime UpdatedDate { get; set; }
+
+        [Text(Name = "字段名", Index = false)]
+        public string[] ShowCatalogIdList { get; set; }
+
+        [Text(Name = "字段名", Index = false)]
+        public string[] PlatformCatalogIdList { get; set; }
+
+        [Text(Name = "字段名", Index = false)]
+        public string[] ProductAttributes { get; set; }
+
+        [GeoPoint(Name = nameof(Location))]
+        public GeoLocation Location { get; set; }
+
+        [GeoShape(Name = nameof(Area))]
+        public List<GeoLocation> Area { get; set; }
+    }
+
+    [Obsolete("只是为了演示用法")]
+    public class AttrParam
+    {
+        public virtual string UID { get; set; }
+
+        public virtual string value { get; set; }
     }
 }

@@ -260,7 +260,6 @@
     <Compile Include="data\ef\EFRepositoryBase.cs" />
     <Compile Include="data\ef\IEFRepository.cs" />
     <Compile Include="data\elasticsearch\ElasticsearchClientManager.cs" />
-    <Compile Include="data\elasticsearch\EsExample.cs" />
     <Compile Include="data\elasticsearch\IElasticSearchIndex.cs" />
     <Compile Include="data\ILinqRepository.cs" />
     <Compile Include="data\mongodb\IMongoRepository.cs" />
