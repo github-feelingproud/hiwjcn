@@ -19,6 +19,13 @@ namespace Lib.rpc
         public TimeSpan? CloseTimeout { get; set; }
         public TimeSpan? SendTimeout { get; set; }
         public TimeSpan? RecieveTimeout { get; set; }
+
+        public int? MaxDepth { get; set; }
+        public int? MaxStringContentLength { get; set; }
+        public int? MaxArrayLength { get; set; }
+        public int? MaxBytesPerRead { get; set; }
+        public int? MaxNameTableCharCount { get; set; }
+
         /// <summary>
         /// event
         /// </summary>
@@ -73,7 +80,15 @@ namespace Lib.rpc
                                 SendTimeout = this.SendTimeout ?? TimeSpan.FromSeconds(30),
                                 ReceiveTimeout = this.RecieveTimeout ?? TimeSpan.FromSeconds(30),
                                 MaxBufferSize = this.MaxBufferSize ?? 2147483647,
-                                MaxReceivedMessageSize = this.MaxRecieveMessageSize ?? 2147483647
+                                MaxReceivedMessageSize = this.MaxRecieveMessageSize ?? 2147483647,
+                                ReaderQuotas = new System.Xml.XmlDictionaryReaderQuotas()
+                                {
+                                    MaxDepth = this.MaxDepth ?? 2147483647,
+                                    MaxArrayLength = this.MaxArrayLength ?? 2147483647,
+                                    MaxStringContentLength = this.MaxStringContentLength ?? 2147483647,
+                                    MaxBytesPerRead = this.MaxBytesPerRead ?? 2147483647,
+                                    MaxNameTableCharCount = this.MaxNameTableCharCount ?? 2147483647
+                                }
                             };
 
                             this.OnBindingCreated?.Invoke(host, c, binding);
@@ -100,7 +115,7 @@ namespace Lib.rpc
                         var dataContractBehavior = host.Description.Behaviors.Find<DataContractSerializerOperationBehavior>();
                         if (dataContractBehavior != null)
                         {
-                            dataContractBehavior.MaxItemsInObjectGraph = this.MaxItemsInObjectGraph ?? 65536000;
+                            dataContractBehavior.MaxItemsInObjectGraph = this.MaxItemsInObjectGraph ?? 2147483647;
                         }
 
                         var debugBehavior = host.Description.Behaviors.Find<ServiceDebugBehavior>();
