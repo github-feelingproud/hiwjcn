@@ -554,8 +554,12 @@ namespace Lib.extension
             var agg = new AggregationContainer();
             agg = new SumAggregation("", "") && new AverageAggregation("", "");
 
-            sd = sd.Aggregations(a => a.Max("max", x => x.Field(m => m.IsGroup)));
+            sd = sd.Aggregations(a => a.Max("max", x => x.Field(m => m.IsGroup))).Size(1000);
             sd = sd.Aggregations(a => a.Stats("stats", x => x.Field(m => m.BrandId).Field(m => m.PIsRemove)));
+            //直方图
+            sd = sd.Aggregations(a => a.Histogram("price", x => x.Field("price").Interval(60)));
+            //时间直方图
+            sd = sd.Aggregations(a => a.DateHistogram("date", x => x.Field("date").Interval(new Time(TimeSpan.FromHours(1)))));
 
             var response = ElasticsearchClientManager.Instance.DefaultClient.CreateClient().Search<ProductListEsIndexModel>(x => sd);
 
@@ -610,6 +614,48 @@ namespace Lib.extension
            m.Field($"")
            .Terms(new List<string>() { })
            )));
+        }
+
+        /// <summary>
+        /// query会计算匹配度（_score）
+        /// filter不会计算匹配度，只会计算是否匹配，并且有查询缓存
+        /// 不需要匹配度的查询使用filter效率更高
+        /// </summary>
+        [Obsolete("只是为了演示用法")]
+        public static void DifferenceBetweenQueryAndFilter() { }
+
+        [Obsolete("只是为了演示用法")]
+        public static void DifferentQuerysInEs(this QueryContainer qc)
+        {
+            //匹配查询
+            qc &= new MatchQuery()
+            {
+                Field = "analyized field name",
+                Query = "关键词",
+                Operator = Operator.Or,
+                MinimumShouldMatch = "100%",
+                Analyzer = "ik_smart"
+            };
+
+            //https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax
+            //https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
+            //query string自定义了一个查询语法
+            new QueryStringQuery() { };
+
+            //https://www.elastic.co/guide/cn/elasticsearch/guide/current/_wildcard_and_regexp_queries.html
+            //使用通配符查询，比如name.*
+            new WildcardQuery() { };
+
+            //精准匹配，不分词
+            new TermQuery() { };
+
+            //https://www.elastic.co/guide/cn/elasticsearch/guide/current/fuzzy-query.html
+            //模糊查询，它会计算关键词和目标字段的“距离”。如果在允许的距离范围内，计算拼写错误也可以匹配到
+            new FuzzyQuery() { };
+
+            //范围查询
+            new DateRangeQuery() { };
+            new NumericRangeQuery() { };
         }
 
         /// <summary>
