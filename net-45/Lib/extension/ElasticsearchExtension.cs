@@ -453,6 +453,37 @@ namespace Lib.extension
         }
 
         /// <summary>
+        /// 使用cursor遍历整个索引
+        /// </summary>
+        [Obsolete("只是为了演示用法")]
+        public static void HowToScrollIndex(this IElasticClient client)
+        {
+            var res = client.Search<ProductListEsIndexModelExample>(s => s
+                .From(0)
+                .Size(1)
+                .MatchAll()
+                .Scroll(new Time(TimeSpan.FromSeconds(4)))
+            );
+            res.ThrowIfException();
+            if (!ValidateHelper.IsPlumpString(res.ScrollId)) { throw new Exception("未能拿到游标地址"); }
+
+            while (true)
+            {
+                res = client.Scroll<ProductListEsIndexModelExample>("4s", res.ScrollId);
+                if (!res.Documents.Any())
+                {
+                    break;
+                }
+                foreach (var doc in res.Documents)
+                {
+                    //do something
+                    client.Delete(new DeleteRequest("index", "typename", "ukey"));
+                    client.Delete(DocumentPath<ProductListEsIndexModelExample>.Id("ukey").Index("index"));
+                }
+            }
+        }
+
+        /// <summary>
         /// 怎么通过距离筛选，请看源代码
         /// ES空间搜索
         /// </summary>
@@ -549,7 +580,7 @@ namespace Lib.extension
         }
 
         [Obsolete("只是为了演示用法")]
-        public static void HowToUseAggregationsInES(this SearchDescriptor<ProductListEsIndexModel> sd)
+        public static void HowToUseAggregationsInES(this SearchDescriptor<ProductListEsIndexModelExample> sd)
         {
             var agg = new AggregationContainer();
             agg = new SumAggregation("", "") && new AverageAggregation("", "");
@@ -561,7 +592,7 @@ namespace Lib.extension
             //时间直方图
             sd = sd.Aggregations(a => a.DateHistogram("date", x => x.Field("date").Interval(new Time(TimeSpan.FromHours(1)))));
 
-            var response = ElasticsearchClientManager.Instance.DefaultClient.CreateClient().Search<ProductListEsIndexModel>(x => sd);
+            var response = ElasticsearchClientManager.Instance.DefaultClient.CreateClient().Search<ProductListEsIndexModelExample>(x => sd);
 
             var stats = response.Aggregations.Stats("stats");
             //etc
@@ -602,7 +633,7 @@ namespace Lib.extension
         }
 
         [Obsolete("只是为了演示用法")]
-        public static void HowToUseNestedSort(this SortDescriptor<ProductListEsIndexModel> sort)
+        public static void HowToUseNestedSort(this SortDescriptor<ProductListEsIndexModelExample> sort)
         {
             sort = sort
            .Field(x => x.Field($"field.fieldxx")
@@ -663,7 +694,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="sd"></param>
         [Obsolete("只是为了演示用法")]
-        public static void HowToUseFunctionQuery(this SearchDescriptor<ProductListEsIndexModel> sd)
+        public static void HowToUseFunctionQuery(this SearchDescriptor<ProductListEsIndexModelExample> sd)
         {
             var qs = new FunctionScoreQuery()
             {
@@ -693,13 +724,13 @@ namespace Lib.extension
             sd = sd.Query(x => qs);
             sd = sd.Sort(x => x.Descending(s => s.UpdatedDate));
             sd = sd.Skip(0).Take(10);
-            new ElasticClient().Search<ProductListEsIndexModel>(_ => sd);
+            new ElasticClient().Search<ProductListEsIndexModelExample>(_ => sd);
         }
 
         [Obsolete("只是为了演示用法")]
         public static void HowToUseInnerAgg()
         {
-            var sd = new SearchDescriptor<ProductListEsIndexModel>();
+            var sd = new SearchDescriptor<ProductListEsIndexModelExample>();
             sd = sd.Aggregations(agg => agg
                 .Terms("NAMEOF_ShowCatalogIdList", av => av.Field("NAMEOF_ShowCatalogIdList").Size(1000))
                 .Terms("NAMEOF_BrandId", av => av.Field("NAMEOF_BrandId").Order(x => x.CountDescending()).Size(1000))
@@ -719,20 +750,20 @@ namespace Lib.extension
             var query = new QueryContainer();
             query &= new TermQuery() { Field = "name", Value = "wj" };
 
-            client.UpdateByQuery<ProductListEsIndexModel>(q => q.Query(rq => query).Script(script => script
+            client.UpdateByQuery<ProductListEsIndexModelExample>(q => q.Query(rq => query).Script(script => script
         .Source("ctx._source.name = newName;")
         .Params(new Dictionary<string, object>() { ["newName"] = "wj" })));
 
             //
-            client.Update(DocumentPath<ProductListEsIndexModel>.Id(""),
-                x => x.Index("").Type<ProductListEsIndexModel>().Doc(new ProductListEsIndexModel() { }));
+            client.Update(DocumentPath<ProductListEsIndexModelExample>.Id(""),
+                x => x.Index("").Type<ProductListEsIndexModelExample>().Doc(new ProductListEsIndexModelExample() { }));
         }
 
     }
 
     [Obsolete("只是为了演示用法")]
     [ElasticsearchType(IdProperty = "UKey", Name = "ProductList")]
-    public class ProductListEsIndexModel : IElasticSearchIndex
+    public class ProductListEsIndexModelExample : IElasticSearchIndex
     {
         [Text(Name = "UKey", Index = false)]
         public string UKey { get; set; }
