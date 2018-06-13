@@ -198,7 +198,7 @@ namespace Lib.extension
         /// https://elasticsearch.cn/article/142
         /// </summary>
         [Obsolete("只是为了演示用法")]
-        public static SuggestDictionary<T> SuggestSample<T>(this IElasticClient client,
+        public static SuggestDictionary<T> SuggestSample<T>(IElasticClient client,
             string index,
             Expression<Func<T, object>> targetField, string text, string analyzer = null,
             string highlight_pre = "<em>", string hightlight_post = "</em>", int size = 20)
@@ -456,7 +456,7 @@ namespace Lib.extension
         /// 使用cursor遍历整个索引
         /// </summary>
         [Obsolete("只是为了演示用法")]
-        public static void HowToScrollIndex(this IElasticClient client)
+        public static void HowToScrollIndex(IElasticClient client)
         {
             var res = client.Search<ProductListEsIndexModelExample>(s => s
                 .From(0)
@@ -489,7 +489,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="qc"></param>
         [Obsolete("只是为了演示用法")]
-        public static void HowToFilterByDistance(this QueryContainer qc)
+        public static void HowToFilterByDistance(QueryContainer qc)
         {
             qc = qc && new GeoBoundingBoxQuery()
             {
@@ -580,26 +580,39 @@ namespace Lib.extension
         }
 
         [Obsolete("只是为了演示用法")]
-        public static void HowToUseAggregationsInES(this SearchDescriptor<ProductListEsIndexModelExample> sd)
+        public static void HowToUseAggregationsInES(IElasticClient client,
+            SearchDescriptor<ProductListEsIndexModelExample> sd)
         {
             var agg = new AggregationContainer();
             agg = new SumAggregation("", "") && new AverageAggregation("", "");
 
+            //select x,count(1) from tb group by x
+            sd = sd.Aggregations(a => a.Terms("terms", x => x.Field(m => m.IsGroup))).Size(1000);
+            //select count(f) from tb where f is not null
+            sd = sd.Aggregations(a => a.ValueCount("count", x => x.Field(m => m.IsGroup))).Size(1000);
+            //最大值
             sd = sd.Aggregations(a => a.Max("max", x => x.Field(m => m.IsGroup))).Size(1000);
+            //最大值，最小值，平均值等统计数据
             sd = sd.Aggregations(a => a.Stats("stats", x => x.Field(m => m.BrandId).Field(m => m.PIsRemove)));
             //直方图
             sd = sd.Aggregations(a => a.Histogram("price", x => x.Field("price").Interval(60)));
             //时间直方图
             sd = sd.Aggregations(a => a.DateHistogram("date", x => x.Field("date").Interval(new Time(TimeSpan.FromHours(1)))));
+            //数值区域
+            sd = sd.Aggregations(a => a.Range("range", x => x.Field("price").Ranges(r => r.From(10).To(20), r => r.From(30).To(40))));
+            //日期区域
+            sd = sd.Aggregations(a => a.DateRange("date_range", x => x.Field("date").Ranges(r => r.From(DateTime.Now.AddDays(-1)).To(DateTime.Now))));
+            //ip区域
+            sd = sd.Aggregations(a => a.IpRange("ip_range", x => x.Field("ip").Ranges(r => r.From("192.168.0.1").To("192.168.0.10"))));
 
-            var response = ElasticsearchClientManager.Instance.DefaultClient.CreateClient().Search<ProductListEsIndexModelExample>(x => sd);
+            var response = client.Search<ProductListEsIndexModelExample>(x => sd);
 
             var stats = response.Aggregations.Stats("stats");
             //etc
         }
 
         [Obsolete("只是为了演示用法")]
-        public static void HowToSortWithScripts<T>(this SortDescriptor<T> sort) where T : class, IElasticSearchIndex
+        public static void HowToSortWithScripts<T>(SortDescriptor<T> sort) where T : class, IElasticSearchIndex
         {
             var sd = new SortScriptDescriptor<T>();
 
@@ -614,7 +627,7 @@ namespace Lib.extension
         }
 
         [Obsolete("只是为了演示用法")]
-        public static void HowToUseNestedQuery(this QueryContainer qc)
+        public static void HowToUseNestedQuery(QueryContainer qc)
         {
             var attr_list = new List<AttrParam>();
             if (ValidateHelper.IsPlumpList(attr_list))
@@ -633,7 +646,7 @@ namespace Lib.extension
         }
 
         [Obsolete("只是为了演示用法")]
-        public static void HowToUseNestedSort(this SortDescriptor<ProductListEsIndexModelExample> sort)
+        public static void HowToUseNestedSort(SortDescriptor<ProductListEsIndexModelExample> sort)
         {
             sort = sort
            .Field(x => x.Field($"field.fieldxx")
@@ -656,7 +669,7 @@ namespace Lib.extension
         public static void DifferenceBetweenQueryAndFilter() { }
 
         [Obsolete("只是为了演示用法")]
-        public static void DifferentQuerysInEs(this QueryContainer qc)
+        public static void DifferentQuerysInEs(QueryContainer qc)
         {
             //匹配查询
             qc &= new MatchQuery()
@@ -694,7 +707,7 @@ namespace Lib.extension
         /// </summary>
         /// <param name="sd"></param>
         [Obsolete("只是为了演示用法")]
-        public static void HowToUseFunctionQuery(this SearchDescriptor<ProductListEsIndexModelExample> sd)
+        public static void HowToUseFunctionQuery(SearchDescriptor<ProductListEsIndexModelExample> sd)
         {
             var qs = new FunctionScoreQuery()
             {
