@@ -22,6 +22,7 @@ namespace Hiwjcn.Api
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            //Microsoft.Extensions.Caching.Distributed.IDistributedCache
         }
 
         public IConfiguration Configuration { get; }

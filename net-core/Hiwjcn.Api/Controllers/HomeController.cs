@@ -24,7 +24,6 @@ namespace Hiwjcn.Api.Controllers
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySQL("");
-            optionsBuilder.UseNpgsql("");
 
             this.Database.EnsureCreated();
 
