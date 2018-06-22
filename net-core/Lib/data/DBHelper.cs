@@ -32,7 +32,7 @@ namespace Lib.data
         /// </summary>
         public static void PrepareConnection(Action<IDbConnection> callback)
         {
-            using (var s = AutofacIocContext.Instance.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
                 using (var con = s.Resolve_<IDbConnection>())
                 {
@@ -46,7 +46,7 @@ namespace Lib.data
         /// </summary>
         public static async Task PrepareConnectionAsync(Func<IDbConnection, Task> callback)
         {
-            using (var s = AutofacIocContext.Instance.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
                 using (var con = s.Resolve_<IDbConnection>())
                 {

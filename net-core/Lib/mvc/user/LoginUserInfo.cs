@@ -1,15 +1,13 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
+using Lib.helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Lib.extension;
-using Lib.ioc;
 using System.Runtime.Serialization;
 
 namespace Lib.mvc.user
 {
-    [Serializable]
+    [System.Serializable]
     [DataContract]
     public class UserPermissions
     {
@@ -186,7 +184,7 @@ namespace Lib.mvc.user
         /// </summary>
         public static bool HasPermission(this LoginUserInfo loginuser, string permission) =>
             ValidateHelper.IsPlumpList(loginuser.Permissions) && loginuser.Permissions.Contains(permission);
-        
+
         /// <summary>
         /// 添加额外信息
         /// </summary>

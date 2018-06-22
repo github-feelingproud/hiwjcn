@@ -1,13 +1,9 @@
 ﻿using Lib.core;
-using Lib.helper;
 using Lib.extension;
+using Lib.helper;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
-using System.Web;
-using System.Web.SessionState;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Collections.ObjectModel;
 
 namespace Lib.mvc.user
 {
@@ -113,7 +109,7 @@ namespace Lib.mvc.user
     /// <summary>
     /// 登录状态存取
     /// </summary>
-    public class LoginStatus : IRequiresSessionState
+    public class LoginStatus
     {
         private readonly CookieTokenEncryption _CookieTokenEncryption;
         //COOKIE
@@ -155,12 +151,12 @@ namespace Lib.mvc.user
 
         public string GetCookieUID(HttpContext context)
         {
-            return context.GetCookie(this.COOKIE_LOGIN_UID);
+            return context.Request.Cookies[this.COOKIE_LOGIN_UID] ?? string.Empty;
         }
 
         public string GetCookieTokenRaw(HttpContext context)
         {
-            return context.GetCookie(this.COOKIE_LOGIN_TOKEN);
+            return context.Request.Cookies[this.COOKIE_LOGIN_TOKEN] ?? string.Empty;
         }
 
         public string GetCookieToken(HttpContext context)
@@ -193,17 +189,25 @@ namespace Lib.mvc.user
             //保存到cookie
             if (this.GetCookieUID(context) != loginuser.UserID)
             {
-                context.SetCookie(this.COOKIE_LOGIN_UID, loginuser.UserID,
-                    domain: this.COOKIE_DOMAIN,
-                    expires_minutes: this.CookieExpiresMinutes);
+                context.Response.Cookies.Append(
+                    this.COOKIE_LOGIN_UID, loginuser.UserID,
+                    new CookieOptions()
+                    {
+                        Domain = this.COOKIE_DOMAIN,
+                        Expires = new DateTimeOffset(DateTime.Now.AddMinutes(this.CookieExpiresMinutes))
+                    });
             }
             if (this.GetCookieToken(context) != loginuser.LoginToken)
             {
                 var data = this._CookieTokenEncryption.Encrypt(loginuser.LoginToken);
 
-                context.SetCookie(this.COOKIE_LOGIN_TOKEN, data,
-                    domain: this.COOKIE_DOMAIN,
-                    expires_minutes: this.CookieExpiresMinutes);
+                context.Response.Cookies.Append(
+                    this.COOKIE_LOGIN_TOKEN, data,
+                    new CookieOptions()
+                    {
+                        Domain = this.COOKIE_DOMAIN,
+                        Expires = new DateTimeOffset(DateTime.Now.AddMinutes(this.CookieExpiresMinutes))
+                    });
             }
         }
 
@@ -214,101 +218,19 @@ namespace Lib.mvc.user
             //CookieHelper.RemoveResponseCookies(context, new string[] { COOKIE_LOGIN_UID, COOKIE_LOGIN_TOKEN });
             if (ValidateHelper.IsPlumpString(this.GetCookieTokenRaw(context)))
             {
-                context.RemoveCookie(this.COOKIE_LOGIN_TOKEN, domain: this.COOKIE_DOMAIN);
+                context.Response.Cookies.Delete(this.COOKIE_LOGIN_TOKEN,
+                    new CookieOptions()
+                    {
+                        Domain = this.COOKIE_DOMAIN
+                    });
             }
             if (ValidateHelper.IsPlumpString(this.GetCookieUID(context)))
             {
-                context.RemoveCookie(this.COOKIE_LOGIN_UID, domain: this.COOKIE_DOMAIN);
-            }
-        }
-    }
-
-    public static class LoginStatusExtension
-    { }
-
-    /// <summary>
-    /// 登录状态存取工厂
-    /// </summary>
-    public static class AccountHelper
-    {
-        /// <summary>
-        /// 在请求上下文中缓存对象
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        private static LoginStatus CacheInstance(string key, Func<LoginStatus> func) =>
-            HttpContext.Current.CacheInHttpContext(key, func);
-
-        private static readonly string domain = ConfigHelper.Instance.CookieDomain;
-
-        /// <summary>
-        /// 用户
-        /// </summary>
-        public static LoginStatus User
-        {
-            get
-            {
-                return CacheInstance(nameof(User), () =>
-                {
-                    return new LoginStatus();
-                });
-            }
-        }
-
-        /// <summary>
-        /// SSO
-        /// </summary>
-        public static LoginStatus SSO
-        {
-            get
-            {
-                return CacheInstance(nameof(SSO), () =>
-                {
-                    return new LoginStatus("SSO_UID", "SSO_TOKEN", "SSO_SESSION", domain);
-                });
-            }
-        }
-
-        /// <summary>
-        /// 卖家
-        /// </summary>
-        public static LoginStatus Trader
-        {
-            get
-            {
-                return CacheInstance(nameof(Trader), () =>
-                {
-                    return new LoginStatus("TRADER_UID", "TRADER_TOKEN", "TRADER_SESSION", domain);
-                });
-            }
-        }
-
-        /// <summary>
-        /// 卖家
-        /// </summary>
-        public static LoginStatus Seller
-        {
-            get
-            {
-                return CacheInstance(nameof(Seller), () =>
-                {
-                    return new LoginStatus("SELLER_UID", "SELLER_TOKEN", "SELLER_SESSION", domain);
-                });
-            }
-        }
-
-        /// <summary>
-        /// 管理员
-        /// </summary>
-        public static LoginStatus Admin
-        {
-            get
-            {
-                return CacheInstance(nameof(Admin), () =>
-                {
-                    return new LoginStatus("ADMIN_UID", "ADMIN_TOKEN", "ADMIN_SESSION", domain);
-                });
+                context.Response.Cookies.Delete(this.COOKIE_LOGIN_UID,
+                    new CookieOptions()
+                    {
+                        Domain = this.COOKIE_DOMAIN
+                    });
             }
         }
     }

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.data;
+﻿using Lib.data;
+using Lib.extension;
+using Lib.helper;
 using Lib.infrastructure.entity;
 using Lib.mvc;
-using Lib.helper;
-using Lib.extension;
-using System.Data.Entity;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lib.infrastructure.extension
 {

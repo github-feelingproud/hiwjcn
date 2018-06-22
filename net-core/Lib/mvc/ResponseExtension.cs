@@ -1,25 +1,12 @@
 ﻿using Lib.helper;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Configuration;
-using System.Web;
 
 namespace Lib.mvc
 {
     public static class ResponseExtension
     {
-        /// <summary>
-        /// 设置不缓存
-        /// </summary>
-        /// <param name="response"></param>
-        public static void SetResponseNoCache(this HttpResponse response)
-        {
-            response.Buffer = false;
-            response.ExpiresAbsolute = DateTime.Now.AddMilliseconds(0);
-            response.Expires = 0;
-            response.CacheControl = "no-cache";
-            response.AppendHeader("Pragma", "No-Cache");
-        }
-
         public static void AllowCrossDomainAjax(this HttpContext context)
         {
             var Origin_Allow = ConvertHelper.GetString(ConfigurationManager.AppSettings["Origin_Allow"]).ToLower();

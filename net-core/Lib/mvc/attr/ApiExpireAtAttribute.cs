@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Lib.mvc.attr
 {
     /// <summary>
     /// 标记接口过期时间
     /// </summary>
-    public class ApiExpireAtAttribute : ActionFilterAttribute
+    public class ApiExpireAtAttribute : _ActionFilterBaseAttribute
     {
         private DateTime Date { get; set; }
 
@@ -19,14 +16,14 @@ namespace Lib.mvc.attr
             this.Date = DateTime.Parse(date);
         }
 
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             if (DateTime.Now > this.Date)
             {
-                filterContext.Result = ResultHelper.BadRequest("无法响应请求，请升级客户端");
+                context.Result = ResultHelper.BadRequest("无法响应请求，请升级客户端");
                 return;
             }
-            base.OnActionExecuting(filterContext);
+            await base.OnActionExecutionAsync(context, next);
         }
     }
 }

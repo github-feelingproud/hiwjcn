@@ -8,8 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Web;
-using System.Web.Compilation;
 
 [assembly: PreApplicationStartMethod(typeof(PluginManager), nameof(PluginManager.LoadPlugins))]
 namespace Lib.mvc.plugin

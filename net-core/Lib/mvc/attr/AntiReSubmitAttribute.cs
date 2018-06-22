@@ -1,39 +1,37 @@
 ﻿using Lib.cache;
 using Lib.core;
 using Lib.extension;
+using Lib.ioc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Lib.ioc;
 
 namespace Lib.mvc.attr
 {
     /// <summary>
     /// 防止重复提交
     /// </summary>
-    public class AntiReSubmitAttribute : ActionFilterAttribute
+    public class AntiReSubmitAttribute : _ActionFilterBaseAttribute
     {
         public virtual int CacheSeconds { get; set; } = 5;
 
         public virtual string ErrorMessage { get; set; } = "重复提交，请稍后再试";
 
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var sessionID = filterContext.HttpContext.Session.SessionID;
+            var sessionID = context.HttpContext.Session.Id;
             var key = $"{nameof(AntiReSubmitAttribute)}:{sessionID}";
 
-            var reqparams = filterContext.HttpContext.Request.Form.ToDict();
-            reqparams = reqparams.AddDict(filterContext.HttpContext.Request.QueryString.ToDict());
+            var reqparams = context.HttpContext.Request.Form.ToDict();
+            reqparams = reqparams.AddDict(context.HttpContext.Request.Query.ToDict());
 
             var dict = new SortedDictionary<string, string>(reqparams, new MyStringComparer());
             var submitData = dict.ToUrlParam();
-            var (AreaName, ControllerName, ActionName) = filterContext.RouteData.GetRouteInfo();
+            var (AreaName, ControllerName, ActionName) = context.RouteData.GetRouteInfo();
             submitData = $"{AreaName}/{ControllerName}/{ActionName}/:{submitData}";
             //读取缓存
-            using (var s = AutofacIocContext.Instance.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
                 using (var cache = s.Resolve_<ICacheProvider>())
                 {
@@ -42,7 +40,7 @@ namespace Lib.mvc.attr
                     {
                         if (data.Result == submitData)
                         {
-                            filterContext.Result = ResultHelper.BadRequest(this.ErrorMessage);
+                            context.Result = ResultHelper.BadRequest(this.ErrorMessage);
                             return;
                         }
                     }
@@ -52,7 +50,8 @@ namespace Lib.mvc.attr
                     cache.Set(key, submitData, TimeSpan.FromSeconds(CacheSeconds));
                 }
             }
-            base.OnActionExecuting(filterContext);
+
+            await base.OnActionExecutionAsync(context, next);
         }
     }
 }

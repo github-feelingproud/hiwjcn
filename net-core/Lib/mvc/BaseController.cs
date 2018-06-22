@@ -165,16 +165,6 @@ namespace Lib.mvc
         {
             return new Http403();
         }
-
-        /// <summary>
-        /// 去首页
-        /// </summary>
-        /// <returns></returns>
-        [NonAction]
-        public virtual ActionResult GoHome()
-        {
-            return new GoHomeResult();
-        }
         #endregion
 
         #region action处理

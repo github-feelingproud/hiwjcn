@@ -1,17 +1,15 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
+using Lib.helper;
+using Lib.io;
+using Lib.mvc.user;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using Lib.extension;
-using Lib.io;
-using Lib.mvc.user;
 using System.Reflection;
-using System.Web.SessionState;
 
 namespace Lib.mvc
 {
@@ -86,7 +84,7 @@ namespace Lib.mvc
         /// <param name="context"></param>
         /// <returns></returns>
         public static Dictionary<string, string> QueryStringToDict(this HttpContext context) =>
-            context.Request.QueryString.ToDict();
+            context.Request.Query.ToDict();
 
         /// <summary>
         /// post数据
@@ -95,6 +93,9 @@ namespace Lib.mvc
         /// <returns></returns>
         public static Dictionary<string, string> PostToDict(this HttpContext context) =>
             context.Request.Form.ToDict();
+
+        public static Dictionary<string, string> ToDict(this IEnumerable<KeyValuePair<string, StringValues>> data)
+            => data.ToDictionary(x => x.Key, x => (string)x.Value);
 
         /// <summary>
         /// 获取这个程序集中所用到的所有权限

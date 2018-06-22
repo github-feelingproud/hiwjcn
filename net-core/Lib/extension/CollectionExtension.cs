@@ -315,18 +315,18 @@ namespace Lib.extension
             return data;
         }
 
-        public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> source, int batchSize)
+        public static IEnumerable<IEnumerable<T>> Split_<T>(this IEnumerable<T> source, int batchSize)
         {
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    yield return Split(enumerator, batchSize);
+                    yield return Split_(enumerator, batchSize);
                 }
             }
         }
 
-        private static IEnumerable<T> Split<T>(IEnumerator<T> enumerator, int batchSize)
+        private static IEnumerable<T> Split_<T>(IEnumerator<T> enumerator, int batchSize)
         {
             do
             {

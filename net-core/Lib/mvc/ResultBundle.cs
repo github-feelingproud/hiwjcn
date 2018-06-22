@@ -1,21 +1,15 @@
-﻿using Lib.core;
-using Lib.helper;
+﻿using Lib.helper;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Lib.mvc
 {
     public static class ResultHelper
     {
-        public static ActionResult BadRequest(string msg, object data = null)
+        public static IActionResult BadRequest(string msg, object data = null)
         {
             return new CustomJsonResult()
             {
@@ -172,47 +166,7 @@ namespace Lib.mvc
     /// </summary>
     public class CustomJsonResult : JsonResult
     {
-        public override void ExecuteResult(ControllerContext context)
-        {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            var response = context.HttpContext.Response;
-
-            if (ValidateHelper.IsPlumpString(this.ContentType))
-            {
-                response.ContentType = this.ContentType;
-            }
-            else
-            {
-                response.ContentType = "application/json";
-            }
-
-            if (this.ContentEncoding != null)
-            {
-                response.ContentEncoding = this.ContentEncoding;
-            }
-
-            if (this.Data != null)
-            {
-                var json = JsonHelper.ObjectToJson(Data);
-                response.Write(json);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 返回首页
-    /// </summary>
-    public class GoHomeResult : ActionResult
-    {
-        public override void ExecuteResult(ControllerContext context)
-        {
-            context.HttpContext.Response.Redirect("/");
-            context.HttpContext.ApplicationInstance.CompleteRequest();
-        }
+        public CustomJsonResult(object data) : base(data) { }
     }
 
     /// <summary>
@@ -229,7 +183,6 @@ namespace Lib.mvc
 
         public override void ExecuteResult(ControllerContext context)
         {
-            context.HttpContext.Response.Clear();
             context.HttpContext.Response.BufferOutput = true;
             context.HttpContext.Response.Status = "301 Moved Permanently";
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.MovedPermanently;

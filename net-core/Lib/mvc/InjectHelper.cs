@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Lib.helper;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Web.Mvc;
 using System.Reflection;
-using Lib.core;
-using Lib.helper;
 
 namespace Lib.mvc.test.inject
 {
@@ -20,7 +18,7 @@ namespace Lib.mvc.test.inject
 
     public class LoadNavigationBeforeActionExecutingAttribute : RunBeforeAttribute
     {
-        public override void Run(System.Web.Mvc.Controller controller)
+        public override void Run(Controller controller)
         {
             //dosomething
         }

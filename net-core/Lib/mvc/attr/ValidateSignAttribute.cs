@@ -1,22 +1,18 @@
 ﻿using Lib.core;
 using Lib.extension;
 using Lib.helper;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Lib.mvc.attr
 {
     /// <summary>
     /// 验证签名
     /// </summary>
-    public class ValidateSignAttribute : ActionFilterAttribute
+    public class ValidateSignAttribute : _ActionFilterBaseAttribute
     {
         /// <summary>
         /// 配置文件里的key
@@ -29,11 +25,12 @@ namespace Lib.mvc.attr
         /// </summary>
         public int DeviationSeconds { get; set; } = 10;
 
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public override async Task OnActionExecutionAsync(ActionExecutingContext _context, ActionExecutionDelegate next)
         {
+
             var salt = ConfigurationManager.AppSettings[ConfigKey];
             if (!ValidateHelper.IsPlumpString(salt)) { throw new Exception($"没有配置签名的约定key({ConfigKey})"); }
-            var context = HttpContext.Current;
+            var context = _context.HttpContext;
 
             var allparams = context.PostAndGet();
 
@@ -44,14 +41,14 @@ namespace Lib.mvc.attr
                 var timestamp = ConvertHelper.GetInt64(allparams.GetValueOrDefault("timestamp"), -1);
                 if (timestamp < 0)
                 {
-                    filterContext.Result = ResultHelper.BadRequest("缺少时间戳");
+                    _context.Result = ResultHelper.BadRequest("缺少时间戳");
                     return;
                 }
                 var server_timestamp = DateTimeHelper.GetTimeStamp();
                 //取绝对值
                 if (Math.Abs(server_timestamp - timestamp) > Math.Abs(DeviationSeconds))
                 {
-                    filterContext.Result = ResultHelper.BadRequest("请求时间戳已经过期", new
+                    _context.Result = ResultHelper.BadRequest("请求时间戳已经过期", new
                     {
                         client_timestamp = timestamp,
                         server_timestamp = server_timestamp
@@ -68,7 +65,7 @@ namespace Lib.mvc.attr
                 var sign = ConvertHelper.GetString(allparams.GetValueOrDefault(SignKey)).ToUpper();
                 if (!ValidateHelper.IsAllPlumpString(sign))
                 {
-                    filterContext.Result = ResultHelper.BadRequest("请求被拦截，获取不到签名");
+                    _context.Result = ResultHelper.BadRequest("请求被拦截，获取不到签名");
                     return;
                 }
 
@@ -77,7 +74,7 @@ namespace Lib.mvc.attr
 
                 if (sign != md5)
                 {
-                    filterContext.Result = ResultHelper.BadRequest("签名错误", new
+                    _context.Result = ResultHelper.BadRequest("签名错误", new
                     {
                         client_sign = md5,
                         server_sign = sign,
@@ -87,8 +84,6 @@ namespace Lib.mvc.attr
                 }
             }
             #endregion
-
-            base.OnActionExecuting(filterContext);
         }
     }
 }

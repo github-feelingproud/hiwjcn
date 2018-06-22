@@ -10,6 +10,7 @@
     <PackageReference Include="Dapper" Version="1.50.4" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.0.2" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
@@ -30,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="distributed\orleans\" />
+    <Folder Include="mvc\middleware\" />
   </ItemGroup>
 
 </Project>
