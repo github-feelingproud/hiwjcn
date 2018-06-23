@@ -1,6 +1,4 @@
-﻿using ImageProcessor;
-using ImageProcessor.Imaging.Formats;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -40,55 +38,6 @@ namespace Lib.io
     /// </summary>
     public static class ImageHelper
     {
-        /// <summary>
-        /// imageprogress 官方例子
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="newFilePath"></param>
-        public static void _ResizeImage(string filePath, string newFilePath)
-        {
-            var photoBytes = File.ReadAllBytes(filePath);
-            // Format is automatically detected though can be changed.
-            var format = new JpegFormat { Quality = 70 };
-            var size = new Size(150, 0);
-
-            using (var inStream = new MemoryStream(photoBytes))
-            {
-                // Initialize the ImageFactory using the overload to preserve EXIF metadata.
-                using (var imageFactory = new ImageFactory(preserveExifData: true))
-                {
-                    // Load, resize, set the format and quality and save an image.
-                    imageFactory.Load(inStream)
-                                .Resize(size)
-                                .Format(format)
-                                .Save(newFilePath);
-                }
-            }
-        }
-
-        /// <summary>
-        /// resize img
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="newFilePath"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        public static void ResizeImage(string filePath, string newFilePath, int width, int height)
-        {
-            var photoBytes = File.ReadAllBytes(filePath);
-            var size = new Size(width, height);
-
-            using (var inStream = new MemoryStream(photoBytes))
-            {
-                // Initialize the ImageFactory using the overload to preserve EXIF metadata.
-                using (var imageFactory = new ImageFactory(preserveExifData: true))
-                {
-                    // Load, resize, set the format and quality and save an image.
-                    imageFactory.Load(inStream).Resize(size).Save(newFilePath);
-                }
-            }
-        }
-
         /// <summary>
         /// 计算压缩比例
         /// </summary>

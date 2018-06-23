@@ -3,8 +3,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
-using System.Web.Hosting;
 
 namespace Lib.io
 {
@@ -89,23 +87,7 @@ namespace Lib.io
                 Directory.CreateDirectory(path);
             }
         }
-
-        /// <summary>
-        /// 获取当前程序根目录（来自nop）
-        /// </summary>
-        /// <returns></returns>
-        public static string GetBinDirectory()
-        {
-            if (HostingEnvironment.IsHosted)
-            {
-                //hosted
-                return HttpRuntime.BinDirectory;
-            }
-
-            //not hosted. For example, run either in unit tests
-            return AppDomain.CurrentDomain.BaseDirectory;
-        }
-
+        
         /// <summary>
         /// 先试用contenttype获取扩展名，再使用filename获取扩展名
         /// </summary>
