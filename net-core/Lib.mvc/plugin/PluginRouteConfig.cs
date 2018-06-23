@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Routing;
-using Lib.core;
+﻿using Lib.core;
 using Lib.extension;
 using Lib.helper;
+using Microsoft.AspNetCore.Routing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lib.mvc.plugin
 {

@@ -90,7 +90,6 @@ namespace Lib.infrastructure.entity.user
 
         [StringLength(100, MinimumLength = 20, ErrorMessage = "UserUID长度错误")]
         [Required(ErrorMessage = "UserUID必填")]
-        [Index]
         public virtual string UserUID { get; set; }
     }
 
@@ -132,7 +131,6 @@ namespace Lib.infrastructure.entity.user
     {
         [StringLength(200)]
         [Required]
-        [Index(IsUnique = true)]
         public virtual string Name { get; set; }
 
         [StringLength(500)]

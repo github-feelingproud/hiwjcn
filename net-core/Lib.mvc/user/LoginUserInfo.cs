@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 namespace Lib.mvc.user
 {
-    [System.Serializable]
+    [Serializable]
     [DataContract]
     public class UserPermissions
     {

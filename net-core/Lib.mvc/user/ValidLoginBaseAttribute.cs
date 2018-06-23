@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Lib.helper;
 using Lib.mvc.attr;
-using Lib.extension;
-using Lib.helper;
-using System.Web.Mvc;
-using System.Web;
-using Lib.ioc;
-using Lib.mvc;
 using Lib.mvc.auth;
+using System;
+using System.Linq;
 using System.Net;
 
 namespace Lib.mvc.user

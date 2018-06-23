@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using Lib.helper;
+﻿using Lib.core;
 using Lib.data;
-using Lib.core;
 using Lib.extension;
-using Lib.infrastructure;
+using Lib.helper;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using System.Data.Entity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Lib.infrastructure.entity
 {
@@ -22,11 +16,11 @@ namespace Lib.infrastructure.entity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column(nameof(IID)), Index(IsUnique = true)]
+        [Column(nameof(IID))]
         public virtual long IID { get; set; }
 
         [StringLength(500, MinimumLength = 1, ErrorMessage = "UID必填")]
-        [Column(nameof(UID)), Index(IsUnique = true), Required]
+        [Column(nameof(UID)), Required]
         public virtual string UID { get; set; }
 
         public virtual int IsRemove { get; set; }
@@ -163,7 +157,6 @@ namespace Lib.infrastructure.entity
     /// 使用rrule
     /// 【终极解决方案】calendar周期性事件，可以高效查询的数据库设计和存储方案
     /// </summary>
-    [Serializable]
     [Obsolete("使用rrule")]
     public class CalendarEventTimeEntity : BaseEntity
     {

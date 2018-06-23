@@ -9,6 +9,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
     /// <summary>
     /// 写到zk中的json实体
     /// </summary>
+    [Serializable]
     public class AddressModel
     {
         public virtual string ServiceNodeName { get; set; }
@@ -27,6 +28,7 @@ namespace Lib.distributed.zookeeper.ServiceManager
     /// <summary>
     /// wcf中协议和服务地址的容器
     /// </summary>
+    [Serializable]
     public class ContractModel
     {
         public ContractModel(Type contract, string url)

@@ -1,9 +1,6 @@
 ﻿using Lib.cache;
-using Lib.extension;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.IO;
-using System.Security;
 using System.Threading.Tasks;
 
 namespace Lib.mvc

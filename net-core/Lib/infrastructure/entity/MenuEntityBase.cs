@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.mvc.user;
-using Lib.core;
+﻿using Lib.core;
 using Lib.extension;
 using Lib.helper;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -56,22 +52,5 @@ namespace Lib.infrastructure.entity
         /// </summary>
         [NotMapped]
         public virtual List<string> PermissionNames => this.PermissionValues.Value;
-
-        public virtual bool ShowForUser(LoginUserInfo loginuser)
-        {
-            if (loginuser == null) { throw new ArgumentNullException(nameof(loginuser)); }
-            var pers = this.PermissionValues.Value;
-            if (ValidateHelper.IsPlumpList(pers))
-            {
-                foreach (var p in pers)
-                {
-                    if (!loginuser.HasPermission(p))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
     }
 }

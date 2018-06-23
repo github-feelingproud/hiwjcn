@@ -9,13 +9,33 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
-[assembly: PreApplicationStartMethod(typeof(PluginManager), nameof(PluginManager.LoadPlugins))]
 namespace Lib.mvc.plugin
 {
     /// <summary>
     /// Contributor: Umbraco (http://www.umbraco.com). Thanks a lot! 
     /// SEE THIS POST for full details of what this does - 
     /// http://shazwazza.com/post/Developing-a-plugin-framework-in-ASPNET-with-medium-trust.aspx
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// in core:
+    /// ApplicationPartManager
+    /// ApplicationPartManager
+    /// ApplicationPartManager
+    /// ApplicationPartManager
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
     /// </summary>
     public class PluginManager
     {
@@ -32,7 +52,7 @@ namespace Lib.mvc.plugin
             if (!ConfigHelper.Instance.LoadPlugin) { return; }
             using (new WriteLockDisposable(Locker))
             {
-                var PluginDir = ServerHelper.GetMapPath(PluginsPath);
+                var PluginDir = "";// ServerHelper.GetMapPath(PluginsPath);
                 if (!Directory.Exists(PluginDir))
                 {
                     throw new Exception("插件目录不存在");
@@ -43,7 +63,6 @@ namespace Lib.mvc.plugin
                     if (IsAlreadyLoaded(dll)) { continue; }
 
                     var ass = Assembly.LoadFile(dll.FullName);
-                    BuildManager.AddReferencedAssembly(ass);
                 }
 
                 //如果出现重复引用的问题就清理解决方案，然后重新生成插件项目

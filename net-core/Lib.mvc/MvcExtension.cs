@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -58,10 +59,14 @@ namespace Lib.mvc
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public static byte[] GetBytes(this HttpPostedFile file)
+        public static byte[] GetBytes(this IFormFile file)
         {
-            var bs = IOHelper.GetPostFileBytesAndDispose(file);
-            return bs;
+            using (var s = file.OpenReadStream())
+            {
+                s.Seek(0, SeekOrigin.Begin);
+                var bs = s.GetBytes();
+                return bs;
+            }
         }
 
         /// <summary>

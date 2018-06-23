@@ -45,25 +45,6 @@ namespace Lib.io
             }
         }
 
-        /// <summary>
-        /// 获取文件的字节数组
-        /// </summary>
-        /// <param name="postFile"></param>
-        /// <returns></returns>
-        public static byte[] GetPostFileBytesAndDispose(HttpPostedFile postFile)
-        {
-            using (postFile.InputStream)
-            {
-                var b = new byte[postFile.ContentLength];
-                if (postFile.InputStream.CanSeek)
-                {
-                    postFile.InputStream.Seek(0, SeekOrigin.Begin);
-                }
-                postFile.InputStream.Read(b, 0, b.Length);
-                return b;
-            }
-        }
-
         public static byte[] GetFileBytes(string file_path)
         {
             //System.IO.File.ReadAllBytes(file_path);

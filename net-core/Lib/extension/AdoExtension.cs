@@ -389,23 +389,7 @@ namespace Lib.extension
         /// </summary>
         public static T[] CloneParams<T>(IEnumerable<T> list) where T : DbParameter
             => Com.CloneParams(list.ToList());
-
-        /// <summary>
-        /// 转为json
-        /// </summary>
-        public static string DataTableToJson(this DataTable tb)
-        {
-            return JsonHelper.DataTableToJson(tb);
-        }
-
-        /// <summary>
-        /// 转为实体对象
-        /// </summary>
-        public static List<T> ToEntityList_<T>(this DataTable tb)
-        {
-            return tb.DataTableToJson().JsonToEntity<List<T>>();
-        }
-
+        
         /// <summary>
         /// 这个方法来自途虎养车网，自己做了一些小修改
         /// </summary>

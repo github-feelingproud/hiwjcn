@@ -10,14 +10,13 @@ namespace Lib.helper
 {
     public static class JsonHelper
     {
-        /// <summary>
-        /// json中的时间格式
-        /// </summary>
-        /// <returns></returns>
-        public static IsoDateTimeConverter TimeFormat()
+        public static readonly JsonSerializerSettings _setting = new JsonSerializerSettings()
         {
-            return new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
-        }
+            Converters = new List<JsonConverter>()
+            {
+                new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" },
+            }
+        };
 
         /// <summary>
         /// model转json
@@ -25,7 +24,7 @@ namespace Lib.helper
         public static string ObjectToJson(object obj)
         {
             //if (obj == null) { throw new Exception("null不能被转为json"); }
-            return JsonConvert.SerializeObject(obj, TimeFormat());
+            return JsonConvert.SerializeObject(obj, _setting);
         }
 
         /// <summary>
@@ -109,15 +108,5 @@ namespace Lib.helper
                 throw new Exception($"不能将json转为{type.FullName}。json数据：{json}", e);
             }
         }
-
-        /// <summary>
-        /// datatable转json
-        /// </summary>
-        /// <returns>json</returns>
-        public static string DataTableToJson(DataTable dt)
-        {
-            return JsonConvert.SerializeObject(dt, new DataTableConverter(), TimeFormat());
-        }
-
     }
 }
