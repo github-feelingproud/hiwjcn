@@ -12,7 +12,7 @@ namespace Lib.extension
     /// <summary>
     /// 基本扩展
     /// </summary>
-    public static class CommonLoggingExtension
+    public static class CommonLoggingHelper
     {
         public static void UseLogger(string name, Action<ILogger> func)
         {
@@ -30,48 +30,11 @@ namespace Lib.extension
             }
         }
 
+        public static void UseLogger(Type tp, Action<ILogger> func) =>
+            CommonLoggingHelper.UseLogger(tp.FullName, func);
+
         public static void UseLogger<T>(Action<ILogger> func) =>
-            UseLogger(typeof(T).FullName, func);
-
-        public static void AddLog__(this Exception e, string logger) =>
-            UseLogger(logger, x => x.LogError(e, e.Message));
-
-        public static void AddInfo__(this string msg, string logger) =>
-            UseLogger(logger, x => x.LogInformation(msg));
-
-        public static void AddWarning__(this string msg, string logger) =>
-            UseLogger(logger, x => x.LogWarning(msg));
-
-        public static void AddDebug__(this string msg, string logger) =>
-            UseLogger(logger, x => x.LogDebug(msg));
-
-        //缓存各种logger
-        public static readonly Dictionary<string, ILog> _str_logger_factory = new Dictionary<string, ILog>();
-        public static readonly Dictionary<Type, ILog> _type_logger_factory = new Dictionary<Type, ILog>();
-
-        public static ILog GetLogger(this string logger) =>
-            LogManager.GetLogger(logger ?? throw new ArgumentNullException($"logger name is null"));
-
-        public static ILog GetLogger(this Type logger) =>
-            LogManager.GetLogger(logger ?? throw new ArgumentNullException($"logger type is null"));
-
-        public static ILog CachedLogger(this string logger) =>
-            _str_logger_factory.GetOrSet(logger, () => logger.GetLogger());
-
-        public static ILog CachedLogger(this Type logger) =>
-            _type_logger_factory.GetOrSet(logger, () => logger.GetLogger());
-
-        public static string GetInnerExceptionAsJson(this Exception e) =>
-            Com.GetExceptionMsgJson(e);
-
-        public static List<string> GetInnerExceptionAsList(this Exception e) =>
-            Com.GetExceptionMsgList(e);
-
-        public static void DebugInfo(this Exception e) =>
-            Debug.WriteLine(e.GetInnerExceptionAsJson());
-
-        public static void DebugInfo(this string msg) =>
-            Debug.WriteLine(msg);
+            CommonLoggingHelper.UseLogger(typeof(T).FullName, func);
     }
 
     /// <summary>
@@ -79,53 +42,49 @@ namespace Lib.extension
     /// </summary>
     public static class LogExtension
     {
-        private static void Handler(Action action)
-        {
-            try
-            {
-                action.Invoke();
-            }
-            catch (Exception e)
-            {
-                e.DebugInfo();
-            }
-        }
+        public static void AddLog(this Exception e, string logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogError(e, e.Message, args));
 
-        public static void AddLog(this Exception e, string logger) =>
-            Handler(() => logger.CachedLogger().Error(e.GetInnerExceptionAsJson()));
+        public static void AddLog(this Exception e, Type logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogError(e, e.Message, args));
 
-        public static void AddLog(this Exception e, Type logger) =>
-            Handler(() => logger.CachedLogger().Error(e.GetInnerExceptionAsJson()));
+        public static void AddErrorLog(this string log, string logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogError(log, args));
 
-        public static void AddLog_(this Exception e, string logger) =>
-            Handler(() => logger.CachedLogger().Error(e.GetInnerExceptionAsJson(), e));
+        public static void AddErrorLog(this string log, Type logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogError(log, args));
 
-        public static void AddLog_(this Exception e, Type logger) =>
-            Handler(() => logger.CachedLogger().Error(e.GetInnerExceptionAsJson(), e));
+        public static void AddInfoLog(this string log, string logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogInformation(log, args));
 
-        public static void AddErrorLog(this string log, string logger) =>
-            Handler(() => logger.CachedLogger().Error(log));
+        public static void AddInfoLog(this string log, Type logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogInformation(log, args));
 
-        public static void AddErrorLog(this string log, Type logger) =>
-            Handler(() => logger.CachedLogger().Error(log));
+        public static void AddWarnLog(this string log, string logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogWarning(log, args));
 
-        public static void AddInfoLog(this string log, string logger) =>
-            Handler(() => logger.CachedLogger().Info(log));
+        public static void AddWarnLog(this string log, Type logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogWarning(log, args));
 
-        public static void AddInfoLog(this string log, Type logger) =>
-            Handler(() => logger.CachedLogger().Info(log));
+        public static void AddFatalLog(this string log, string logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogCritical(log, args));
 
-        public static void AddWarnLog(this string log, string logger) =>
-            Handler(() => logger.CachedLogger().Warn(log));
+        public static void AddFatalLog(this string log, Type logger, params object[] args) =>
+            CommonLoggingHelper.UseLogger(logger, x => x.LogCritical(log, args));
 
-        public static void AddWarnLog(this string log, Type logger) =>
-            Handler(() => logger.CachedLogger().Warn(log));
+        public static string GetInnerExceptionAsJson(this Exception e) =>
+            Com.GetExceptionMsgJson(e);
 
-        public static void AddFatalLog(this string log, string logger) =>
-            Handler(() => logger.CachedLogger().Fatal(log));
+        public static List<string> GetInnerExceptionAsList(this Exception e) =>
+            Com.GetExceptionMsgList(e);
+    }
 
-        public static void AddFatalLog(this string log, Type logger) =>
-            Handler(() => logger.CachedLogger().Fatal(log));
+    /// <summary>
+    /// 附加信息
+    /// </summary>
+    public interface IAttachExtraLogInformation
+    {
+        object AttachOrThrow();
     }
 
     /// <summary>
@@ -175,7 +134,7 @@ namespace Lib.extension
                 }
             }
 
-            var json = new
+            var data = new
             {
                 error_msg = e.GetInnerExceptionAsList(),
                 exception_type = $"异常类型：{e.GetType()?.FullName}",
@@ -184,9 +143,9 @@ namespace Lib.extension
                 extra_data = extra_data,
                 friendly_time = FriendlyTime(),
                 tips = new string[] { "建议使用json格式化工具：http://json.cn/" }
-            }.ToJson();
+            };
 
-            json.AddErrorLog(LoggerName);
+            e.AddLog(LoggerName, data);
         }
 
         /// <summary>
@@ -195,14 +154,14 @@ namespace Lib.extension
         /// <param name="log"></param>
         public static void AddBusinessInfoLog(this string log)
         {
-            var json = new
+            var data = new
             {
                 msg = log,
                 req_data = ReqData(),
                 friendly_time = FriendlyTime(),
-            }.ToJson();
+            };
 
-            json.AddInfoLog(LoggerName);
+            log.AddInfoLog(LoggerName, data);
         }
 
         /// <summary>
@@ -211,14 +170,14 @@ namespace Lib.extension
         /// <param name="log"></param>
         public static void AddBusinessWarnLog(this string log)
         {
-            var json = new
+            var data = new
             {
                 msg = log,
                 req_data = ReqData(),
                 friendly_time = FriendlyTime(),
-            }.ToJson();
+            };
 
-            json.AddWarnLog(LoggerName);
+            log.AddWarnLog(LoggerName, data);
         }
 
         /// <summary>
@@ -229,6 +188,14 @@ namespace Lib.extension
         {
             try
             {
+                using (var s = IocContext.Instance.Scope())
+                {
+                    var service = s.ResolveOptional_<IAttachExtraLogInformation>() ?? throw new Exception("无附加信息");
+
+                    var data = service.AttachOrThrow();
+                    return data;
+                }
+                /*
                 var context = HttpContext.Current;
                 if (context == null)
                 {
@@ -255,7 +222,7 @@ namespace Lib.extension
                     RequestParam = p,
                     RequestHeader = header,
                     RequestCookie = cookies
-                };
+                };*/
             }
             catch (Exception e)
             {
