@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using Lib.extension;
+﻿using Lib.core;
 using Quartz;
-using Quartz.Impl.Matchers;
-using Lib.helper;
-using Quartz.Impl;
-using Lib.core;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Lib.task
 {

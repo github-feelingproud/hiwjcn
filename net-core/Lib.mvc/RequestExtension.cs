@@ -9,37 +9,22 @@ namespace Lib.mvc
 {
     public static class RequestExtension
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        public static string GetBaseUrl(this HttpRequest request) => throw new NotImplementedException();
+        [Obsolete]
+        public static string GetBaseUrl(this HttpRequest request) => request.PathBase;
+        [Obsolete]
+        public static string GetCurrentUrl(this HttpRequest request) => request.Path;
 
-        public static string GetCurrentUrl(this HttpRequest request) => throw new NotImplementedException();
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Request"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static string MapPath(this HttpRequest Request, string path)
-        {
-            return ConvertHelper.GetString(Request.MapPath(path));
-        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="Request"></param>
         /// <returns></returns>
-        public static bool IsPost(this HttpRequest Request)
-        {
-            return Request.Method?.ToUpper() == "POST";
-        }
-        public static bool IsGet(this HttpRequest Request)
-        {
-            return Request.Method?.ToUpper() == "GET";
-        }
+        public static bool IsPost(this HttpRequest Request) =>
+            Request.Method?.ToUpper() == "POST";
+
+        public static bool IsGet(this HttpRequest Request) =>
+            Request.Method?.ToUpper() == "GET";
+
         public static bool IsAjax(this HttpRequest Request)
         {
             StringValues? data = Request.Headers["X-Requested-With"];
@@ -52,12 +37,6 @@ namespace Lib.mvc
         /// </summary>
         /// <returns></returns>
         public static string GetUrlReferrer(this HttpRequest Request) => throw new NotImplementedException();
-
-        /// <summary>
-        /// 获得请求的原始url
-        /// </summary>
-        /// <returns></returns>
-        public static string GetRawUrl(this HttpRequest Request) => throw new NotImplementedException();
 
         /// <summary>
         /// 获取ip地址，方法来自nopcommerce。计算方式比较多

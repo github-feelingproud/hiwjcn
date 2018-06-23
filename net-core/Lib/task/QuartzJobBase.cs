@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using Quartz;
-using Quartz.Impl;
-using Quartz.Impl.Matchers;
-using Lib.helper;
-using Lib.core;
+﻿using Quartz;
+using System;
 using System.Threading.Tasks;
 
 namespace Lib.task

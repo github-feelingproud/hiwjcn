@@ -10,7 +10,7 @@ namespace Lib.mvc
     public static class ResultHelper
     {
         public static IActionResult BadRequest(string msg, object data = null) =>
-            new CustomJsonResult(new _() { success = false, msg = msg, data = data });
+            new JsonResult(new _() { success = false, msg = msg, data = data }, JsonHelper._setting);
     }
 
     public static class ResultExtension
@@ -33,13 +33,5 @@ namespace Lib.mvc
         跳转SSO = -3,
         账户未验证 = -4,
         账户被冻结 = -5
-    }
-
-    /// <summary>
-    /// 解决mvc中json丢时区的问题
-    /// </summary>
-    public class CustomJsonResult : JsonResult
-    {
-        public CustomJsonResult(object data) : base(data, JsonHelper._setting) { }
     }
 }
