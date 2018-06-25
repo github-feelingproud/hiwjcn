@@ -4,15 +4,13 @@ using Lib.extension;
 using Lib.helper;
 using Lib.infrastructure.entity.auth;
 using Lib.infrastructure.service.user;
-using Lib.mvc;
-using Lib.mvc.auth;
 using Lib.mvc.user;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Lib.infrastructure.provider
+namespace Lib.mvc.auth.provider
 {
     public abstract class AuthApiServiceFromDbBase<TokenBase> :
         AuthServiceBase<TokenBase>,

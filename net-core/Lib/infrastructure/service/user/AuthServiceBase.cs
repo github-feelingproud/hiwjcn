@@ -1,20 +1,12 @@
-﻿using System;
+﻿using Lib.data.ef;
+using Lib.extension;
+using Lib.helper;
+using Lib.infrastructure.entity.auth;
+using Lib.infrastructure.extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Lib.infrastructure.entity;
-using Lib.data;
-using Lib.cache;
-using Lib.mvc;
-using Lib.helper;
-using Lib.extension;
-using System.Data.Entity;
-using Lib.core;
-using Lib.infrastructure.entity.auth;
-using Lib.data.ef;
-using Lib.infrastructure.extension;
-using Lib.infrastructure.model;
 
 namespace Lib.infrastructure.service.user
 {
