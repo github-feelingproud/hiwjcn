@@ -30,6 +30,18 @@ namespace Hiwjcn.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication("cookie")
+                .AddCookie("cookie", x =>
+                {
+                    x.Cookie = new CookieBuilder();
+                    x.Cookie.Domain = ".xx.com";
+                    x.Cookie.HttpOnly = true;
+                })
+                .AddOAuth("auth", x => 
+                {
+                    x.SaveTokens = true;
+                });
+
             new ServiceCollection();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMvc();
@@ -63,6 +75,8 @@ namespace Hiwjcn.Api
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
+            app.UseAuthentication();
+
             new LoggerFactory();
 
             loggerFactory.AddConsole();

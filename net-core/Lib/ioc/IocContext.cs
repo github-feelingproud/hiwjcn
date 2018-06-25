@@ -164,34 +164,6 @@ namespace Lib.ioc
         /// </summary>
         /// <returns></returns>
         public ILifetimeScope Scope() => this.Container.BeginLifetimeScope();
-
-        /// <summary>
-        /// 生命周期
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public T Scope<T>(Func<ILifetimeScope, T> func)
-        {
-            using (var scope = Scope())
-            {
-                return func.Invoke(scope);
-            }
-        }
-
-        /// <summary>
-        /// 生命周期
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public async Task<T> ScopeAsync<T>(Func<ILifetimeScope, Task<T>> func)
-        {
-            using (var scope = Scope())
-            {
-                return await func.Invoke(scope);
-            }
-        }
     }
 
     /*
