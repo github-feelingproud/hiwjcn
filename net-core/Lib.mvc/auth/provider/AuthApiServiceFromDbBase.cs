@@ -13,8 +13,7 @@ using System.Threading.Tasks;
 namespace Lib.mvc.auth.provider
 {
     public abstract class AuthApiServiceFromDbBase<TokenBase> :
-        AuthServiceBase<TokenBase>,
-        IAuthApi
+        AuthServiceBase<TokenBase>, IAuthApi
         where TokenBase : AuthTokenBase, new()
     {
         protected readonly ICacheProvider _cache;

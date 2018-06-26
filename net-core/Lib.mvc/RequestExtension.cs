@@ -1,5 +1,4 @@
-﻿using Lib.extension;
-using Lib.helper;
+﻿using Lib.helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;

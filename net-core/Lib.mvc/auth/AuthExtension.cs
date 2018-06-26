@@ -2,9 +2,9 @@
 using Lib.ioc;
 using Lib.mvc.auth.validation;
 using Lib.mvc.user;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace Lib.mvc.auth
 {
@@ -24,19 +24,6 @@ namespace Lib.mvc.auth
         }
 
         /// <summary>
-        /// 获取当前登录用户
-        /// </summary>
-        public static LoginUserInfo GetAuthUser(this HttpContext context, string name = null)
-        {
-            using (var x = AutofacIocContext.Instance.Scope())
-            {
-                var loginuser = x.Resolve_<ITokenValidationProvider>(name).GetLoginUserInfo(context);
-
-                return loginuser;
-            }
-        }
-
-        /// <summary>
         /// 获取bearer token
         /// </summary>
         /// <param name="context"></param>
@@ -44,7 +31,7 @@ namespace Lib.mvc.auth
         public static string GetBearerToken(this HttpContext context)
         {
             var bearer = "Bearer" + ' '.ToString();
-            var token = context.Request.Headers["Authorization"] ?? string.Empty;
+            var token = ((string)context.Request.Headers["Authorization"]) ?? string.Empty;
             if (token.StartsWith(bearer, StringComparison.OrdinalIgnoreCase))
             {
                 return token.Substring(bearer.Length);

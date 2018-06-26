@@ -1,9 +1,6 @@
 ﻿using Lib.helper;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
-using System.Net;
-using System.Runtime.Serialization;
 
 namespace Lib.mvc
 {

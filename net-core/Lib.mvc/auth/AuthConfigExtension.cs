@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Lib.mvc.auth.api;
 using Lib.mvc.auth.validation;
 using Lib.mvc.user;
 using System;
@@ -8,16 +7,6 @@ namespace Lib.mvc.auth
 {
     public static class AuthConfigExtension
     {
-        /// <summary>
-        /// 配置auth
-        /// </summary>
-        public static void AuthBasicServerConfig(this ContainerBuilder builder, Func<AuthServerConfig> serverProvider,
-            Func<LoginStatus> cookieProvider = null)
-        {
-            builder.Register(_ => serverProvider.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
-            builder.AuthConfig<AppOrWebAuthDataProvider, AuthApiFromWcf>(cookieProvider);
-        }
-
         /// <summary>
         /// 配置auth
         /// </summary>

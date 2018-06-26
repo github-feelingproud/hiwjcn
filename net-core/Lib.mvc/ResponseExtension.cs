@@ -1,6 +1,5 @@
 ﻿using Lib.helper;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.Configuration;
 
 namespace Lib.mvc

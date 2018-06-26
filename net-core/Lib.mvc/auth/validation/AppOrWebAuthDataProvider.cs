@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using Lib.mvc.auth;
+﻿using Lib.helper;
 using Lib.mvc.user;
-using System.Configuration;
-using Lib.extension;
-using Lib.helper;
+using Microsoft.AspNetCore.Http;
 
 namespace Lib.mvc.auth.validation
 {
