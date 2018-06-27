@@ -8,11 +8,11 @@ namespace Lib.mvc
     {
         public const string HTTPCONTEXT_AUTOFAC_SCOPE_KEY = "ioc.autofac.scope.key";
 
-        public static void SetAutofacScope(this HttpContext context, ILifetimeScope scope, string context_key = null)
-        {
-            context.Items[context_key ?? HTTPCONTEXT_AUTOFAC_SCOPE_KEY] = scope ??
-                throw new ArgumentNullException(nameof(scope));
-        }
+        public static IServiceProvider CurrentServiceProvider(this HttpContext context) =>
+            context.RequestServices ?? throw new Exception("无法获取当前ioc scope");
+
+        public static void SetAutofacScope(this HttpContext context, ILifetimeScope scope, string context_key = null) =>
+            context.Items[context_key ?? HTTPCONTEXT_AUTOFAC_SCOPE_KEY] = scope ?? throw new ArgumentNullException(nameof(scope));
 
         /// <summary>
         /// 获取httpcontext.item中的scope对象，需要配置httpmodule

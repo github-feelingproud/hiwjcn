@@ -1,25 +1,28 @@
 ﻿using Lib.extension;
+using Lib.ioc;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Lib.cache
 {
     public static class CacheExtension
     {
-        public static readonly string CacheKeyPrefix =
-            ConfigurationManager.AppSettings["CacheKeyPrefix"] ??
-            "Lib.Cache.DefaultKeyPrefix";
-
         /// <summary>
         /// 缓存key加前缀
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string WithCacheKeyPrefix(this string key) => $"{CacheKeyPrefix}.{key}";
+        public static string WithCacheKeyPrefix(this string key)
+        {
+            using (var s = IocContext.Instance.Scope())
+            {
+                var config = s.Resolve_<IConfiguration>();
+                var CacheKeyPrefix = config["IConfiguration"] ?? "Lib.Cache.DefaultKeyPrefix";
+                return $"{CacheKeyPrefix}.{key}";
+            }
+        }
 
         /// <summary>
         /// 设置数据，并标记为成功
