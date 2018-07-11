@@ -9,6 +9,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Lib.infrastructure.entity
 {
     /// <summary>
+    /// 制造假数据
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IMockData<T>
+    {
+        T MockData();
+    }
+
+    /// <summary>
     /// 实体基类
     /// </summary>
     [Serializable]
