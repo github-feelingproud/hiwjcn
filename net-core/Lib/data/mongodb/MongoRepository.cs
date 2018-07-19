@@ -1,5 +1,4 @@
-﻿using Lib.data.ef;
-using Lib.helper;
+﻿using Lib.helper;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -21,10 +20,10 @@ namespace Lib.data.mongodb
         {
             var set = this.Set();
 
-            set.MapReduce<Lib.mvc.user.LoginUserInfo>(
+            set.MapReduce<_>(
                 new BsonJavaScript("function(){emit(this.user_id,this.age);}"),
-                new BsonJavaScript("function(user_id,age){return Array.avg(age);}"), 
-                new MapReduceOptions<T, mvc.user.LoginUserInfo>() { });
+                new BsonJavaScript("function(user_id,age){return Array.avg(age);}"),
+                new MapReduceOptions<T, _>() { });
         }
 
         [Obsolete]
@@ -103,10 +102,7 @@ namespace Lib.data.mongodb
             return (int)(await this.Set().DeleteManyAsync(where)).DeletedCount;
         }
 
-        public void Dispose()
-        {
-            //
-        }
+        public void Dispose() { }
 
         public bool Exist(Expression<Func<T, bool>> where)
         {
@@ -162,39 +158,39 @@ namespace Lib.data.mongodb
             return list;
         }
 
-        public void PrepareIQueryable(Func<IQueryable<T>, bool> callback, bool track = false)
+        public void PrepareIQueryable(Func<IQueryable<T>, bool> callback)
         {
-            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            var q = this.Set().AsQueryable();
             callback.Invoke(q);
         }
 
-        public void PrepareIQueryable(Action<IQueryable<T>> callback, bool track = false)
+        public void PrepareIQueryable(Action<IQueryable<T>> callback)
         {
-            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            var q = this.Set().AsQueryable();
             callback.Invoke(q);
         }
 
-        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback, bool track = false)
+        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback)
         {
-            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            var q = this.Set().AsQueryable();
             await callback.Invoke(q);
         }
 
-        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback, bool track = false)
+        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback)
         {
-            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            var q = this.Set().AsQueryable();
             await callback.Invoke(q);
         }
 
-        public async Task<R> PrepareIQueryableAsync<R>(Func<IQueryable<T>, Task<R>> callback, bool track = false)
+        public async Task<R> PrepareIQueryableAsync<R>(Func<IQueryable<T>, Task<R>> callback)
         {
-            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            var q = this.Set().AsQueryable();
             return await callback.Invoke(q);
         }
 
-        public R PrepareIQueryable<R>(Func<IQueryable<T>, R> callback, bool track = false)
+        public R PrepareIQueryable<R>(Func<IQueryable<T>, R> callback)
         {
-            var q = this.Set().AsQueryable().AsQueryableTrackingOrNot(track);
+            var q = this.Set().AsQueryable();
             return callback.Invoke(q);
         }
 
