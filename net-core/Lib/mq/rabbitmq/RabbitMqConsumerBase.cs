@@ -20,7 +20,7 @@ namespace Lib.mq.rabbitmq
     public abstract class RabbitMqConsumerBase : IMessageQueueConsumer
     {
         private readonly IModel _channel;
-        private readonly EventingBasicConsumer _consumer;
+        private readonly AsyncEventingBasicConsumer _consumer;
         private readonly ExchangeTypeEnum _exchange_type;
         private readonly string _exchange_name;
         private readonly string _queue_name;
@@ -48,7 +48,8 @@ namespace Lib.mq.rabbitmq
 
             this.SetupQueue();
 
-            this._consumer = new EventingBasicConsumer(this._channel);
+            //异步消费
+            this._consumer = new AsyncEventingBasicConsumer(this._channel);
 
             this.SetUpConsumer();
 
@@ -77,7 +78,7 @@ namespace Lib.mq.rabbitmq
                 try
                 {
                     var result = await this.OnMessageReceived(sender, args);
-                    if (this._ack && result != null && result.Value)
+                    if (this._ack && (result ?? false))
                     {
                         this._channel.BasicAck_(args);
                     }
@@ -90,7 +91,7 @@ namespace Lib.mq.rabbitmq
             };
             var consumerTag = $"{Environment.MachineName}|{this._queue_name}|{this._consumer_name}";
             this._channel.BasicConsume(
-                queue: this._queue_name, noAck: !this._ack,
+                queue: this._queue_name, autoAck: this._ack,
                 consumerTag: consumerTag, consumer: this._consumer);
         }
 
@@ -101,6 +102,13 @@ namespace Lib.mq.rabbitmq
             try
             {
                 this._channel?.Close();
+            }
+            catch (Exception e)
+            {
+                e.AddErrorLog();
+            }
+            try
+            {
                 this._channel?.Dispose();
             }
             catch (Exception e)
