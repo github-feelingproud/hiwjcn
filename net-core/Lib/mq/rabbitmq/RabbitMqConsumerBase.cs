@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lib.extension;
-using Lib.helper;
-using Lib.io;
+﻿using Lib.extension;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Polly;
-using Lib.cache;
-using Lib.data;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Lib.mq.rabbitmq
 {

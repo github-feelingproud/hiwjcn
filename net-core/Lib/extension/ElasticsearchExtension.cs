@@ -17,20 +17,19 @@ namespace Lib.extension
         /// <summary>
         /// 如果有错误就抛出异常
         /// </summary>
-        /// <param name="response"></param>
-        public static T ThrowIfException<T>(this T response) where T : IResponse
+        public static T ThrowIfException<T>(this T response, string data = null) where T : IResponse
         {
             if (!response.IsValid)
             {
-                if (response.ServerError?.Error != null)
+                var msg = new
                 {
-                    var msg = $@"server errors:{response.ServerError.Error.ToJson()},debug information:{response.DebugInformation}";
-                    throw new Exception(msg);
-                }
-                if (response.OriginalException != null)
-                {
-                    throw response.OriginalException;
-                }
+                    extra_data = data,
+                    debug = response.DebugInformation,
+                    error = response.ServerError
+                }.ToJson();
+
+                var inner = response.OriginalException ?? new Exception($"{nameof(response.OriginalException)} is empty");
+                throw new Exception(msg, inner);
             }
             return response;
         }
