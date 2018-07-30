@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Lib.extension;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Web.Mvc;
-using Lib.extension;
-using Lib.mvc;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Lib.helper
 {
@@ -26,9 +23,6 @@ namespace Lib.helper
     [DataContract]
     public class PagerData<T, EXT>
     {
-        [Obsolete("不建议手动维护")]
-        public readonly Dictionary<string, string> UrlParams = new Dictionary<string, string>();
-
         /// <summary>
         /// 数据库记录总数
         /// </summary>
@@ -77,44 +71,6 @@ namespace Lib.helper
         /// </summary>
         [DataMember]
         public bool Success { get; set; } = true;
-
-        /// <summary>
-        /// 获取分页
-        /// </summary>
-        public string GetPagerHtml(Controller controller, string pageKey, int currentPage, int pageSize)
-        {
-            var url = controller.RouteData.ActionUrl();
-            return this.GetPagerHtml(url, pageKey, currentPage, pageSize, HttpContext.Current);
-        }
-
-        /// <summary>
-        /// 分页控件的html代码
-        /// </summary>
-        public string GetPagerHtml(string base_url, string pageKey, int currentPage, int pageSize, HttpContext _context = null)
-        {
-            if (!ValidateHelper.IsPlumpDict(this.UrlParams))
-            {
-                try
-                {
-                    var kv = _context.Request.QueryString.ToDict()
-                        .Where(x => ValidateHelper.IsPlumpString(x.Key) && x.Key.ToLower() != pageKey.ToLower())
-                        .ToDictionary(x => x.Key, x => ConvertHelper.GetString(x.Value));
-                    this.UrlParams.AddDict(kv);
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.Message);
-                }
-            }
-
-            return PagerHelper.GetPagerHtmlByData(
-                url: base_url,
-                pageKey: pageKey,
-                urlParams: this.UrlParams,
-                itemCount: this.ItemCount,
-                page: currentPage,
-                pageSize: pageSize);
-        }
     }
 
     /// <summary>

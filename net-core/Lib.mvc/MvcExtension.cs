@@ -15,6 +15,24 @@ namespace Lib.mvc
 {
     public static class MvcExtension
     {
+        public static string GetPagerHtml<T, EXT>(this PagerData<T, EXT> pager, Controller controller, string pageKey, int currentPage, int pageSize)
+        {
+            var p = new Dictionary<string, string>();
+            var _context = controller.HttpContext;
+
+            var kv = _context.Request.Query.ToDict().Where(x => ValidateHelper.IsPlumpString(x.Key) && x.Key.ToLower() != pageKey.ToLower()).ToDictionary(x => x.Key, x => ConvertHelper.GetString(x.Value));
+
+            p.AddDict(kv);
+
+            return PagerHelper.GetPagerHtmlByData(
+                url: _context.Request.PathBase,
+                pageKey: pageKey,
+                urlParams: p,
+                itemCount: pager.ItemCount,
+                page: currentPage,
+                pageSize: pageSize);
+        }
+
         /// <summary>
         /// 获取Area Controller Action
         /// </summary>

@@ -1,5 +1,4 @@
-﻿using Lib.mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,23 +37,23 @@ namespace Lib.helper
                 {
                     if (data == null)
                     {
-                        string path = ServerHelper.GetMapPath("~/App_Data/Lang/");
-                        if (!Directory.Exists(path)) { throw new Exception("语言目录不存在"); }
-                        var files = Directory.GetFiles(path, "*.json");
+                        //string path = ServerHelper.GetMapPath("~/App_Data/Lang/");
+                        //if (!Directory.Exists(path)) { throw new Exception("语言目录不存在"); }
+                        //var files = Directory.GetFiles(path, "*.json");
 
-                        data = new List<LangModel>();
+                        //data = new List<LangModel>();
 
-                        foreach (var f in files)
-                        {
-                            var json = File.ReadAllText(f);
-                            var m = JsonHelper.JsonToEntity<LangModel>(json);
-                            data.Add(m);
-                        }
+                        //foreach (var f in files)
+                        //{
+                        //    var json = File.ReadAllText(f);
+                        //    var m = JsonHelper.JsonToEntity<LangModel>(json);
+                        //    data.Add(m);
+                        //}
 
-                        if (data.Where(x => x.Default).Count() > 1)
-                        {
-                            throw new Exception("默认语言最多只能有一个");
-                        }
+                        //if (data.Where(x => x.Default).Count() > 1)
+                        //{
+                        //    throw new Exception("默认语言最多只能有一个");
+                        //}
                     }
                 }
             }

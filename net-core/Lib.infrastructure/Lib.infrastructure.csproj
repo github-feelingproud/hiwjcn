@@ -5,11 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Lib\Lib.csproj" />
+    <ProjectReference Include="..\Lib.entityframework\Lib.entityframework.csproj" />
   </ItemGroup>
 
 </Project>

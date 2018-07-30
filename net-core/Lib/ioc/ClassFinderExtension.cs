@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Lib.extension;
+﻿using Lib.extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;

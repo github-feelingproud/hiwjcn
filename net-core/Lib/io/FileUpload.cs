@@ -1,10 +1,9 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
+using Lib.helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
-using Lib.extension;
 
 namespace Lib.io
 {
@@ -62,7 +61,7 @@ namespace Lib.io
                 if (ValidateHelper.IsPlumpList(AllowFileType))
                 {
                     //检查文件格式
-                    if (AllowFileType.Where(x => x.ToLower() == file_extesion).Count() <= 0)
+                    if (!AllowFileType.Any(x => x.ToLower() == file_extesion))
                     {
                         model.Info = "文件格式不允许";
                         return model;

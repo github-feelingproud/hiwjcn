@@ -1,17 +1,7 @@
-﻿using Lib.data;
-using Lib.distributed;
-using Lib.events;
-using Lib.extension;
+﻿using Lib.extension;
 using Lib.ioc;
-using Lib.mq;
-using Lib.task;
-using Lib.net;
 using System;
-using Lib.distributed.akka;
-using Lib.mq.rabbitmq;
-using Lib.distributed.redis;
-using Lib.data.elasticsearch;
-using Lib.rpc;
+using System.Linq;
 
 namespace Lib.core
 {
@@ -22,95 +12,36 @@ namespace Lib.core
     {
         public static void DisposeAll()
         {
-            try
-            {
-                //startup tasks
-                LibStartUpHelper.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
-            try
-            {
-                //wcf service host
-                ServiceHostManager.Host.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
-            try
-            {
-                //akka system
-                AkkaSystemManager.Instance.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-            
-            try
-            {
-                //redis
-                RedisClientManager.Instance?.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
-            try
-            {
-                //关闭rabbitmq
-                RabbitMQClientManager.Instance?.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
-            try
-            {
-                //关闭ES搜索
-                ElasticsearchClientManager.Instance?.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
-            try
-            {
-                //zookeeper
-                //ZooKeeperClientManager.Instance?.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
-            try
-            {
-                //IOC
-                AutofacIocContext.Instance.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
-
-            try
-            {
-                //httpclient
-                HttpClientManager.Instance.Dispose();
-            }
-            catch (Exception e)
-            {
-                e.AddErrorLog();
-            }
+            if (IocContext.Instance.Inited)
+                using (var s = IocContext.Instance.Scope())
+                {
+                    //释放
+                    var coms = s.ResolveAll<IDisposeComponent>();
+                    foreach (var com in coms.OrderBy(x => x.Order))
+                    {
+                        try
+                        {
+                            com.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+                            e.AddErrorLog(com.ComponentName);
+                        }
+                    }
+                    //释放ioc中的对象
+                    var disposes = s.ResolveAll<IDisposable>();
+                    foreach (var dis in disposes)
+                    {
+                        try
+                        {
+                            dis.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+                            e.AddErrorLog();
+                        }
+                    }
+                }
 
             //回收内存
             GC.Collect();
