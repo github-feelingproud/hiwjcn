@@ -1,9 +1,7 @@
-﻿using Lib.helper;
-using Lib.ioc;
-using Lib.data;
-using System;
-using System.Linq;
+﻿using Lib.data;
 using Lib.extension;
+using Lib.ioc;
+using System;
 
 namespace Lib.events
 {
@@ -58,10 +56,7 @@ namespace Lib.events
             using (var s = IocContext.Instance.Scope())
             {
                 var subscriptions = s.ResolveAll<IConsumer<T>>();
-                foreach (var sub in subscriptions)
-                {
-                    PublishToConsumer(sub, eventMessage);
-                }
+                subscriptions.ForEach_(x => this.PublishToConsumer(x, eventMessage));
             }
         }
 
