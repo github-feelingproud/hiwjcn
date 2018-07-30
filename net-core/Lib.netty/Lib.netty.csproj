@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NEST" Version="6.2.0" />
+    <PackageReference Include="DotNetty.Handlers" Version="0.4.8" />
   </ItemGroup>
 
 </Project>
