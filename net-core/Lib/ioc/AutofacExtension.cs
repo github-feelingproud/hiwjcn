@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Autofac.Builder;
 using Autofac.Extensions.DependencyInjection;
 using Lib.helper;
 using System;

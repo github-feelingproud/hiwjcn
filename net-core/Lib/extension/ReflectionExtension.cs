@@ -31,21 +31,17 @@ namespace Lib.extension
         public static bool IsAsync(this MethodInfo method) =>
             method.ReturnType == typeof(Task) || method.ReturnType.IsGenericType_(typeof(Task<>));
 
-        public static List<Type> FindTypesByBaseType<T>(this Assembly a)
-        {
-            return a.GetTypes().Where(x => x.BaseType != null && x.BaseType == typeof(T)).ToList();
-        }
+        public static IEnumerable<Type> FindTypesByBaseType<T>(this Assembly a) =>
+            a.GetTypes().Where(x => x.BaseType == typeof(T));
 
         public static bool IsDatabaseTable(this Type t) => t.IsAssignableTo_<IDBTable>();
 
-        [Obsolete]
-        public static bool IsAssignableToGeneric_xxxxxxxxxxxxxx(this Type t, Type generic_type)
-        {
-            if (!generic_type.IsGenericType) { throw new Exception("必须是泛型"); }
-            return t.IsGenericType_(generic_type) || t.GetAllInterfaces_().Any(x => x.IsGenericType_(generic_type));
-        }
-
-        [Obsolete]
+        /// <summary>
+        /// 判断是否是泛型的子类
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="generic_type"></param>
+        /// <returns></returns>
         public static bool IsAssignableToGeneric_(this Type t, Type generic_type)
         {
             if (!generic_type.IsGenericType) { throw new Exception("必须是泛型"); }
@@ -55,10 +51,14 @@ namespace Lib.extension
             }
             else
             {
-                var cur = t;
+                var cur = t.BaseType;
                 while (true)
                 {
-                    if (t == null || t == typeof(object)) { break; }
+                    if (cur == null || cur == typeof(object))
+                    {
+                        //reach the top
+                        break;
+                    }
                     if (t.IsGenericType_(generic_type))
                     {
                         return true;
@@ -76,10 +76,7 @@ namespace Lib.extension
         /// <typeparam name="T"></typeparam>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static bool IsAssignableTo_<T>(this Type t)
-        {
-            return t.IsAssignableTo_(typeof(T));
-        }
+        public static bool IsAssignableTo_<T>(this Type t) => t.IsAssignableTo_(typeof(T));
 
         /// <summary>
         /// 是否可以赋值给
@@ -87,32 +84,16 @@ namespace Lib.extension
         /// <param name="t"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool IsAssignableTo_(this Type t, Type type)
-        {
-            return type.IsAssignableFrom(t);
-        }
+        public static bool IsAssignableTo_(this Type t, Type type) => type.IsAssignableFrom(t);
 
         /// <summary>
         /// 非抽象类，不是抽象类，不是接口
         /// </summary>
-        public static bool IsNormalClass(this Type t)
-        {
-            return t.IsClass && !t.IsAbstract && !t.IsInterface;
-        }
+        public static bool IsNormalClass(this Type t) =>
+            t.IsClass && !t.IsAbstract && !t.IsInterface;
 
-        public static Type[] GetAllNormalClass(this Assembly ass) =>
-            ass.GetTypes().Where(x => x.IsNormalClass()).ToArray();
-
-        /// <summary>
-        /// 是指定的泛型
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        public static bool IsGenericType_<T>(this Type t)
-        {
-            return t.IsGenericType_(typeof(T));
-        }
+        public static IEnumerable<Type> GetAllNormalClass(this Assembly ass) =>
+            ass.GetTypes().Where(x => x.IsNormalClass());
 
         /// <summary>
         /// 是指定的泛型

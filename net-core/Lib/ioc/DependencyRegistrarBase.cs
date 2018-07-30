@@ -1,15 +1,9 @@
 ﻿using Autofac;
-using Autofac.Extras.DynamicProxy;
-using Autofac.Integration.Mvc;
-using Castle.DynamicProxy;
 using Lib.data;
-using Lib.data.ef;
-using Lib.data.mongodb;
 using Lib.events;
 using Lib.extension;
 using Lib.helper;
 using Lib.infrastructure;
-using Lib.mvc.plugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;

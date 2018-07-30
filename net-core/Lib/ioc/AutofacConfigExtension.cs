@@ -1,20 +1,11 @@
 ﻿using Autofac;
-using Autofac.Builder;
-using Autofac.Integration.Mvc;
 using Lib.cache;
 using Lib.core;
 using Lib.helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Web;
-using Lib.extension;
-using System.Data;
-using System.Data.Entity;
 using Lib.mq;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Data;
 
 namespace Lib.ioc
 {

@@ -224,24 +224,41 @@ namespace Lib.data.mongodb
 
         public async Task<List<T>> QueryListAsync<OrderByColumnType>(Expression<Func<T, bool>> where, Expression<Func<T, OrderByColumnType>> orderby = null, bool Desc = true, int? start = null, int? count = null)
         {
-            return await Task.FromResult(this.QueryList(where, orderby, Desc, start, count));
+            var condition = Builders<T>.Filter.Empty;
+            if (where != null)
+            {
+                condition &= where;
+            }
+
+            var query = this.Set().Find(condition);
+            if (orderby != null)
+            {
+                var sort = Builders<T>.Sort.Sort_(orderby, Desc);
+                query = query.Sort(sort);
+            }
+
+            if (start != null)
+            {
+                query = query.Skip(start.Value);
+            }
+            if (count != null)
+            {
+                query = query.Take(count.Value);
+            }
+            return await query.ToListAsync();
         }
 
         public int Update(params T[] models)
         {
-            var count = 0;
             var set = this.Set();
-            foreach (var m in models)
-            {
-                var res = set.ReplaceOne(x => x._id == m._id, m);
-                count += (int)res.ModifiedCount;
-            }
-            return count;
+            return (int)models.Select(x => set.ReplaceOne(m => m._id == x._id, x).ModifiedCount).Sum();
         }
 
         public async Task<int> UpdateAsync(params T[] models)
         {
-            return await Task.FromResult(this.Update(models));
+            var set = this.Set();
+            var res = await Task.WhenAll(models.Select(x => set.ReplaceOneAsync(m => m._id == x._id, x)));
+            return (int)res.Select(x => x.ModifiedCount).Sum();
         }
 
         public void PrepareMongoCollection(Action<IMongoCollection<T>> callback)

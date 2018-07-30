@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
-using Autofac.Extras.DynamicProxy;
-using Castle.DynamicProxy;
-using System.Transactions;
-using Lib.extension;
+﻿using Lib.extension;
 using Polly;
+using System;
+using System.Linq;
+using System.Transactions;
 
 namespace Lib.ioc
 {

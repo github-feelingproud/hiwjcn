@@ -1,13 +1,10 @@
 ﻿using Autofac;
 using Lib.core;
-using Lib.extension;
 using Lib.helper;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace Lib.ioc
 {
@@ -73,8 +70,6 @@ namespace Lib.ioc
             {
                 //创建builder
                 var builder = new ContainerBuilder();
-                //注册依赖
-                new BaseDependencyRegistrar().Register(ref builder);
                 //注册额外依赖
                 if (ValidateHelper.IsPlumpList(this.ExtraRegistrars))
                 {
