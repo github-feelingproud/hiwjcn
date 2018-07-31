@@ -35,3 +35,11 @@ namespace Lib.ioc
         }
     }
 }
+
+namespace System
+{
+    public static class IocExtension____
+    {
+        //
+    }
+}

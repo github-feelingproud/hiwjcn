@@ -1,11 +1,10 @@
 ﻿using Lib.helper;
 using Lib.ioc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Lib.extension
 {
@@ -92,11 +91,12 @@ namespace Lib.extension
     /// </summary>
     public static class CommonLogExtension
     {
-        public static readonly string LoggerName =
-            ConfigurationManager.AppSettings["LoggerName"] ?? "WebLogger";
+        private static string LoggerName(IServiceScope s) =>
+            s.ResolveConfig_()["LoggerName"] ?? "WebLogger";
 
-        public static readonly bool LogFullException =
-            (ConfigurationManager.AppSettings["LogFullException"] ?? "true").ToBool();
+        private static bool LogFullException(IServiceScope s) =>
+            (s.ResolveConfig_()["LogFullException"] ?? "false").ToBool();
+
 
         private static string FriendlyTime()
         {
@@ -122,10 +122,6 @@ namespace Lib.extension
             {
                 try
                 {
-                    if (!LogFullException)
-                    {
-                        return "无法记录整个异常对象，请修改配置文件";
-                    }
                     return JsonHelper.ObjectToJson(e);
                 }
                 catch (Exception err)
@@ -134,18 +130,21 @@ namespace Lib.extension
                 }
             }
 
-            var data = new
-            {
-                error_msg = e.GetInnerExceptionAsList(),
-                exception_type = $"异常类型：{e.GetType()?.FullName}",
-                full_exception = ExceptionJson(),
-                req_data = ReqData(),
-                extra_data = extra_data,
-                friendly_time = FriendlyTime(),
-                tips = new string[] { "建议使用json格式化工具：http://json.cn/" }
-            };
 
-            e.AddLog(LoggerName, data);
+            using (var s = IocContext.Instance.Scope())
+            {
+                var data = new
+                {
+                    error_msg = e.GetInnerExceptionAsList(),
+                    exception_type = $"异常类型：{e.GetType()?.FullName}",
+                    full_exception = LogFullException(s) ? ExceptionJson() : string.Empty,
+                    req_data = ReqData(),
+                    extra_data = extra_data,
+                    friendly_time = FriendlyTime(),
+                    tips = new string[] { "建议使用json格式化工具：http://json.cn/" }
+                };
+                e.AddLog(LoggerName(s), data);
+            }
         }
 
         /// <summary>
@@ -161,7 +160,8 @@ namespace Lib.extension
                 friendly_time = FriendlyTime(),
             };
 
-            log.AddInfoLog(LoggerName, data);
+            using (var s = IocContext.Instance.Scope())
+                log.AddInfoLog(LoggerName(s), data);
         }
 
         /// <summary>
@@ -177,7 +177,8 @@ namespace Lib.extension
                 friendly_time = FriendlyTime(),
             };
 
-            log.AddWarnLog(LoggerName, data);
+            using (var s = IocContext.Instance.Scope())
+                log.AddWarnLog(LoggerName(s), data);
         }
 
         /// <summary>

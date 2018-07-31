@@ -8,7 +8,7 @@ namespace Lib.ioc
     {
         public static readonly IocContext Instance = new IocContext();
 
-        private IServiceProvider _root;
+        private IServiceProvider _root { get; set; }
 
         public IocContext SetRootContainer(IServiceProvider root)
         {
@@ -30,9 +30,6 @@ namespace Lib.ioc
             }
         }
 
-        public void Dispose()
-        {
-            //
-        }
+        public void Dispose() { }
     }
 }

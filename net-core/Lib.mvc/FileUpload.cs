@@ -1,7 +1,8 @@
 ﻿using Lib.extension;
 using Lib.helper;
+using Lib.models;
+using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -39,17 +40,12 @@ namespace Lib.io
         /// 获取一个新的文件模型
         /// </summary>
         /// <returns></returns>
-        private UpLoadFileResult PrepareNewFile(HttpPostedFile http_file, string save_path)
+        private UpLoadFileResult PrepareNewFile(IFormFile http_file, string save_path)
         {
             var model = new UpLoadFileResult();
             try
             {
-                if (http_file == null || http_file.InputStream == null)
-                {
-                    model.Info = "文件不存在";
-                    return model;
-                }
-                if (http_file.ContentLength > MaxSize)
+                if (http_file.Length > MaxSize)
                 {
                     model.Info = "文件超出大小限制";
                     return model;
@@ -87,7 +83,7 @@ namespace Lib.io
                 //文件后缀(.jpg)
                 model.FileExtension = file_extesion;
                 //文件大小
-                model.FileSize = http_file.ContentLength;
+                model.FileSize = http_file.Length;
                 //本地存储文件夹路径
                 model.DirectoryPath = save_path;
                 //浏览器相对路径
@@ -113,8 +109,9 @@ namespace Lib.io
         /// <param name="http_file"></param>
         /// <param name="save_path"></param>
         /// <returns></returns>
-        public UpLoadFileResult UploadSingleFile(HttpPostedFile http_file, string save_path)
+        public UpLoadFileResult UploadSingleFile(IFormFile http_file, string save_path)
         {
+            if (http_file == null) { throw new ArgumentNullException(nameof(http_file)); }
             //获取一个新的文件模型
             var model = PrepareNewFile(http_file, save_path);
             if (!model.SuccessPreparePath)
@@ -122,13 +119,13 @@ namespace Lib.io
                 return model;
             }
             //循环写数据，结束后关闭输入输出流
-            using (http_file.InputStream)
+            using (var s = http_file.OpenReadStream())
             {
                 using (var fs = new FileStream(model.FilePath, FileMode.Create, FileAccess.Write))
                 {
                     var buffer = new byte[1024 * 1024];
                     int len = 0;
-                    while ((len = http_file.InputStream.Read(buffer, 0, buffer.Length)) > 0)
+                    while ((len = s.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         fs.Write(buffer, 0, len);
                     }
@@ -139,75 +136,7 @@ namespace Lib.io
             model.SuccessUpload = true;
             return model;
         }
-        /// <summary>
-        /// 上传所有文件
-        /// </summary>
-        /// <returns>返回上传后的文件信息</returns>
-        public List<UpLoadFileResult> UploadAllFile(HttpFileCollection http_files, string save_path)
-        {
-            var filelist = new List<UpLoadFileResult>();
-
-            if (http_files == null || http_files.Count == 0) { return filelist; }
-
-            for (int i = 0; i < http_files.Count; ++i)
-            {
-                filelist.Add(this.UploadSingleFile(http_files[i], save_path));
-            }
-            return filelist;
-        }
         #endregion
-
-    }
-
-    /// <summary>
-    /// 上传结果
-    /// </summary>
-    public class UpLoadFileResult
-    {
-        public UpLoadFileResult()
-        {
-            SuccessUpload = SuccessPreparePath = false;
-        }
-        /// <summary>
-        /// 文件名
-        /// </summary>
-        public string FileName { get; set; }
-        /// <summary>
-        /// 原始名称
-        /// </summary>
-        public string OriginName { get; set; }
-        /// <summary>
-        /// 存储的相对路径
-        /// </summary>
-        public string WebPath { get; set; }
-        /// <summary>
-        /// 文件的扩展名
-        /// </summary>
-        public string FileExtension { get; set; }
-        /// <summary>
-        /// 存储的本地完全路径
-        /// </summary>
-        public string DirectoryPath { get; set; }
-        /// <summary>
-        /// DirectoryPath+FileName
-        /// </summary>
-        public string FilePath { get; set; }
-        /// <summary>
-        /// 文件的大小 单位【字节】
-        /// </summary>
-        public int FileSize { get; set; }
-        /// <summary>
-        /// 文件的信息
-        /// </summary>
-        public string Info { get; set; }
-        /// <summary>
-        /// 是否正确上传
-        /// </summary>
-        public bool SuccessUpload { get; set; }
-        /// <summary>
-        /// 是否准备路径成功
-        /// </summary>
-        public bool SuccessPreparePath { get; set; }
     }
 }
 

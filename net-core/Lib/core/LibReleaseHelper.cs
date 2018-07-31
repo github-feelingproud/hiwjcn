@@ -21,24 +21,12 @@ namespace Lib.core
                     {
                         try
                         {
-                            com.Dispose();
+                            //dispose by using syntax
+                            using (com) { }
                         }
                         catch (Exception e)
                         {
                             e.AddErrorLog(com.ComponentName);
-                        }
-                    }
-                    //释放ioc中的对象
-                    var disposes = s.ResolveAll<IDisposable>();
-                    foreach (var dis in disposes)
-                    {
-                        try
-                        {
-                            dis.Dispose();
-                        }
-                        catch (Exception e)
-                        {
-                            e.AddErrorLog();
                         }
                     }
                 }

@@ -9,6 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lib.entityframework\Lib.entityframework.csproj" />
+    <ProjectReference Include="..\Lib.infrastructure\Lib.infrastructure.csproj" />
     <ProjectReference Include="..\Lib\Lib.csproj" />
   </ItemGroup>
 

@@ -11,53 +11,26 @@ namespace Lib.mq.rabbitmq
     /// <summary>
     /// rabitmq，配置
     /// </summary>
-    public class RabbitMqSection : ConfigurationSection
+    public class RabbitMqSection
     {
-        public static RabbitMqSection FromSection(string name)
-        {
-            return (RabbitMqSection)ConfigurationManager.GetSection(name);
-        }
+        public static RabbitMqSection FromSection(string name) => throw new NotImplementedException();
 
-        [ConfigurationProperty(nameof(HostName), IsRequired = true)]
-        public string HostName
-        {
-            get { return this[nameof(HostName)].ToString(); }
-        }
+        public string HostName { get; set; }
 
-        [ConfigurationProperty(nameof(UserName), IsRequired = true)]
-        public string UserName
-        {
-            get { return this[nameof(UserName)].ToString(); }
-        }
+        public string UserName { get; set; }
 
-        [ConfigurationProperty(nameof(Password), IsRequired = false)]
-        public string Password
-        {
-            get { return this[nameof(Password)].ToString(); }
-        }
+        public string Password { get; set; }
 
-        [ConfigurationProperty(nameof(VirtualHost), IsRequired = false)]
-        public string VirtualHost
-        {
-            get { return this[nameof(VirtualHost)].ToString(); }
-        }
+        public string VirtualHost { get; set; }
 
         /// <summary>
         /// 默认3000ms
         /// </summary>
-        [ConfigurationProperty(nameof(ContinuationTimeout), IsRequired = false)]
-        public int ContinuationTimeout
-        {
-            get => (this[nameof(ContinuationTimeout)]?.ToString() ?? "3000").ToInt();
-        }
+        public int ContinuationTimeout { get; set; }
 
         /// <summary>
         /// 默认2000ms
         /// </summary>
-        [ConfigurationProperty(nameof(SocketTimeout), IsRequired = false)]
-        public int SocketTimeout
-        {
-            get => (this[nameof(SocketTimeout)]?.ToString() ?? "2000").ToInt();
-        }
+        public int SocketTimeout { get; set; }
     }
 }
