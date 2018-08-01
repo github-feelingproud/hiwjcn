@@ -15,9 +15,9 @@ namespace Lib.mvc.auth
         /// </summary>
         public static async Task<LoginUserInfo> GetAuthUserAsync(this HttpContext context, string name = null)
         {
-            using (var x = AutofacIocContext.Instance.Scope())
+            using (var x = IocContext.Instance.Scope())
             {
-                var loginuser = await x.Resolve_<ITokenValidationProvider>(name).GetLoginUserInfoAsync(context);
+                var loginuser = await x.Resolve_<ITokenValidationProvider>().GetLoginUserInfoAsync(context);
 
                 return loginuser;
             }
@@ -57,7 +57,7 @@ namespace Lib.mvc.auth
         /// </summary>
         public static void CookieLogin(this HttpContext context, LoginUserInfo loginuser)
         {
-            using (var s = AutofacIocContext.Instance.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
                 var loginstatus = s.Resolve_<LoginStatus>();
                 loginstatus.SetUserLogin(context, loginuser);
@@ -69,7 +69,7 @@ namespace Lib.mvc.auth
         /// </summary>
         public static void CookieLogout(this HttpContext context)
         {
-            using (var s = AutofacIocContext.Instance.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
                 var loginstatus = s.Resolve_<LoginStatus>();
                 loginstatus.SetUserLogout(context);

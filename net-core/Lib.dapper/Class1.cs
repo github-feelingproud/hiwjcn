@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lib.netty
+namespace Lib.dapper
 {
     public class Class1
     {

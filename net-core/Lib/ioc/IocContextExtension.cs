@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Net.Http;
 
 namespace Lib.ioc
 {
@@ -28,10 +29,15 @@ namespace Lib.ioc
         public static IConfiguration ResolveConfig_(this IServiceScope scope) =>
             scope.Resolve_<IConfiguration>();
 
+        public static void AddComponentDisposer<T>(this IServiceCollection collection)
+            where T : class, IDisposeComponent
+            => collection.AddSingleton<IDisposeComponent, T>();
+
         public static void UseLib(this IServiceCollection collection)
         {
             collection.AddSingleton(x => HttpClientManager.Instance.DefaultClient);
-            collection.AddSingleton<IDisposeComponent, LibCoreDisposeComponent>();
+
+            collection.AddComponentDisposer<LibCoreDisposeComponent>();
         }
     }
 }
