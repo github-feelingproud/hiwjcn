@@ -10,14 +10,14 @@ namespace Lib.core
         /// <summary>
         /// 按照asc排序释放资源
         /// </summary>
-        int Order { get; }
+        int DisposeOrder { get; }
     }
 
     public class LibCoreDisposeComponent : IDisposeComponent
     {
         public string ComponentName => "lib core";
 
-        public int Order => int.MinValue;
+        public int DisposeOrder => int.MinValue;
 
         public void Dispose()
         {

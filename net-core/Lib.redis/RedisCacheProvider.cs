@@ -1,5 +1,7 @@
 using Lib.distributed.redis;
 using Lib.extension;
+using Lib.ioc;
+using Lib.redis;
 using StackExchange.Redis;
 using System;
 
@@ -14,10 +16,10 @@ namespace Lib.cache
         private readonly RedisHelper _redis;
         private readonly IDatabase _db;
 
-        public RedisCacheProvider_()
+        public RedisCacheProvider_(RedisCacheProviderConfig config, IServiceWrapper<IConnectionMultiplexer> wrapper)
         {
-            this.CACHE_DB = (ConfigurationManager.AppSettings["RedisCacheDB"] ?? "1").ToInt(1);
-            this._redis = new RedisHelper(this.CACHE_DB);
+            this.CACHE_DB = config.DbNumber;
+            this._redis = new RedisHelper(wrapper.Value, CACHE_DB);
             this._db = this._redis.Database;
         }
 

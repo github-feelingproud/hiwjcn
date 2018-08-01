@@ -1,5 +1,6 @@
 ﻿using Lib.data;
 using Lib.helper;
+using Lib.ioc;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -16,21 +17,16 @@ namespace Lib.distributed.redis
     /// </summary>
     public class RedisHelper : SerializeBase, IDisposable
     {
-        private readonly int DbNum;
-        private readonly ConnectionMultiplexer _conn;
+        private readonly int _db;
+        private readonly IConnectionMultiplexer _conn;
 
-        public IDatabase Database => this._conn.SelectDatabase(this.DbNum);
+        public IDatabase Database => this._conn.SelectDatabase(this._db);
         public IConnectionMultiplexer Connection => this._conn;
 
-        public RedisHelper(int dbNum = 1) : this(dbNum, null) { }
-
-        public RedisHelper(int dbNum, string readWriteHosts)
+        public RedisHelper(IConnectionMultiplexer conn, int db)
         {
-            this.DbNum = dbNum;
-            this._conn = 
-                ValidateHelper.IsPlumpString(readWriteHosts) ? 
-                RedisClientManager.Instance.GetCachedClient(readWriteHosts) : 
-                RedisClientManager.Instance.DefaultClient;
+            this._conn = conn;
+            this._db = db;
         }
 
         public const string DeleteKeyWithValueScript =
@@ -378,13 +374,13 @@ namespace Lib.distributed.redis
 
         public T Do<T>(Func<IDatabase, T> func)
         {
-            var database = _conn.GetDatabase(DbNum);
+            var database = _conn.GetDatabase(_db);
             return func(database);
         }
 
         public Task<T> DoAsync<T>(Func<IDatabase, Task<T>> func)
         {
-            var database = _conn.GetDatabase(DbNum);
+            var database = _conn.GetDatabase(_db);
             return func(database);
         }
 

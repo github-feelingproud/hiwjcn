@@ -17,7 +17,7 @@ namespace Lib.core
                 {
                     //释放
                     var coms = s.ResolveAll<IDisposeComponent>();
-                    foreach (var com in coms.OrderBy(x => x.Order))
+                    foreach (var com in coms.OrderBy(x => x.DisposeOrder))
                     {
                         try
                         {

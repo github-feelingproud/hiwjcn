@@ -8,7 +8,7 @@ namespace Lib.distributed.redis
         public MQTest()
         {
             var stop = false;
-            using (var redis = new RedisHelper())
+            using (var redis = new RedisHelper(null, 1))
             {
                 var db = redis.Database;
                 while (true)

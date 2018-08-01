@@ -1,4 +1,7 @@
-﻿using Polly;
+﻿using Lib.ioc;
+using Lib.redis;
+using Polly;
+using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
 
@@ -10,7 +13,6 @@ namespace Lib.distributed.redis
     /// </summary>
     public class RedisDistributedLock : IDistributedLock
     {
-        private readonly int DB_NUM;
         private readonly string _key;
         private readonly byte[] _value;
 
@@ -19,16 +21,12 @@ namespace Lib.distributed.redis
         private readonly Policy _retryAsync = Policy.Handle<Exception>()
             .WaitAndRetryAsync(5, i => TimeSpan.FromMilliseconds(100 * 5));
 
-        public RedisDistributedLock(string key, int db = 1) : this(null, key, db)
-        { }
-
-        public RedisDistributedLock(string connection_string, string key, int db)
+        public RedisDistributedLock(RedisDistributedLockConfig config, IServiceWrapper<IConnectionMultiplexer> wrapper)
         {
-            this.DB_NUM = db;
-            this._key = key ?? throw new ArgumentNullException(nameof(key));
             this._value = Guid.NewGuid().ToByteArray();
 
-            this._redis = new RedisHelper(db, connection_string);
+            this._redis = new RedisHelper(wrapper.Value, config.DbNumber);
+            throw new NotImplementedException();
         }
 
         public async Task LockOrThrow()
