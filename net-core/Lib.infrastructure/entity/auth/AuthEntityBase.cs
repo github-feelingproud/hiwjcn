@@ -1,14 +1,12 @@
 ﻿using Lib.extension;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Configuration;
 
 namespace Lib.infrastructure.entity.auth
 {
     public static class TokenConfig
     {
-        public static readonly int TokenExpireDays =
-            (ConfigurationManager.AppSettings["AuthExpireDays"] ?? "30").ToInt(30);
+        public static int TokenExpireDays => throw new NotImplementedException();
     }
 
     [Serializable]

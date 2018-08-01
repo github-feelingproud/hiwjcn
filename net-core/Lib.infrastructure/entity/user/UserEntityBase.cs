@@ -9,7 +9,7 @@ namespace Lib.infrastructure.entity.user
     public class UserEntityBase : BaseEntity
     {
         [Column("user_name")]
-        [Index(IsUnique = true)]
+        //[Index(IsUnique = true)] dosent work in core,just figure out another way
         [StringLength(20, MinimumLength = 1, ErrorMessage = "用户名长度不匹配")]
         public virtual string UserName { get; set; }
 

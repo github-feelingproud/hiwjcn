@@ -1,4 +1,5 @@
-﻿using Lib.data;
+﻿using Autofac;
+using Lib.data;
 using Lib.events;
 using Lib.extension;
 using Lib.helper;
