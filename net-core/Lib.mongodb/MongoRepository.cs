@@ -1,4 +1,5 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
+using Lib.helper;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -9,11 +10,17 @@ using System.Threading.Tasks;
 
 namespace Lib.data.mongodb
 {
-    public class MongoRepository<T, Context> : IMongoRepository<T>
+    public class MongoRepository<T> : IMongoRepository<T>
         where T : MongoEntityBase
-        where Context : MongoContextBase, new()
     {
-        private IMongoCollection<T> Set() => new Context().Set<T>();
+        private readonly IMongoDatabase _db;
+
+        public MongoRepository(IMongoClientWrapper wrapper)
+        {
+            this._db = wrapper.Value.GetDatabase(wrapper.DatabaseName);
+        }
+
+        private IMongoCollection<T> Set() => this._db.GetCollection<T>(typeof(T).GetTableName());
 
         [Obsolete]
         public void indexfsfsd()
