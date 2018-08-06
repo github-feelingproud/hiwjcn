@@ -24,6 +24,9 @@ namespace Lib.ioc
         public static T ResolveOptional_<T>(this IServiceScope scope) =>
             scope.ServiceProvider.GetService<T>();
 
+        public static T[] ResolveAll<T>(this IServiceProvider provider) =>
+            provider.GetServices<T>().ToArray();
+
         public static T[] ResolveAll<T>(this IServiceScope scope) =>
             scope.ServiceProvider.GetServices<T>().ToArray();
 

@@ -1,15 +1,22 @@
-﻿using Qiniu.Http;
+﻿using Lib.extension;
+using Qiniu.Http;
 using Qiniu.IO;
 using Qiniu.IO.Model;
 using Qiniu.RS;
 using Qiniu.RS.Model;
 using Qiniu.Util;
 using System;
-using System.Configuration;
-using Lib.extension;
 
 namespace Lib.extra_
 {
+    public class QiniuOption
+    {
+        public virtual string QiniuAccessKey { get; set; }
+        public virtual string QiniuSecretKey { get; set; }
+        public virtual string QiniuBucketName { get; set; }
+        public virtual string QiniuBaseUrl { get; set; }
+    }
+
     /// <summary>
     /// http://developer.qiniu.com/resource/official.html#sdk
     /// </summary>
@@ -20,11 +27,11 @@ namespace Lib.extra_
         public readonly string Bucket;
         public readonly string BaseUrl;
 
-        public QiniuHelper() : this(
-            ConfigurationManager.AppSettings["QiniuAccessKey"],
-            ConfigurationManager.AppSettings["QiniuSecretKey"],
-            ConfigurationManager.AppSettings["QiniuBucketName"],
-            ConfigurationManager.AppSettings["QiniuBaseUrl"])
+        public QiniuHelper(QiniuOption option) : this(
+            option.QiniuAccessKey,
+            option.QiniuSecretKey,
+            option.QiniuBucketName,
+            option.QiniuBaseUrl)
         {
             //
         }
@@ -79,7 +86,7 @@ namespace Lib.extra_
             // 返回结果存储在result中
             var res = bm.Delete(this.Bucket, key).ThrowIfException();
         }
-        
+
         /// <summary>
         /// 上传文件到qiniu，返回访问链接
         /// </summary>

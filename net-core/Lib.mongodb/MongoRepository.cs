@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Lib.ioc;
 
 namespace Lib.data.mongodb
 {
@@ -16,8 +17,11 @@ namespace Lib.data.mongodb
     {
         private readonly IMongoDatabase _db;
 
-        public MongoRepository(IMongoClientWrapper wrapper)
+        public MongoRepository(IServiceProvider provider)
         {
+            var wrapper = provider.ResolveAll<IMongoClientWrapper>().FirstOrDefault(x => x.Name == Bootstrap.DefaultName);
+            wrapper = wrapper ?? throw new NotRegException("mongo client not registed");
+
             this._db = wrapper.Value.GetDatabase(wrapper.DatabaseName);
         }
 

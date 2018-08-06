@@ -2,14 +2,17 @@
 using Lib.distributed;
 using Lib.distributed.redis;
 using Lib.ioc;
+using Lib.helper;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using System;
 
 namespace Lib.redis
 {
-    public static class ConfigExtension
+    public static class Bootstrap
     {
+        public static readonly string DefaultName = Com.GetUUID();
+
         public static IServiceCollection UseRedis(this IServiceCollection collection, string connection_string,
             Action<IConnectionMultiplexer> config = null)
         {
@@ -27,7 +30,7 @@ namespace Lib.redis
                 pool.InternalError += (sender, e) => { e.Exception?.AddErrorLog("Redis内部错误"); };*/
                 return pool;
             };
-            collection.AddSingleton<IServiceWrapper<IConnectionMultiplexer>>(new RedisClientWrapper(string.Empty, source));
+            collection.AddSingleton<IServiceWrapper<IConnectionMultiplexer>>(new RedisClientWrapper(Bootstrap.DefaultName, source));
             collection.AddComponentDisposer<RedisComponentDisposer>();
             return collection;
         }
@@ -50,7 +53,7 @@ namespace Lib.redis
         public static IServiceCollection UseRedisDistributedLock(this IServiceCollection collection, Func<RedisDistributedLockConfig> config) =>
             collection.AddSingleton(config).AddTransient<IDistributedLock, RedisDistributedLock>();
 
-        public static IServiceCollection UseRedisFireWall(this IServiceCollection collection) => 
+        public static IServiceCollection UseRedisFireWall(this IServiceCollection collection) =>
             throw new NotImplementedException();
     }
 }

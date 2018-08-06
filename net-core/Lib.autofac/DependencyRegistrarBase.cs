@@ -1,9 +1,9 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
+using Castle.DynamicProxy;
 using Lib.data;
 using Lib.events;
 using Lib.extension;
-using Lib.helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,24 +149,6 @@ namespace Lib.ioc
         protected virtual List<Assembly> FindPluginAssemblies()
         {
             return AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.StartsWith("Hiwjcn.Plugin.")).ToList();
-        }
-
-        /// <summary>
-        /// 注册插件的控制器
-        /// </summary>
-        protected virtual void RegController(ref ContainerBuilder builder, params Assembly[] ass)
-        {
-            foreach (var a in ass)
-            {
-                //注册URL
-                builder.RegisterControllers(a);
-                //注册插件
-                var tps = this.CachedClass(a).Where(x => x.IsAssignableTo_<BasePaymentController>()).ToArray();
-                if (ValidateHelper.IsPlumpList(tps))
-                {
-                    builder.RegisterTypes(tps).As<BasePaymentController>();
-                }
-            }
         }
 
         public void Clean()

@@ -1,4 +1,5 @@
-﻿using Lib.ioc;
+﻿using Lib.helper;
+using Lib.ioc;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using System;
@@ -7,12 +8,14 @@ namespace Lib.mongodb
 {
     public static class Bootstrap
     {
+        public static readonly string DefaultName = Com.GetUUID();
+
         public static IServiceCollection UseMongoDB(this IServiceCollection collection,
             string database_name, string connection_string)
         {
             Func<IMongoClient> func = () => new MongoClient(MongoClientSettings.FromConnectionString(connection_string));
 
-            collection.AddSingleton<IMongoClientWrapper>(_ => new MongoClientWrapper(database_name, string.Empty, func));
+            collection.AddSingleton<IMongoClientWrapper>(_ => new MongoClientWrapper(database_name, Bootstrap.DefaultName, func));
             collection.AddComponentDisposer<MongoDisposer>();
 
             return collection;
