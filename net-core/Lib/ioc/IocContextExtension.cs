@@ -1,10 +1,11 @@
-﻿using Lib.core;
+﻿using Lib.cache;
+using Lib.core;
 using Lib.net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Data;
 using System.Linq;
-using System.Net.Http;
 
 namespace Lib.ioc
 {
@@ -40,12 +41,20 @@ namespace Lib.ioc
             collection.AddComponentDisposer<LibCoreDisposeComponent>();
         }
     }
-}
 
-namespace System
-{
     public static class IocExtension____
     {
-        //
+        /// <summary>
+        /// 使用数据库
+        /// </summary>
+        public static IServiceCollection UseAdoConnection(this IServiceCollection collection, Func<IDbConnection> get_opened_connction) =>
+            collection.AddTransient<IDbConnection>(_ => get_opened_connction.Invoke());
+
+        /// <summary>
+        /// 使用缓存
+        /// </summary>
+        public static IServiceCollection UseCacheProvider<T>(this IServiceCollection collection)
+            where T : class, ICacheProvider =>
+            collection.AddSingleton<ICacheProvider, T>();
     }
 }

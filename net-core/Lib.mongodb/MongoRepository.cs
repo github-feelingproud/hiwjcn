@@ -1,5 +1,6 @@
 ﻿using Lib.extension;
 using Lib.helper;
+using Lib.mongodb;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;

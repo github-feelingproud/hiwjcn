@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Lib.helper;
 using System.Collections;
+using Lib.core;
 
 namespace Lib.extension
 {
@@ -231,7 +232,7 @@ namespace Lib.extension
         /// </summary>
         public static string AsSteps(this IEnumerable<string> list, string sp = "=>")
         {
-            return (sp ?? throw new Exception(nameof(sp))).Join_(list);
+            return (sp ?? throw new ArgumentNullException(nameof(sp))).Join_(list);
         }
 
         /// <summary>
@@ -252,7 +253,7 @@ namespace Lib.extension
         {
             if (ValidateHelper.IsPlumpList(list))
             {
-                new Exception($"{prefix ?? string.Empty}{list.ToJson()}").AddErrorLog();
+                new ExceptionLogException($"{prefix ?? string.Empty}{list.ToJson()}").AddErrorLog();
             }
         }
 

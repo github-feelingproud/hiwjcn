@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Extras.DynamicProxy;
 using Lib.data;
 using Lib.events;
 using Lib.extension;

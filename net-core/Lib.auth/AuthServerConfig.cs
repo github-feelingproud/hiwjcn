@@ -30,11 +30,11 @@ namespace Lib.mvc.auth
         {
             void EnsureUrl(string url)
             {
-                var lower = (url ?? throw new Exception("auth服务器地址不能为空")).ToLower();
+                var lower = (url ?? throw new ArgumentNullException("auth服务器地址不能为空")).ToLower();
                 var prefix_ok = lower.StartsWith("http://") || lower.StartsWith("https://");
                 if (!prefix_ok)
                 {
-                    throw new Exception("服务器地址必须以http或者https开头");
+                    throw new ArgumentException("服务器地址必须以http或者https开头");
                 }
             }
 

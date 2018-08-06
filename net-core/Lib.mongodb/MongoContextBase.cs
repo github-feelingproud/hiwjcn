@@ -25,22 +25,4 @@ namespace Lib.data.mongodb
             // do nothing
         }
     }
-
-    public interface IMongoClientWrapper : Lib.ioc.IServiceWrapper<IMongoClient>
-    {
-        string DatabaseName { get; }
-    }
-
-    public class MongoClientWrapper : Lib.ioc.LazyServiceWrapperBase<IMongoClient>, IMongoClientWrapper
-    {
-        private string _db_name;
-
-        public MongoClientWrapper(string database_name, string name, Func<IMongoClient> func) : base(name, func)
-        {
-            this._db_name = database_name;
-        }
-
-        public string DatabaseName => this._db_name;
-    }
-
 }
