@@ -1,22 +1,10 @@
 ﻿using Lib.extension;
 using Lib.helper;
 using System;
-using System.Configuration;
 using System.Linq;
 
 namespace Lib.mvc.auth
 {
-    public static class WebClientConfig
-    {
-        private static readonly Lazy<string> id = new Lazy<string>(() =>
-        (ConfigurationManager.AppSettings["auth.client_id"] ?? throw new Exception("没有配置auth client id")).ToMD5().ToLower());
-        private static readonly Lazy<string> security = new Lazy<string>(() =>
-        (ConfigurationManager.AppSettings["auth.client_security"] ?? throw new Exception("没有配置auth client security")).ToMD5().ToLower());
-
-        public static string ClientID() => id.Value;
-        public static string ClientSecurity() => security.Value;
-    }
-
     public static class AuthApiControllerConfig
     {
         public const string ControllerName = "Auth";

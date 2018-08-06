@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Lib.data.ef
 {
-
     public abstract partial class EFRepositoryBase<T> : IEFRepository<T> 
         where T : class, IDBTable
     {

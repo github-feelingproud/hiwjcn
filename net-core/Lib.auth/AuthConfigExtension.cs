@@ -1,6 +1,6 @@
-﻿using Autofac;
-using Lib.mvc.auth.validation;
+﻿using Lib.mvc.auth.validation;
 using Lib.mvc.user;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace Lib.mvc.auth
@@ -10,33 +10,33 @@ namespace Lib.mvc.auth
         /// <summary>
         /// 配置auth
         /// </summary>
-        public static void AuthBasicConfig<AuthApiProvider>(this ContainerBuilder builder,
+        public static void AuthBasicConfig<AuthApiProvider>(this IServiceCollection collection,
             Func<LoginStatus> cookieProvider = null)
             where AuthApiProvider : class, IAuthApi
         {
-            builder.AuthConfig<AppOrWebAuthDataProvider, AuthApiProvider>(cookieProvider);
+            collection.AuthConfig<AppOrWebAuthDataProvider, AuthApiProvider>(cookieProvider);
         }
 
         /// <summary>
         /// 配置auth
         /// </summary>
-        public static void AuthConfig<TokenProvider, AuthApiProvider>(this ContainerBuilder builder,
+        public static void AuthConfig<TokenProvider, AuthApiProvider>(this IServiceCollection collection,
             Func<LoginStatus> cookieProvider = null)
             where TokenProvider : class, IAuthDataProvider
             where AuthApiProvider : class, IAuthApi
         {
             //从那里拿token和client信息
-            builder.RegisterType<TokenProvider>().AsSelf().As<IAuthDataProvider>();
+            collection.AddTransient<IAuthDataProvider, TokenProvider>();
             //怎么创建token scope等
-            builder.RegisterType<AuthApiProvider>().AsSelf().As<IAuthApi>();
+            collection.AddTransient<IAuthApi, AuthApiProvider>();
 
             //使用以上信息
-            builder.RegisterType<AuthBasicValidationProvider>().AsSelf().As<ITokenValidationProvider>();
+            collection.AddTransient<ITokenValidationProvider, AuthBasicValidationProvider>();
 
             //往那里写cookie
             if (cookieProvider != null)
             {
-                builder.Register(_ => cookieProvider.Invoke()).AsSelf().AsImplementedInterfaces().SingleInstance();
+                collection.AddSingleton<LoginStatus>(_ => cookieProvider.Invoke());
             }
         }
     }

@@ -1,39 +1,21 @@
 ﻿using System.Configuration;
+using System;
 
 namespace Lib.distributed.zookeeper
 {
     /// <summary>
     /// zookeeper配置
     /// </summary>
-    public class ZooKeeperConfigSection : ConfigurationSection
+    public class ZooKeeperConfigSection
     {
-        public static ZooKeeperConfigSection FromSection(string name)
-        {
-            return (ZooKeeperConfigSection)ConfigurationManager.GetSection(name);
-        }
+        public static ZooKeeperConfigSection FromSection(string name) => throw new NotImplementedException();
 
-        [ConfigurationProperty(nameof(SessionTimeOut), IsRequired = true)]
-        public int SessionTimeOut
-        {
-            get { return int.Parse(this[nameof(SessionTimeOut)].ToString()); }
-        }
+        public int SessionTimeOut { get; set; }
 
-        [ConfigurationProperty(nameof(Server), IsRequired = true)]
-        public string Server
-        {
-            get { return this[nameof(Server)].ToString(); }
-        }
+        public string Server { get; set; }
 
-        [ConfigurationProperty(nameof(MasterSlavePath), IsRequired = false)]
-        public string MasterSlavePath
-        {
-            get { return this[nameof(MasterSlavePath)].ToString(); }
-        }
+        public string MasterSlavePath { get; set; }
 
-        [ConfigurationProperty(nameof(DistributedLockPath), IsRequired = false)]
-        public string DistributedLockPath
-        {
-            get { return this[nameof(DistributedLockPath)].ToString(); }
-        }
+        public string DistributedLockPath { get; set; }
     }
 }

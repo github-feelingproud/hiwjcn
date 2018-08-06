@@ -23,32 +23,22 @@ namespace Lib.data.mongodb
         private IMongoCollection<T> Set() => this._db.GetCollection<T>(typeof(T).GetTableName());
 
         [Obsolete]
-        public void indexfsfsd()
+        public void test()
         {
             var set = this.Set();
 
+            //map reduce
             set.MapReduce<_>(
                 new BsonJavaScript("function(){emit(this.user_id,this.age);}"),
                 new BsonJavaScript("function(user_id,age){return Array.avg(age);}"),
                 new MapReduceOptions<T, _>() { });
-        }
 
-        [Obsolete]
-        public void indexsfsd()
-        {
-            var set = this.Set();
-
+            //geo index
             var index = Builders<T>.IndexKeys.Geo2D(x => x._id).Geo2DSphere(x => x._id);
             set.Indexes.CreateOne(index, new CreateIndexOptions() { Unique = true, Background = true });
-        }
 
-        [Obsolete]
-        public void Agg()
-        {
-            var set = this.Set();
-
+            //agg
             var filter = Builders<T>.Filter.Where(x => x._id == null);
-
             var group = Builders<T>.Projection.Exclude(x => x._id).Include(x => x._id);
             var agg = set.Aggregate().Match(filter).Group(group).SortByCount(x => x.AsObjectId).ToList();
         }
@@ -123,12 +113,12 @@ namespace Lib.data.mongodb
 
         public int GetCount(Expression<Func<T, bool>> where)
         {
-            return (int)this.Set().Count(where);
+            return (int)this.Set().CountDocuments(where);
         }
 
         public async Task<int> GetCountAsync(Expression<Func<T, bool>> where)
         {
-            return (int)(await this.Set().CountAsync(where));
+            return (int)(await this.Set().CountDocumentsAsync(where));
         }
 
         public T GetFirst(Expression<Func<T, bool>> where)
@@ -151,36 +141,10 @@ namespace Lib.data.mongodb
             return await this.QueryListAsync<object>(where: where, start: 0, count: count);
         }
 
-        public List<T> GetListEnsureMaxCount(Expression<Func<T, bool>> where, int count, string error_msg)
-        {
-            var list = this.GetList(where, count);
-            if (list.Count >= count) { throw new Exception(error_msg); }
-            return list;
-        }
-
-        public async Task<List<T>> GetListEnsureMaxCountAsync(Expression<Func<T, bool>> where, int count, string error_msg)
-        {
-            var list = await this.GetListAsync(where, count);
-            if (list.Count >= count) { throw new Exception(error_msg); }
-            return list;
-        }
-
-        public void PrepareIQueryable(Func<IQueryable<T>, bool> callback)
-        {
-            var q = this.Set().AsQueryable();
-            callback.Invoke(q);
-        }
-
         public void PrepareIQueryable(Action<IQueryable<T>> callback)
         {
             var q = this.Set().AsQueryable();
             callback.Invoke(q);
-        }
-
-        public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task<bool>> callback)
-        {
-            var q = this.Set().AsQueryable();
-            await callback.Invoke(q);
         }
 
         public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback)
@@ -290,9 +254,12 @@ namespace Lib.data.mongodb
 
         private ObjectId ParseID(params object[] keys)
         {
-            if (keys == null || keys.Count() != 1) { throw new Exception("mongodb只能传入一个id"); }
-            var pid = keys.FirstOrDefault()?.ToString();
-            if (!ValidateHelper.IsPlumpString(pid)) { throw new Exception("id不能为空"); }
+            var pid = keys?.FirstOrDefault()?.ToString();
+            if (!ValidateHelper.IsPlumpString(pid))
+            {
+                throw new ArgumentNullException("id不能为空");
+            }
+
             var id = new ObjectId(pid);
             return id;
         }

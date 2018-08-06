@@ -1,4 +1,5 @@
-﻿using Lib.ioc;
+﻿using Lib.extension;
+using Lib.ioc;
 using Lib.mvc.user;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
@@ -24,44 +25,24 @@ namespace Lib.mvc.auth.validation
 
         public abstract Task<LoginUserInfo> FindUserAsync(HttpContext context);
 
-        //xxxxxxxxxxxxx
-        private readonly bool xx = true;
-
         public virtual void WhenUserNotLogin(HttpContext context)
         {
-            if (xx) { return; }
-            using (var s = AutofacIocContext.Instance.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
-                s.ResolveOptional_<LoginStatus>()?.SetUserLogout(context);
+                var refresh = (s.ResolveConfig_()["refresh_login_status"] ?? "false").ToBool();
+                if (refresh)
+                    s.ResolveOptional_<LoginStatus>()?.SetUserLogout(context);
             }
         }
 
         public virtual void WhenUserLogin(HttpContext context, LoginUserInfo loginuser)
         {
-            if (xx) { return; }
-            using (var s = AutofacIocContext.Instance.Scope())
+            using (var s = IocContext.Instance.Scope())
             {
-                s.ResolveOptional_<LoginStatus>()?.SetUserLogin(context, loginuser);
+                var refresh = (s.ResolveConfig_()["refresh_login_status"] ?? "false").ToBool();
+                if (refresh)
+                    s.ResolveOptional_<LoginStatus>()?.SetUserLogin(context, loginuser);
             }
-        }
-
-        LoginUserInfo ITokenValidationProvider.GetLoginUserInfo(HttpContext context)
-        {
-            var data = context.CacheInHttpContext(this.HttpContextItemKey(), () =>
-            {
-                var loginuser = this.FindUser(context);
-                if (loginuser == null)
-                {
-                    this.WhenUserNotLogin(context);
-                }
-                else
-                {
-                    this.WhenUserLogin(context, loginuser);
-                }
-
-                return loginuser;
-            });
-            return data;
         }
 
         async Task<LoginUserInfo> ITokenValidationProvider.GetLoginUserInfoAsync(HttpContext context)

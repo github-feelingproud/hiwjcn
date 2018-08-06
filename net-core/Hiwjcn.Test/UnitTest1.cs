@@ -1,10 +1,30 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Hiwjcn.Test
 {
     public class UnitTest1
     {
+        [Fact]
+        public void rdfsafh()
+        {
+            var collection = new ServiceCollection();
+
+            collection.AddSingleton<User>(new User().MockData());
+            collection.AddSingleton<User>(new User().MockData());
+            collection.AddSingleton<User>(new User().MockData());
+
+            collection.AddSingleton<Group, Group>();
+
+
+            var provider = collection.BuildServiceProvider();
+
+            var obj = provider.GetService<Group>();
+        }
+
         public class User : Lib.infrastructure.entity.IMockData<User>
         {
             public User MockData()
@@ -31,6 +51,14 @@ namespace Hiwjcn.Test
             public virtual string Address { get; set; }
 
             public virtual DateTime CreateTime { get; set; }
+        }
+
+        public class Group
+        {
+            public Group(IServiceProvider provider)
+            {
+                var data = provider.GetServices<User>().ToList();
+            }
         }
 
         [Fact]
