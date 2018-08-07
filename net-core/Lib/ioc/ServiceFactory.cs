@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Lib.extension;
+using System;
 using System.Collections.Concurrent;
-using System.Text;
 using System.Linq;
-using Lib.extension;
-using System.Collections.Generic;
 
 namespace Lib.ioc
 {

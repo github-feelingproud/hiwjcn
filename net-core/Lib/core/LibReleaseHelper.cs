@@ -16,7 +16,7 @@ namespace Lib.core
                 using (var s = IocContext.Instance.Scope())
                 {
                     //释放
-                    var coms = s.ResolveAll<IDisposeComponent>();
+                    var coms = s.ResolveAll_<IDisposeComponent>();
                     foreach (var com in coms.OrderBy(x => x.DisposeOrder))
                     {
                         try

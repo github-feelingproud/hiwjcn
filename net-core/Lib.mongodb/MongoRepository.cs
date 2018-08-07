@@ -19,7 +19,7 @@ namespace Lib.data.mongodb
 
         public MongoRepository(IServiceProvider provider)
         {
-            var wrapper = provider.ResolveAll<IMongoClientWrapper>().FirstOrDefault(x => x.Name == Bootstrap.DefaultName);
+            var wrapper = provider.ResolveAll_<IMongoClientWrapper>().FirstOrDefault(x => x.Name == Bootstrap.DefaultName);
             wrapper = wrapper ?? throw new NotRegException("mongo client not registed");
 
             this._db = wrapper.Value.GetDatabase(wrapper.DatabaseName);

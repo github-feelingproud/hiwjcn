@@ -7,7 +7,7 @@ namespace Lib.ioc
     /// ioc中一个接口的多个实现用name来区分
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IServiceWrapper<T>
+    public interface IServiceWrapper<T> : IDisposable
     {
         string Name { get; }
 
@@ -20,8 +20,8 @@ namespace Lib.ioc
     /// <typeparam name="T"></typeparam>
     public abstract class LazyServiceWrapperBase<T> : IServiceWrapper<T>
     {
-        private readonly string _name;
-        private readonly Lazy_<T> _lazy;
+        protected readonly string _name;
+        protected readonly Lazy_<T> _lazy;
 
         public LazyServiceWrapperBase(string name, Func<T> source)
         {
@@ -32,12 +32,14 @@ namespace Lib.ioc
         public string Name => this._name;
 
         public T Value => this._lazy.Value;
+
+        public virtual void Dispose() { }
     }
 
     public abstract class ServiceWrapperBase<T> : IServiceWrapper<T>
     {
-        private readonly string _name;
-        private readonly T _value;
+        protected readonly string _name;
+        protected readonly T _value;
 
         public ServiceWrapperBase(string name, T source)
         {
@@ -48,5 +50,7 @@ namespace Lib.ioc
         public string Name => this._name;
 
         public T Value => this._value;
+
+        public virtual void Dispose() { }
     }
 }

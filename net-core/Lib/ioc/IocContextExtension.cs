@@ -18,20 +18,33 @@ namespace Lib.ioc
         public static void SetAsRootIServiceProvider(this IServiceProvider s) =>
             IocContext.Instance.SetRootContainer(s);
 
-        public static T Resolve_<T>(this IServiceScope scope) =>
-            scope.ServiceProvider.GetRequiredService<T>();
+        public static T Resolve_<T>(this IServiceProvider provider) =>
+            provider.GetRequiredService<T>();
 
-        public static T ResolveOptional_<T>(this IServiceScope scope) =>
-            scope.ServiceProvider.GetService<T>();
+        public static T ResolveOptional_<T>(this IServiceProvider provider) =>
+            provider.GetService<T>();
 
-        public static T[] ResolveAll<T>(this IServiceProvider provider) =>
+        public static T[] ResolveAll_<T>(this IServiceProvider provider) =>
             provider.GetServices<T>().ToArray();
 
-        public static T[] ResolveAll<T>(this IServiceScope scope) =>
-            scope.ServiceProvider.GetServices<T>().ToArray();
+        public static IConfiguration ResolveConfig_(this IServiceProvider provider) =>
+            provider.Resolve_<IConfiguration>();
 
+        //-------------------------------------------------------------------------
+
+        public static T Resolve_<T>(this IServiceScope scope) =>
+            scope.ServiceProvider.Resolve_<T>();
+        
+        public static T ResolveOptional_<T>(this IServiceScope scope) =>
+            scope.ServiceProvider.ResolveOptional_<T>();
+        
+        public static T[] ResolveAll_<T>(this IServiceScope scope) =>
+            scope.ServiceProvider.ResolveAll_<T>();
+        
         public static IConfiguration ResolveConfig_(this IServiceScope scope) =>
-            scope.Resolve_<IConfiguration>();
+            scope.ServiceProvider.ResolveConfig_();
+
+        //-----------------------------------------------------------------------------
 
         public static void AddComponentDisposer<T>(this IServiceCollection collection)
             where T : class, IDisposeComponent

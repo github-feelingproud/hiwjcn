@@ -55,7 +55,7 @@ namespace Lib.events
         {
             using (var s = IocContext.Instance.Scope())
             {
-                var subscriptions = s.ResolveAll<IConsumer<T>>();
+                var subscriptions = s.ResolveAll_<IConsumer<T>>();
                 subscriptions.ForEach_(x => this.PublishToConsumer(x, eventMessage));
             }
         }
