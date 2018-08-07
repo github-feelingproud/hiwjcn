@@ -1,72 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using Hiwjcn.Api.Controllers;
+﻿using Hiwjcn.Api.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace Hiwjcn.Api
 {
     public class Startup
     {
-        public static IContainer ioc_container;
+        private IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
-            //Microsoft.Extensions.Caching.Distributed.IDistributedCache
+            var builder = new ConfigurationBuilder();
+            builder.AddJsonFile(Path.Combine(env.ContentRootPath, "appsettings.json"));
+            this.Configuration = builder.Build();
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication("cookie")
-                .AddCookie("cookie", x =>
-                {
-                    x.Cookie = new CookieBuilder();
-                    x.Cookie.Domain = ".xx.com";
-                    x.Cookie.HttpOnly = true;
-                })
-                .AddOAuth("auth", x => 
-                {
-                    x.SaveTokens = true;
-                });
+            //new ServiceCollection();
+            //解决中文被编码
+            services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
-            new ServiceCollection();
+
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMvc();
 
-            services.AddDbContext<ffasdfasdgdsafa>();
+            //services.AddDbContext<EntityDB>();
 
-            var builder = new ContainerBuilder();
-
-            // Register dependencies, populate the services from
-            // the collection, and build the container. If you want
-            // to dispose of the container at the end of the app,
-            // be sure to keep a reference to it as a property or field.
-            //
-            // Note that Populate is basically a foreach to add things
-            // into Autofac that are in the collection. If you register
-            // things in Autofac BEFORE Populate then the stuff in the
-            // ServiceCollection can override those things; if you register
-            // AFTER Populate those registrations can override things
-            // in the ServiceCollection. Mix and match as needed.
-            builder.Populate(services);
-
-            Startup.ioc_container = builder.Build();
-
-            //services.AddAutofac();
-            return new AutofacServiceProvider(Startup.ioc_container);
+            return services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,13 +48,12 @@ namespace Hiwjcn.Api
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            app.UseAuthentication();
-
-            new LoggerFactory();
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            //new LoggerFactory();
 
             loggerFactory.AddConsole();
-            //loggerFactory.AddLog4Net("log4net.config");
-            loggerFactory.CreateLogger("").LogInformation("");
+            //loggerFactory.AddLog4Net(Path.Combine(env.ContentRootPath, "log4net.config"), watch: true);
+            //loggerFactory.CreateLogger("").LogInformation("");
 
             if (env.IsDevelopment())
             {

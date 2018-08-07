@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Hiwjcn.Api.Models;
-using Microsoft.EntityFrameworkCore;
-using System.ServiceModel;
-using System.IO;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp.Drawing.Pens;
-using SixLabors.ImageSharp.Drawing.Brushes;
-using SixLabors.ImageSharp;
+﻿using Hiwjcn.Api.Models;
 using Microsoft.AspNetCore.Http;
-using Autofac;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Text;
+using Lib.extension;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Hiwjcn.Api.Controllers
 {
-    public class ffasdfasdgdsafa : DbContext
+    public class EntityDB : DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -29,18 +21,19 @@ namespace Hiwjcn.Api.Controllers
 
             base.OnConfiguring(optionsBuilder);
         }
-
-    }
-    public class ServiceClient<T> : ClientBase<T>, IDisposable where T : class
-    {
-
     }
 
-    public class xx : ActionFilterAttribute
+    public class LoginFilterAttribute : ActionFilterAttribute
     {
-        public override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            return base.OnActionExecutionAsync(context, next);
+            if (new Random((int)DateTime.Now.Ticks).Choice(new bool[] { true, false }))
+            {
+                context.HttpContext.Response.ContentType = "text/plain; charset=utf-8";
+                await context.HttpContext.Response.WriteAsync("验证前");
+            }
+            else
+                await next.Invoke();
         }
     }
 
@@ -49,15 +42,10 @@ namespace Hiwjcn.Api.Controllers
         public HomeController(IHttpContextAccessor _context)
         {
             var context = _context.HttpContext;
-
-            using (var s = Startup.ioc_container.BeginLifetimeScope())
-            {
-                var data = s.Resolve<IHttpContextAccessor>();
-            }
-
             //HttpContext.RequestServices.GetService(null);
         }
 
+        [LoginFilter]
         public IActionResult Index()
         {
             return View();

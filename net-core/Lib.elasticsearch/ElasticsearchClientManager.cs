@@ -3,7 +3,6 @@ using Lib.core;
 using Lib.extension;
 using Nest;
 using System;
-using System.Configuration;
 using System.Linq;
 
 namespace Lib.data.elasticsearch
@@ -17,10 +16,7 @@ namespace Lib.data.elasticsearch
 
         public override string DefaultKey
         {
-            get
-            {
-                return ConfigurationManager.ConnectionStrings["ES"]?.ConnectionString;
-            }
+            get => throw new NotImplementedException();
         }
 
         public override bool CheckClient(ConnectionSettings ins)

@@ -1,25 +1,41 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.6.2" />
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.1" />
-    <PackageReference Include="Ical.Net" Version="4.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="2.0.2" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="6.10.5" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0002" />
-    <PackageReference Include="System.Drawing.Common" Version="4.5.0-preview1-26216-02" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.0-preview1-26228-01" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="2.2.4" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lib.auth\Lib.auth.csproj" />
+    <ProjectReference Include="..\Lib.dapper\Lib.dapper.csproj" />
+    <ProjectReference Include="..\Lib.elasticsearch\Lib.elasticsearch.csproj" />
+    <ProjectReference Include="..\Lib.entityframework\Lib.entityframework.csproj" />
+    <ProjectReference Include="..\Lib.images\Lib.images.csproj" />
+    <ProjectReference Include="..\Lib.infrastructure\Lib.infrastructure.csproj" />
+    <ProjectReference Include="..\Lib.mongodb\Lib.mongodb.csproj" />
+    <ProjectReference Include="..\Lib.mvc\Lib.mvc.csproj" />
+    <ProjectReference Include="..\Lib.netty\Lib.netty.csproj" />
+    <ProjectReference Include="..\Lib.quartz\Lib.quartz.csproj" />
+    <ProjectReference Include="..\Lib.rabbitmq\Lib.rabbitmq.csproj" />
+    <ProjectReference Include="..\Lib.redis\Lib.redis.csproj" />
+    <ProjectReference Include="..\Lib.tools\Lib.tools.csproj" />
+    <ProjectReference Include="..\Lib.zookeeper\Lib.zookeeper.csproj" />
+    <ProjectReference Include="..\Lib\Lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

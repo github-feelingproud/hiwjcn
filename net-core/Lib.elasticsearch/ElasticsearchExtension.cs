@@ -1,14 +1,12 @@
 ﻿using Elasticsearch.Net;
+using Lib.data.elasticsearch;
 using Lib.helper;
 using Nest;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
-using Lib.core;
 using System.Threading.Tasks;
-using Lib.data.elasticsearch;
 
 namespace Lib.extension
 {

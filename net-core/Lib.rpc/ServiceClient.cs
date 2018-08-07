@@ -1,7 +1,7 @@
-﻿using Castle.DynamicProxy;
+﻿using Castle.Core.Interceptor;
+using Castle.DynamicProxy;
 using Lib.extension;
 using System;
-using System.Configuration;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Threading.Tasks;
@@ -31,7 +31,7 @@ namespace Lib.rpc
                 MaxReceivedMessageSize = (ConfigurationManager.AppSettings["WCF.MaxReceivedMessageSize"] ?? "2147483647").ToInt(null),
                 ReceiveTimeout = TimeSpan.FromSeconds((ConfigurationManager.AppSettings["WCF.ReceiveTimeoutSecond"] ?? "30").ToInt(null)),
                 SendTimeout = TimeSpan.FromSeconds((ConfigurationManager.AppSettings["WCF.SendTimeoutSecond"] ?? "30").ToInt(null))
-            } : throw new Exception("暂不支持"), new EndpointAddress(url))
+            } : throw new NotSupportedException("暂不支持"), new EndpointAddress(url))
         {
             //with default config
         }
@@ -50,9 +50,6 @@ namespace Lib.rpc
 
         private readonly object _create_proxy_lock = new object();
 
-        [Obsolete("无法代理channel，方法没有实现")]
-        public bool UseProxy { get; set; } = false;
-
         /// <summary>
         /// 接口实例
         /// </summary>
@@ -60,7 +57,8 @@ namespace Lib.rpc
         {
             get
             {
-                if (this.UseProxy)
+                var UseProxy = false;
+                if (UseProxy)
                 {
                     if (this._ins == null)
                     {

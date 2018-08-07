@@ -59,7 +59,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lib.autofac", "Lib.autofac\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lib.dapper", "Lib.dapper\Lib.dapper.csproj", "{710ED0FD-0240-4FC3-B356-EDC433286107}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib.auth", "Lib.auth\Lib.auth.csproj", "{8111E933-71BA-4745-BBBE-4E60C56551A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lib.auth", "Lib.auth\Lib.auth.csproj", "{8111E933-71BA-4745-BBBE-4E60C56551A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

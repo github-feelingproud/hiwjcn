@@ -3,6 +3,7 @@ using Lib.helper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Lib.data.ef;
 
 namespace Lib.entityframework
 {
@@ -17,6 +18,12 @@ namespace Lib.entityframework
             where T : DbContext
         {
             collection.AddTransient<IServiceWrapper<T>>(_ => new DbContextWrapper<T>(Bootstrap.DefaultName, func));
+            return collection;
+        }
+
+        public static IServiceCollection UseEFRepository(this IServiceCollection collection, Type repoType)
+        {
+            collection.AddTransient(typeof(IEFRepository<>), repoType);
             return collection;
         }
     }
