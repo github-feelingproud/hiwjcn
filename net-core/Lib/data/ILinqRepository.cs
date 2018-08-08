@@ -25,6 +25,5 @@ namespace Lib.data
         /// 可以拿到返回值
         /// </summary>
         Task<R> PrepareIQueryableAsync<R>(Func<IQueryable<T>, Task<R>> callback);
-
     }
 }
