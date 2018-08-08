@@ -1,7 +1,6 @@
-﻿using Lib.ioc;
-using System;
+﻿using System;
 
-namespace Lib.core
+namespace Lib.ioc
 {
     public interface IDisposeComponent : IDisposable
     {
@@ -15,16 +14,18 @@ namespace Lib.core
 
     public class LibCoreDisposeComponent : IDisposeComponent
     {
+        public LibCoreDisposeComponent(IServiceProvider provider)
+        {
+            //
+        }
+
         public string ComponentName => "lib core";
 
         public int DisposeOrder => int.MinValue;
 
         public void Dispose()
         {
-            using (var s = IocContext.Instance.Scope())
-            {
-                //
-            }
+            //
         }
     }
 }

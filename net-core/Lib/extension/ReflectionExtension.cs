@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Lib.data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
-using Lib.data;
+using System.Threading.Tasks;
 
 namespace Lib.extension
 {
@@ -103,7 +102,7 @@ namespace Lib.extension
         /// <returns></returns>
         public static bool IsGenericType_(this Type t, Type tt)
         {
-            if (!tt.IsGenericType) { throw new Exception("传入参数必须是泛型"); }
+            if (!tt.IsGenericType) { throw new ArgumentException("传入参数必须是泛型"); }
             return t.IsGenericType && t.GetGenericTypeDefinition() == tt;
         }
 

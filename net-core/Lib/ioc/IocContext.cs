@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Lib.core;
+using Lib.extension;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 
@@ -30,6 +32,32 @@ namespace Lib.ioc
             }
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            if (!this.Inited)
+                return;
+
+            //dispose single instances
+            using (var s = this.Scope())
+            {
+                //释放
+                var coms = s.ResolveAll_<IDisposeComponent>();
+                foreach (var com in coms.OrderBy(x => x.DisposeOrder))
+                {
+                    try
+                    {
+                        //dispose by using syntax
+                        using (com) { }
+                    }
+                    catch (Exception e)
+                    {
+                        e.AddErrorLog(com.ComponentName);
+                    }
+                }
+            }
+
+            //回收内存
+            GC.Collect();
+        }
     }
 }

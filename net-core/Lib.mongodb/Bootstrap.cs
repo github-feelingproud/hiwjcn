@@ -56,7 +56,7 @@ namespace Lib.mongodb
 
         public void Dispose()
         {
-            foreach (var c in this._clients)
+            foreach (var m in this._clients)
             {
                 try
                 {

@@ -1,5 +1,4 @@
 ﻿using Lib.cache;
-using Lib.core;
 using Lib.net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
