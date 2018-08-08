@@ -1,5 +1,4 @@
-﻿using Lib.extension;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Lib.infrastructure.entity.auth

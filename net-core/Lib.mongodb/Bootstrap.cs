@@ -1,8 +1,11 @@
-﻿using Lib.helper;
+﻿using Lib.extension;
+using Lib.helper;
 using Lib.ioc;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lib.mongodb
 {
@@ -40,13 +43,30 @@ namespace Lib.mongodb
 
     public class MongoDisposer : Lib.core.IDisposeComponent
     {
+        private readonly List<IMongoClientWrapper> _clients;
+
+        public MongoDisposer(IServiceProvider provider)
+        {
+            this._clients = provider.ResolveAll_<IMongoClientWrapper>().ToList();
+        }
+
         public string ComponentName => "mongodb";
 
         public int DisposeOrder => 1;
 
         public void Dispose()
         {
-            //do nothing
+            foreach (var c in this._clients)
+            {
+                try
+                {
+                    //do nothing
+                }
+                catch (Exception e)
+                {
+                    e.AddErrorLog();
+                }
+            }
         }
     }
 }
