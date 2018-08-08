@@ -11,7 +11,7 @@ namespace Lib.entityframework
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="Context"></typeparam>
-    public class EFRepositoryFromContext<T, Context> : EFRepositoryBase<T>
+    public abstract class EFRepositoryFromContext<T, Context> : EFRepositoryBase<T>
         where T : class, IDBTable
         where Context : DbContext, new()
     {

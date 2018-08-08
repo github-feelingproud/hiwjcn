@@ -13,21 +13,21 @@ namespace Lib.entityframework
     public class EFRepositoryFromIOC<T> : EFRepositoryBase<T>
         where T : class, IDBTable
     {
-        private readonly IEFContext _context;
+        private readonly DbContext _context;
 
-        public EFRepositoryFromIOC(IEFContext context)
+        public EFRepositoryFromIOC(DbContext context)
         {
             this._context = context;
         }
 
         public override void PrepareSession(Action<DbContext> callback)
         {
-            callback.Invoke(this._context.Value);
+            callback.Invoke(this._context);
         }
 
         public override async Task PrepareSessionAsync(Func<DbContext, Task> callback)
         {
-            await callback.Invoke(this._context.Value);
+            await callback.Invoke(this._context);
         }
 
         public override void Dispose()

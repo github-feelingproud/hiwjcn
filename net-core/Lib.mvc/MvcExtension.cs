@@ -47,13 +47,15 @@ namespace Lib.mvc
         /// <summary>
         /// 设置请求ID
         /// </summary>
-        public static void SetNewRequestID(this HttpContext context) => context.Items["req_guid"] = Com.GetUUID();
+        public static void SetNewRequestID(this HttpContext context) => 
+            context.Items["req_guid"] = Com.GetUUID();
 
         /// <summary>
         /// 获取请求ID
         /// </summary>
         /// <returns></returns>
-        public static string GetRequestID(this HttpContext context) => ConvertHelper.GetString(context.Items["req_guid"]);
+        public static string GetRequestID(this HttpContext context) => 
+            ConvertHelper.GetString(context.Items["req_guid"]);
 
         /// <summary>
         /// 获取类似/home/index的url
@@ -92,12 +94,6 @@ namespace Lib.mvc
         public static Dictionary<string, string> PostAndGet(this HttpContext context) =>
             context.QueryStringToDict().AddDict(context.PostToDict());
 
-        /*
-            var dict = context.Request.Form.ToDict();
-            dict = dict.AddDict(context.Request.QueryString.ToDict());
-            return dict;
-             */
-
         /// <summary>
         /// get数据
         /// </summary>
@@ -114,7 +110,7 @@ namespace Lib.mvc
         public static Dictionary<string, string> PostToDict(this HttpContext context) =>
             context.Request.Form.ToDict();
 
-        public static Dictionary<string, string> ToDict(this IEnumerable<KeyValuePair<string, StringValues>> data)
-            => data.ToDictionary(x => x.Key, x => (string)x.Value);
+        public static Dictionary<string, string> ToDict(this IEnumerable<KeyValuePair<string, StringValues>> data) => 
+            data.ToDictionary(x => x.Key, x => (string)x.Value);
     }
 }

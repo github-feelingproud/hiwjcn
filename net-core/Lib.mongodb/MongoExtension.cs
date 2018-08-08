@@ -3,11 +3,12 @@ using MongoDB.Driver;
 using System;
 using System.Linq.Expressions;
 
-namespace Lib.data.mongodb
+namespace Lib.mongodb
 {
     public static class MongoExtension
     {
-        public static SortDefinition<T> Sort_<T, SortType>(this SortDefinitionBuilder<T> builder, Expression<Func<T, SortType>> field, bool desc)
+        public static SortDefinition<T> Sort_<T, SortType>(this SortDefinitionBuilder<T> builder, 
+            Expression<Func<T, SortType>> field, bool desc)
         {
             if (field.Body is MemberExpression exp)
             {
@@ -23,7 +24,7 @@ namespace Lib.data.mongodb
             }
             else
             {
-                throw new Exception("不支持的排序lambda表达式");
+                throw new NotSupportedException("不支持的排序lambda表达式");
             }
         }
 
@@ -35,6 +36,5 @@ namespace Lib.data.mongodb
             var range = PagerHelper.GetQueryRange(page, pagesize);
             return finder.Skip(range.skip).Take(range.take);
         }
-
     }
 }

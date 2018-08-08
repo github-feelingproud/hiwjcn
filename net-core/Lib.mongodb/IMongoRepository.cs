@@ -1,11 +1,12 @@
-﻿using Lib.helper;
+﻿using Lib.data;
+using Lib.helper;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Lib.data.mongodb
+namespace Lib.mongodb
 {
     public interface IMongoRepository<T> : ILinqRepository<T>, IRepository<T>
         where T : MongoEntityBase

@@ -1,6 +1,5 @@
 ﻿using Lib.extension;
 using Lib.helper;
-using Lib.mongodb;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -8,20 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Lib.ioc;
 
-namespace Lib.data.mongodb
+namespace Lib.mongodb
 {
     public class MongoRepository<T> : IMongoRepository<T>
         where T : MongoEntityBase
     {
         private readonly IMongoDatabase _db;
 
-        public MongoRepository(IServiceProvider provider)
+        public MongoRepository(IMongoClientWrapper wrapper)
         {
-            var wrapper = provider.ResolveAll_<IMongoClientWrapper>().FirstOrDefault(x => x.Name == Bootstrap.DefaultName);
-            wrapper = wrapper ?? throw new NotRegException("mongo client not registed");
-
             this._db = wrapper.Value.GetDatabase(wrapper.DatabaseName);
         }
 
@@ -103,8 +98,6 @@ namespace Lib.data.mongodb
             where = where ?? throw new ArgumentNullException(nameof(where));
             return (int)(await this.Set().DeleteManyAsync(where)).DeletedCount;
         }
-
-        public void Dispose() { }
 
         public bool Exist(Expression<Func<T, bool>> where)
         {
@@ -260,10 +253,9 @@ namespace Lib.data.mongodb
         private ObjectId ParseID(params object[] keys)
         {
             var pid = keys?.FirstOrDefault()?.ToString();
+
             if (!ValidateHelper.IsPlumpString(pid))
-            {
                 throw new ArgumentNullException("id不能为空");
-            }
 
             var id = new ObjectId(pid);
             return id;
@@ -280,5 +272,7 @@ namespace Lib.data.mongodb
             var id = ParseID(keys);
             return await this.Set().Find(x => x._id == id).FirstOrDefaultAsync();
         }
+
+        public virtual void Dispose() { }
     }
 }

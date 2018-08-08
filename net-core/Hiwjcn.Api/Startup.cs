@@ -1,11 +1,10 @@
 ﻿using Hiwjcn.Api.Controllers;
+using Lib.entityframework;
+using Lib.mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
@@ -32,13 +31,14 @@ namespace Hiwjcn.Api
             //new ServiceCollection();
             //解决中文被编码
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
-
-
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //use httpcontext
+            services.AddHttpContextAccessor_();
+            //use ef
+            services.UseEF<EntityDB>().UseEFRepositoryFromIoc();
+            //use mvc
             services.AddMvc();
 
-            //services.AddDbContext<EntityDB>();
-
+            //finally,build service provider
             return services.BuildServiceProvider();
         }
 

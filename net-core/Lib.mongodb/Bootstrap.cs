@@ -1,5 +1,4 @@
 ﻿using Lib.extension;
-using Lib.helper;
 using Lib.ioc;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -9,21 +8,34 @@ using System.Linq;
 
 namespace Lib.mongodb
 {
-    public static class Bootstrap
+    public static class MongoBootstrap
     {
-        public static readonly string DefaultName = Com.GetUUID();
-
         public static IServiceCollection UseMongoDB(this IServiceCollection collection,
             string database_name, string connection_string)
         {
             Func<IMongoClient> func = () => new MongoClient(MongoClientSettings.FromConnectionString(connection_string));
 
-            collection.AddSingleton<IMongoClientWrapper>(_ => new MongoClientWrapper(database_name, Bootstrap.DefaultName, func));
+            collection.AddSingleton<IMongoClientWrapper>(_ => new MongoClientWrapper(database_name, string.Empty, func));
             collection.AddComponentDisposer<MongoDisposer>();
 
             return collection;
         }
+
+        public static IServiceCollection UseMongoRepositoryFromIoc(this IServiceCollection collection) =>
+            collection.UseMongoRepository(typeof(MongoRepository<>));
+
+        public static IServiceCollection UseMongoRepository(this IServiceCollection collection, Type repoType)
+        {
+            if (repoType == null)
+                throw new ArgumentNullException(nameof(repoType));
+            if (!repoType.IsGenericType)
+                throw new ArgumentException("mongo repository type must be generic type");
+
+            collection.AddTransient(typeof(IMongoRepository<>), repoType);
+            return collection;
+        }
     }
+
     public interface IMongoClientWrapper : Lib.ioc.IServiceWrapper<IMongoClient>
     {
         string DatabaseName { get; }
@@ -41,7 +53,7 @@ namespace Lib.mongodb
         public string DatabaseName => this._db_name;
     }
 
-    public class MongoDisposer : Lib.core.IDisposeComponent
+    public class MongoDisposer : IDisposeComponent
     {
         private readonly List<IMongoClientWrapper> _clients;
 

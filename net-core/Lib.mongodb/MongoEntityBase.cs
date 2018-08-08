@@ -1,7 +1,8 @@
-﻿using MongoDB.Bson;
+﻿using Lib.data;
+using MongoDB.Bson;
 using System;
 
-namespace Lib.data.mongodb
+namespace Lib.mongodb
 {
     [Serializable]
     public abstract class MongoEntityBase : IDBTable
