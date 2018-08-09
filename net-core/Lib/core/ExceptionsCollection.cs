@@ -12,6 +12,18 @@ namespace Lib.core
     }
 
     [Serializable]
+    public class InstanceDeadException : Exception
+    {
+        public InstanceDeadException(string msg) : base(msg) { }
+    }
+
+    [Serializable]
+    public class NotExistException : Exception
+    {
+        public NotExistException(string msg) : base(msg) { }
+    }
+
+    [Serializable]
     public class SourceNotExistException : Exception
     {
         public SourceNotExistException(string msg) : base(msg) { }
@@ -45,5 +57,17 @@ namespace Lib.core
     public class ExceptionLogException : Exception
     {
         public ExceptionLogException(string msg) : base(msg) { }
+    }
+
+    [Serializable]
+    public class NoPrimaryKeyException : Exception
+    {
+        public NoPrimaryKeyException(string msg) : base(msg) { }
+    }
+
+    [Serializable]
+    public class NoValidFieldsException : Exception
+    {
+        public NoValidFieldsException(string msg) : base(msg) { }
     }
 }

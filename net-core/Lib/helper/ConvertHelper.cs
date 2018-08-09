@@ -230,7 +230,7 @@ namespace Lib.helper
         #region 图片转换
         public static byte[] BitmapToBytes(Bitmap bm, ImageFormat format = null)
         {
-            if (bm == null) { throw new Exception("bitmap为空"); }
+            if (bm == null) { throw new ArgumentException("bitmap为空"); }
             if (format == null) { format = ImageFormat.Png; }
 
             using (var ms = new MemoryStream())
@@ -243,9 +243,8 @@ namespace Lib.helper
         public static Bitmap BytesToBitmap(byte[] buffer)
         {
             if (!ValidateHelper.IsPlumpList(buffer))
-            {
-                throw new Exception("bytes is null");
-            }
+                throw new ArgumentException("bytes is null");
+
             using (var ms = new MemoryStream())
             {
                 ms.Write(buffer, 0, buffer.Length);
@@ -313,7 +312,9 @@ Console.WriteLine(Convert.ToBase64String(buffer)); //这是把字节数组当作
         /// <returns></returns>
         public static byte[] StreamToBytes(Stream stream)
         {
-            if (stream == null || !stream.CanRead) { throw new Exception("流为空，或者不可读"); }
+            if (stream == null || !stream.CanRead)
+                throw new ArgumentException("流为空，或者不可读");
+
             if (stream.CanSeek)
             {
                 byte[] bytes = new byte[stream.Length];

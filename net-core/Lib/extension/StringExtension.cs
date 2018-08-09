@@ -29,7 +29,7 @@ namespace Lib.extension
         {
             if ((s ?? throw new ArgumentNullException(nameof(s))).ToArray().Contains(' '))
             {
-                throw new Exception(msg ?? $"{s}存在空字符");
+                throw new ArgumentException(msg ?? $"{s}存在空字符");
             }
             return s;
         }
@@ -75,7 +75,7 @@ namespace Lib.extension
             var sp = email.Split('@');
             if (sp.Length != 2 || !ValidateHelper.IsAllPlumpString(sp[0], sp[1]))
             {
-                throw new Exception("邮件格式错误");
+                throw new ArgumentException("邮件格式错误");
             }
             return (sp[0], sp[1]);
         }

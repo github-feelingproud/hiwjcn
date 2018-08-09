@@ -1,4 +1,5 @@
-﻿using Lib.helper;
+﻿using Lib.core;
+using Lib.helper;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
@@ -103,7 +104,7 @@ namespace System
         {
             if (!this.Success)
             {
-                throw new Exception(this.ErrorMsg ?? $"{nameof(ResultMsg)}默认错误信息");
+                throw new MsgException(this.ErrorMsg ?? $"{nameof(ResultMsg)}默认错误信息");
             }
         }
 
@@ -115,7 +116,7 @@ namespace System
 
         public void SetErrorMsg(string msg)
         {
-            if (!ValidateHelper.IsPlumpString(msg)) { throw new Exception("错误信息不能为空"); }
+            if (!ValidateHelper.IsPlumpString(msg)) { throw new ArgumentException("错误信息不能为空"); }
             this.ErrorMsg = msg;
             this.Success = false;
         }

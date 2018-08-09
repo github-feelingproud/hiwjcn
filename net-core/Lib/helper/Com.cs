@@ -70,7 +70,7 @@ namespace Lib.helper
         /// </summary>
         /// <returns></returns>
         public static dynamic DynamicObj() => new System.Dynamic.ExpandoObject();
-        
+
         /// <summary>
         /// 把对象可读属性读出来变成字典
         /// </summary>
@@ -140,13 +140,13 @@ namespace Lib.helper
             }
 
             var url_sp = url.Split('?');
-            if (!new int[] { 1, 2 }.Contains(url_sp.Length)) { throw new Exception("多问号错误"); }
+            if (!new int[] { 1, 2 }.Contains(url_sp.Length)) { throw new ArgumentException("多问号错误"); }
             var param_part = url_sp.Length == 1 ? url_sp[0] : url_sp[1];
 
             foreach (var p in param_part.Split('&'))
             {
                 var sp = p.Split('=');
-                if (!new int[] { 1, 2 }.Contains(sp.Length)) { throw new Exception("多等号错误"); }
+                if (!new int[] { 1, 2 }.Contains(sp.Length)) { throw new ArgumentException("多等号错误"); }
                 if (sp.Length == 1)
                 {
                     dict[sp[0]] = string.Empty;
@@ -326,7 +326,7 @@ namespace Lib.helper
         {
             if (!ValidateHelper.IsPlumpString(pass))
             {
-                throw new Exception("密码为空");
+                throw new ArgumentException("密码为空");
             }
             var str = new StringBuilder();
             var list = (pass + salt).ToArray().Select(x => (int)x).ToList();
@@ -339,7 +339,7 @@ namespace Lib.helper
             sortlist.Sort(new MyStringComparer());
             return SecureHelper.GetMD5(string.Join("{*}", sortlist));
         }
-        
+
         /// <summary>
         /// 获取对象占用内存大小
         /// </summary>
@@ -623,7 +623,7 @@ namespace Lib.helper
         {
             if (!ValidateHelper.IsPlumpList(lists) || lists.Count() < 2)
             {
-                throw new Exception("至少两个集合才能获取交集");
+                throw new ArgumentException("至少两个集合才能获取交集");
             }
 
             return lists.Reduce((x, y) => Com.GetInterSection(x, y));
@@ -832,7 +832,7 @@ namespace Lib.helper
         public static void FindFiles(string path, VoidFunc<FileInfo> func, VoidFunc<int> stack_count_func = null)
         {
             var root = new DirectoryInfo(path);
-            if (!root.Exists) { throw new Exception("目录不存在"); }
+            if (!root.Exists) { throw new NotExistException("目录不存在"); }
 
             var stack = new Stack<DirectoryInfo>();
             stack.Push(root);
@@ -1031,7 +1031,7 @@ namespace Lib.helper
         /// </summary>
         public static IEnumerable<double> RangeDouble(double a, double? b = null, double step = 1)
         {
-            if (step <= 0) { throw new Exception($"{nameof(step)}必须大于0"); }
+            if (step <= 0) { throw new ArgumentException($"{nameof(step)}必须大于0"); }
 
             var list = new List<double?>() { a, b }.Where(x => x != null).ToList();
             if (list.Count != 2)

@@ -1,4 +1,5 @@
-﻿using Lib.helper;
+﻿using Lib.core;
+using Lib.helper;
 using Lib.ioc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -191,7 +192,7 @@ namespace Lib.extension
             {
                 using (var s = IocContext.Instance.Scope())
                 {
-                    var service = s.ResolveOptional_<IAttachExtraLogInformation>() ?? throw new Exception("无附加信息");
+                    var service = s.ResolveOptional_<IAttachExtraLogInformation>() ?? throw new MsgException("无附加信息");
 
                     var data = service.AttachOrThrow();
                     return data;

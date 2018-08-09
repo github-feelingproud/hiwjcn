@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using Lib.core;
 
 namespace Lib.extension
 {
@@ -163,7 +164,7 @@ namespace Lib.extension
             var total_weight = source.Sum(x => selector.Invoke(x));
 
             var weight = ran.RealNext(total_weight - 1);
-            
+
             var cur = 0;
 
             foreach (var s in source)
@@ -182,7 +183,7 @@ namespace Lib.extension
                 cur += end;
             }
 
-            throw new Exception("权重取值异常");
+            throw new MsgException("权重取值异常");
         }
     }
 }

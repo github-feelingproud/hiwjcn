@@ -40,7 +40,9 @@ namespace Lib.extension
         /// <returns></returns>
         public static string GetMD5(this FileInfo file)
         {
-            if (!file.Exists) { throw new Exception($"无法读取MD5，文件{file.FullName}不存在"); }
+            if (!file.Exists)
+                throw new SourceNotExistException($"无法读取MD5，文件{file.FullName}不存在");
+
             return SecureHelper.GetFileMD5(file.FullName);
         }
 

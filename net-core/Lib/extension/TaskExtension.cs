@@ -15,7 +15,7 @@ namespace Lib.extension
         {
             if (!reset_event.WaitOne(span))
             {
-                throw new Exception(msg ?? "等待信号量超时");
+                throw new TimeoutException(msg ?? "等待信号量超时");
             }
         }
 
@@ -23,7 +23,7 @@ namespace Lib.extension
         {
             if (!reset_event.WaitOne(span))
             {
-                throw new Exception(msg ?? "等待信号量超时");
+                throw new TimeoutException(msg ?? "等待信号量超时");
             }
         }
 
@@ -31,7 +31,7 @@ namespace Lib.extension
         {
             if (!reset_event.Wait(span))
             {
-                throw new Exception(msg ?? "等待信号量超时");
+                throw new TimeoutException(msg ?? "等待信号量超时");
             }
         }
 
@@ -407,7 +407,7 @@ namespace Lib.extension
         }
         #endregion
     }
-    
+
     public class AsyncManualResetEvent
     {
         private volatile TaskCompletionSource<bool> _mTcs = new TaskCompletionSource<bool>();

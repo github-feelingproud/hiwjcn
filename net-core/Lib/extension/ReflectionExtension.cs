@@ -43,7 +43,7 @@ namespace Lib.extension
         /// <returns></returns>
         public static bool IsAssignableToGeneric_(this Type t, Type generic_type)
         {
-            if (!generic_type.IsGenericType) { throw new Exception("必须是泛型"); }
+            if (!generic_type.IsGenericType) { throw new ArgumentException("必须是泛型"); }
             if (generic_type.IsInterface)
             {
                 return t.GetAllInterfaces_().Any(x => x.IsGenericType_(generic_type));

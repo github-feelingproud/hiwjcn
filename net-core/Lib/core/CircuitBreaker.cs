@@ -90,15 +90,15 @@ namespace Lib.core
             this.BlockSeconds = BlockSeconds;
             if (this.ExceptionCount <= 0)
             {
-                throw new Exception($"{this.ExceptionCount}必须大于0");
+                throw new ArgumentException($"{this.ExceptionCount}必须大于0");
             }
             if (this.ExceptionInSeconds <= 0)
             {
-                throw new Exception($"{this.ExceptionInSeconds}必须大于0");
+                throw new ArgumentException($"{this.ExceptionInSeconds}必须大于0");
             }
             if (this.BlockSeconds <= 0)
             {
-                throw new Exception($"{nameof(this.BlockSeconds)}必须大于0 ");
+                throw new ArgumentException($"{nameof(this.BlockSeconds)}必须大于0 ");
             }
 
             this.BlockUntil = DateTime.Now.AddSeconds(-1);

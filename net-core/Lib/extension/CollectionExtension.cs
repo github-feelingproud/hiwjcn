@@ -181,7 +181,7 @@ namespace Lib.extension
         {
             if (list.Contains(flag))
             {
-                throw new Exception(error_msg ?? $"{flag}已经存在");
+                throw new MsgException(error_msg ?? $"{flag}已经存在");
             }
             list.Add(flag);
         }
@@ -191,7 +191,7 @@ namespace Lib.extension
         /// </summary>
         public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> list, string msg = null)
         {
-            if (!list.Any()) { throw new Exception(msg ?? "不允许的空集合"); }
+            if (!list.Any()) { throw new MsgException(msg ?? "不允许的空集合"); }
             return list;
         }
 
@@ -203,7 +203,7 @@ namespace Lib.extension
             var count = list.Count();
             if (count > max)
             {
-                throw new Exception(msg ?? $"集合数量({count})超过了允许最大值：{max}");
+                throw new MsgException(msg ?? $"集合数量({count})超过了允许最大值：{max}");
             }
             return list;
         }
@@ -372,7 +372,7 @@ namespace Lib.extension
         {
             if (!ValidateHelper.IsPlumpList(list) || list.Count < 2)
             {
-                throw new Exception($"item少于2的list无法执行{nameof(Reduce)}操作");
+                throw new ArgumentException($"item少于2的list无法执行{nameof(Reduce)}操作");
             }
 
             var res = func(list[0], list[1]);
@@ -415,7 +415,7 @@ namespace Lib.extension
         /// </summary>
         public static IEnumerable<IEnumerable<T>> Batch<T>([NotNull]this IEnumerable<T> list, int size)
         {
-            if (size <= 0) { throw new Exception("batch size必须大于0"); }
+            if (size <= 0) { throw new ArgumentException("batch size必须大于0"); }
             var temp = new List<T>();
             foreach (var m in list)
             {
@@ -460,7 +460,7 @@ namespace Lib.extension
                 typeof(decimal?),
                 typeof(DateTime?)
             };
-            if (!tps.Contains(typeof(T))) { throw new Exception("不支持的数据类型对比"); }
+            if (!tps.Contains(typeof(T))) { throw new NotSupportedException("不支持的数据类型对比"); }
             return ".".Join_(list.OrderBy(x => x)) == ".".Join_(data.OrderBy(x => x));
         }
     }

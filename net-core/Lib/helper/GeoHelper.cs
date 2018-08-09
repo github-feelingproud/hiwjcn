@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lib.core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,7 +45,7 @@ namespace Lib.helper
         {
             if (!IsGeoValid(startPoint) || !IsGeoValid(endPoint))
             {
-                return defaultValue ?? throw new Exception("无法计算距离，传入坐标错误");
+                return defaultValue ?? throw new MsgException("无法计算距离，传入坐标错误");
             }
 
             var startlatrad = Rad(startPoint.Lat);

@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Lib.core;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 
 namespace Lib.helper
@@ -23,7 +23,6 @@ namespace Lib.helper
         /// </summary>
         public static string ObjectToJson(object obj)
         {
-            //if (obj == null) { throw new Exception("null不能被转为json"); }
             return JsonConvert.SerializeObject(obj, _setting);
         }
 
@@ -97,15 +96,15 @@ namespace Lib.helper
         /// </summary>
         public static object JsonToEntity(string json, Type type)
         {
-            if (!ValidateHelper.IsPlumpString(json)) { throw new Exception("json为空"); }
-            if (type == null) { throw new Exception("请指定json对应的实体类型"); }
+            if (!ValidateHelper.IsPlumpString(json)) { throw new ArgumentNullException("json为空"); }
+            if (type == null) { throw new ArgumentNullException("请指定json对应的实体类型"); }
             try
             {
                 return JsonConvert.DeserializeObject(json, type);
             }
             catch (Exception e)
             {
-                throw new Exception($"不能将json转为{type.FullName}。json数据：{json}", e);
+                throw new MsgException($"不能将json转为{type.FullName}。json数据：{json}", e);
             }
         }
     }

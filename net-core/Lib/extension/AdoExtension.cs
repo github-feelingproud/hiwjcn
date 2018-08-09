@@ -1,4 +1,5 @@
-﻿using Lib.data;
+﻿using Lib.core;
+using Lib.data;
 using Lib.helper;
 using Newtonsoft.Json.Linq;
 using System;
@@ -146,7 +147,7 @@ namespace Lib.extension
             var key_props = pps.Where(x => x.IsPrimaryKey()).ToList();
             if (!ValidateHelper.IsPlumpList(key_props))
             {
-                throw new Exception("Model没有设置主键");
+                throw new NoPrimaryKeyException("Model没有设置主键");
             }
             var keys = key_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
 
@@ -159,7 +160,7 @@ namespace Lib.extension
             column_props = pps.Where(x => !auto_generated_columns.Values.Contains(x.Name)).ToList();
             if (!ValidateHelper.IsPlumpList(column_props))
             {
-                throw new Exception("无法提取到有效字段");
+                throw new NoValidFieldsException("无法提取到有效字段");
             }
             var columns = column_props.Select(x => GetColumn(x)).ToDictionary(x => x.column, x => x.placeholder);
 
@@ -308,41 +309,10 @@ namespace Lib.extension
                     param.Value = dict[key];
                     cmd.Parameters.Add(param);
                 }
-
-                #region 垃圾代码-可以跑
-                /*
-             var dbType = DBTypeEnum.None;
-                var connectionType = cmd.Connection.GetType();
-                if (connectionType == typeof(SqlConnection))
-                {
-                    dbType = DBTypeEnum.SqlServer;
-                }
-                else if (connectionType == typeof(MySqlConnection))
-                {
-                    dbType = DBTypeEnum.MySQL;
-                }
-                else
-                {
-                    throw new Exception("不支持的数据库类型");
-                }
-                
-                var dict = Com.ObjectToSqlParamsDict(p);
-                foreach (var key in dict.Keys)
-                {
-                    switch (dbType)
-                    {
-                        case DBTypeEnum.SqlServer:
-                            cmd.Parameters.Add(new SqlParameter($"@{key}", dict[key])); break;
-                        case DBTypeEnum.MySQL:
-                            cmd.Parameters.Add(new MySqlParameter($"@{key}", dict[key])); break;
-                    }
-                }    
-             */
-                #endregion
             }
             else
             {
-                throw new Exception("只能有一个object参数");
+                throw new ArgumentException("只能有一个object参数");
             }
         }
 

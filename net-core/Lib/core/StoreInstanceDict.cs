@@ -48,7 +48,7 @@ namespace Lib.core
                     if (!dict.ContainsKey(key))
                     {
                         var ins = func();
-                        if (!CheckInstance(ins)) { throw new Exception("新生成的实例没有通过验证"); }
+                        if (!CheckInstance(ins)) { throw new InstanceDeadException("新生成的实例没有通过验证"); }
                         dict[key] = ins;
                     }
                 }

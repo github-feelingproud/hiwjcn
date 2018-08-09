@@ -132,7 +132,9 @@ namespace Lib.data
         /// <returns></returns>
         public static DbType ConvertToDbType(Type t)
         {
-            if (!Type2DBTypeMapper.ContainsKey(t)) { throw new Exception($"{Type2DBTypeMapper}:不支持的类型转换"); }
+            if (!Type2DBTypeMapper.ContainsKey(t))
+                throw new NotSupportedException($"{Type2DBTypeMapper}:不支持的类型转换");
+
             return Type2DBTypeMapper[t];
         }
 

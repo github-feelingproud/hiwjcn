@@ -13,19 +13,22 @@ namespace Lib.mongodb
     public class MongoRepository<T> : IMongoRepository<T>
         where T : MongoEntityBase
     {
+        private readonly IMongoClient _client;
         private readonly IMongoDatabase _db;
+        private readonly IMongoCollection<T> _set;
 
         public MongoRepository(IMongoClientWrapper wrapper)
         {
-            this._db = wrapper.Value.GetDatabase(wrapper.DatabaseName);
-        }
+            this._client = wrapper.Value;
 
-        private IMongoCollection<T> Set() => this._db.GetCollection<T>(typeof(T).GetTableName());
+            this._db = this._client.GetDatabase(wrapper.DatabaseName);
+            this._set = this._db.GetCollection<T>(typeof(T).GetTableName());
+        }
 
         [Obsolete]
         public void test()
         {
-            var set = this.Set();
+            var set = this._set;
 
             //map reduce
             set.MapReduce<_>(
@@ -54,69 +57,79 @@ namespace Lib.mongodb
                 condition &= Builders<T>.Filter.Where(where);
             }
             var range = PagerHelper.GetQueryRange(page, pagesize);
-            return this.Set().Find(condition).QueryPage(page, pagesize).ToList();
+            return this._set.Find(condition).QueryPage(page, pagesize).ToList();
         }
 
         public int Add(params T[] models)
         {
-            if (!ValidateHelper.IsPlumpList(models)) { throw new ArgumentNullException(nameof(models)); }
-            this.Set().InsertMany(models);
+            if (!ValidateHelper.IsPlumpList(models))
+                throw new ArgumentNullException(nameof(models));
+
+            this._set.InsertMany(models);
             return models.Count();
         }
 
         public async Task<int> AddAsync(params T[] models)
         {
-            if (!ValidateHelper.IsPlumpList(models)) { throw new ArgumentNullException(nameof(models)); }
-            await this.Set().InsertManyAsync(models);
+            if (!ValidateHelper.IsPlumpList(models))
+                throw new ArgumentNullException(nameof(models));
+
+            await this._set.InsertManyAsync(models);
             return models.Count();
         }
 
         public int Delete(params T[] models)
         {
-            if (!ValidateHelper.IsPlumpList(models)) { throw new ArgumentNullException(nameof(models)); }
+            if (!ValidateHelper.IsPlumpList(models))
+                throw new ArgumentNullException(nameof(models));
+
             var uids = models.Select(x => x._id);
             var filter = Builders<T>.Filter.Where(x => uids.Contains(x._id));
-            return (int)this.Set().DeleteMany(filter).DeletedCount;
+            return (int)this._set.DeleteMany(filter).DeletedCount;
         }
 
         public async Task<int> DeleteAsync(params T[] models)
         {
-            if (!ValidateHelper.IsPlumpList(models)) { throw new ArgumentNullException(nameof(models)); }
+            if (!ValidateHelper.IsPlumpList(models))
+                throw new ArgumentNullException(nameof(models));
+
             var uids = models.Select(x => x._id);
             var filter = Builders<T>.Filter.Where(x => uids.Contains(x._id));
-            return (int)(await this.Set().DeleteManyAsync(filter)).DeletedCount;
+            return (int)(await this._set.DeleteManyAsync(filter)).DeletedCount;
         }
 
         public int DeleteWhere(Expression<Func<T, bool>> where)
         {
             where = where ?? throw new ArgumentNullException(nameof(where));
-            return (int)this.Set().DeleteMany(where).DeletedCount;
+
+            return (int)this._set.DeleteMany(where).DeletedCount;
         }
 
         public async Task<int> DeleteWhereAsync(Expression<Func<T, bool>> where)
         {
             where = where ?? throw new ArgumentNullException(nameof(where));
-            return (int)(await this.Set().DeleteManyAsync(where)).DeletedCount;
+
+            return (int)(await this._set.DeleteManyAsync(where)).DeletedCount;
         }
 
         public bool Exist(Expression<Func<T, bool>> where)
         {
-            return this.Set().Find(where).Take(1).FirstOrDefault() != null;
+            return this._set.Find(where).Take(1).FirstOrDefault() != null;
         }
 
         public async Task<bool> ExistAsync(Expression<Func<T, bool>> where)
         {
-            return (await this.Set().FindAsync(where)).FirstOrDefault() != null;
+            return (await this._set.FindAsync(where)).FirstOrDefault() != null;
         }
 
         public int GetCount(Expression<Func<T, bool>> where)
         {
-            return (int)this.Set().CountDocuments(where);
+            return (int)this._set.CountDocuments(where);
         }
 
         public async Task<int> GetCountAsync(Expression<Func<T, bool>> where)
         {
-            return (int)(await this.Set().CountDocumentsAsync(where));
+            return (int)(await this._set.CountDocumentsAsync(where));
         }
 
         public T GetFirst(Expression<Func<T, bool>> where)
@@ -141,25 +154,25 @@ namespace Lib.mongodb
 
         public void PrepareIQueryable(Action<IQueryable<T>> callback)
         {
-            var q = this.Set().AsQueryable();
+            var q = this._set.AsQueryable();
             callback.Invoke(q);
         }
 
         public async Task PrepareIQueryableAsync(Func<IQueryable<T>, Task> callback)
         {
-            var q = this.Set().AsQueryable();
+            var q = this._set.AsQueryable();
             await callback.Invoke(q);
         }
 
         public async Task<R> PrepareIQueryableAsync<R>(Func<IQueryable<T>, Task<R>> callback)
         {
-            var q = this.Set().AsQueryable();
+            var q = this._set.AsQueryable();
             return await callback.Invoke(q);
         }
 
         public R PrepareIQueryable<R>(Func<IQueryable<T>, R> callback)
         {
-            var q = this.Set().AsQueryable();
+            var q = this._set.AsQueryable();
             return callback.Invoke(q);
         }
 
@@ -173,7 +186,7 @@ namespace Lib.mongodb
                 condition &= where;
             }
 
-            var query = this.Set().Find(condition);
+            var query = this._set.Find(condition);
             if (orderby != null)
             {
                 var sort = Builders<T>.Sort.Sort_(orderby, Desc);
@@ -199,7 +212,7 @@ namespace Lib.mongodb
                 condition &= where;
             }
 
-            var query = this.Set().Find(condition);
+            var query = this._set.Find(condition);
             if (orderby != null)
             {
                 var sort = Builders<T>.Sort.Sort_(orderby, Desc);
@@ -219,35 +232,35 @@ namespace Lib.mongodb
 
         public int Update(params T[] models)
         {
-            var set = this.Set();
+            var set = this._set;
             return (int)models.Select(x => set.ReplaceOne(m => m._id == x._id, x).ModifiedCount).Sum();
         }
 
         public async Task<int> UpdateAsync(params T[] models)
         {
-            var set = this.Set();
+            var set = this._set;
             var res = await Task.WhenAll(models.Select(x => set.ReplaceOneAsync(m => m._id == x._id, x)));
             return (int)res.Select(x => x.ModifiedCount).Sum();
         }
 
         public void PrepareMongoCollection(Action<IMongoCollection<T>> callback)
         {
-            callback.Invoke(this.Set());
+            callback.Invoke(this._set);
         }
 
         public async Task PrepareMongoCollectionAsync(Func<IMongoCollection<T>, Task> callback)
         {
-            await callback.Invoke(this.Set());
+            await callback.Invoke(this._set);
         }
 
         public R PrepareMongoCollection<R>(Func<IMongoCollection<T>, R> callback)
         {
-            return callback.Invoke(this.Set());
+            return callback.Invoke(this._set);
         }
 
         public async Task<R> PrepareMongoCollectionAsync<R>(Func<IMongoCollection<T>, Task<R>> callback)
         {
-            return await callback.Invoke(this.Set());
+            return await callback.Invoke(this._set);
         }
 
         private ObjectId ParseID(params object[] keys)
@@ -264,13 +277,13 @@ namespace Lib.mongodb
         public T GetByKeys(params object[] keys)
         {
             var id = ParseID(keys);
-            return this.Set().Find(x => x._id == id).FirstOrDefault();
+            return this._set.Find(x => x._id == id).FirstOrDefault();
         }
 
         public async Task<T> GetByKeysAsync(params object[] keys)
         {
             var id = ParseID(keys);
-            return await this.Set().Find(x => x._id == id).FirstOrDefaultAsync();
+            return await this._set.Find(x => x._id == id).FirstOrDefaultAsync();
         }
 
         public virtual void Dispose() { }
