@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace Lib.auth
 {
@@ -9,10 +8,6 @@ namespace Lib.auth
     /// </summary>
     public interface IScopedUserContext : IDisposable
     {
-        LoginUserInfo User { get; }
-
-        bool IsLogin { get; }
-
-        bool HasPermission(string permission);
+        Task<LoginUserInfo> GetLoginUserAsync();
     }
 }

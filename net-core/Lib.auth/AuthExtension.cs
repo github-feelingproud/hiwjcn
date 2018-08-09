@@ -1,5 +1,4 @@
-﻿using Lib.auth.provider;
-using Lib.auth.validator;
+﻿using Lib.auth.validator;
 using Lib.extension;
 using Lib.helper;
 using Lib.ioc;
@@ -18,15 +17,8 @@ namespace Lib.auth
         /// <summary>
         /// 获取当前登录用户
         /// </summary>
-        public static async Task<LoginUserInfo> GetAuthUserAsync(this HttpContext context, string name = null)
-        {
-            using (var x = IocContext.Instance.Scope())
-            {
-                var loginuser = await x.Resolve_<ITokenValidationProvider>().GetLoginUserInfoAsync(context);
-
-                return loginuser;
-            }
-        }
+        public static async Task<LoginUserInfo> GetAuthUserAsync(this HttpContext context) =>
+            await context.RequestServices.Resolve_<IScopedUserContext>().GetLoginUserAsync();
 
         /// <summary>
         /// 获取bearer token
@@ -60,26 +52,14 @@ namespace Lib.auth
         /// <summary>
         /// 使用cookie登录
         /// </summary>
-        public static void CookieLogin(this HttpContext context, LoginUserInfo loginuser)
-        {
-            using (var s = IocContext.Instance.Scope())
-            {
-                var loginstatus = s.Resolve_<LoginStatus>();
-                loginstatus.SetUserLogin(context, loginuser);
-            }
-        }
+        public static void CookieLogin(this HttpContext context, LoginUserInfo loginuser) =>
+            context.RequestServices.Resolve_<IAuthDataProvider>().SetToken(loginuser.LoginToken);
 
         /// <summary>
         /// 退出登录
         /// </summary>
-        public static void CookieLogout(this HttpContext context)
-        {
-            using (var s = IocContext.Instance.Scope())
-            {
-                var loginstatus = s.Resolve_<LoginStatus>();
-                loginstatus.SetUserLogout(context);
-            }
-        }
+        public static void CookieLogout(this HttpContext context) =>
+            context.RequestServices.Resolve_<IAuthDataProvider>().RemoveToken();
 
         /// <summary>
         /// 获取这个程序集中所用到的所有权限

@@ -30,89 +30,21 @@ namespace Lib.auth
         public virtual string[] TokenUID { get; set; }
     }
 
-    [Serializable]
-    [DataContract]
-    public class UserPermissions
-    {
-        [DataMember]
-        public virtual List<string> PermissionIds { get; set; }
-
-        [DataMember]
-        public virtual List<string> RoleIds { get; set; }
-
-        [DataMember]
-        public virtual List<string> DepartmentIds { get; set; }
-    }
-
-    /// <summary>
-    /// 为汽配龙业务提供的数据
-    /// </summary>
-    [Serializable]
-    [DataContract]
-    public class QPLData
-    {
-        [DataMember]
-        public virtual double Lon { get; set; }
-
-        [DataMember]
-        public virtual double Lat { get; set; }
-
-        [DataMember]
-        public virtual string TraderShopType { get; set; }
-
-        [DataMember]
-        public virtual decimal MaxServiceDistance { get; set; }
-
-        [DataMember]
-        public virtual bool IsGeneralDelivery { get; set; }
-
-        [DataMember]
-        public virtual bool IsQuickArrive { get; set; }
-
-        [DataMember]
-        public virtual string TraderId { get; set; }
-
-        [DataMember]
-        public virtual string TraderName { get; set; }
-
-        [DataMember]
-        public virtual int IsCheck { get; set; }
-
-        [DataMember]
-        public virtual string CustomerType { get; set; }
-
-        [DataMember]
-        public virtual int IsHaveInquiry { get; set; }
-
-        [DataMember]
-        public virtual string LocationId { get; set; }
-
-        [DataMember]
-        public virtual int IsSelf { get; set; }
-    }
-
     /// <summary>
     /// 记录登陆信息，可以序列化
     /// </summary>
     [Serializable]
     [DataContract]
-    public class LoginUserInfo : QPLData
+    public class LoginUserInfo
     {
-        public LoginUserInfo() { }
-
         [DataMember]
         public virtual long IID { get; set; }
 
         [DataMember]
         public virtual string UserID { get; set; }
 
-        [Obsolete("等同于UserID")]
-        [DataMember]
-        public virtual string UserUID
-        {
-            get => this.UserID;
-            set => this.UserID = value;
-        }
+        public virtual bool IsAuthed =>
+            ValidateHelper.IsAllPlumpString(this.UserID, this.UserName);
 
         [DataMember]
         public virtual string UserName { get; set; }
@@ -154,7 +86,8 @@ namespace Lib.auth
         public virtual Dictionary<string, string> ExtraData { get; set; }
 
 
-        public static implicit operator LoginUserInfo(string json) => json.JsonToEntity<LoginUserInfo>();
+        public static implicit operator LoginUserInfo(string json) =>
+            (json ?? throw new ArgumentNullException($"bad convert from {nameof(json)}")).JsonToEntity<LoginUserInfo>();
     }
 
     public static class LoginUserInfoExtension
@@ -182,7 +115,8 @@ namespace Lib.auth
             }
         }
 
-        public static string UserNameOrNickName(this LoginUserInfo loginuser) => loginuser.NickName ?? loginuser.UserName;
+        public static string UserNameOrNickName(this LoginUserInfo loginuser) =>
+            loginuser.NickName ?? loginuser.UserName;
 
         /// <summary>
         /// 去除权限等敏感信息

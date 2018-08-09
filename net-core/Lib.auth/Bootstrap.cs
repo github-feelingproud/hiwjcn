@@ -1,7 +1,6 @@
-﻿using Lib.mvc.auth.validation;
-using Lib.mvc.user;
+﻿using Lib.auth.provider;
+using Lib.infrastructure.entity.auth;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Lib.auth
 {
@@ -10,34 +9,24 @@ namespace Lib.auth
         /// <summary>
         /// 配置auth
         /// </summary>
-        public static void AuthBasicConfig<AuthApiProvider>(this IServiceCollection collection,
-            Func<LoginStatus> cookieProvider = null)
-            where AuthApiProvider : class, IAuthApi
+        /// <typeparam name="TokenBase"></typeparam>
+        /// <typeparam name="CacheKeyManager"></typeparam>
+        /// <typeparam name="UserLoginApi"></typeparam>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public static IServiceCollection AuthConfig<TokenBase, CacheKeyManager, UserLoginApi>(this IServiceCollection collection)
+            where TokenBase : AuthTokenBase, new()
+            where CacheKeyManager : class, ICacheKeyManager
+            where UserLoginApi : class, IUserLoginApi
         {
-            collection.AuthConfig<AppOrWebAuthDataProvider, AuthApiProvider>(cookieProvider);
-        }
+            collection.AddScoped<IScopedUserContext, ScopedUserContext>();
+            collection.AddScoped<IAuthDataProvider, AppOrWebAuthDataProvider>();
+            collection.AddScoped<IAuthApi, AuthApiServiceFromDbBase<TokenBase>>();
+            collection.AddScoped<ITokenEncryption, DefaultTokenEncryption>();
+            collection.AddScoped<ICacheKeyManager, CacheKeyManager>();
+            collection.AddScoped<IUserLoginApi, UserLoginApi>();
 
-        /// <summary>
-        /// 配置auth
-        /// </summary>
-        public static void AuthConfig<TokenProvider, AuthApiProvider>(this IServiceCollection collection,
-            Func<LoginStatus> cookieProvider = null)
-            where TokenProvider : class, IAuthDataProvider
-            where AuthApiProvider : class, IAuthApi
-        {
-            //从那里拿token和client信息
-            collection.AddTransient<IAuthDataProvider, TokenProvider>();
-            //怎么创建token scope等
-            collection.AddTransient<IAuthApi, AuthApiProvider>();
-
-            //使用以上信息
-            collection.AddTransient<ITokenValidationProvider, AuthBasicValidationProvider>();
-
-            //往那里写cookie
-            if (cookieProvider != null)
-            {
-                collection.AddSingleton<LoginStatus>(_ => cookieProvider.Invoke());
-            }
+            return collection;
         }
     }
 }

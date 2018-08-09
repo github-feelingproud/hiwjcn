@@ -18,7 +18,7 @@ namespace Lib.auth.provider
 
         private string CreateResult(string token, string salt)
         {
-            return $"{token}={nameof(DefaultCookieTokenEncryption)}={salt}".ToMD5().ToLower();
+            return $"{token}={nameof(DefaultTokenEncryption)}={salt}".ToMD5().ToLower();
         }
 
         public string Decrypt(string data)
