@@ -3,33 +3,35 @@ using Lib.data.ef;
 using Lib.extension;
 using Lib.helper;
 using Lib.infrastructure.entity.auth;
-using Lib.infrastructure.service.user;
-using Lib.mvc.user;
+using Lib.infrastructure.extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Lib.mvc.auth.provider
+namespace Lib.auth.provider
 {
-    public abstract class AuthApiServiceFromDbBase<TokenBase> :
-        AuthServiceBase<TokenBase>, IAuthApi
+    public partial class AuthApiServiceFromDbBase<TokenBase> : IAuthApi
         where TokenBase : AuthTokenBase, new()
     {
         protected readonly ICacheProvider _cache;
+        protected readonly ICacheKeyManager _keyManager;
+        protected readonly IUserLoginApi _login;
+        protected readonly IEFRepository<TokenBase> _tokenRepo;
 
         public AuthApiServiceFromDbBase(
             ICacheProvider _cache,
-            IEFRepository<TokenBase> _tokenRepo) :
-            base(_tokenRepo)
+            ICacheKeyManager _keyManager,
+            IUserLoginApi _login,
+            IEFRepository<TokenBase> _tokenRepo)
         {
             this._cache = _cache;
-
-            this.ClearTokenCacheCallback = x => this._cache.Remove(this.AuthTokenCacheKey(x));
-            this.ClearUserTokenCallback = x => this._cache.Remove(this.AuthUserInfoCacheKey(x));
+            this._keyManager = _keyManager;
+            this._login = _login;
+            this._tokenRepo = _tokenRepo;
         }
 
-        public abstract Task CacheHitLog(string cache_key, CacheHitStatusEnum status);
+        protected virtual Task CacheHitLog(string cache_key, CacheHitStatusEnum status) => Task.CompletedTask;
 
         public virtual async Task<_<TokenModel>> CreateAccessTokenAsync(string user_uid)
         {
@@ -49,7 +51,7 @@ namespace Lib.mvc.auth.provider
                 Expire = token.ExpiryTime
             };
 
-            this._cache.Remove(this.AuthUserInfoCacheKey(token.UserUID));
+            this._cache.Remove(this._keyManager.AuthUserInfoCacheKey(token.UserUID));
 
             res.SetSuccessData(token_data);
             return res;
@@ -68,7 +70,7 @@ namespace Lib.mvc.auth.provider
             var cache_expire = TimeSpan.FromMinutes(10);
 
             var hit_status = CacheHitStatusEnum.Hit;
-            var cache_key = this.AuthTokenCacheKey(access_token);
+            var cache_key = this._keyManager.AuthTokenCacheKey(access_token);
 
             //查找token
             var token = await this._cache.GetOrSetAsync(cache_key, async () =>
@@ -88,13 +90,13 @@ namespace Lib.mvc.auth.provider
             }
 
             hit_status = CacheHitStatusEnum.Hit;
-            cache_key = this.AuthUserInfoCacheKey(token.UserUID);
+            cache_key = this._keyManager.AuthUserInfoCacheKey(token.UserUID);
             //查找用户
             var loginuser = await this._cache.GetOrSetAsync(cache_key, async () =>
             {
                 hit_status = CacheHitStatusEnum.NotHit;
 
-                var user = await this.GetLoginUserInfoByUserUID(token.UserUID);
+                var user = await this._login.GetLoginUserInfoByUserUID(token.UserUID);
 
                 return user;
             }, cache_expire);
@@ -117,12 +119,6 @@ namespace Lib.mvc.auth.provider
             return data;
         }
 
-        public abstract Task<LoginUserInfo> GetLoginUserInfoByUserUID(string uid);
-
-        public abstract Task<_<LoginUserInfo>> ValidUserByOneTimeCodeAsync(string phone, string sms);
-
-        public abstract Task<_<LoginUserInfo>> ValidUserByPasswordAsync(string username, string password);
-
         public virtual async Task<_<string>> RemoveCacheAsync(CacheBundle data)
         {
             if (data == null)
@@ -134,8 +130,8 @@ namespace Lib.mvc.auth.provider
 
             var keys = new List<string>();
 
-            keys.AddWhenNotEmpty(data.UserUID?.Select(x => this.AuthUserInfoCacheKey(x)));
-            keys.AddWhenNotEmpty(data.TokenUID?.Select(x => this.AuthTokenCacheKey(x)));
+            keys.AddWhenNotEmpty(data.UserUID?.Select(x => this._keyManager.AuthUserInfoCacheKey(x)));
+            keys.AddWhenNotEmpty(data.TokenUID?.Select(x => this._keyManager.AuthTokenCacheKey(x)));
 
             foreach (var key in keys.Distinct())
             {
@@ -148,10 +144,136 @@ namespace Lib.mvc.auth.provider
 
             return res;
         }
+    }
 
-        public abstract string AuthTokenCacheKey(string token);
+    public partial class AuthApiServiceFromDbBase<TokenBase>
+    {
+        public async Task<_<string>> DeleteUserTokensAsync(string user_uid)
+        {
+            var data = new _<string>();
+            if (!ValidateHelper.IsPlumpString(user_uid))
+            {
+                data.SetErrorMsg("用户ID为空");
+                return data;
+            }
 
-        public abstract string AuthUserInfoCacheKey(string user_uid);
+            var max_count = 3000;
 
+            var token_to_delete = await this._tokenRepo.GetListAsync(x => x.UserUID == user_uid, count: max_count);
+
+            var errors = await this.DeleteTokensAndRemoveCacheAsync(token_to_delete);
+            if (ValidateHelper.IsPlumpString(errors))
+            {
+                data.SetErrorMsg(errors);
+                return data;
+            }
+            else
+            {
+                if (max_count == token_to_delete.Count)
+                {
+                    data.SetErrorMsg("要删除的记录数比较多，请多试几次，直到完全删除");
+                    return data;
+                }
+            }
+            data.SetSuccessData(string.Empty);
+            return data;
+        }
+
+        private async Task<string> DeleteTokensAndRemoveCacheAsync(List<TokenBase> list)
+        {
+            if (!ValidateHelper.IsPlumpList(list))
+            {
+                return string.Empty;
+            }
+            var msg = string.Empty;
+            await this._tokenRepo.PrepareSessionAsync(async db =>
+            {
+                var token_query = db.Set<TokenBase>();
+
+                var token_uid_list = list.Select(x => x.UID).Distinct().ToList();
+                var user_uid_list = list.Select(x => x.UserUID).Distinct().ToList();
+
+                token_query.RemoveRange(token_query.Where(x => token_uid_list.Contains(x.UID)));
+
+                if (await db.SaveChangesAsync() <= 0)
+                {
+                    msg = "删除token失败";
+                    return;
+                }
+
+                foreach (var token in token_uid_list)
+                {
+                    this._cache.Remove(this._keyManager.AuthTokenCacheKey(token));
+                }
+                foreach (var user_uid in user_uid_list)
+                {
+                    this._cache.Remove(this._keyManager.AuthUserInfoCacheKey(user_uid));
+                }
+            });
+            return msg;
+        }
+
+        private async Task RefreshToken(TokenBase tk)
+        {
+            var now = DateTime.Now;
+            var token = await this._tokenRepo.GetFirstAsync(x => x.UID == tk.UID);
+            if (token == null || token.ExpiryTime < now || token.IsRemove > 0)
+            {
+                return;
+            }
+
+            //更新过期时间
+            token.ExpiryTime = now.AddDays(TokenConfig.TokenExpireDays);
+            token.UpdateTime = now;
+            token.RefreshTime = now;
+
+            await this._tokenRepo.UpdateAsync(token);
+        }
+
+        public virtual async Task<TokenBase> FindTokenAsync(string token_uid)
+        {
+            var now = DateTime.Now;
+            var token = await this._tokenRepo.GetFirstAsync(x => x.UID == token_uid);
+
+            if (token == null || token.ExpiryTime < now)
+            {
+                return null;
+            }
+
+            //自动刷新过期时间
+            if ((token.ExpiryTime - now).TotalDays < (TokenConfig.TokenExpireDays / 2.0))
+            {
+                await this.RefreshToken(token);
+            }
+            return token;
+        }
+
+        public async Task<_<TokenBase>> CreateTokenAsync(string user_uid)
+        {
+            var data = new _<TokenBase>();
+            var now = DateTime.Now;
+
+            //create new token
+            var token = new TokenBase()
+            {
+                ExpiryTime = now.AddDays(TokenConfig.TokenExpireDays),
+                RefreshToken = Com.GetUUID(),
+                UserUID = user_uid
+            }.InitSelf("token");
+
+            if (!token.IsValid(out var msg))
+            {
+                data.SetErrorMsg(msg);
+                return data;
+            }
+            if (await this._tokenRepo.AddAsync(token) <= 0)
+            {
+                data.SetErrorMsg("保存token失败");
+                return data;
+            }
+
+            data.SetSuccessData(token);
+            return data;
+        }
     }
 }

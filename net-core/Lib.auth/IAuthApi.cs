@@ -1,8 +1,7 @@
-﻿using Lib.mvc.user;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
-namespace Lib.mvc.auth
+namespace Lib.auth
 {
     /// <summary>
     /// 对外提供的服务（webapi，wcf）
@@ -18,16 +17,6 @@ namespace Lib.mvc.auth
         /// 用token换取登录信息
         /// </summary>
         Task<_<LoginUserInfo>> GetLoginUserInfoByTokenAsync(string access_token);
-
-        /// <summary>
-        /// 用验证码登录换取code
-        /// </summary>
-        Task<_<LoginUserInfo>> ValidUserByOneTimeCodeAsync(string phone, string sms);
-
-        /// <summary>
-        /// 用密码登录换取code
-        /// </summary>
-        Task<_<LoginUserInfo>> ValidUserByPasswordAsync(string username, string password);
 
         /// <summary>
         /// 删除缓存

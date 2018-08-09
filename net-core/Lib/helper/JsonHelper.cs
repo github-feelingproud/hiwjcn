@@ -1,5 +1,4 @@
-﻿using Lib.core;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System;
@@ -104,7 +103,7 @@ namespace Lib.helper
             }
             catch (Exception e)
             {
-                throw new MsgException($"不能将json转为{type.FullName}。json数据：{json}", e);
+                throw new Exception($"不能将json转为{type.FullName}。json数据：{json}", e);
             }
         }
     }

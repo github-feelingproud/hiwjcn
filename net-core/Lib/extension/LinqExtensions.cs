@@ -1,4 +1,5 @@
-﻿using Lib.helper;
+﻿using Lib.data;
+using Lib.helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,30 @@ namespace Lib.extension
     /// </summary>
     public static class LinqExtensions
     {
+        public static List<T> GetListEnsureMaxCount<T>(this IRepository<T> repo,
+            Expression<Func<T, bool>> where, int count, string error_msg)
+            where T : IDBTable
+        {
+            var list = repo.GetList(where, count);
+            if (list.Count >= count)
+            {
+                throw new Exception(error_msg);
+            }
+            return list;
+        }
+
+        public static async Task<List<T>> GetListEnsureMaxCountAsync<T>(this IRepository<T> repo,
+            Expression<Func<T, bool>> where, int count, string error_msg)
+            where T : IDBTable
+        {
+            var list = await repo.GetListAsync(where, count);
+            if (list.Count >= count)
+            {
+                throw new Exception(error_msg);
+            }
+            return list;
+        }
+
         public static T FirstOrThrow_<T>(this IEnumerable<T> query, string error_msg) =>
             query.AsQueryable().FirstOrThrow_(error_msg);
 

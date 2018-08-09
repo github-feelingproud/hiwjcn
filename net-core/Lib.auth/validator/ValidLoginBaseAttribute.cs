@@ -1,7 +1,5 @@
 ﻿using Lib.helper;
 using Lib.mvc.attr;
-using Lib.mvc.auth;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
@@ -9,7 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Lib.mvc.user
+namespace Lib.auth.validator
 {
     public abstract class ValidLoginBaseAttribute : _ActionFilterBaseAttribute
     {

@@ -3,9 +3,9 @@ using Lib.mvc.user;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Lib.mvc.auth
+namespace Lib.auth
 {
-    public static class AuthConfigExtension
+    public static class AuthBootstrap
     {
         /// <summary>
         /// 配置auth

@@ -12,30 +12,6 @@ namespace Lib.data.ef
 {
     public static class EFExtension
     {
-        public static List<T> GetListEnsureMaxCount<T>(this IRepository<T> repo,
-            Expression<Func<T, bool>> where, int count, string error_msg)
-            where T : IDBTable
-        {
-            var list = repo.GetList(where, count);
-            if (list.Count >= count)
-            {
-                throw new Exception(error_msg);
-            }
-            return list;
-        }
-
-        public static async Task<List<T>> GetListEnsureMaxCountAsync<T>(this IRepository<T> repo,
-            Expression<Func<T, bool>> where, int count, string error_msg)
-            where T : IDBTable
-        {
-            var list = await repo.GetListAsync(where, count);
-            if (list.Count >= count)
-            {
-                throw new Exception(error_msg);
-            }
-            return list;
-        }
-
         /// <summary>
         /// 创建表
         /// </summary>

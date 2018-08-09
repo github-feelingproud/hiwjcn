@@ -1,8 +1,8 @@
-﻿using Lib.extension;
+﻿using Lib.auth.provider;
+using Lib.auth.validator;
+using Lib.extension;
 using Lib.helper;
 using Lib.ioc;
-using Lib.mvc.auth.validation;
-using Lib.mvc.user;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Lib.mvc.auth
+namespace Lib.auth
 {
     public static class AuthExtension
     {
