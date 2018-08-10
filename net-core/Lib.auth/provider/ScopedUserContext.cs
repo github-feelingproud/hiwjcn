@@ -1,4 +1,5 @@
 ﻿using Lib.helper;
+using Lib.threading;
 using System.Threading.Tasks;
 
 namespace Lib.auth.provider
@@ -23,13 +24,19 @@ namespace Lib.auth.provider
         {
             if (this._user == null)
             {
-                var token = this._authData.GetToken();
-                if (ValidateHelper.IsPlumpString(token))
+                using (new MonitorLock(this._lock))
                 {
-                    var res = await this._authApi.GetLoginUserInfoByTokenAsync(token);
-                    if (res.success)
+                    if (this._user == null)
                     {
-                        this._user = res.data;
+                        var token = this._authData.GetToken();
+                        if (ValidateHelper.IsPlumpString(token))
+                        {
+                            var res = await this._authApi.GetLoginUserInfoByTokenAsync(token);
+                            if (res.success)
+                            {
+                                this._user = res.data;
+                            }
+                        }
                     }
                 }
             }
