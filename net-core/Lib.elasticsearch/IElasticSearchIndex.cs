@@ -5,7 +5,7 @@ namespace Lib.data.elasticsearch
     /// <summary>
     /// 标记为索引model
     /// </summary>
-    public interface IElasticSearchIndex { }
+    public interface IElasticSearchIndex : IDBTable { }
 
     /// <summary>
     /// 用于关键词补全

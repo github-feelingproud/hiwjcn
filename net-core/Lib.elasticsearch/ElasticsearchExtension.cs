@@ -42,11 +42,15 @@ namespace Lib.extension
         /// <param name="deep"></param>
         /// <returns></returns>
         public static CreateIndexDescriptor GetCreateIndexDescriptor<T>(this CreateIndexDescriptor x,
-            int shards = 5, int replicas = 1, int deep = 5)
+            int? shards = null, int? replicas = null, int deep = 5)
             where T : class, IElasticSearchIndex
         {
-            return x.Settings(s =>
-            s.NumberOfShards(shards).NumberOfReplicas(replicas)).Mappings(map => map.Map<T>(m => m.AutoMap(deep)));
+            //shards and replicas
+            var indexDescriptor = x.Settings(s => s.NumberOfShards(shards).NumberOfReplicas(replicas));
+            //mapping option
+            indexDescriptor = indexDescriptor.Mappings(map => map.Map<T>(m => m.AutoMap(deep)));
+
+            return indexDescriptor;
         }
 
         /// <summary>
@@ -447,6 +451,41 @@ namespace Lib.extension
             {
                 return sort.GeoDistance(x => x.Field(field).PinTo(new GeoLocation(lat, lng)).Ascending());
             }*/
+        }
+
+        [Obsolete("只是为了演示用法")]
+        public static void ReScore(IElasticClient client)
+        {
+            var rescore = new RescoringDescriptor<ProductListEsIndexModelExample>();
+
+            var query = new QueryContainer() && new MatchAllQuery();
+            var function_query = new FunctionScoreQuery()
+            {
+                Query = new MatchAllQuery(),
+                ScoreMode = FunctionScoreMode.Average,
+                Functions = new List<IScoreFunction>()
+                {
+                    new GaussDateDecayFunction(){ },
+                    new ScriptScoreFunction(){ }
+                }
+            };
+            var script_query = new ScriptQuery() { };
+            var script_query_ = new ScriptScoreFunction() { };
+
+            rescore = rescore.Rescore(x =>
+                x.RescoreQuery(d => d.Query(q => query)
+                .QueryWeight(0.5)
+                .RescoreQueryWeight(0.5)
+                .ScoreMode(ScoreMode.Average)).WindowSize(10))
+                .Rescore(x =>
+                x.RescoreQuery(d => d.Query(q => function_query)
+                .QueryWeight(0.5)
+                .RescoreQueryWeight(0.5)
+                .ScoreMode(ScoreMode.Average)).WindowSize(10));
+
+            //use rescore
+            var sd = new SearchDescriptor<ProductListEsIndexModelExample>();
+            sd = sd.Rescore(x => rescore).Source(false);
         }
 
         /// <summary>
