@@ -197,6 +197,9 @@ namespace Lib.extension
         /// <summary>
         /// 搜索建议
         /// https://elasticsearch.cn/article/142
+        /// https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/suggest-usage.html
+        /// https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-suggesters.html
+        /// https://www.elastic.co/guide/en/elasticsearch/reference/6.2/search-suggesters-completion.html
         /// </summary>
         [Obsolete("只是为了演示用法")]
         public static SuggestDictionary<T> SuggestSample<T>(IElasticClient client,
@@ -229,12 +232,12 @@ namespace Lib.extension
         .Field("")
         .ShardSize(7)
         .Size(8)
-        .Text("hello world")
+        .Text(text)
     )
     .Completion("my-completion-suggest", c => c
         .Contexts(ctxs => ctxs
             .Context("color",
-                ctx => ctx.Context("")
+                ctx => ctx.Context(text)
             )
         )
         .Fuzzy(f => f
@@ -247,7 +250,7 @@ namespace Lib.extension
         .Analyzer("simple")
         .Field("")
         .Size(8)
-        .Prefix("")
+        .Prefix(text)
     )
     .Phrase("my-phrase-suggest", ph => ph
         .Collate(c => c
@@ -263,11 +266,10 @@ namespace Lib.extension
         )
         .GramSize(1)
         .Field("")
-        .Text("hello world")
+        .Text(text)
         .RealWordErrorLikelihood(0.5)
     )
 ));
-
             response.ThrowIfException();
 
             return response.Suggest;
@@ -702,7 +704,13 @@ namespace Lib.extension
         /// 不需要匹配度的查询使用filter效率更高
         /// </summary>
         [Obsolete("只是为了演示用法")]
-        public static void DifferenceBetweenQueryAndFilter() { }
+        public static void DifferenceBetweenQueryAndFilter()
+        {
+            var sd = new SearchDescriptor<ProductListEsIndexModelExample>();
+
+            sd = sd.PostFilter(x => new QueryContainer());
+            sd = sd.Query(x => new QueryContainer());
+        }
 
         [Obsolete("只是为了演示用法")]
         public static void DifferentQuerysInEs(QueryContainer qc)
@@ -728,6 +736,9 @@ namespace Lib.extension
 
             //精准匹配，不分词
             new TermQuery() { };
+
+            //字段存在且不为空
+            new ExistsQuery() { };
 
             //https://www.elastic.co/guide/cn/elasticsearch/guide/current/fuzzy-query.html
             //模糊查询，它会计算关键词和目标字段的“距离”。如果在允许的距离范围内，计算拼写错误也可以匹配到
