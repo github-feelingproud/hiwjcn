@@ -1,16 +1,16 @@
-﻿using System;
-using System.Text;
+﻿using Lib.core;
+using Lib.helper;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Lib.helper;
-using System.Collections;
-using Lib.core;
 
 namespace Lib.extension
 {
-    public static class CollectionExtension
+    public static class EnumerableExtension
     {
         /// <summary>
         /// 加入非空集合
@@ -410,6 +410,9 @@ namespace Lib.extension
             return true;
         }
 
+        public static T FirstOrThrow_<T>(this IEnumerable<T> query, string error_msg) =>
+            query.AsQueryable().FirstOrThrow_(error_msg);
+
         /// <summary>
         /// 取出一批数据
         /// </summary>
@@ -430,6 +433,26 @@ namespace Lib.extension
             if (temp.Count > 0)
             {
                 yield return temp;
+            }
+        }
+
+        /// <summary>
+        /// 使用分页
+        /// </summary>
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IOrderedEnumerable<T> list, int size)
+        {
+            if (size <= 0) { throw new ArgumentException("batch size必须大于0"); }
+            var page = 0;
+            while (true)
+            {
+                ++page;
+
+                var pager = PagerHelper.GetQueryRange(page, size);
+                var data = list.Skip(pager.skip).Take(pager.take).ToList();
+                if (!data.Any())
+                    break;
+
+                yield return data;
             }
         }
 

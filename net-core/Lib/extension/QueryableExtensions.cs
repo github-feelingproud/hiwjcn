@@ -11,7 +11,7 @@ namespace Lib.extension
     /// <summary>
     /// 对Linq的扩展
     /// </summary>
-    public static class LinqExtensions
+    public static class QueryableExtensions
     {
         public static List<T> GetListEnsureMaxCount<T>(this IRepository<T> repo,
             Expression<Func<T, bool>> where, int count, string error_msg)
@@ -36,9 +36,6 @@ namespace Lib.extension
             }
             return list;
         }
-
-        public static T FirstOrThrow_<T>(this IEnumerable<T> query, string error_msg) =>
-            query.AsQueryable().FirstOrThrow_(error_msg);
 
         public static T FirstOrThrow_<T>(this IQueryable<T> query, string error_msg)
         {
@@ -124,25 +121,5 @@ namespace Lib.extension
             desc ?
             query.OrderByDescending(orderby) :
             query.OrderBy(orderby);
-
-        /// <summary>
-        /// 动态生成or条件
-        /// http://www.albahari.com/nutshell/predicatebuilder.aspx
-        /// </summary>
-        public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
-        {
-            var invokedExpr = Expression.Invoke(expr2, expr1.Parameters.Cast<Expression>());
-            return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, invokedExpr), expr1.Parameters);
-        }
-
-        /// <summary>
-        /// 动态生成and条件
-        /// http://www.albahari.com/nutshell/predicatebuilder.aspx
-        /// </summary>
-        public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
-        {
-            var invokedExpr = Expression.Invoke(expr2, expr1.Parameters.Cast<Expression>());
-            return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(expr1.Body, invokedExpr), expr1.Parameters);
-        }
     }
 }

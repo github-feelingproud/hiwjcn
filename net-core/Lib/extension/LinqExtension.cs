@@ -1,0 +1,30 @@
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+
+namespace Lib.extension
+{
+    public static class LinqExtension
+    {
+
+        /// <summary>
+        /// 动态生成or条件
+        /// http://www.albahari.com/nutshell/predicatebuilder.aspx
+        /// </summary>
+        public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
+        {
+            var invokedExpr = Expression.Invoke(expr2, expr1.Parameters.Cast<Expression>());
+            return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, invokedExpr), expr1.Parameters);
+        }
+
+        /// <summary>
+        /// 动态生成and条件
+        /// http://www.albahari.com/nutshell/predicatebuilder.aspx
+        /// </summary>
+        public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
+        {
+            var invokedExpr = Expression.Invoke(expr2, expr1.Parameters.Cast<Expression>());
+            return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(expr1.Body, invokedExpr), expr1.Parameters);
+        }
+    }
+}
